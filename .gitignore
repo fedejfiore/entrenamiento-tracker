@@ -1,0 +1,15 @@
+node_modules/
+.claude/
+.agents/
+skills-lock.json
+package-lock.json
+.tmp_debug.js
+
+# Fotos personales y backups de historial: nunca deben subirse al repo.
+control/
+tracker viejos BackUp/
+ultimo tracker funcionando backup/
+*.jpeg
+*.jpg
+*.json
+!manifest.json
