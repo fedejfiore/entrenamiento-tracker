@@ -63,6 +63,15 @@ class App {
         bindGeneralSettings();
         bindPrograms();
         bindAccessibilitySettings();
+        bindTrainMode();
+        bindFinishSession();
+        bindProgression();
+        bindLibrary();
+        bindProfile();
+        initCollapsibleSections(document.querySelector('[data-screen="perfil"]'));
+        initCollapsibleSections(document.querySelector('[data-screen="biblioteca"] .lib-tab[data-tab="rutinas"]'));
+        initCollapsibleSections(document.querySelector('[data-screen="biblioteca"] .lib-tab[data-tab="ejercicios"]'));
+        initCollapsibleSections(document.querySelector('[data-screen="progreso"]'));
         initCollapsibleSections(document.querySelector('[data-screen="ajustes"]'));
         initBottomNavKeyboardHide();
 

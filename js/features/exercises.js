@@ -19,19 +19,19 @@ function renderVariantsCatalog() {
     groupOrder.forEach(group => {
         const icon = MUSCLE_GROUPS[group].icon;
         const gid = `mg_${normalizeForCompare(group).replace(/[^a-z0-9]+/g, '_')}`;
-        html += `<div class="collapsible" onclick="toggleVariantGroup('${gid}')">▶ ${icon} ${group}</div>
+        html += `<div class="collapsible" onclick="toggleVariantGroup('${gid}')">▶ ${icon} ${escapeHtml(group)}</div>
         <div class="collapsible-content" id="${gid}">`;
 
         byGroup[group].forEach((ex, idx) => {
             const variants = EXERCISE_VARIANTS[ex] || [];
             const uid = `${gid}_ex_${idx}`;
-            html += `<div class="collapsible" style="margin-left:12px;" onclick="event.stopPropagation(); toggleVariantGroup('${uid}')">▶ ${ex}</div>
+            html += `<div class="collapsible" style="margin-left:12px;" onclick="event.stopPropagation(); toggleVariantGroup('${uid}')">▶ ${escapeHtml(ex)}</div>
             <div class="collapsible-content" id="${uid}" style="margin-left:12px;">`;
             if (variants.length === 0) {
-                html += `<a href="${youtubeSearchUrl(ex + ' alternativas')}" target="_blank" rel="noopener">🔍 Buscar alternativas a "${ex}"</a>`;
+                html += `<a href="${escapeHtml(youtubeSearchUrl(ex + ' alternativas'))}" target="_blank" rel="noopener noreferrer">🔍 Buscar alternativas a "${escapeHtml(ex)}"</a>`;
             } else {
                 html += variants.map(v =>
-                    `<div style="margin-bottom: 8px;">▸ ${v} — <a href="${youtubeSearchUrl(v)}" target="_blank" rel="noopener">🎥 Ver video</a></div>`
+                    `<div style="margin-bottom: 8px;">▸ ${escapeHtml(v)} — <a href="${escapeHtml(youtubeSearchUrl(v))}" target="_blank" rel="noopener noreferrer">🎥 Ver video</a></div>`
                 ).join('');
             }
             html += `</div>`;
@@ -56,7 +56,7 @@ function populateUnifySelectors() {
     const prevSource = source.value;
     const prevTarget = target.value;
     const names = getAllKnownExerciseNames();
-    const optionsHtml = names.map(n => `<option value="${n}">${n}</option>`).join('');
+    const optionsHtml = names.map(n => `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
 
     source.innerHTML = '<option value="">Ejercicio a renombrar...</option>' + optionsHtml;
     target.innerHTML = '<option value="">Unificar con...</option>' + optionsHtml;

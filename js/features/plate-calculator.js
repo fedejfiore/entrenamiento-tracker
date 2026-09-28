@@ -11,7 +11,8 @@ function loadPlatePrefs() {
     const saved = db.get('plateCalculator');
     return {
         bar: BAR_OPTIONS.some(([v]) => v === saved.bar) ? saved.bar : 20,
-        plates: Array.isArray(saved.plates) && saved.plates.length ? saved.plates : DEFAULT_PLATES,
+        // Solo discos conocidos (lo guardado puede venir de un backup).
+        plates: Array.isArray(saved.plates) && saved.plates.some(p => ALL_PLATES.includes(p)) ? saved.plates.filter(p => ALL_PLATES.includes(p)) : DEFAULT_PLATES,
         modes: saved.modes && typeof saved.modes === 'object' ? saved.modes : {},
         stacks: saved.stacks && typeof saved.stacks === 'object' ? saved.stacks : {}
     };

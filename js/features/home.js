@@ -98,8 +98,8 @@ function renderRecentRoutineAverages(workouts) {
     let html = summaries.map(s => `
         <div class="stat-box" style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
             <div>
-                <div style="font-weight:600; font-size:13px;">${s.routineLabel}</div>
-                <small style="color:var(--text-faint);">${s.date}</small>
+                <div style="font-weight:600; font-size:13px;">${escapeHtml(s.routineLabel)}</div>
+                <small style="color:var(--text-faint);">${escapeHtml(s.date)}</small>
             </div>
             <div style="text-align:right; font-size:12px; color:var(--text-muted);">
                 ${s.avgWeight != null ? `Peso prom: <strong style="color:var(--text);">${s.avgWeight}kg</strong><br>` : ''}
@@ -174,7 +174,7 @@ function renderMonthCalendar() {
         const title = trained ? `${dateStr}: ${label}` : dateStr;
         const isToday = dateStr === todayStr;
 
-        html += `<div class="calendar-cell ${trained ? 'trained ' + intensity : ''}${isToday ? ' today' : ''}" title="${title}">${day}</div>`;
+        html += `<div class="calendar-cell ${trained ? 'trained ' + intensity : ''}${isToday ? ' today' : ''}" title="${escapeHtml(title)}">${day}</div>`;
     }
     html += '</div>';
     container.innerHTML = html;

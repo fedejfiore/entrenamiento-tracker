@@ -1,119 +1,22 @@
-/* Progreso: mini-gráficos, modal de detalle y calendario. */
+/* Progreso: análisis de progresión, modal de detalle y calendario. */
 
-/* GRILLA DE MINI-GRÁFICOS POR EJERCICIO */
-.mini-chart-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-    margin-bottom: 8px;
+/* ANÁLISIS DE PROGRESIÓN: filas tocables (abren el detalle con gráficos) */
+.progression-controls { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+.progression-controls label { font-size: 12px; color: var(--text-muted); white-space: nowrap; min-width: 110px; }
+.progression-controls select { width: auto; flex: 1; margin-bottom: 0; }
+.progression-row {
+    display: block; position: relative; width: 100%; margin: 0 0 6px; padding: 10px 40px 10px 10px;
+    text-align: left; font-weight: 400; background: var(--bg-elevated); color: var(--text); border-radius: var(--radius-sm);
 }
-
-.mini-chart-card {
-    position: relative;
-    background: var(--bg-subtle);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 10px;
-    cursor: grab;
-    transition: background 0.15s, transform 0.15s;
-    user-select: none;
-    -webkit-user-select: none;
-}
-
-.mini-chart-card:hover {
-    background: var(--bg-elevated);
-    transform: translateY(-1px);
-}
-
-.mini-chart-card.dragging-source {
-    opacity: 0.35;
-}
-
-.mini-chart-drag-ghost {
-    position: fixed;
-    z-index: 3000;
-    pointer-events: none;
-    box-shadow: var(--shadow-md);
-    transform: scale(1.04);
-    cursor: grabbing;
-}
-
-.mini-chart-grid.drop-target-active {
-    outline: 2px dashed var(--brand);
-    outline-offset: 6px;
-    border-radius: var(--radius-sm);
-}
-
-.mini-chart-move-btn {
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    width: 30px;
-    height: 30px;
-    padding: 0;
-    margin: 0;
-    border-radius: 50%;
-    font-size: 14px;
-    background: var(--bg-elevated);
-    border: 1px solid var(--border);
-    color: inherit;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1;
-}
-
-.move-group-list {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.move-group-list button {
-    width: 100%;
-    text-align: left;
-    background: var(--bg-subtle);
-    color: var(--text);
-    border: 1px solid var(--border);
-}
-
-.move-group-list button:hover {
-    background: var(--bg-elevated);
-}
-
-.mini-chart-title {
-    font-size: 12px;
-    font-weight: 600;
-    margin-bottom: 6px;
-    padding-right: 26px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.mini-chart-canvas-wrap {
-    position: relative;
-    height: 46px;
-    overflow: hidden;
-}
-
-.mini-chart-last {
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-top: 6px;
-}
-
-@media (min-width: 640px) {
-    .mini-chart-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-}
-
-@media (min-width: 900px) {
-    .mini-chart-grid {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-}
+.progression-row:hover { background: var(--bg-subtle); box-shadow: none; transform: none; }
+.progression-row small { display: block; color: var(--text-muted); margin-top: 2px; }
+.progression-row .progression-vs { display: inline; color: var(--text-faint); }
+.progression-open { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 18px; }
+.progression-group { margin-bottom: 8px; }
+.progression-group > summary { cursor: pointer; font-weight: 700; padding: 8px 2px; list-style-position: inside; }
+.progression-group > summary small { color: var(--text-muted); font-weight: 400; }
+.progression-empty { color: var(--text-faint); font-size: 13px; }
+.detail-group-label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
 
 /* MODAL (detalle de ejercicio) */
 .modal-overlay {

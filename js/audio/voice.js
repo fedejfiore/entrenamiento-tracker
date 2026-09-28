@@ -16,6 +16,7 @@ const VOICE_DEFAULTS = {
     tempo: 3,            // segundos por rep (cadencia) por defecto
     rate: 1.05,          // velocidad de la voz
     voiceURI: '',        // voz elegida ('' = la primera en español)
+    style: 'neutro',     // estilo de las frases y el tono (js/audio/voice-styles.js)
     useRecordings: true  // si hay una grabación propia para un aviso, suena esa
 };
 
@@ -65,7 +66,10 @@ function speak(text, key, opts = {}) {
         const voice = pickVoice(st);
         if (voice) u.voice = voice;
         u.lang = voice?.lang || 'es-AR';
-        u.rate = st.rate;
+        // El estilo elegido (tierno, militar…) ajusta tono y velocidad de la voz.
+        const style = typeof currentVoiceStyle === 'function' ? currentVoiceStyle() : { pitch: 1, rate: 1 };
+        u.rate = Math.min(2, st.rate * style.rate);
+        u.pitch = style.pitch;
         u.volume = Math.max(0.1, loadSoundSettings().volume / 100);
         speechSynthesis.speak(u);
     } catch (e) {
@@ -86,6 +90,10 @@ function initVoiceSettingsUI() {
     if (!box) return;
     if (!voiceSupported()) {
         box.innerHTML = '<p style="color:var(--text-faint); font-size:13px;">Este navegador no tiene voz disponible. Los avisos siguen sonando con beeps.</p>';
+    }
+    const styleSel = document.getElementById('voiceStyleSelect');
+    if (styleSel && typeof VOICE_STYLES !== 'undefined') {
+        styleSel.innerHTML = Object.entries(VOICE_STYLES).map(([k, v]) => `<option value="${k}">${v.label}</option>`).join('');
     }
     document.querySelectorAll('[data-voice]').forEach(el => {
         const key = el.dataset.voice;
@@ -126,6 +134,6 @@ function populateVoiceSelect() {
 
 function testVoice() {
     unlockAudio();
-    speak('¡Dale! Quedan cinco. ¡Última!');
+    speak(styledCueText(['repFive', 'repLast'], '¡Dale! Quedan cinco. ¡Última!'));
 }
 

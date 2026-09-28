@@ -94,23 +94,26 @@
 .muscle.selected { stroke: var(--text); stroke-width: 2; }
 
 /* Niveles: gris (nada), naranja claro/medio (poco/moderado), verde (rango ideal), rojo (mucho) */
-/* Escala de intensidad del color de acento: cuanto más fuerte el color, más trabajado.
-   Se mezcla con el fondo, así funciona en los dos temas (en claro va de pálido a intenso;
-   en oscuro, de apagado a vivo) y con cualquier color elegido. */
+/* Niveles del mapa: saltos grandes de intensidad del color de acento (se mezcla con el fondo,
+   así funciona en los dos temas y con cualquier color). "Alto" lleva rayas: se distingue sin
+   depender del color. "Ideal" tiene borde para destacarse. */
 .muscle-map, .muscle-legend, .muscle-list {
     --heat-0: var(--bg-elevated);
-    --heat-1: color-mix(in srgb, var(--brand) 30%, var(--bg-card));
-    --heat-2: color-mix(in srgb, var(--brand) 48%, var(--bg-card));
-    --heat-3: color-mix(in srgb, var(--brand) 66%, var(--bg-card));
-    --heat-4: color-mix(in srgb, var(--brand) 82%, var(--bg-card));
-    --heat-5: var(--brand);
+    --heat-1: color-mix(in srgb, var(--brand) 28%, var(--bg-card));
+    --heat-2: color-mix(in srgb, var(--brand) 58%, var(--bg-card));
+    --heat-3: var(--brand);
+    --heat-4: var(--brand);
+    --heat-4-stripe: color-mix(in srgb, var(--brand) 45%, #000);
 }
-.lvl-0 { fill: var(--heat-0); background: var(--heat-0); }
-.lvl-1 { fill: var(--heat-1); background: var(--heat-1); }
-.lvl-2 { fill: var(--heat-2); background: var(--heat-2); }
-.lvl-3 { fill: var(--heat-3); background: var(--heat-3); }
-.lvl-4 { fill: var(--heat-4); background: var(--heat-4); }
-.lvl-5 { fill: var(--heat-5); background: var(--heat-5); }
+.lvl-0 { fill: var(--heat-0); }
+.lvl-1 { fill: var(--heat-1); }
+.lvl-2 { fill: var(--heat-2); }
+.lvl-3 { fill: var(--heat-3); }
+.lvl-4 { fill: url(#muscleHighPattern); }
+.muscle.lvl-3 { stroke: var(--text); stroke-width: 1.2; }
+.muscle-legend-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+svg.muscle-dot { width: 14px; height: 14px; flex-shrink: 0; margin-top: 3px; }
+svg.muscle-dot .muscle, .muscle-legend-item .muscle { stroke-width: 0; cursor: default; }
 .muscle-range-info { font-size: 12px; color: var(--text-muted); margin: -4px 0 8px; }
 .muscle-note { color: var(--text-muted); }
 
@@ -136,7 +139,7 @@
 /* ---- Unilaterales: chip ↔ y serie con un lado hecho (½) ---- */
 .side-chip.on { background: var(--brand); color: var(--on-color); border-color: transparent; }
 .set-row.half { background: rgba(var(--brand-rgb), 0.10); }
-.set-row.half .set-check { background: rgba(var(--brand-rgb), 0.55); color: var(--on-color); font-weight: 700; }
+.set-row.half .set-check { background: var(--brand); color: var(--on-color); font-weight: 700; }
 
 /* ---- Bloque terminado: se contrae y muestra un resumen ---- */
 .exercise-name-line { display: flex; align-items: flex-start; gap: 6px; }
@@ -188,3 +191,7 @@
 .accent-choice span { width: 16px; height: 16px; border-radius: 50%; background: var(--swatch); flex-shrink: 0; }
 .accent-choice.on { border-color: var(--swatch); font-weight: 700; }
 .accent-choice:hover { box-shadow: none; transform: none; }
+
+/* La muestra de cada color usa el tono del tema actual. */
+.accent-choice { --swatch: var(--swatch-dark); }
+html[data-theme="light"] .accent-choice { --swatch: var(--swatch-light); }

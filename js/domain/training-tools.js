@@ -94,27 +94,32 @@ function muscleSetsByGroup(workouts, fromStr, toStr, groupOf) {
     return out;
 }
 
-// Nivel de color según series por semana (el rango habitual para ganar músculo es 10-20).
-// La escala es de un solo color: más oscuro / intenso cuanto más se entrenó.
+// Nivel según series por semana (el rango habitual para ganar músculo es 10-20). Pocos
+// niveles y con nombre, para que se distingan de un vistazo: la intensidad del color sube
+// con el trabajo y "alto" lleva rayas (no depende solo del color).
 const MUSCLE_LEVELS = [
-    { min: 0, label: 'Sin trabajo' },
-    { min: 0.5, label: '1 a 5' },
-    { min: 6, label: '6 a 9' },
-    { min: 10, label: '10 a 15 (rango ideal)' },
-    { min: 15.5, label: '16 a 20 (rango ideal)' },
-    { min: 20.5, label: 'Más de 20' }
+    { min: 0, label: 'Sin trabajo', short: 'Sin trabajo' },
+    { min: 0.5, label: 'Bajo (1 a 5)', short: 'Bajo' },
+    { min: 6, label: 'Moderado (6 a 9)', short: 'Moderado' },
+    { min: 10, label: 'Ideal (10 a 20)', short: 'Ideal' },
+    { min: 20.5, label: 'Alto (más de 20)', short: 'Alto' }
 ];
 
 const MUSCLE_IDEAL_RANGE = { min: 10, max: 20 };
 
 /**
- * Rango de fechas de cada período del mapa, respetando el día en que empieza la semana.
+ * Rango de fechas de cada período del mapa.
+ * 'last7' = los últimos 7 días corridos hasta hoy (no depende de la semana);
  * 'week' = semana en curso (hasta hoy), 'lastweek' = la anterior completa, '4w' / '12w' =
- * semanas completas anteriores a la actual. weeks = por cuánto dividir para el promedio.
+ * semanas completas anteriores a la actual, respetando el día en que empieza la semana.
+ * weeks = por cuánto dividir para el promedio semanal.
  */
 function muscleMapRange(period, today, weekStartDay = 1) {
     const start = getWeekStart(today, weekStartDay);
     const shift = (d, days) => { const x = new Date(d); x.setDate(x.getDate() + days); return x; };
+    if (period === 'last7') {
+        return { from: formatDateLocal(shift(today, -6)), to: formatDateLocal(today), weeks: 1, inProgress: false, daysLeft: 0 };
+    }
     if (period === 'week') {
         const dayIndex = Math.round((new Date(today).setHours(0, 0, 0, 0) - start.getTime()) / 86400000);
         return { from: formatDateLocal(start), to: formatDateLocal(today), weeks: 1, inProgress: true, daysLeft: 6 - dayIndex };

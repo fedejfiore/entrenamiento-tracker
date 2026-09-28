@@ -6,10 +6,13 @@
 //   "schemaVersion": 2, "exportedAt": "2026-09-28T...",
 //   "data": { <cada clave de los grupos data y prefs del esquema> },
 //   "recordings": { "<aviso>": { mime, duration, updatedAt, data: <audio en base64> } },
+//   "photos": { "<id>": { kind, date, mime, updatedAt, data: <imagen en base64> } },
 //   "workouts": [...], "bodyMetrics": [...], "customRoutines": {...}, "version": "2.0"
 // }
 // Las claves sueltas del final repiten datos de "data" para que una versión anterior de
 // la app también pueda restaurar este archivo.
+//
+// Opcionalmente el archivo entero va cifrado con contraseña (js/data/backup-crypto.js).
 //
 // Se aceptan también los backups viejos (workouts/bodyMetrics/customRoutines sueltos): en
 // ese caso solo se restauran esas claves y lo demás queda como está.
@@ -18,15 +21,18 @@ const BACKUP_FORMAT = 'entrenamiento-tracker-backup';
 const BACKUP_FORMAT_VERSION = 3;
 
 class BackupService {
-    constructor(store, recordings) {
+    constructor(store, recordings, photos = null) {
         this.store = store;
         this.recordings = recordings;
+        this.photos = photos;
     }
 
     async build() {
         const data = this.store.snapshot(def => BACKUP_GROUPS.includes(def.group));
         let recordings = {};
         try { recordings = await this.recordings.exportAll(); } catch (e) { console.warn('Backup sin grabaciones:', e); }
+        let photos = {};
+        try { if (this.photos) photos = await this.photos.exportAll(); } catch (e) { console.warn('Backup sin fotos:', e); }
         return {
             format: BACKUP_FORMAT,
             formatVersion: BACKUP_FORMAT_VERSION,
@@ -34,6 +40,7 @@ class BackupService {
             exportedAt: new Date().toISOString(),
             data,
             recordings,
+            photos,
             // Compatibilidad con versiones anteriores de la app:
             version: '2.0',
             workouts: data.workouts || [],
@@ -82,15 +89,18 @@ class BackupService {
         });
 
         const recordings = raw.recordings && typeof raw.recordings === 'object' ? raw.recordings : null;
+        const photos = raw.photos && typeof raw.photos === 'object' && !Array.isArray(raw.photos) ? raw.photos : null;
         return {
             data,
             recordings,
+            photos,
             schemaVersion,
             version: raw.version || '2.0',
             summary: {
                 sessions: data.workouts.length,
                 measurements: Array.isArray(data.bodyMetrics) ? data.bodyMetrics.length : 0,
-                recordings: recordings ? Object.keys(recordings).length : 0
+                recordings: recordings ? Object.keys(recordings).length : 0,
+                photos: photos ? Object.keys(photos).length : 0
             }
         };
     }
@@ -112,8 +122,13 @@ class BackupService {
             try { await this.recordings.replaceAll(parsed.recordings); }
             catch (e) { recordingsError = e; console.error('No se pudieron restaurar las grabaciones:', e); }
         }
-        return { recordingsError };
+        let photosError = null;
+        if (parsed.photos && this.photos) {
+            try { await this.photos.replaceAll(parsed.photos); }
+            catch (e) { photosError = e; console.error('No se pudieron restaurar las fotos:', e); }
+        }
+        return { recordingsError, photosError };
     }
 }
 
-const backupService = new BackupService(db, recordingRepo);
+const backupService = new BackupService(db, recordingRepo, photoRepo);

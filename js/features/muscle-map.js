@@ -4,6 +4,7 @@
 // semana en curso muestra lo que va hasta hoy. Tocar un músculo muestra su detalle.
 
 const MUSCLE_MAP_PERIODS = {
+    last7: 'Últimos 7 días',
     week: 'Esta semana (en curso)',
     lastweek: 'Semana pasada',
     '4w': 'Últimas 4 semanas (promedio)',
@@ -11,6 +12,11 @@ const MUSCLE_MAP_PERIODS = {
 };
 
 let muscleMapSelected = null;
+
+const MUSCLE_PATTERN_SVG = `<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+    <pattern id="muscleHighPattern" patternUnits="userSpaceOnUse" width="5" height="5" patternTransform="rotate(45)">
+        <rect width="5" height="5" fill="var(--heat-4)"/><rect width="2" height="5" fill="var(--heat-4-stripe)"/>
+    </pattern></defs></svg>`;
 
 // Figura estilizada: la silueta de base y encima cada músculo con su grupo (data-group).
 const BODY_BASE = `
@@ -55,7 +61,7 @@ function muscleFigureSvg(regions, caption) {
 
 function muscleMapData() {
     const select = document.getElementById('muscleMapPeriod');
-    const period = MUSCLE_MAP_PERIODS[select?.value] ? select.value : 'week';
+    const period = MUSCLE_MAP_PERIODS[select?.value] ? select.value : 'last7';
     const range = muscleMapRange(period, new Date(), loadAppSettings().weekStart);
     const byGroup = muscleSetsByGroup(repo.workouts.all(), range.from, range.to, getMuscleGroup);
     const weekly = sets => Math.round(sets / range.weeks * 10) / 10;
@@ -66,18 +72,19 @@ function renderMuscleMap() {
     const box = document.getElementById('muscleMap');
     if (!box) return;
     const { byGroup, weekly, range } = muscleMapData();
-    box.innerHTML = muscleFigureSvg(BODY_FRONT, 'Frente') + muscleFigureSvg(BODY_BACK, 'Espalda');
+    // Rayas para el nivel "alto": se definen una vez y las usan la figura, la leyenda y la lista.
+    box.innerHTML = MUSCLE_PATTERN_SVG + muscleFigureSvg(BODY_FRONT, 'Frente') + muscleFigureSvg(BODY_BACK, 'Espalda');
     box.querySelectorAll('[data-group]').forEach(el => {
         const g = el.dataset.group;
         const level = muscleLevel(weekly(byGroup[g]?.sets || 0));
         el.setAttribute('class', `muscle lvl-${level}${muscleMapSelected === g ? ' selected' : ''}`);
         el.setAttribute('tabindex', '0');
-        el.innerHTML = `<title>${g}: ${formatNumber(weekly(byGroup[g]?.sets || 0))} series${range.weeks > 1 ? ' por semana' : ''}</title>`;
+        el.innerHTML = `<title>${escapeHtml(g)}: ${formatNumber(weekly(byGroup[g]?.sets || 0))} series${range.weeks > 1 ? ' por semana' : ''}</title>`;
     });
 
     const legend = document.getElementById('muscleMapLegend');
     if (legend) {
-        legend.innerHTML = MUSCLE_LEVELS.map((l, i) => `<span class="muscle-legend-item"><i class="lvl-${i}"></i>${l.label}</span>`).join('');
+        legend.innerHTML = MUSCLE_LEVELS.map((l, i) => `<span class="muscle-legend-item"><svg viewBox="0 0 14 14" aria-hidden="true"><rect class="muscle lvl-${i}" width="14" height="14" rx="3"/></svg>${l.label}</span>`).join('');
     }
     const info = document.getElementById('muscleMapRangeInfo');
     if (info) {
@@ -113,7 +120,7 @@ function renderMuscleMapList(byGroup, weekly, range) {
         const detail = Object.entries(r.exercises).sort((a, b) => b[1] - a[1]).map(([n, s]) => `${escapeHtml(n)} (${s})`).join(', ');
         const offMap = !MAPPED_GROUPS.includes(r.g) ? ' <small>(no se muestra en la figura)</small>' : '';
         return `<div class="muscle-row" data-group="${escapeHtml(r.g)}">
-                <span class="muscle-dot lvl-${level}"></span>
+                <svg class="muscle-dot" viewBox="0 0 14 14" aria-hidden="true"><rect class="muscle lvl-${level}" width="14" height="14" rx="7"/></svg>
                 <div class="muscle-row-text">
                     <strong>${escapeHtml(r.g)}</strong>${offMap} · ${formatNumber(w)} series${range.weeks > 1 ? '/semana' : ''}${muscleRangeNote(w, range) ? ` · <span class="muscle-note">${muscleRangeNote(w, range)}</span>` : ''}
                     ${detail ? `<small>${detail}</small>` : '<small>Sin series en este período</small>'}

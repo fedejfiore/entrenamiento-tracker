@@ -74,3 +74,20 @@ test('un archivo inválido no escribe nada', () => {
     assert.throws(() => service.parse(JSON.stringify({ workouts: [], customRoutines: [] })), /customRoutines/);
     assert.equal(store.get('customRoutineLabels').A1, 'Empuje');
 });
+
+test('las fotos entran en el backup y se restauran', async () => {
+    const app = loadApp();
+    const store = app('(a) => new Store(a, STORAGE_SCHEMA)')(app('new MemoryAdapter()'));
+    store.set('workouts', legacy.workouts);
+    const mem = saved => ({ saved, async exportAll() { return { ...this.saved }; }, async replaceAll(map) { this.saved = { ...map }; } });
+    const recordings = mem({});
+    const photos = mem({ avatar: { kind: 'avatar', mime: 'image/jpeg', updatedAt: 1, data: 'AAEC' } });
+    const service = app('(s, r, p) => new BackupService(s, r, p)')(store, recordings, photos);
+    const backup = await service.build();
+    assert.equal(backup.photos.avatar.kind, 'avatar');
+    const parsed = service.parse(JSON.stringify(backup));
+    assert.equal(parsed.summary.photos, 1);
+    photos.saved = {};
+    await service.restore(parsed);
+    assert.equal(photos.saved.avatar.data, 'AAEC');
+});

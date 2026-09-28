@@ -42,11 +42,12 @@ class RecordingRepository {
 
     clear() { return this.transaction('readwrite', s => s.clear()); }
 
-    /** { id: { mime, duration, updatedAt, data: base64 } } — formato del backup JSON. */
+    /** { id: { mime, updatedAt, ...otros campos, data: base64 } } — formato del backup JSON. */
     async exportAll() {
         const out = {};
         (await this.all()).forEach(rec => {
-            out[rec.id] = { mime: rec.mime, duration: rec.duration, updatedAt: rec.updatedAt, data: arrayBufferToBase64(rec.data) };
+            const { id, data, ...meta } = rec;
+            out[id] = { ...meta, data: arrayBufferToBase64(data) };
         });
         return out;
     }
@@ -55,7 +56,7 @@ class RecordingRepository {
     replaceAll(exported) {
         const records = Object.entries(exported || {})
             .filter(([, rec]) => rec && typeof rec.data === 'string')
-            .map(([id, rec]) => ({ id, mime: rec.mime, duration: rec.duration, updatedAt: rec.updatedAt || Date.now(), data: base64ToArrayBuffer(rec.data) }));
+            .map(([id, rec]) => ({ ...rec, id, updatedAt: rec.updatedAt || Date.now(), data: base64ToArrayBuffer(rec.data) }));
         return this.transaction('readwrite', s => {
             s.clear();
             records.forEach(r => s.put(r));
@@ -64,3 +65,7 @@ class RecordingRepository {
 }
 
 const recordingRepo = new RecordingRepository();
+
+// Fotos (perfil y progreso): mismo mecanismo, en su propia base.
+// Registro: { id: 'avatar' | 'progress-AAAA-MM-DD-xxx', kind, date, mime, updatedAt, data }
+const photoRepo = new RecordingRepository('entrenamientoFotos', 'photos');

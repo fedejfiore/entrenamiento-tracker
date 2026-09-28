@@ -1,21 +1,27 @@
 /* Variables de diseño (colores, radios, tipografías) y tema claro / oscuro. */
 
+/* Contraste (WCAG AA, 4,5:1): cada color de acento tiene una versión por tema.
+   - Oscuro: tono brillante con texto oscuro encima (--on-color).
+   - Claro: tono profundo con texto blanco encima.
+   Así el mismo color sirve de fondo de botón y de color de texto sobre la tarjeta, y
+   ninguna combinación de color + tema queda por debajo del mínimo. */
 :root {
     --brand: #ff6b35;
-    --brand-dark: #e2551f;
     --brand-rgb: 255, 107, 53;
+    --brand-dark: color-mix(in srgb, var(--brand) 88%, #000);
     --success: #39d98a;
-    --success-dark: #22b06c;
-    --danger: #ff4d4f;
-    --danger-dark: #d93436;
+    --success-dark: color-mix(in srgb, var(--success) 88%, #000);
+    --danger: #ff6b6b;
+    --danger-dark: color-mix(in srgb, var(--danger) 88%, #000);
     --warning: #ffb020;
+    --on-color: #14161a; /* texto sobre fondos de color */
     --bg-page: #0f1115;
     --bg-card: #1a1d24;
     --bg-subtle: #22252d;
     --bg-elevated: #2a2e37;
     --text: #f5f6f8;
     --text-muted: #a0a4ad;
-    --text-faint: #6b6f78;
+    --text-faint: #8e929b; /* 5,4:1 sobre la tarjeta (antes 3,4:1) */
     --border: #2a2d35;
     --input-border: #383c46;
     --radius: 12px;
@@ -26,30 +32,27 @@
     --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     /* Espacio que ocupa abajo lo que no es de la app (barra de Android / gestos del iPhone)
        más la barra de navegación en el celular: lo usan el timer, el contador y los avisos. */
-    --on-color: #ffffff; /* texto sobre fondos de color; oscuro en alto contraste */
     --bottom-nav-h: 0px;
     --bottom-inset: calc(var(--bottom-nav-h) + env(safe-area-inset-bottom, 0px));
     /* Colores de estado del Tabata */
-    --tabata-work: #27ae60;
-    --tabata-rest: #e67e22;
+    --tabata-work: #15803d;
+    --tabata-rest: #c2410c;
 }
 
 html[data-theme="light"] {
-    --brand: #ff5a1f;
-    --brand-dark: #e04d15;
-    --brand-rgb: 255, 90, 31;
-    --success: #1fae66;
-    --success-dark: #178f53;
-    --danger: #e5484d;
-    --danger-dark: #c93338;
-    --warning: #d98c00;
+    --brand: #c2410c;
+    --brand-rgb: 194, 65, 12;
+    --success: #166534;
+    --danger: #c62828;
+    --warning: #8a5a00;
+    --on-color: #ffffff;
     --bg-page: #f4f5f7;
     --bg-card: #ffffff;
     --bg-subtle: #f0f1f4;
     --bg-elevated: #e9eaee;
     --text: #14161a;
     --text-muted: #5c6068;
-    --text-faint: #9a9ea6;
+    --text-faint: #6b6f78; /* 5:1 sobre blanco (antes 2,7:1) */
     --border: #e4e6ea;
     --input-border: #d7d9de;
     --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
@@ -59,33 +62,29 @@ html[data-theme="light"] {
 /* Colores para daltonismo (Ajustes → Accesibilidad): verde / rojo pasan a azul / bermellón
    (paleta Okabe-Ito), que se distinguen con protanopia, deuteranopia y tritanopia. */
 html[data-vision="cvd"] {
-    --success: #0a84ff;
-    --success-dark: #0066cc;
-    --danger: #e8590c;
-    --danger-dark: #c2410c;
+    --success: #4da3ff;
+    --danger: #ff8c42;
     --warning: #f5c518;
-    --tabata-work: #0a84ff;
-    --tabata-rest: #e8590c;
+    --tabata-work: #0059b3;
+    --tabata-rest: #b34700;
 }
 html[data-vision="cvd"][data-theme="light"] {
-    --success: #0066cc;
-    --success-dark: #004f9e;
-    --danger: #c2410c;
-    --danger-dark: #9a3412;
-    --warning: #b8860b;
+    --success: #0059b3;
+    --danger: #b34700;
+    --warning: #8a5a00;
 }
 
 /* Color de acento elegido en Ajustes → General (naranja es el de :root). */
-html[data-accent="turquesa"] { --brand: #14b8a6; --brand-dark: #0d9488; --brand-rgb: 20, 184, 166; }
-html[data-theme="light"][data-accent="turquesa"] { --brand: #0d9488; --brand-dark: #0f766e; --brand-rgb: 13, 148, 136; }
-html[data-accent="azul"] { --brand: #3b82f6; --brand-dark: #2563eb; --brand-rgb: 59, 130, 246; }
-html[data-theme="light"][data-accent="azul"] { --brand: #2563eb; --brand-dark: #1d4ed8; --brand-rgb: 37, 99, 235; }
-html[data-accent="fucsia"] { --brand: #ec4899; --brand-dark: #db2777; --brand-rgb: 236, 72, 153; }
-html[data-theme="light"][data-accent="fucsia"] { --brand: #db2777; --brand-dark: #be185d; --brand-rgb: 219, 39, 119; }
-html[data-accent="verde"] { --brand: #22c55e; --brand-dark: #16a34a; --brand-rgb: 34, 197, 94; }
-html[data-theme="light"][data-accent="verde"] { --brand: #16a34a; --brand-dark: #15803d; --brand-rgb: 22, 163, 74; }
-html[data-accent="violeta"] { --brand: #8b5cf6; --brand-dark: #7c3aed; --brand-rgb: 139, 92, 246; }
-html[data-theme="light"][data-accent="violeta"] { --brand: #7c3aed; --brand-dark: #6d28d9; --brand-rgb: 124, 58, 237; }
+html[data-accent="turquesa"] { --brand: #2dd4bf; --brand-rgb: 45, 212, 191; }
+html[data-theme="light"][data-accent="turquesa"] { --brand: #0f766e; --brand-rgb: 15, 118, 110; }
+html[data-accent="azul"] { --brand: #60a5fa; --brand-rgb: 96, 165, 250; }
+html[data-theme="light"][data-accent="azul"] { --brand: #1d4ed8; --brand-rgb: 29, 78, 216; }
+html[data-accent="fucsia"] { --brand: #f472b6; --brand-rgb: 244, 114, 182; }
+html[data-theme="light"][data-accent="fucsia"] { --brand: #be185d; --brand-rgb: 190, 24, 93; }
+html[data-accent="verde"] { --brand: #4ade80; --brand-rgb: 74, 222, 128; }
+html[data-theme="light"][data-accent="verde"] { --brand: #166534; --brand-rgb: 22, 101, 52; }
+html[data-accent="violeta"] { --brand: #a78bfa; --brand-rgb: 167, 139, 250; }
+html[data-theme="light"][data-accent="violeta"] { --brand: #6d28d9; --brand-rgb: 109, 40, 217; }
 
 * {
     margin: 0;

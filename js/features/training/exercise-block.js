@@ -138,7 +138,7 @@ function buildExerciseRowHtml(idx, ex, routine) {
     const superset = getSupersetLetter(routine, ex);
     const unilateral = isUnilateral(ex);
 
-    return `<div class="exercise-row" id="row_${idx}" data-name="${safeName}" data-type="${type}" data-time-unit="${timeUnit}" data-unilateral="${unilateral ? '1' : '0'}"${superset ? ` data-superset="${superset}"` : ''}>
+    return `<div class="exercise-row" id="row_${idx}" data-name="${safeName}" data-type="${type}" data-time-unit="${timeUnit}" data-unilateral="${unilateral ? '1' : '0'}"${superset ? ` data-superset="${escapeHtml(superset)}"` : ''}>
             <div class="exercise-row-header">
                 <button type="button" class="drag-handle" aria-label="Reordenar ${safeName}: mantené apretado y arrastrá, o usá las flechas ↑ ↓" title="Mantené apretado y arrastrá para reordenar">${DRAG_DOTS_SVG}</button>
                 <div class="exercise-title">
@@ -150,7 +150,7 @@ function buildExerciseRowHtml(idx, ex, routine) {
                     <div class="exercise-meta">
                         <select class="type-chip" aria-label="Cómo se mide ${safeName}" data-change="change-type">${buildTypeOptionsHtml(type)}</select>
                         <button type="button" class="side-chip${unilateral ? ' on' : ''}" data-action="toggle-unilateral" aria-pressed="${unilateral ? 'true' : 'false'}" title="${unilateral ? 'Unilateral: cada serie se marca por lado (tocá para desactivar)' : 'Marcar como unilateral (de a un lado)'}">↔${unilateral ? ' Por lado' : ''}</button>
-                <button type="button" class="superset-chip${superset ? ' on' : ''}" data-action="superset" title="${superset ? `Superserie ${superset} (tocá para cambiarla)` : 'Armar una superserie con otro ejercicio'}">🔗${superset ? ' ' + superset : ''}</button>
+                <button type="button" class="superset-chip${superset ? ' on' : ''}" data-action="superset" title="${superset ? `Superserie ${escapeHtml(superset)} (tocá para cambiarla)` : 'Armar una superserie con otro ejercicio'}">🔗${superset ? ' ' + escapeHtml(superset) : ''}</button>
                         <span class="exercise-last">${buildLastSummaryText(stats, type)}</span>
                     </div>
                     ${programTargetLineHtml(routine, ex)}

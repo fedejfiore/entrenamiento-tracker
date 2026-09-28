@@ -51,6 +51,7 @@ const STORAGE_SCHEMA = {
     musicLinks: { group: 'prefs', type: 'object', default: {}, description: 'Playlists de Spotify / YouTube Music.' },
     bodyChartScale: { group: 'prefs', type: 'object', default: {}, description: 'Escala manual del gráfico de medidas.' },
     plateCalculator: { group: 'prefs', type: 'object', default: {}, description: 'Calculadora de discos: barra y discos disponibles.' },
+    userProfile: { group: 'data', type: 'object', default: {}, description: 'Perfil: nombre, email y teléfono (las fotos van en IndexedDB).' },
     appSettings: { group: 'prefs', type: 'object', default: {}, description: 'Ajustes generales: día en que empieza la semana, segundos para cambiar de lado.' },
     wakeLockEnabled: { group: 'prefs', format: 'text', type: 'string', default: null, description: 'Pantalla siempre encendida ("1"/"0").' },
 
@@ -60,6 +61,9 @@ const STORAGE_SCHEMA = {
     activeSessionEnd: { group: 'session', format: 'text', type: 'string', default: null, description: 'Fin de la sesión en curso (ms).' },
     activeTabataBlocks: { group: 'session', type: 'array', default: [], description: 'Bloques de Tabata de la sesión en curso.' },
     activeScreen: { group: 'session', format: 'text', type: 'string', default: null, description: 'Última pantalla abierta.' },
+    openSections: { group: 'session', format: 'text', type: 'string', default: null, description: 'Secciones plegables abiertas (para volver igual al recargar).' },
+    trainMode: { group: 'session', format: 'text', type: 'string', default: null, description: 'Modo de Entrenar: rutina o tabata.' },
+    activeScrollY: { group: 'session', format: 'text', type: 'string', default: null, description: 'Altura de desplazamiento de la última pantalla (para volver al recargar).' },
     planReminderShown: { group: 'session', format: 'text', type: 'string', default: null, description: 'Último día (AAAA-MM-DD) en que se avisó "hoy toca entrenar".' },
 
     // ---- Control interno ----

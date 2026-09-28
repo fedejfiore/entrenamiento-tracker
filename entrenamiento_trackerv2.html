@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src 'self'; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+    <meta name="referrer" content="no-referrer">
     <title>💪 Tracker de Entrenamiento</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0f1115">
@@ -13,10 +15,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="Entreno">
     <script src="js/boot.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link rel="stylesheet" href="css/fonts.css">
+    <!-- Chart.js alojado en la app, con verificación de integridad (mismo hash que publica cdnjs). -->
+    <script src="vendor/chart.min.js" integrity="sha512-ElRFoEQdI5Ht6kZvyzXhYG9NqjtkmlkfYk0wr6wHxU9JEHakS7UJZNeml5ALk+8IKlU6jDgMabC3vkumRokgJA=="></script>
     <link rel="stylesheet" href="css/tokens.css">
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/training.css">
@@ -130,80 +131,84 @@
 
             <!-- ENTRENAR -->
             <div data-screen="entrenar">
-                <div class="section">
-                    <h2>Selecciona Rutina</h2>
-                    <select id="routine" onchange="loadRoutineExercises(); saveWorkoutDraft();">
-                        <option value="">Elige una rutina...</option>
-                        <option value="A">Rutina A - Superior</option>
-                        <option value="B">Rutina B - Inferior</option>
-                        <option value="C">Rutina C - Superior</option>
-                        <option value="D">Rutina D - Inferior</option>
-                    </select>
-                    <div style="display: flex; gap: 10px; margin-bottom: 8px;">
-                        <input type="text" id="newRoutineName" placeholder="Nombre de rutina nueva (ej: Fútbol, Yoga, Boxeo)" style="flex: 1; margin-bottom: 0;">
-                        <button onclick="createNewRoutine()" style="width: auto; flex: 0 0 auto; margin-bottom: 0;">➕ Crear</button>
-                    </div>
-                    <div style="display: flex; gap: 10px; margin-bottom: 8px;">
-                        <button class="small" id="btnRenameRoutine" onclick="renameRoutine()" style="display:none; width: auto;">✏️ Renombrar</button>
-                        <button class="danger small" id="btnDeleteRoutine" onclick="archiveCurrentRoutine()" style="display:none; width: auto;">📥 Archivar esta rutina</button>
-                    </div>
-                    <div style="display: flex; gap: 10px; margin-bottom: 8px;">
-                        <button id="btnStartRoutine" class="success" onclick="startRoutineManually()">▶ Iniciar Rutina</button>
-                        <button id="btnFinishRoutine" class="danger" onclick="finishRoutineManually()" style="display:none;">⏹ Finalizar Rutina</button>
-                    </div>
-                    <div id="routineTimeStatus" style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;"></div>
-                    <a href="#" id="btnResetRoutineTimer" onclick="event.preventDefault(); resetRoutineTimer();" style="display:none; font-size: 12px; color: var(--danger);">↺ Reiniciar marcado de tiempo</a>
-                    <div class="music-row">
-                        <span class="music-row-label">🎵 Música</span>
-                        <button type="button" class="small" onclick="openMusic('spotify')">Spotify</button>
-                        <button type="button" class="small" onclick="openMusic('ytmusic')">YouTube Music</button>
-                    </div>
+                <div class="mode-switch" role="tablist" aria-label="Tipo de entrenamiento">
+                    <button type="button" role="tab" class="mode-tab" data-train-mode="rutina" aria-selected="true">🏋️ Rutina</button>
+                    <button type="button" role="tab" class="mode-tab" data-train-mode="tabata" aria-selected="false">⏱️ Tabata / Intervalos</button>
                 </div>
-
-                <div class="section exercises-section">
-                    <div id="exercisesContainer"></div>
-                </div>
-
-                <div class="section">
-                    <h2>Finalizar Sesión</h2>
-                    <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 12px;">
-                        <span>Ánimo:</span>
-                        <button class="emoji-btn" data-mood="1">😢</button>
-                        <button class="emoji-btn" data-mood="2">😐</button>
-                        <button class="emoji-btn selected" data-mood="3">🙂</button>
-                        <button class="emoji-btn" data-mood="4">😊</button>
-                        <button class="emoji-btn" data-mood="5">🔥</button>
-                    </div>
-                    <label for="workoutDate" style="display:block; font-size:12px; color:var(--text-muted); margin-bottom:4px;">Fecha de la sesión</label>
-                    <input type="date" id="workoutDate">
-                    <input type="text" id="sessionNotes" placeholder="Notas de la sesión (opcional)" oninput="saveWorkoutDraft()">
-                    <button class="success" onclick="saveWorkoutSession()" style="font-size: 16px; padding: 14px;">✅ GUARDAR SESIÓN</button>
-                </div>
-            </div>
-
-            <!-- TABATA / INTERVALOS -->
-            <div data-screen="tabata">
-                <div class="section" id="section-tabata">
-                    <h2>⏱️ Tabata / Intervalos</h2>
-                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Para bloques de tiempo (HIIT, plancha, bici, etc.) en vez de reps y peso.</div>
-                    <input type="text" id="tabataName" placeholder="Nombre del bloque (ej: Burpees, Bici, Plancha)">
-                    <div style="display: flex; gap: 10px;">
-                        <div style="flex: 1;">
-                            <label style="display:block; font-size:11px; color:var(--text-muted); margin-bottom:2px;">Trabajo (seg)</label>
-                            <input type="number" id="tabataWork" value="20" min="1">
+                <div class="train-mode" data-mode="rutina">
+                    <div class="section">
+                        <h2>Selecciona Rutina</h2>
+                        <select id="routine" onchange="loadRoutineExercises(); saveWorkoutDraft();">
+                            <option value="">Elige una rutina...</option>
+                            <option value="A">Rutina A - Superior</option>
+                            <option value="B">Rutina B - Inferior</option>
+                            <option value="C">Rutina C - Superior</option>
+                            <option value="D">Rutina D - Inferior</option>
+                        </select>
+                        <div style="display: flex; gap: 10px; margin-bottom: 8px;">
+                            <input type="text" id="newRoutineName" placeholder="Nombre de rutina nueva (ej: Fútbol, Yoga, Boxeo)" style="flex: 1; margin-bottom: 0;">
+                            <button onclick="createNewRoutine()" style="width: auto; flex: 0 0 auto; margin-bottom: 0;">➕ Crear</button>
                         </div>
-                        <div style="flex: 1;">
-                            <label style="display:block; font-size:11px; color:var(--text-muted); margin-bottom:2px;">Descanso (seg)</label>
-                            <input type="number" id="tabataRest" value="10" min="0">
+                        <div style="display: flex; gap: 10px; margin-bottom: 8px;">
+                            <button class="small" id="btnRenameRoutine" onclick="renameRoutine()" style="display:none; width: auto;">✏️ Renombrar</button>
+                            <button class="danger small" id="btnDeleteRoutine" onclick="archiveCurrentRoutine()" style="display:none; width: auto;">📥 Archivar esta rutina</button>
                         </div>
-                        <div style="flex: 1;">
-                            <label style="display:block; font-size:11px; color:var(--text-muted); margin-bottom:2px;">Rondas</label>
-                            <input type="number" id="tabataRounds" value="8" min="1">
+                        <div style="display: flex; gap: 10px; margin-bottom: 8px;">
+                            <button id="btnStartRoutine" class="success" onclick="startRoutineManually()">▶ Iniciar Rutina</button>
+                            <button id="btnFinishRoutine" class="danger" onclick="finishRoutineManually()" style="display:none;">⏹ Finalizar Rutina</button>
+                        </div>
+                        <div id="routineTimeStatus" style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;"></div>
+                        <a href="#" id="btnResetRoutineTimer" onclick="event.preventDefault(); resetRoutineTimer();" style="display:none; font-size: 12px; color: var(--danger);">↺ Reiniciar marcado de tiempo</a>
+                        <div class="music-row">
+                            <span class="music-row-label">🎵 Música</span>
+                            <button type="button" class="small" onclick="openMusic('spotify')">Spotify</button>
+                            <button type="button" class="small" onclick="openMusic('ytmusic')">YouTube Music</button>
                         </div>
                     </div>
-                    <button class="success" onclick="startTabata()" style="font-size: 16px; padding: 14px;">▶ Iniciar Bloque</button>
-                    <div id="tabataSessionBlocks" style="margin-top: 10px;"></div>
-                    <button class="danger" id="btnFinishTabataSession" onclick="finishTabataSession()" style="display:none; font-size: 16px; padding: 14px;">⏹ Finalizar Sesión Tabata</button>
+
+                    <div class="section exercises-section">
+                        <div id="exercisesContainer"></div>
+                    </div>
+
+                    <div class="section">
+                        <h2>Finalizar Sesión</h2>
+                        <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 12px;">
+                            <span>Ánimo:</span>
+                            <button class="emoji-btn" data-mood="1">😢</button>
+                            <button class="emoji-btn" data-mood="2">😐</button>
+                            <button class="emoji-btn selected" data-mood="3">🙂</button>
+                            <button class="emoji-btn" data-mood="4">😊</button>
+                            <button class="emoji-btn" data-mood="5">🔥</button>
+                        </div>
+                        <label for="workoutDate" style="display:block; font-size:12px; color:var(--text-muted); margin-bottom:4px;">Fecha de la sesión</label>
+                        <input type="date" id="workoutDate">
+                        <input type="text" id="sessionNotes" placeholder="Notas de la sesión (opcional)" oninput="saveWorkoutDraft()">
+                        <button class="success" onclick="saveWorkoutSession()" style="font-size: 16px; padding: 14px;">✅ GUARDAR SESIÓN</button>
+                    </div>
+                </div>
+                <div class="train-mode" data-mode="tabata" hidden>
+                    <div class="section" id="section-tabata">
+                        <h2>⏱️ Tabata / Intervalos</h2>
+                        <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Para bloques de tiempo (HIIT, plancha, bici, etc.) en vez de reps y peso.</div>
+                        <input type="text" id="tabataName" placeholder="Nombre del bloque (ej: Burpees, Bici, Plancha)">
+                        <div style="display: flex; gap: 10px;">
+                            <div style="flex: 1;">
+                                <label style="display:block; font-size:11px; color:var(--text-muted); margin-bottom:2px;">Trabajo (seg)</label>
+                                <input type="number" id="tabataWork" value="20" min="1">
+                            </div>
+                            <div style="flex: 1;">
+                                <label style="display:block; font-size:11px; color:var(--text-muted); margin-bottom:2px;">Descanso (seg)</label>
+                                <input type="number" id="tabataRest" value="10" min="0">
+                            </div>
+                            <div style="flex: 1;">
+                                <label style="display:block; font-size:11px; color:var(--text-muted); margin-bottom:2px;">Rondas</label>
+                                <input type="number" id="tabataRounds" value="8" min="1">
+                            </div>
+                        </div>
+                        <button class="success" onclick="startTabata()" style="font-size: 16px; padding: 14px;">▶ Iniciar Bloque</button>
+                        <div id="tabataSessionBlocks" style="margin-top: 10px;"></div>
+                        <button class="danger" id="btnFinishTabataSession" onclick="finishTabataSession()" style="display:none; font-size: 16px; padding: 14px;">⏹ Finalizar Sesión Tabata</button>
+                    </div>
                 </div>
             </div>
 
@@ -227,10 +232,11 @@
 
             <!-- PROGRESO -->
             <div data-screen="progreso">
-                <div class="section" id="muscleMapSection">
+                <div class="section" id="muscleMapSection" data-hint="Series por músculo y si estás en el rango ideal">
                     <h2>🗺️ Músculos trabajados</h2>
                     <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Series efectivas por músculo (sin calentamiento). Entre 10 y 20 por semana es el rango habitual para ganar músculo: cuanto más intenso el color, más trabajado. Tocá un músculo para ver sus ejercicios. El día en que empieza la semana se elige en Ajustes.</div>
                     <select id="muscleMapPeriod" aria-label="Período del mapa de músculos">
+                        <option value="last7">Últimos 7 días</option>
                         <option value="week">Esta semana (en curso)</option>
                         <option value="lastweek">Semana pasada</option>
                         <option value="4w">Últimas 4 semanas (promedio)</option>
@@ -242,11 +248,20 @@
                     <div id="muscleMapList" class="muscle-list"></div>
                 </div>
 
-                <div class="section">
+                <div class="section" data-hint="Cada ejercicio contra una sesión anterior; tocalo para ver sus gráficos">
                     <h2>📊 Análisis de Progresión</h2>
-                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px; flex-wrap:wrap;">
-                        <label for="progressionTimeframe" style="font-size:12px; color:var(--text-muted); white-space:nowrap;">Comparar contra:</label>
-                        <select id="progressionTimeframe" onchange="generateProgressionAnalysis()" style="width:auto; margin-bottom:0;">
+                    <div class="progression-controls">
+                        <label for="progressionGrouping">Ver:</label>
+                        <select id="progressionGrouping">
+                            <option value="all">Todos los ejercicios</option>
+                            <option value="last">Última sesión</option>
+                            <option value="routine">Por rutina</option>
+                            <option value="muscle">Por grupo muscular</option>
+                        </select>
+                    </div>
+                    <div class="progression-controls">
+                        <label for="progressionTimeframe">Comparar contra:</label>
+                        <select id="progressionTimeframe" onchange="generateProgressionAnalysis()">
                             <option value="last">Sesión anterior</option>
                             <option value="1">Hace 1 mes</option>
                             <option value="3">Hace 3 meses</option>
@@ -255,15 +270,6 @@
                         </select>
                     </div>
                     <div id="progressionData"></div>
-                </div>
-
-                <div class="section">
-                    <h2>💪 Progreso por Ejercicio</h2>
-                    <div style="font-size: 11px; color: var(--text-faint); margin-bottom: 8px;">Tocá un ejercicio para ver el gráfico completo con 1RM estimado. Mantené presionado y arrastrá una tarjeta para moverla a otro grupo muscular.</div>
-                    <select id="progresoRoutineFilter" onchange="renderProgressGrid()">
-                        <option value="">Todas las rutinas</option>
-                    </select>
-                    <div id="progressExerciseGrid"></div>
                 </div>
             </div>
 
@@ -277,6 +283,8 @@
                     <input type="number" step="0.1" id="bodyMuscle" placeholder="Músculo %">
                     <input type="number" step="0.1" id="bodyWater" placeholder="Agua %">
                     <input type="number" step="0.1" id="bodyWaist" placeholder="Cintura (cm)">
+                    <label for="bodyPhoto" class="settings-label">📷 Foto de progreso (opcional)</label>
+                    <input type="file" id="bodyPhoto" accept="image/*">
                     <button class="success" onclick="saveBodyMetrics()">➕ Agregar Medición</button>
                 </div>
 
@@ -306,11 +314,94 @@
                 </div>
             </div>
 
-            <!-- VARIANTES -->
-            <div data-screen="variantes">
-                <div class="section">
-                    <h2>🎯 Variantes de Ejercicios</h2>
-                    <div id="variantsContainer"></div>
+            <!-- BIBLIOTECA: rutinas y ejercicios -->
+            <div data-screen="biblioteca">
+                <div class="mode-switch" role="tablist" aria-label="Biblioteca">
+                    <button type="button" role="tab" class="mode-tab" data-lib-tab="rutinas" aria-selected="true">🗂️ Rutinas</button>
+                    <button type="button" role="tab" class="mode-tab" data-lib-tab="ejercicios" aria-selected="false">💪 Ejercicios</button>
+                </div>
+                <div class="lib-tab" data-tab="rutinas">
+                    <div class="section" data-hint="Las que creaste o importaste" data-open="1">
+                        <h2>🗂️ Tus rutinas</h2>
+                        <div id="libMyRoutines"></div>
+                    </div>
+                    <div class="section" data-hint="Programas armados con progresión automática">
+                        <h2>🎯 Programas</h2>
+                        <div id="libPrograms"></div>
+                    </div>
+                    <div class="section" data-hint="Rutinas que trae la app">
+                        <h2>📋 Rutinas básicas</h2>
+                        <div id="libBaseRoutines"></div>
+                    </div>
+                    <div class="section" id="section-archived-routines" style="display:none;" data-hint="No aparecen en el selector; se pueden restaurar">
+                        <h2>📥 Archivadas</h2>
+                        <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Sus ejercicios, entrenamientos guardados y progreso siguen intactos. Restauralas cuando las vuelvas a necesitar, o usá el archivo para ir preparando rutinas futuras sin que molesten en la lista actual.</div>
+                        <div id="archivedRoutinesList"></div>
+                    </div>
+                    <div class="section" data-hint="Agregar una rutina que te pasaron por link">
+                        <h2>🔗 Importar una rutina</h2>
+                        <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Si alguien (por ejemplo, tu entrenador) te pasó el link de una rutina, abrilo desde el celular o pegalo acá.</div>
+                        <input type="text" id="importRoutineLink" placeholder="Pegá el link de la rutina" autocomplete="off" inputmode="url">
+                        <button type="button" data-lib="import">Importar rutina</button>
+                    </div>
+                </div>
+                <div class="lib-tab" data-tab="ejercicios" hidden>
+                    <div class="section" data-hint="Todo lo que entrenaste, por músculo" data-open="1">
+                        <h2>💪 Tus ejercicios</h2>
+                        <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Tocá uno para ver sus gráficos y cambiar su grupo muscular.</div>
+                        <div id="libMyExercises"></div>
+                    </div>
+                    <div class="section" data-hint="Alternativas para cada ejercicio, con videos">
+                        <h2>🎥 Variantes y videos</h2>
+                        <div id="variantsContainer"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PERFIL -->
+            <div data-screen="perfil">
+                <div class="section profile-card" data-collapsible="no">
+                    <div class="profile-head">
+                        <button type="button" class="profile-photo" id="profilePhotoBtn" aria-label="Cambiar foto de perfil">
+                            <img id="profilePhoto" alt="" hidden>
+                            <span id="profileInitials">🙂</span>
+                        </button>
+                        <div class="profile-id">
+                            <label for="profileName" class="visually-hidden">Tu nombre</label>
+                            <input type="text" id="profileName" placeholder="Tu nombre" maxlength="60" autocomplete="name">
+                            <small id="profileSince"></small>
+                        </div>
+                    </div>
+                    <input type="file" id="profilePhotoInput" accept="image/*" hidden>
+                </div>
+                <div class="section" data-hint="Sesiones, horas, rachas y récords" data-open="1">
+                    <h2>📈 Tu actividad</h2>
+                    <div id="profileStats"></div>
+                </div>
+                <div class="section" data-hint="Constancia, récords, kilos, horas y cardio" data-open="1">
+                    <h2>🏅 Medallas</h2>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Se ganan con tu historial real. Tocá 📤 para compartir la medalla como imagen.</div>
+                    <div id="profileMedals"></div>
+                </div>
+                <div class="section" data-hint="Tu evolución en fotos (quedan en tu celular)">
+                    <h2>📸 Fotos de progreso</h2>
+                    <button type="button" id="addProgressPhoto">📷 Agregar foto de hoy</button>
+                    <input type="file" id="progressPhotoInput" accept="image/*" hidden>
+                    <div id="progressPhotos" class="photo-grid"></div>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">Las fotos no salen de tu celular: se guardan comprimidas y entran en el backup. Si compartís el backup, protegelo con contraseña (Ajustes → Datos).</div>
+                </div>
+                <div class="section" data-hint="Email y teléfono">
+                    <h2>✉️ Contacto</h2>
+                    <label for="profileEmail" class="settings-label">Email</label>
+                    <input type="email" id="profileEmail" placeholder="tu@email.com" maxlength="120" autocomplete="email">
+                    <label for="profilePhone" class="settings-label">Teléfono (opcional)</label>
+                    <input type="tel" id="profilePhone" placeholder="+54 9 11 ..." maxlength="30" autocomplete="tel">
+                    <div style="font-size: 12px; color: var(--text-muted);">Por ahora quedan solo en tu celular. Cuando llegue la cuenta (email, Google o Microsoft), desde acá vas a poder cambiar tu forma de contacto y elegir si querés recibir novedades.</div>
+                </div>
+                <div class="section" data-hint="Gratis hoy; Pro próximamente">
+                    <h2>⭐ Tu plan</h2>
+                    <p style="font-size: 14px; margin-bottom: 6px;"><b>Plan gratis.</b> Todo lo que ves hoy es gratis.</p>
+                    <div style="font-size: 12px; color: var(--text-muted);">Pro llega con las cuentas: sincronización entre dispositivos, entrenar sin internet, todos los programas, rutinas con IA, mascota o personaje que crece con vos y medallas especiales.</div>
                 </div>
             </div>
 
@@ -385,6 +476,9 @@
                             <div class="settings-subtitle">Otros</div>
                         <label class="toggle-row"><input type="checkbox" data-voice="tabata" onchange="onVoiceSettingChange(this)"><span>Tabata: trabajo, descanso, última ronda y 3-2-1</span></label>
                         <label class="toggle-row"><input type="checkbox" data-voice="records" onchange="onVoiceSettingChange(this)"><span>«¡Nuevo récord!» al guardar la sesión</span></label>
+                            <div class="settings-subtitle">Estilo</div>
+                            <select id="voiceStyleSelect" data-voice="style" onchange="onVoiceSettingChange(this); renderRecordingsUI();"></select>
+                            <div class="settings-hint">Cambia las frases y el tono de la voz: neutro, tierno, militar, motivador o calma. Si grabaste o subiste un audio para un aviso (Mis grabaciones), suena ese.</div>
                             <div class="settings-subtitle">Voz</div>
                             <select id="voiceSelect" data-voice="voiceURI" onchange="onVoiceSettingChange(this)"></select>
                             <label class="range-label">Velocidad de la voz: <strong id="voiceRateLabel"></strong></label>
@@ -418,17 +512,13 @@
                     <button onclick="unifyFromSelectors()">🔗 Unificar</button>
                 </div>
 
-                <div class="section" id="section-archived-routines" style="display:none;" data-hint="Rutinas archivadas: restaurar o borrar">
-                    <h2>📥 Reservorio de Rutinas</h2>
-                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Rutinas archivadas: no aparecen en el selector, pero sus ejercicios, entrenamientos guardados y progreso siguen intactos. Restauralas cuando las vuelvas a necesitar, o usá el reservorio para ir preparando rutinas futuras sin que molesten en la lista actual.</div>
-                    <div id="archivedRoutinesList"></div>
-                </div>
-
                 <div class="section" data-hint="Backup, restaurar y borrar todo">
                     <h2>💾 Datos</h2>
+                    <label class="toggle-row"><input type="checkbox" id="backupEncrypt"> Proteger el backup con contraseña</label>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Recomendado si el backup tiene fotos o medidas, o si lo vas a mandar por mail o WhatsApp. Si te olvidás la contraseña, el backup no se puede abrir.</div>
                     <button class="success" onclick="downloadData()">📥 Descargar backup</button>
                     <button onclick="triggerFileInput()">📤 Cargar backup</button>
-                    <input type="file" id="fileInput" accept=".json" style="display:none;">
+                    <input type="file" id="fileInput" accept=".json,application/json" style="display:none;">
                     <button class="danger" onclick="resetAllData()">🗑️ Resetear todo</button>
                 </div>
             </div>
@@ -541,6 +631,48 @@
         </div>
     </div>
 
+    <button type="button" id="finishFab" class="finish-fab success" hidden aria-label="Terminar la sesión">✅ Terminar</button>
+
+    <div class="modal-overlay" id="finishModal" role="dialog" aria-modal="true" aria-labelledby="finishTitle">
+        <div class="modal-content finish-content">
+            <h3 id="finishTitle">¿Terminar la sesión?</h3>
+            <p class="finish-summary" id="finishSummary"></p>
+            <div class="finish-label">¿Cómo te sentiste?</div>
+            <div class="finish-mood" id="finishMood">
+                <button type="button" class="emoji-btn" data-mood="1" aria-label="Mal">😢</button>
+                <button type="button" class="emoji-btn" data-mood="2" aria-label="Regular">😐</button>
+                <button type="button" class="emoji-btn" data-mood="3" aria-label="Bien">🙂</button>
+                <button type="button" class="emoji-btn" data-mood="4" aria-label="Muy bien">😊</button>
+                <button type="button" class="emoji-btn" data-mood="5" aria-label="Excelente">🔥</button>
+            </div>
+            <input type="text" id="finishNote" placeholder="Nota de la sesión (opcional)" autocomplete="off">
+            <button type="button" class="success" data-finish-action="save">✅ Guardar sesión</button>
+            <button type="button" class="finish-cancel" data-finish-action="cancel">Seguir entrenando</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="photoModal" role="dialog" aria-modal="true" aria-label="Foto de progreso">
+        <div class="modal-content photo-modal">
+            <div class="modal-header">
+                <h3 id="photoModalDate"></h3>
+                <button type="button" class="small" style="width:auto;" data-photo-action="close" aria-label="Cerrar">✕</button>
+            </div>
+            <img id="photoModalImg" alt="Foto de progreso">
+            <button type="button" class="danger" data-photo-action="delete">🗑 Borrar foto</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="passwordModal" role="dialog" aria-modal="true" aria-labelledby="passwordTitle">
+        <div class="modal-content">
+            <h3 id="passwordTitle"></h3>
+            <p id="passwordText" style="font-size: 13px; color: var(--text-muted); margin-bottom: 10px;"></p>
+            <input type="password" id="passwordInput" autocomplete="new-password" placeholder="Contraseña (mínimo 8 caracteres)">
+            <input type="password" id="passwordConfirm" autocomplete="new-password" placeholder="Repetí la contraseña">
+            <button type="button" class="success" data-password-action="ok">Aceptar</button>
+            <button type="button" class="finish-cancel" data-password-action="cancel">Cancelar</button>
+        </div>
+    </div>
+
     <div id="toastContainer" aria-live="polite"></div>
 
     <div class="modal-overlay" id="exerciseDetailModal" onclick="if(event.target===this) closeExerciseDetail()">
@@ -549,6 +681,9 @@
                 <h3 id="exerciseDetailTitle"></h3>
                 <button type="button" class="small" style="width:auto;" onclick="closeExerciseDetail()">✕</button>
             </div>
+            <label class="detail-group-label" for="exerciseDetailGroup">Grupo muscular</label>
+            <select id="exerciseDetailGroup"></select>
+            <p id="exerciseDetailEmpty" class="progression-empty" hidden>Todavía no hay sesiones con peso de este ejercicio para graficar.</p>
             <div class="checkbox-group" style="margin-bottom: 10px;">
                 <label><input type="checkbox" id="exmetric_weight" checked onchange="renderExerciseDetailChart()"> Peso promedio</label>
                 <label><input type="checkbox" id="exmetric_1rm" checked onchange="renderExerciseDetailChart()"> 1RM estimado</label>
@@ -561,17 +696,10 @@
         </div>
     </div>
 
-    <div class="modal-overlay" id="moveGroupModal" onclick="if(event.target===this) closeMoveGroupModal()">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Mover <span id="moveGroupExerciseName"></span> a...</h3>
-                <button type="button" class="small" style="width:auto;" onclick="closeMoveGroupModal()">✕</button>
-            </div>
-            <div id="moveGroupList" class="move-group-list"></div>
-        </div>
     </div>
 
     <script src="js/core/utils.js"></script>
+    <script src="js/core/brand.js"></script>
     <script src="js/core/time.js"></script>
     <script src="js/core/units.js"></script>
     <script src="js/data/store.js"></script>
@@ -583,9 +711,12 @@
     <script src="js/domain/plan.js"></script>
     <script src="js/domain/training-tools.js"></script>
     <script src="js/domain/programs.js"></script>
+    <script src="js/domain/routine-share.js"></script>
+    <script src="js/domain/achievements.js"></script>
     <script src="js/data/migrations.js"></script>
     <script src="js/data/repositories.js"></script>
     <script src="js/data/recording-repository.js"></script>
+    <script src="js/data/backup-crypto.js"></script>
     <script src="js/data/backup-service.js"></script>
     <script src="js/data/exercise-prefs.js"></script>
     <script src="js/data/routines-store.js"></script>
@@ -594,6 +725,7 @@
     <script src="js/ui/wake-lock.js"></script>
     <script src="js/audio/sound.js"></script>
     <script src="js/audio/voice.js"></script>
+    <script src="js/audio/voice-styles.js"></script>
     <script src="js/audio/recordings.js"></script>
     <script src="js/features/rest-timer.js"></script>
     <script src="js/features/tabata.js"></script>
@@ -607,6 +739,8 @@
     <script src="js/features/training/reorder.js"></script>
     <script src="js/features/training/workout.js"></script>
     <script src="js/features/training/workout-screen.js"></script>
+    <script src="js/features/training/finish-session.js"></script>
+    <script src="js/features/training/train-mode.js"></script>
     <script src="js/features/training/supersets.js"></script>
     <script src="js/features/exercises.js"></script>
     <script src="js/features/history.js"></script>
@@ -618,6 +752,8 @@
     <script src="js/features/plate-calculator.js"></script>
     <script src="js/features/general-settings.js"></script>
     <script src="js/features/programs.js"></script>
+    <script src="js/features/library.js"></script>
+    <script src="js/features/profile.js"></script>
     <script src="js/features/backup.js"></script>
     <script src="js/features/help.js"></script>
     <script src="js/ui/collapsible.js"></script>

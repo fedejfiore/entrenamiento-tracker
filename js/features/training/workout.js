@@ -107,7 +107,7 @@ function loadRoutineExercises() {
 function populateExerciseDatalist() {
     const datalist = document.getElementById('exerciseNamesList');
     if (datalist) {
-        datalist.innerHTML = getAllKnownExerciseNames().map(n => `<option value="${n}"></option>`).join('');
+        datalist.innerHTML = getAllKnownExerciseNames().map(n => `<option value="${escapeHtml(n)}"></option>`).join('');
     }
     populateUnifySelectors();
 }

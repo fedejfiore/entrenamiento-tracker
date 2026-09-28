@@ -151,7 +151,7 @@ function renderTabataSessionBlocks() {
     container.innerHTML = `<div style="font-size:12px; color:var(--text-muted); margin-bottom:6px;">Bloques de esta sesión:</div>` +
         tabataSessionBlocks.map(b => `
             <div class="stat-box" style="font-size:12px;">
-                🔥 <strong>${b.name}</strong> — ${b.roundsCompleted}/${b.rounds} rondas × (${b.workSec}s/${b.restSec}s)${b.completed ? '' : ' <small style="color:var(--text-faint);">(cortado)</small>'}
+                🔥 <strong>${escapeHtml(b.name)}</strong> — ${Number(b.roundsCompleted) || 0}/${Number(b.rounds) || 0} rondas × (${Number(b.workSec) || 0}s/${Number(b.restSec) || 0}s)${b.completed ? '' : ' <small style="color:var(--text-faint);">(cortado)</small>'}
             </div>
         `).join('');
 

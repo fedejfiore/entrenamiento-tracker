@@ -7,8 +7,9 @@ function renderHistoryItem(w) {
     if (w.type === 'tabata') return renderTabataHistoryItem(w);
 
     const mood = ['😢','😐','🙂','😊','🔥'][w.mood-1] || '😐';
-    const exes = w.exercises.map(e => e?.name?.split(' ')[0] || '').filter(Boolean).join(', ');
-    const uid = `session_${w.id}`;
+    const exes = escapeHtml(w.exercises.map(e => e?.name?.split(' ')[0] || '').filter(Boolean).join(', '));
+    // El id sale de los datos guardados (o de un backup): solo se usa si es un número o un texto simple.
+    const uid = `session_${String(w.id).replace(/[^A-Za-z0-9_-]/g, '')}`;
     const durationChip = formatDuration(w.duration) ? `<span class="stat-chip">⏱ ${formatDuration(w.duration)}</span>` : '';
     const sessionVolume = w.volume != null ? w.volume : calculateSessionVolume(w.exercises);
     const volumeChip = sessionVolume > 0 ? `<span class="stat-chip">🏋️ ${Math.round(sessionVolume).toLocaleString('es-AR')}kg</span>` : '';
@@ -16,31 +17,31 @@ function renderHistoryItem(w) {
     const notesBadge = (w.progressNotes && w.progressNotes.length > 0) ? `<span class="stat-chip" title="Hay señales mixtas para revisar">📝</span>` : '';
     const routineLabel = w.routine ? (customRoutineLabels[w.routine] || ROUTINE_LABELS[w.routine] || `Rutina ${w.routine}`) : '';
     const routineBadge = w.routine
-        ? `<span title="${routineLabel}" class="stat-chip brand">${w.routine}</span>`
+        ? `<span title="${escapeHtml(routineLabel)}" class="stat-chip brand">${escapeHtml(w.routine)}</span>`
         : '';
 
     return `<div class="history-item">
             <div data-action="toggle-session" data-target="${uid}" style="cursor:pointer; user-select: none;">
                 <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:4px;">
-                    ${routineBadge}<strong>${w.date}</strong>
-                    <button type="button" class="small" style="width:auto; padding:2px 6px;" data-action="edit-date" data-id="${w.id}" title="Editar fecha">✏️</button>
-                    <button type="button" class="small" style="width:auto; padding:2px 6px;" data-action="delete-session" data-id="${w.id}" title="Borrar sesión" aria-label="Borrar la sesión del ${w.date}">🗑</button>
+                    ${routineBadge}<strong>${escapeHtml(w.date)}</strong>
+                    <button type="button" class="small" style="width:auto; padding:2px 6px;" data-action="edit-date" data-id="${escapeHtml(w.id)}" title="Editar fecha">✏️</button>
+                    <button type="button" class="small" style="width:auto; padding:2px 6px;" data-action="delete-session" data-id="${escapeHtml(w.id)}" title="Borrar sesión" aria-label="Borrar la sesión del ${escapeHtml(w.date)}">🗑</button>
                     <span>${mood}</span>${prBadge}${notesBadge}${durationChip}${volumeChip}
                 </div>
                 <div>${exes}</div>
                 <small style="color:var(--text-faint);">▾ ver detalle</small>
             </div>
             <div id="${uid}" style="display:none; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 0.9em;">
-                ${w.prs && w.prs.length > 0 ? `<div style="margin-bottom: 10px; padding: 8px; background: rgba(var(--brand-rgb), 0.12); border-left: 3px solid var(--warning); border-radius: 3px;"><strong>🏆 PRs de esta sesión:</strong><br>${w.prs.join('<br>')}</div>` : ''}
-                ${w.progressNotes && w.progressNotes.length > 0 ? `<div style="margin-bottom: 10px; padding: 8px; background: var(--bg-elevated); border-left: 3px solid var(--text-faint); border-radius: 3px;"><strong>📝 Para tener en cuenta:</strong><br>${w.progressNotes.join('<br>')}</div>` : ''}
-                ${w.notes ? `<div style="margin-bottom: 10px; padding: 8px; background: var(--bg-elevated); border-left: 3px solid var(--brand); border-radius: 3px;"><strong>📌 Notas de la sesión:</strong> ${w.notes}</div>` : ''}
+                ${w.prs && w.prs.length > 0 ? `<div style="margin-bottom: 10px; padding: 8px; background: rgba(var(--brand-rgb), 0.12); border-left: 3px solid var(--warning); border-radius: 3px;"><strong>🏆 PRs de esta sesión:</strong><br>${w.prs.map(escapeHtml).join('<br>')}</div>` : ''}
+                ${w.progressNotes && w.progressNotes.length > 0 ? `<div style="margin-bottom: 10px; padding: 8px; background: var(--bg-elevated); border-left: 3px solid var(--text-faint); border-radius: 3px;"><strong>📝 Para tener en cuenta:</strong><br>${w.progressNotes.map(escapeHtml).join('<br>')}</div>` : ''}
+                ${w.notes ? `<div style="margin-bottom: 10px; padding: 8px; background: var(--bg-elevated); border-left: 3px solid var(--brand); border-radius: 3px;"><strong>📌 Notas de la sesión:</strong> ${escapeHtml(w.notes)}</div>` : ''}
                 ${w.exercises.map(ex => `
                     <div style="margin-bottom: 10px; padding: 8px; background: var(--bg-elevated); border-radius: 3px; border-left: 2px solid var(--brand);">
-                        <strong>${ex?.name || 'Sin nombre'}</strong>${ex?.superset ? ` <span class="stat-chip">🔗 ${escapeHtml(ex.superset)}</span>` : ''}<br>
+                        <strong>${escapeHtml(ex?.name || 'Sin nombre')}</strong>${ex?.superset ? ` <span class="stat-chip">🔗 ${escapeHtml(ex.superset)}</span>` : ''}<br>
                         ${Array.isArray(ex?.sets) && ex.sets.length > 0
                             ? renderHistorySets(ex)
-                            : `<small>Reps: <strong>${ex?.reps || '-'}</strong> | Peso: <strong>${ex?.weight || '-'}</strong> | Pausa: <strong>${ex?.pause || '-'}</strong></small>`}
-                        ${ex?.note ? `<br><small style="color: var(--brand); font-style: italic;">💡 ${ex.note}</small>` : ''}
+                            : `<small>Reps: <strong>${escapeHtml(ex?.reps || '-')}</strong> | Peso: <strong>${escapeHtml(ex?.weight || '-')}</strong> | Pausa: <strong>${escapeHtml(ex?.pause || '-')}</strong></small>`}
+                        ${ex?.note ? `<br><small style="color: var(--brand); font-style: italic;">💡 ${escapeHtml(ex.note)}</small>` : ''}
                     </div>
                 `).join('')}
             </div>
@@ -65,15 +66,15 @@ function renderTabataHistoryItem(w) {
     // Formato nuevo: varios bloques por sesión. Formato viejo (compatibilidad): un solo bloque suelto en el propio objeto.
     const blocks = Array.isArray(w.blocks) ? w.blocks : [{ name: w.name, workSec: w.workSec, restSec: w.restSec, rounds: w.rounds, roundsCompleted: w.roundsCompleted, completed: w.roundsCompleted >= w.rounds }];
 
-    const blocksLabel = blocks.map(b => `${b.name || 'Tabata'} (${b.roundsCompleted}/${b.rounds}×${b.workSec}s/${b.restSec}s)${b.completed === false ? ' ⚠️' : ''}`).join(' + ');
+    const blocksLabel = escapeHtml(blocks.map(b => `${b.name || 'Tabata'} (${b.roundsCompleted}/${b.rounds}×${b.workSec}s/${b.restSec}s)${b.completed === false ? ' ⚠️' : ''}`).join(' + '));
 
     return `<div class="history-item">
             <div>
                 <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:4px;">
                     <span title="Tabata" class="stat-chip tabata">🔥 Tabata${blocks.length > 1 ? ` · ${blocks.length} bloques` : ''}</span>
-                    <strong>${w.date}</strong>
-                    <button type="button" class="small" style="width:auto; padding:2px 6px;" data-action="edit-date" data-id="${w.id}" title="Editar fecha">✏️</button>
-                    <button type="button" class="small" style="width:auto; padding:2px 6px;" data-action="delete-session" data-id="${w.id}" title="Borrar sesión" aria-label="Borrar la sesión del ${w.date}">🗑</button>
+                    <strong>${escapeHtml(w.date)}</strong>
+                    <button type="button" class="small" style="width:auto; padding:2px 6px;" data-action="edit-date" data-id="${escapeHtml(w.id)}" title="Editar fecha">✏️</button>
+                    <button type="button" class="small" style="width:auto; padding:2px 6px;" data-action="delete-session" data-id="${escapeHtml(w.id)}" title="Borrar sesión" aria-label="Borrar la sesión del ${escapeHtml(w.date)}">🗑</button>
                     ${durationChip}
                 </div>
                 <div>${blocksLabel}</div>
@@ -102,12 +103,12 @@ function populateHistoryFilters(sessions) {
     const prevMonth = monthSel.value;
     monthSel.innerHTML = months.map(m => {
         const label = new Date(m + '-01T00:00:00').toLocaleDateString('es-AR', { month: 'long', year: 'numeric' });
-        return `<option value="${m}">${label}</option>`;
+        return `<option value="${escapeHtml(m)}">${escapeHtml(label)}</option>`;
     }).join('');
     if (months.includes(prevMonth)) monthSel.value = prevMonth;
 
     const prevYear = yearSel.value;
-    yearSel.innerHTML = years.map(y => `<option value="${y}">${y}</option>`).join('');
+    yearSel.innerHTML = years.map(y => `<option value="${escapeHtml(y)}">${escapeHtml(y)}</option>`).join('');
     if (years.includes(prevYear)) yearSel.value = prevYear;
 }
 

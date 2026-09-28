@@ -10,16 +10,29 @@ async function downloadData() {
         return;
     }
 
-    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+    let text = JSON.stringify(backup, null, 2);
+    const encrypt = document.getElementById('backupEncrypt')?.checked;
+    if (encrypt) {
+        const password = await askPassword({ title: 'Proteger el backup', text: 'Elegí una contraseña. La vas a necesitar para cargar este backup; si te la olvidás, no se puede abrir.', confirm: true });
+        if (!password) return;
+        try {
+            text = await encryptBackupText(text, password);
+        } catch (err) {
+            showToast(`❌ ${err.message}`, 'error', 5000);
+            return;
+        }
+    }
+    const blob = new Blob([text], { type: 'application/json' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `tracker_backup_${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `tracker_backup_${new Date().toISOString().split('T')[0]}${encrypt ? '_protegido' : ''}.json`;
     a.click();
     window.URL.revokeObjectURL(url);
 
     const recordings = Object.keys(backup.recordings || {}).length;
-    showToast(`✅ Backup descargado — ${backup.workouts.length} sesiones, ${backup.bodyMetrics.length} mediciones${recordings ? `, ${recordings} grabaciones` : ''}`);
+    const photos = Object.keys(backup.photos || {}).length;
+    showToast(`✅ Backup ${encrypt ? 'protegido ' : ''}descargado — ${backup.workouts.length} sesiones, ${backup.bodyMetrics.length} mediciones${recordings ? `, ${recordings} grabaciones` : ''}${photos ? `, ${photos} fotos` : ''}`);
 }
 
 // Abre el selector de archivos; al elegir uno, el listener de js/app.js llama a uploadData.
@@ -46,15 +59,24 @@ function uploadData(file) {
     reader.onload = async e => {
         let parsed;
         try {
-            parsed = backupService.parse(String(e.target?.result || ''));
+            let text = String(e.target?.result || '');
+            // Backup protegido: se pide la contraseña y se descifra antes de validar.
+            let outer = null;
+            try { outer = JSON.parse(text); } catch (err) { /* lo informa parse() */ }
+            if (isEncryptedBackup(outer)) {
+                const password = await askPassword({ title: 'Backup protegido', text: 'Este backup tiene contraseña. Escribila para abrirlo.' });
+                if (!password) return;
+                text = await decryptBackupText(outer, password);
+            }
+            parsed = backupService.parse(text);
         } catch (err) {
             console.error('Backup inválido:', err);
             showToast(`❌ ${err.message}`, 'error', 6000);
             return;
         }
 
-        const { sessions, measurements, recordings } = parsed.summary;
-        const detail = `- ${sessions} sesiones\n- ${measurements} mediciones${recordings ? `\n- ${recordings} grabaciones` : ''}`;
+        const { sessions, measurements, recordings, photos } = parsed.summary;
+        const detail = `- ${sessions} sesiones\n- ${measurements} mediciones${recordings ? `\n- ${recordings} grabaciones` : ''}${photos ? `\n- ${photos} fotos` : ''}`;
         if (!confirm(`¿Restaurar este backup?\n\n${detail}\n\nReemplaza los datos de este celular por los del archivo.`)) return;
 
         let result;
@@ -66,7 +88,7 @@ function uploadData(file) {
             return;
         }
 
-        const warning = result.recordingsError ? '\n\n⚠️ Los datos se restauraron, pero las grabaciones de voz no.' : '';
+        const warning = (result.recordingsError ? '\n\n⚠️ Los datos se restauraron, pero las grabaciones de voz no.' : '') + (result.photosError ? '\n\n⚠️ Las fotos no se pudieron restaurar.' : '');
         alert(`✅ BACKUP RESTAURADO\n\n📊 Datos cargados:\n${detail}${warning}\n\n🔄 Recargando página...`);
         window.location.reload();
     };
@@ -76,7 +98,7 @@ function uploadData(file) {
 // Borra TODOS los datos de este celular (también las grabaciones). Pide confirmar dos
 // veces y ofrece antes descargar un backup, porque no se puede deshacer.
 async function resetAllData() {
-    if (!confirm('⚠️ ¿Borrar TODOS tus datos de este celular?\n\nSesiones, medidas, rutinas, ajustes y grabaciones. No se puede deshacer.')) return;
+    if (!confirm('⚠️ ¿Borrar TODOS tus datos de este celular?\n\nSesiones, medidas, rutinas, ajustes, grabaciones y fotos. No se puede deshacer.')) return;
     if (confirm('¿Querés descargar un backup antes de borrar? (Aceptar = descargar primero)')) {
         await downloadData();
         if (!confirm('Backup descargado. ¿Borrar todo ahora?')) return;
@@ -84,9 +106,41 @@ async function resetAllData() {
     try {
         db.transaction(tx => Object.keys(db.schema).forEach(key => tx.remove(key)));
         await recordingRepo.clear().catch(() => {});
+        await photoRepo.clear().catch(() => {});
     } catch (err) {
         showToast(`❌ No se pudo borrar. ${err.message}`, 'error', 6000);
         return;
     }
     window.location.reload();
+}
+
+// Pide una contraseña en un modal (campo oculto, no en un prompt que la muestra en pantalla).
+// Resuelve con la contraseña, o null si se cancela.
+function askPassword({ title, text, confirm: needConfirm = false }) {
+    return new Promise(resolve => {
+        const modal = document.getElementById('passwordModal');
+        const input = document.getElementById('passwordInput');
+        const again = document.getElementById('passwordConfirm');
+        document.getElementById('passwordTitle').textContent = title;
+        document.getElementById('passwordText').textContent = text;
+        input.value = ''; again.value = '';
+        again.hidden = !needConfirm;
+        input.autocomplete = needConfirm ? 'new-password' : 'current-password';
+        modal.classList.add('open');
+        setTimeout(() => input.focus(), 50);
+        const done = value => {
+            modal.classList.remove('open');
+            modal.removeEventListener('click', onClick);
+            input.value = ''; again.value = '';
+            resolve(value);
+        };
+        const onClick = e => {
+            if (e.target === modal || e.target.closest('[data-password-action="cancel"]')) { done(null); return; }
+            if (!e.target.closest('[data-password-action="ok"]')) return;
+            if (input.value.length < 8) { showToast('Mínimo 8 caracteres', 'error'); return; }
+            if (needConfirm && input.value !== again.value) { showToast('Las contraseñas no coinciden', 'error'); return; }
+            done(input.value);
+        };
+        modal.addEventListener('click', onClick);
+    });
 }

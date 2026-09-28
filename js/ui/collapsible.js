@@ -24,11 +24,25 @@ function initCollapsibleSections(root) {
                 <span class="section-chevron" aria-hidden="true">▸</span>
             </button>`;
         section.classList.add('collapsible');
-        h2.querySelector('.section-toggle').addEventListener('click', () => setSectionOpen(section, body.hidden));
+        section.dataset.collapsibleId = bodyId;
+        h2.querySelector('.section-toggle').addEventListener('click', () => { setSectionOpen(section, body.hidden); rememberOpenSections(); });
+        // Abierta si arranca así (data-open) o si estaba abierta antes de recargar.
+        if (section.dataset.open === '1' || openSectionsBeforeReload().includes(bodyId)) setSectionOpen(section, true, false);
     });
 }
 
-function setSectionOpen(section, open) {
+// Qué secciones estaban abiertas: se recuerda durante la sesión, así al recargar la página
+// vuelve igual (y a la misma altura).
+function openSectionsBeforeReload() {
+    try { return JSON.parse(db.get('openSections') || '[]'); } catch (e) { return []; }
+}
+
+function rememberOpenSections() {
+    const ids = [...document.querySelectorAll('.section.collapsible.open')].map(s => s.dataset.collapsibleId).filter(Boolean);
+    try { db.set('openSections', JSON.stringify(ids)); } catch (e) {}
+}
+
+function setSectionOpen(section, open, scroll = true) {
     const body = section.querySelector(':scope > .section-body');
     const btn = section.querySelector('.section-toggle');
     if (!body || !btn) return;
@@ -36,5 +50,5 @@ function setSectionOpen(section, open) {
     section.classList.toggle('open', open);
     btn.setAttribute('aria-expanded', open ? 'true' : 'false');
     btn.querySelector('.section-chevron').textContent = open ? '▾' : '▸';
-    if (open) section.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    if (open && scroll) section.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
 }

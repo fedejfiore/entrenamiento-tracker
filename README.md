@@ -30,6 +30,8 @@ node --test "tests/**/*.test.js"   # pruebas automáticas (Node 22 o más nuevo)
 - Gamificación (florcita, mascota o personaje, trofeos e insignias): [docs/GAMIFICACION.md](docs/GAMIFICACION.md)
 - Costos, ROI y escenarios del negocio: [docs/ANALISIS-FINANCIERO.md](docs/ANALISIS-FINANCIERO.md) (modelo en `tools/modelo-financiero.js`)
 - Usabilidad y accesibilidad: [docs/UX-UI.md](docs/UX-UI.md)
+- Seguridad (revisión, cifrado, anti-copia): [docs/SEGURIDAD.md](docs/SEGURIDAD.md)
+- Plan de negocio y desarrollo (evaluación como inversión): [docs/PLAN-DE-NEGOCIO-Y-DESARROLLO.md](docs/PLAN-DE-NEGOCIO-Y-DESARROLLO.md)
 - Prototipo del personaje y la florcita: `docs/prototipos/personaje.html` (abrir en el navegador)
 - Tutorial para el usuario: dentro de la app, Ajustes → Ayuda (contenido en `js/features/help.js`)
 

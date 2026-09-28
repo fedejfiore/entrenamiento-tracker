@@ -10,8 +10,10 @@ function supersetMap(routine) {
     return (db.get('routineSupersets')[routine]) || {};
 }
 
+// Solo una letra A-Z: el mapa viene de los datos guardados (o de un backup).
 function getSupersetLetter(routine, name) {
-    return supersetMap(routine)[normalizeForCompare(name || '')] || null;
+    const letter = supersetMap(routine)[normalizeForCompare(name || '')];
+    return typeof letter === 'string' && /^[A-Z]$/.test(letter) ? letter : null;
 }
 
 // Guarda el mapa de la rutina quitando las superseries que quedaron con un solo ejercicio.
@@ -66,7 +68,7 @@ function openSupersetModal(block) {
     document.getElementById('supersetList').innerHTML = others.map(n => {
         const letter = map[normalizeForCompare(n)];
         const checked = myLetter && letter === myLetter;
-        const note = letter && letter !== myLetter ? ` <small>(ya está en la superserie ${letter}: se mueve a esta)</small>` : '';
+        const note = letter && letter !== myLetter ? ` <small>(ya está en la superserie ${escapeHtml(letter)}: se mueve a esta)</small>` : '';
         return `<label class="toggle-row"><input type="checkbox" value="${escapeHtml(n)}"${checked ? ' checked' : ''}><span>${escapeHtml(n)}${note}</span></label>`;
     }).join('');
     document.getElementById('supersetRemove').hidden = !myLetter;

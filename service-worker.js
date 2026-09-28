@@ -4,7 +4,7 @@
 //
 // Subí SW_VERSION cada vez que edites el HTML/CSS/JS de forma significativa,
 // para que los clientes descarten el caché viejo en vez de seguir sirviéndolo.
-const SW_VERSION = 'v15';
+const SW_VERSION = 'v17';
 const CACHE_NAME = 'entrenamiento-tracker-' + SW_VERSION;
 
 // Todo lo que la app necesita para abrir sin conexión. Tiene que coincidir con los
@@ -16,6 +16,9 @@ const PRECACHE_URLS = [
     './icon-512.png',
     './icon-512-maskable.png',
     './apple-touch-icon.png',
+    './vendor/chart.min.js',
+    './fonts/inter-latin.woff2',
+    './fonts/oswald-latin.woff2',
     './js/boot.js',
     './css/tokens.css',
     './css/layout.css',
@@ -26,9 +29,11 @@ const PRECACHE_URLS = [
     './css/help.css',
     './css/plan.css',
     './css/tools.css',
+    './css/fonts.css',
     './css/accessibility.css',
     './css/responsive.css',
     './js/core/utils.js',
+    './js/core/brand.js',
     './js/core/time.js',
     './js/core/units.js',
     './js/data/store.js',
@@ -40,9 +45,12 @@ const PRECACHE_URLS = [
     './js/domain/plan.js',
     './js/domain/training-tools.js',
     './js/domain/programs.js',
+    './js/domain/routine-share.js',
+    './js/domain/achievements.js',
     './js/data/migrations.js',
     './js/data/repositories.js',
     './js/data/recording-repository.js',
+    './js/data/backup-crypto.js',
     './js/data/backup-service.js',
     './js/data/exercise-prefs.js',
     './js/data/routines-store.js',
@@ -51,6 +59,7 @@ const PRECACHE_URLS = [
     './js/ui/wake-lock.js',
     './js/audio/sound.js',
     './js/audio/voice.js',
+    './js/audio/voice-styles.js',
     './js/audio/recordings.js',
     './js/features/rest-timer.js',
     './js/features/tabata.js',
@@ -64,6 +73,8 @@ const PRECACHE_URLS = [
     './js/features/training/reorder.js',
     './js/features/training/workout.js',
     './js/features/training/workout-screen.js',
+    './js/features/training/finish-session.js',
+    './js/features/training/train-mode.js',
     './js/features/training/supersets.js',
     './js/features/exercises.js',
     './js/features/history.js',
@@ -75,6 +86,8 @@ const PRECACHE_URLS = [
     './js/features/plate-calculator.js',
     './js/features/general-settings.js',
     './js/features/programs.js',
+    './js/features/library.js',
+    './js/features/profile.js',
     './js/features/backup.js',
     './js/features/help.js',
     './js/ui/collapsible.js',
@@ -102,12 +115,14 @@ self.addEventListener('activate', (event) => {
 // el gimnasio) y actualiza el caché en segundo plano para la próxima vez.
 self.addEventListener('fetch', (event) => {
     if (event.request.method !== 'GET') return;
+    // Solo archivos de la propia app: nada de otros sitios entra al caché.
+    if (new URL(event.request.url).origin !== self.location.origin) return;
 
     event.respondWith(
         caches.match(event.request).then((cached) => {
             const network = fetch(event.request)
                 .then((response) => {
-                    if (response && response.status === 200) {
+                    if (response && response.status === 200 && response.type === 'basic') {
                         const copy = response.clone();
                         caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
                     }

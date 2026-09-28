@@ -185,6 +185,21 @@ class RoutineRepository {
         });
     }
 
+    /** Rutina importada de un link: plantilla, nombre y objetivos juntos (todo o nada). */
+    importRoutine(key, label, exercises, targets) {
+        this.store.transaction(tx => {
+            const custom = tx.get('customRoutines');
+            const labels = tx.get('customRoutineLabels');
+            const allTargets = tx.get('routineTargets');
+            custom[key] = [...exercises];
+            labels[key] = label;
+            if (targets && Object.keys(targets).length) allTargets[key] = targets;
+            tx.set('customRoutines', custom);
+            tx.set('customRoutineLabels', labels);
+            tx.set('routineTargets', allTargets);
+        });
+    }
+
     /** Termina el programa: se van los objetivos, las rutinas y su historial quedan. */
     endProgram() {
         this.store.transaction(tx => {

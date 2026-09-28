@@ -69,8 +69,8 @@ test('niveles de color según series por semana', () => {
     assert.equal(muscleLevel(3), 1);
     assert.equal(muscleLevel(8), 2);
     assert.equal(muscleLevel(12), 3);
-    assert.equal(muscleLevel(18), 4);
-    assert.equal(muscleLevel(24), 5);
+    assert.equal(muscleLevel(18), 3);
+    assert.equal(muscleLevel(24), 4);
 });
 
 test('superseries: siguiente ejercicio de la misma letra, en el orden de pantalla', () => {
@@ -100,6 +100,9 @@ test('períodos del mapa: semana en curso y semanas completas anteriores', () =>
     const last = plain(muscleMapRange('lastweek', wed, 0));
     assert.equal(last.from, '2026-09-13');
     assert.equal(last.to, '2026-09-19');
+    const last7 = plain(muscleMapRange('last7', wed, 0));
+    assert.equal(last7.from, '2026-09-17');
+    assert.equal(last7.to, '2026-09-23');
     const four = plain(muscleMapRange('4w', wed, 1));
     assert.equal(four.from, '2026-08-24');
     assert.equal(four.to, '2026-09-20');

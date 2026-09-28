@@ -124,17 +124,83 @@ html[data-size] .collapse-btn, html[data-size="xlarge"] .collapse-btn { min-heig
 html[data-size] .bottom-nav-item, html[data-size="xlarge"] .bottom-nav-item { min-height: 0; }
 
 /* ---- Alto contraste (Ajustes → Accesibilidad) ----
-   El texto blanco sobre los botones de color no llega al mínimo de la norma WCAG (4,5:1):
-   naranja 2,8, verde de "Guardar" 1,8. Con texto oscuro todos pasan (4,6 a 9,9). También se
-   aclara el texto tenue, que en tema oscuro quedaba en 3,4:1. Todo texto sobre un fondo de
-   color usa var(--on-color), así este modo solo cambia la variable. */
-html[data-contrast="high"] { --on-color: #14161a; --text-faint: #8e929b; }
-html[data-contrast="high"][data-theme="light"] { --text-faint: #6b6f78; }
-html[data-contrast="high"][data-accent="violeta"]:not([data-theme="light"]) { --brand: #a78bfa; --brand-rgb: 167, 139, 250; }
-html[data-contrast="high"][data-theme="light"][data-accent="violeta"] button:not(.success):not(.danger) { color: #fff; }
-/* Tema claro: el acento como COLOR DE TEXTO sobre blanco queda bajo (naranja 2,6:1); en alto
-   contraste se oscurece solo para los textos, sin tocar los fondos. */
-html[data-contrast="high"][data-theme="light"] .rep-count-btn,
-html[data-contrast="high"][data-theme="light"] .size-choice.on,
-html[data-contrast="high"][data-theme="light"] .bottom-nav-item.active,
-html[data-contrast="high"][data-theme="light"] select.type-chip { color: color-mix(in srgb, var(--brand) 62%, #000); }
+   Los colores de acento ya pasan WCAG AA en los dos temas (ver css/tokens.css). Este modo
+   refuerza lo que queda cerca del límite: texto tenue (3,4:1 → 5,4:1), bordes de campos y
+   el texto secundario, para leer al sol o con poca vista. */
+html[data-contrast="high"] { --text-faint: #a0a4ad; --text-muted: #c3c6cc; --input-border: #5a5f6b; --border: #3a3e48; }
+html[data-contrast="high"][data-theme="light"] { --text-faint: #4d5159; --text-muted: #3d4148; --input-border: #9a9ea6; --border: #c9ccd2; }
+
+/* ---- Botón fijo "Terminar" (Entrenar) ---- */
+.finish-fab {
+    position: fixed;
+    right: 14px;
+    bottom: calc(var(--bottom-inset) + 14px);
+    z-index: 1600;
+    width: auto;
+    margin: 0;
+    padding: 12px 18px;
+    min-height: 48px;
+    border-radius: 999px;
+    font-size: 15px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+.finish-fab[hidden] { display: none; }
+body.rest-timer-open .finish-fab { bottom: calc(var(--bottom-inset) + 96px); }
+body.rep-counter-open .finish-fab, body.keyboard-open .finish-fab { display: none; }
+.finish-content h3 { margin-bottom: 4px; }
+.finish-summary { color: var(--text-muted); font-size: 14px; margin-bottom: 12px; }
+.finish-label { font-size: 13px; color: var(--text-muted); margin-bottom: 6px; }
+.finish-mood { display: flex; gap: 6px; justify-content: space-between; margin-bottom: 12px; }
+.finish-mood .emoji-btn { flex: 1; }
+.finish-cancel { background: var(--bg-elevated); color: var(--text); }
+.finish-cancel:hover { background: var(--bg-subtle); box-shadow: none; transform: none; }
+
+/* ---- Entrenar: pestañas Rutina / Tabata ---- */
+.mode-switch { display: flex; gap: 4px; padding: 4px; margin-bottom: 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 999px; }
+.mode-tab { flex: 1; margin: 0; padding: 10px 8px; min-height: 44px; border-radius: 999px; background: transparent; color: var(--text-muted); font-size: 14px; }
+.mode-tab:hover { background: var(--bg-elevated); box-shadow: none; transform: none; }
+.mode-tab.active { background: var(--brand); color: var(--on-color); }
+
+/* ---- Biblioteca ---- */
+.lib-item { display: flex; gap: 8px; align-items: flex-start; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.lib-item:last-child { border-bottom: 0; }
+.lib-item-main { min-width: 0; flex: 1; }
+.lib-item-main strong { display: block; overflow-wrap: anywhere; }
+.lib-item-main small { display: block; color: var(--text-muted); font-size: 12px; }
+.lib-item-main details { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+.lib-item-main ol { margin: 4px 0 0 18px; }
+.lib-actions { display: flex; gap: 4px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; max-width: 50%; }
+.lib-actions button { margin: 0; }
+.lib-secondary { background: var(--bg-elevated); color: var(--text); }
+.lib-secondary:hover { background: var(--bg-subtle); box-shadow: none; transform: none; }
+.lib-empty, .lib-note { color: var(--text-muted); font-size: 13px; margin-bottom: 8px; }
+
+/* ---- Perfil ---- */
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.profile-head { display: flex; align-items: center; gap: 14px; }
+.profile-photo { width: 76px; height: 76px; min-height: 0; margin: 0; padding: 0; border-radius: 50%; overflow: hidden; flex-shrink: 0; background: var(--brand); color: var(--on-color); font-size: 28px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.profile-photo img { width: 100%; height: 100%; object-fit: cover; }
+.profile-id { flex: 1; min-width: 0; }
+.profile-id input { margin-bottom: 4px; font-size: 18px; font-weight: 700; }
+.profile-id small { color: var(--text-muted); font-size: 12px; }
+.profile-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px; }
+.profile-stat { background: var(--bg-elevated); border-radius: var(--radius-sm); padding: 10px 6px; text-align: center; }
+.profile-stat span { display: block; font-size: 18px; }
+.profile-stat b { display: block; font-size: 20px; font-family: var(--font-heading); }
+.profile-stat small { color: var(--text-muted); font-size: 11px; }
+.medal { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.medal:last-child { border-bottom: 0; }
+.medal-disc { width: 52px; height: 52px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 24px;
+    background: radial-gradient(circle at 35% 30%, #fff 0, var(--medal) 30%, color-mix(in srgb, var(--medal) 55%, #000) 100%);
+    box-shadow: inset 0 0 0 3px rgba(255,255,255,0.35), 0 2px 6px rgba(0,0,0,0.3); }
+.medal.locked .medal-disc { filter: grayscale(1); opacity: 0.45; }
+.medal-text { flex: 1; min-width: 0; }
+.medal-text strong { display: block; font-size: 14px; }
+.medal-text small { color: var(--text-muted); font-size: 12px; }
+.medal-bar { height: 6px; border-radius: 3px; background: var(--bg-elevated); margin-top: 4px; overflow: hidden; }
+.medal-bar i { display: block; height: 100%; background: var(--brand); border-radius: 3px; }
+.photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 8px; }
+.photo-thumb { position: relative; margin: 0; padding: 0; min-height: 0; aspect-ratio: 3 / 4; overflow: hidden; border-radius: var(--radius-sm); background: var(--bg-elevated); }
+.photo-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.photo-thumb span { position: absolute; left: 0; right: 0; bottom: 0; font-size: 11px; padding: 3px; background: rgba(0,0,0,0.55); color: #fff; }
+.photo-modal img { width: 100%; max-height: 65vh; object-fit: contain; border-radius: var(--radius-sm); margin-bottom: 10px; }

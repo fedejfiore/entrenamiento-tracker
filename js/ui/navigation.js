@@ -4,11 +4,11 @@
 const APP_SCREENS = [
     { id: 'inicio', icon: '🏠', label: 'Inicio' },
     { id: 'entrenar', icon: '🏋️', label: 'Entrenar' },
-    { id: 'tabata', icon: '⏱️', label: 'Tabata' },
     { id: 'historial', icon: '📋', label: 'Historial' },
     { id: 'progreso', icon: '📊', label: 'Progreso' },
     { id: 'medidas', icon: '📏', label: 'Medidas corporales' },
-    { id: 'variantes', icon: '🎯', label: 'Variantes' },
+    { id: 'biblioteca', icon: '📚', label: 'Biblioteca' },
+    { id: 'perfil', icon: '👤', label: 'Perfil' },
     { id: 'ajustes', icon: '⚙️', label: 'Ajustes' }
 ];
 
@@ -17,11 +17,11 @@ const APP_SCREENS = [
 const SCREEN_ON_SHOW = {
     progreso: () => {
         renderMuscleMap();
-        populateProgresoRoutineFilter();
-        renderProgressGrid();
+        generateProgressionAnalysis();
     },
     medidas: () => updateBodyChart(),
-    ajustes: () => renderArchivedRoutinesList()
+    biblioteca: () => renderLibrary(),
+    perfil: () => renderProfile()
 };
 
 function renderDrawerNav() {
@@ -35,6 +35,8 @@ function renderDrawerNav() {
 }
 
 function showScreen(screenId, fromClick) {
+    if (screenId === 'tabata') { screenId = 'entrenar'; setTimeout(() => setTrainMode('tabata'), 0); }
+    if (screenId === 'variantes') screenId = 'biblioteca';
     if (!APP_SCREENS.some(s => s.id === screenId)) screenId = 'inicio';
 
     document.querySelectorAll('[data-screen]').forEach(el => {
@@ -55,12 +57,26 @@ function showScreen(screenId, fromClick) {
     if (fromClick) {
         closeDrawer();
         window.scrollTo(0, 0);
+        try { db.set('activeScrollY', '0'); } catch (e) {}
     }
 }
 
+// Al recargar vuelve a la pantalla (y a la altura) en la que estaba, no siempre a Inicio.
 function initScreens() {
     renderDrawerNav();
-    showScreen('inicio');
+    let screen = 'inicio', scrollY = 0;
+    try {
+        screen = db.get('activeScreen') || 'inicio';
+        scrollY = parseInt(db.get('activeScrollY'), 10) || 0;
+    } catch (e) {}
+    showScreen(screen);
+    if (scrollY > 0) requestAnimationFrame(() => setTimeout(() => window.scrollTo(0, scrollY), 60));
+    // La altura se guarda al salir o recargar (y cada tanto al desplazarse).
+    const saveScroll = () => { try { db.set('activeScrollY', String(Math.round(window.scrollY))); } catch (e) {} };
+    window.addEventListener('pagehide', saveScroll);
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveScroll(); });
+    let t = null;
+    window.addEventListener('scroll', () => { clearTimeout(t); t = setTimeout(saveScroll, 400); }, { passive: true });
 }
 
 function openDrawer() {

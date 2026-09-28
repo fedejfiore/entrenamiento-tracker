@@ -36,6 +36,7 @@ function loadApp(files = CORE_FILES) {
         setTimeout,
         clearTimeout,
         TextEncoder,
+        TextDecoder,
         URL,
         URLSearchParams
     });

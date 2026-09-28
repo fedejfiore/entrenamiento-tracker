@@ -1,369 +1,13 @@
-// Progreso: mini-gráficos por ejercicio, grupos musculares, detalle y análisis de progresión.
+// Progreso → "Análisis de Progresión": cada ejercicio comparado contra una sesión anterior,
+// agrupado como se elija (todo, última sesión, por rutina o por grupo muscular). Tocar un
+// ejercicio abre su detalle con los gráficos (peso, 1RM, reps, volumen) y el grupo muscular.
 // Script clásico (no módulo): comparte el ámbito global con el resto de la app.
-
-const miniCharts = {};
-
-function miniChartId(exName) {
-    return 'mini_' + normalizeForCompare(exName).replace(/[^a-z0-9]+/g, '_');
-}
-
-function drawMiniChart(canvasId, data) {
-    const canvas = document.getElementById(canvasId);
-    if (!canvas || typeof Chart === 'undefined') return;
-    if (miniCharts[canvasId]) miniCharts[canvasId].destroy();
-    miniCharts[canvasId] = new Chart(canvas.getContext('2d'), {
-        type: 'line',
-        data: {
-            labels: data.map(d => d.date),
-            datasets: [{
-                data: data.map(d => d.weight),
-                borderColor: cssVar('--brand'),
-                backgroundColor: 'transparent',
-                borderWidth: 2,
-                pointRadius: 0,
-                tension: 0.3
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            animation: false,
-            plugins: { legend: { display: false }, tooltip: { enabled: false } },
-            scales: { x: { display: false }, y: { display: false } }
-        }
-    });
-}
-
-// Grilla de mini-gráficos por ejercicio, agrupados por músculo y filtrables por
-// rutina — reemplaza el gráfico multi-línea + selector que ocupaban toda la pantalla.
-function renderProgressGrid() {
-    const container = document.getElementById('progressExerciseGrid');
-    if (!container) return;
-
-    calculateStats();
-    const routineFilter = document.getElementById('progresoRoutineFilter')?.value || '';
-
-    let exerciseNames = Object.keys(exerciseStats);
-    if (routineFilter) {
-        loadCustomRoutines();
-        const routineExercises = new Set((customRoutines[routineFilter] || routines[routineFilter] || []).map(normalizeForCompare));
-        exerciseNames = exerciseNames.filter(name => routineExercises.has(normalizeForCompare(name)));
-    }
-
-    const byGroup = {};
-    exerciseNames.forEach(name => {
-        const data = getExerciseHistoryData(name);
-        if (data.length === 0) return;
-        const group = getMuscleGroup(name);
-        if (!byGroup[group]) byGroup[group] = [];
-        byGroup[group].push({ name, data });
-    });
-
-    const anyData = Object.keys(byGroup).length > 0;
-    if (!anyData) {
-        container.innerHTML = '<p style="color:var(--text-faint);">Todavía no hay suficiente peso cargado en tus sesiones para graficar.</p>';
-        return;
-    }
-
-    // Solo se muestran los grupos que ya tienen algún ejercicio (si no, la pantalla
-    // se llena de secciones vacías). Para mover un ejercicio a un grupo que todavía
-    // no aparece acá, está el botón 📁 de cada tarjeta (abre la lista completa de
-    // grupos), además de poder arrastrar entre los que ya están visibles.
-    const groupOrder = Object.keys(MUSCLE_GROUPS).filter(g => byGroup[g]);
-    if (byGroup['Otro']) groupOrder.push('Otro');
-
-    let html = '';
-    groupOrder.forEach(group => {
-        const icon = (MUSCLE_GROUPS[group] || {}).icon || '📌';
-        const items = byGroup[group] || [];
-        html += `<h3 style="font-family:var(--font-heading); font-size:14px; font-weight:500; margin:16px 0 8px; color:var(--text-muted);">${icon} ${group}</h3>`;
-        html += `<div class="mini-chart-grid" data-muscle-group="${group}">`;
-        items.forEach(item => {
-            const last = item.data[item.data.length - 1];
-            const cid = miniChartId(item.name);
-            html += `<div class="mini-chart-card">
-                <button type="button" class="mini-chart-move-btn" title="Mover a otro grupo muscular">📁</button>
-                <div class="mini-chart-title">${item.name}</div>
-                <div class="mini-chart-canvas-wrap"><canvas id="${cid}"></canvas></div>
-                <div class="mini-chart-last">${last.weight}kg último</div>
-            </div>`;
-        });
-        html += `</div>`;
-    });
-    container.innerHTML = html;
-
-    // Asignar el nombre real del ejercicio vía JS (no por atributo/onclick) para no
-    // pelear con comillas o tildes al escapar el string dentro del HTML generado.
-    const cards = container.querySelectorAll('.mini-chart-card');
-    let cardIdx = 0;
-    groupOrder.forEach(group => {
-        (byGroup[group] || []).forEach(item => {
-            const card = cards[cardIdx++];
-            if (!card) return;
-            setupExerciseCardDrag(card, item.name);
-            const moveBtn = card.querySelector('.mini-chart-move-btn');
-            if (moveBtn) {
-                moveBtn.addEventListener('pointerdown', e => e.stopPropagation());
-                moveBtn.addEventListener('click', e => {
-                    e.stopPropagation();
-                    openMoveGroupModal(item.name);
-                });
-            }
-        });
-    });
-
-    groupOrder.forEach(group => {
-        (byGroup[group] || []).forEach(item => drawMiniChart(miniChartId(item.name), item.data));
-    });
-}
-
-// Complementa el arrastre entre tarjetas: sirve para mandar un ejercicio a un grupo
-// que todavía no tiene ninguna tarjeta visible (y por lo tanto no aparece como sección
-// en la grilla), algo que el arrastre solo no puede hacer.
-let pendingMoveExerciseName = null;
-
-function openMoveGroupModal(exerciseName) {
-    pendingMoveExerciseName = exerciseName;
-    const modal = document.getElementById('moveGroupModal');
-    const nameEl = document.getElementById('moveGroupExerciseName');
-    const list = document.getElementById('moveGroupList');
-    if (!modal || !nameEl || !list) return;
-
-    nameEl.textContent = `"${exerciseName}"`;
-    const currentGroup = getMuscleGroup(exerciseName);
-    const groups = [...Object.keys(MUSCLE_GROUPS), 'Otro'];
-    list.innerHTML = groups.map(group => {
-        const icon = (MUSCLE_GROUPS[group] || {}).icon || '📌';
-        const isCurrent = group === currentGroup;
-        return `<button type="button" onclick="chooseMoveGroup('${group.replace(/'/g, "\\'")}')" ${isCurrent ? 'disabled' : ''}>${icon} ${group}${isCurrent ? ' (actual)' : ''}</button>`;
-    }).join('');
-
-    modal.classList.add('open');
-}
-
-function closeMoveGroupModal() {
-    const modal = document.getElementById('moveGroupModal');
-    if (modal) modal.classList.remove('open');
-    pendingMoveExerciseName = null;
-}
-
-function chooseMoveGroup(group) {
-    if (!pendingMoveExerciseName) return;
-    saveGroupOverride(pendingMoveExerciseName, group);
-    const icon = (MUSCLE_GROUPS[group] || {}).icon || '📌';
-    showToast(`✅ "${pendingMoveExerciseName}" movido a ${icon} ${group}`);
-    closeMoveGroupModal();
-    renderProgressGrid();
-}
-
-// Con Pointer Events en vez del drag-and-drop nativo de HTML5, porque este último
-// no funciona de forma confiable con touch en celulares. Mantener presionado ~320ms
-// sin mover mucho arranca el arrastre; soltar antes de eso (o moverse de golpe, que
-// es scroll normal) lo cancela y, si no hubo arrastre, se interpreta como un tap.
-const DRAG_LONG_PRESS_MS = 320;
-
-const DRAG_MOVE_THRESHOLD_PX = 10;
-
-const DRAG_EDGE_SCROLL_ZONE_PX = 80;
-
-const DRAG_EDGE_SCROLL_MAX_SPEED = 16;
-
-let dragGhostEl = null;
-
-let dragOriginCard = null;
-
-let dragOriginGroup = null;
-
-let dragActiveDropTarget = null;
-
-let dragLastClientX = 0;
-
-let dragLastClientY = 0;
-
-let dragAutoScrollRAF = null;
-
-function setupExerciseCardDrag(card, exerciseName) {
-    card.style.touchAction = 'pan-y';
-    card.addEventListener('pointerdown', (e) => {
-        if (e.pointerType === 'mouse' && e.button !== 0) return;
-        onExerciseCardPointerDown(e, card, exerciseName);
-    });
-}
-
-function onExerciseCardPointerDown(startEvent, card, exerciseName) {
-    const pointerId = startEvent.pointerId;
-    const startX = startEvent.clientX;
-    const startY = startEvent.clientY;
-    let dragging = false;
-    let cancelled = false;
-
-    const longPressTimer = setTimeout(() => {
-        if (cancelled) return;
-        dragging = true;
-        beginCardDrag(card, startX, startY);
-    }, DRAG_LONG_PRESS_MS);
-
-    function onMove(e) {
-        if (e.pointerId !== pointerId) return;
-        const dx = e.clientX - startX;
-        const dy = e.clientY - startY;
-        if (!dragging) {
-            if (Math.abs(dx) > DRAG_MOVE_THRESHOLD_PX || Math.abs(dy) > DRAG_MOVE_THRESHOLD_PX) {
-                cancelled = true;
-                clearTimeout(longPressTimer);
-                cleanup();
-            }
-            return;
-        }
-        e.preventDefault();
-        updateCardDrag(e.clientX, e.clientY);
-    }
-
-    function onUp(e) {
-        if (e.pointerId !== pointerId) return;
-        clearTimeout(longPressTimer);
-        if (dragging) {
-            endCardDrag(e.clientX, e.clientY, exerciseName);
-        } else if (!cancelled) {
-            openExerciseDetail(exerciseName);
-        }
-        cleanup();
-    }
-
-    function onCancel(e) {
-        if (e.pointerId !== pointerId) return;
-        clearTimeout(longPressTimer);
-        if (dragging) cancelCardDrag();
-        cleanup();
-    }
-
-    function cleanup() {
-        window.removeEventListener('pointermove', onMove);
-        window.removeEventListener('pointerup', onUp);
-        window.removeEventListener('pointercancel', onCancel);
-    }
-
-    window.addEventListener('pointermove', onMove, { passive: false });
-    window.addEventListener('pointerup', onUp);
-    window.addEventListener('pointercancel', onCancel);
-}
-
-function beginCardDrag(card, x, y) {
-    dragOriginCard = card;
-    dragOriginGroup = card.closest('.mini-chart-grid')?.dataset.muscleGroup || null;
-    card.classList.add('dragging-source');
-
-    try { navigator.vibrate && navigator.vibrate(15); } catch (e) {}
-
-    const rect = card.getBoundingClientRect();
-    const ghost = card.cloneNode(true);
-    ghost.removeAttribute('id');
-    ghost.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
-    // El <canvas> clonado no copia lo dibujado — mostramos solo título y último valor.
-    const wrap = ghost.querySelector('.mini-chart-canvas-wrap');
-    if (wrap) wrap.style.visibility = 'hidden';
-    ghost.classList.add('mini-chart-drag-ghost');
-    ghost.style.width = rect.width + 'px';
-    ghost.style.left = (x - rect.width / 2) + 'px';
-    ghost.style.top = (y - rect.height / 2) + 'px';
-    document.body.appendChild(ghost);
-    dragGhostEl = ghost;
-
-    dragLastClientX = x;
-    dragLastClientY = y;
-    dragAutoScrollRAF = requestAnimationFrame(dragAutoScrollTick);
-}
-
-function updateCardDrag(x, y) {
-    dragLastClientX = x;
-    dragLastClientY = y;
-
-    if (dragGhostEl) {
-        const rect = dragGhostEl.getBoundingClientRect();
-        dragGhostEl.style.left = (x - rect.width / 2) + 'px';
-        dragGhostEl.style.top = (y - rect.height / 2) + 'px';
-    }
-    const targetGrid = document.elementFromPoint(x, y)?.closest('.mini-chart-grid') || null;
-    if (dragActiveDropTarget && dragActiveDropTarget !== targetGrid) {
-        dragActiveDropTarget.classList.remove('drop-target-active');
-        dragActiveDropTarget = null;
-    }
-    if (targetGrid && targetGrid !== dragActiveDropTarget) {
-        targetGrid.classList.add('drop-target-active');
-        dragActiveDropTarget = targetGrid;
-    }
-}
-
-// Autoscroll de la página mientras se arrastra cerca del borde superior/inferior
-// de la pantalla — sin esto, no se puede soltar en un grupo que no está visible
-// en ese momento (el drag no tiene por qué mover el dedo para "seguir" pidiendo scroll).
-function dragAutoScrollTick() {
-    if (!dragGhostEl) { dragAutoScrollRAF = null; return; }
-
-    const y = dragLastClientY;
-    const vh = window.innerHeight;
-    let delta = 0;
-    if (y < DRAG_EDGE_SCROLL_ZONE_PX) {
-        delta = -Math.ceil((DRAG_EDGE_SCROLL_ZONE_PX - y) / DRAG_EDGE_SCROLL_ZONE_PX * DRAG_EDGE_SCROLL_MAX_SPEED);
-    } else if (y > vh - DRAG_EDGE_SCROLL_ZONE_PX) {
-        delta = Math.ceil((y - (vh - DRAG_EDGE_SCROLL_ZONE_PX)) / DRAG_EDGE_SCROLL_ZONE_PX * DRAG_EDGE_SCROLL_MAX_SPEED);
-    }
-
-    if (delta !== 0) {
-        const before = window.scrollY;
-        window.scrollBy(0, delta);
-        // El dedo/mouse no se movió, pero el contenido sí — recalcular qué hay debajo.
-        if (window.scrollY !== before) updateCardDrag(dragLastClientX, dragLastClientY);
-    }
-
-    dragAutoScrollRAF = requestAnimationFrame(dragAutoScrollTick);
-}
-
-function endCardDrag(x, y, exerciseName) {
-    const targetGrid = document.elementFromPoint(x, y)?.closest('.mini-chart-grid') || null;
-    const targetGroup = targetGrid?.dataset.muscleGroup || null;
-    const validTarget = targetGroup === 'Otro' || !!MUSCLE_GROUPS[targetGroup];
-
-    cleanupCardDrag();
-
-    if (validTarget && targetGroup !== dragOriginGroup) {
-        saveGroupOverride(exerciseName, targetGroup);
-        const icon = (MUSCLE_GROUPS[targetGroup] || {}).icon || '📌';
-        showToast(`✅ "${exerciseName}" movido a ${icon} ${targetGroup}`);
-        renderProgressGrid();
-    }
-}
-
-function cancelCardDrag() {
-    cleanupCardDrag();
-}
-
-function cleanupCardDrag() {
-    if (dragAutoScrollRAF) { cancelAnimationFrame(dragAutoScrollRAF); dragAutoScrollRAF = null; }
-    if (dragGhostEl) { dragGhostEl.remove(); dragGhostEl = null; }
-    if (dragOriginCard) { dragOriginCard.classList.remove('dragging-source'); dragOriginCard = null; }
-    if (dragActiveDropTarget) { dragActiveDropTarget.classList.remove('drop-target-active'); dragActiveDropTarget = null; }
-    dragOriginGroup = null;
-}
-
-function populateProgresoRoutineFilter() {
-    const select = document.getElementById('progresoRoutineFilter');
-    if (!select) return;
-    loadCustomRoutines();
-    const keys = Array.from(new Set([...Object.keys(routines), ...Object.keys(customRoutines)]))
-        .filter(isRoutineVisible)
-        .sort();
-    const current = select.value;
-    select.innerHTML = '<option value="">Todas las rutinas</option>' + keys.map(key => {
-        const label = customRoutineLabels[key] || ROUTINE_LABELS[key] || `Rutina ${key}`;
-        return `<option value="${key}">${label}</option>`;
-    }).join('');
-    if (keys.includes(current)) select.value = current;
-}
 
 let exerciseDetailChart = null;
 
 let currentExerciseDetailData = null;
+
+let currentExerciseDetailName = null;
 
 // Tocar el nombre de un ejercicio mientras se está entrenando abre directamente
 // su gráfico de progreso (sin tener que ir a la pantalla Progreso a buscarlo).
@@ -378,16 +22,32 @@ function openExerciseDetail(exName) {
     const titleEl = document.getElementById('exerciseDetailTitle');
     if (!modal || !titleEl) return;
 
-    const data = getExerciseHistoryData(exName).slice(-30);
-    if (data.length === 0) {
-        showToast(`Todavía no hay historial de "${exName}" para graficar`, 'error');
-        return;
-    }
-
+    const data = getExerciseHistoryData(exName).sort((a, b) => a.date.localeCompare(b.date)).slice(-30);
     titleEl.textContent = exName;
+    currentExerciseDetailName = exName;
     currentExerciseDetailData = data;
-    renderExerciseDetailChart();
+
+    // Grupo muscular: se cambia desde acá (antes era arrastrando tarjetas en otra sección).
+    const group = document.getElementById('exerciseDetailGroup');
+    if (group) {
+        const current = getMuscleGroup(exName);
+        const groups = [...Object.keys(MUSCLE_GROUPS), 'Otro'];
+        group.innerHTML = groups.map(g => `<option value="${escapeHtml(g)}"${g === current ? ' selected' : ''}>${escapeHtml(((MUSCLE_GROUPS[g] || {}).icon || '📌') + ' ' + g)}</option>`).join('');
+    }
+    const empty = document.getElementById('exerciseDetailEmpty');
+    if (empty) empty.hidden = data.length > 0;
+    document.querySelector('#exerciseDetailModal .chart-large').hidden = data.length === 0;
+    document.querySelector('#exerciseDetailModal .checkbox-group').hidden = data.length === 0;
     modal.classList.add('open');
+    renderExerciseDetailChart();
+}
+
+function changeExerciseDetailGroup(group) {
+    if (!currentExerciseDetailName) return;
+    saveGroupOverride(currentExerciseDetailName, group);
+    showToast(`${currentExerciseDetailName} → ${group}`, 'success', 1800);
+    generateProgressionAnalysis();
+    renderMuscleMap();
 }
 
 // Cada métrica vive en su propia escala (peso/1RM en kg, reps en unidades, volumen
@@ -409,7 +69,8 @@ const EXERCISE_CHART_AXIS_META = {
 
 function renderExerciseDetailChart() {
     const canvas = document.getElementById('exerciseDetailChart');
-    if (!canvas || !currentExerciseDetailData || typeof Chart === 'undefined') return;
+    if (exerciseDetailChart) { exerciseDetailChart.destroy(); exerciseDetailChart = null; }
+    if (!canvas || !currentExerciseDetailData || !currentExerciseDetailData.length || typeof Chart === 'undefined') return;
     const data = currentExerciseDetailData;
 
     const datasets = [];
@@ -432,8 +93,6 @@ function renderExerciseDetailChart() {
             yAxisID: def.axis
         });
     });
-
-    if (exerciseDetailChart) { exerciseDetailChart.destroy(); exerciseDetailChart = null; }
     if (datasets.length === 0) return; // ningún checkbox tildado: no hay nada para graficar
 
     const scales = { x: { grid: { color: cssVar('--border') }, ticks: { color: cssVar('--text-muted') } } };
@@ -464,79 +123,120 @@ function closeExerciseDetail() {
     if (modal) modal.classList.remove('open');
 }
 
+// ---------- Análisis de Progresión ----------
+
 // Umbral para considerar el volumen "igual" entre dos sesiones (evita que un
 // redondeo mínimo se lea como mejora o retroceso).
 const VOLUME_FLAT_THRESHOLD_PCT = 2;
 
-function generateProgressionAnalysis() {
-    let workouts = repo.workouts.all();
-    if (!Array.isArray(workouts)) workouts = [];
+const PROGRESSION_GROUPINGS = {
+    all: 'Todos los ejercicios',
+    last: 'Última sesión',
+    routine: 'Por rutina',
+    muscle: 'Por grupo muscular'
+};
 
-    // Agrupar por ejercicio: volumen total, reps totales y peso máximo de cada sesión
-    // donde apareció ese ejercicio (no solo el peso de una serie suelta).
-    const exerciseHistory = {};
-    workouts.forEach(w => {
-        if (!w || !w.date || !w.exercises || !Array.isArray(w.exercises)) return;
-
-        w.exercises.forEach(ex => {
-            if (!ex || !ex.name) return;
-
-            const weights = parseWeightList(ex.weight, ex.reps);
-            const volume = calculateExerciseVolume(ex);
-            const totalReps = calculateExerciseTotalReps(ex);
-            if (weights.length === 0 && totalReps === 0) return;
-
-            if (!exerciseHistory[ex.name]) exerciseHistory[ex.name] = [];
-            exerciseHistory[ex.name].push({
-                date: w.date,
-                volume: volume,
-                totalReps: totalReps,
-                maxWeight: weights.length > 0 ? Math.max(...weights) : 0
-            });
-        });
-    });
-
-    const timeframe = document.getElementById('progressionTimeframe')?.value || 'last';
-
-    let html = '';
-    Object.entries(exerciseHistory).forEach(([exName, historyRaw]) => {
-        // Ordenar por fecha por las dudas (editar la fecha de una sesión ya guardada
-        // podría desordenar el array respecto al orden en que se guardaron).
-        const history = [...historyRaw].sort((a, b) => a.date.localeCompare(b.date));
-        if (history.length < 2) return;
-
-        const last = history[history.length - 1];
-        const candidates = history.slice(0, history.length - 1);
-
-        let baseline;
-        if (timeframe === 'last') {
-            baseline = candidates[candidates.length - 1];
-        } else {
-            const refDate = new Date(last.date + 'T00:00:00');
-            refDate.setMonth(refDate.getMonth() - parseInt(timeframe, 10));
-            baseline = findClosestSession(candidates, refDate);
-        }
-
-        // Señal principal: volumen total (peso × reps de todas las series).
-        // Es lo que realmente indica progreso cuando sube el peso pero bajan
-        // las reps (o viceversa), a diferencia de mirar solo el peso máximo.
-        const volumePct = baseline.volume > 0 ? ((last.volume - baseline.volume) / baseline.volume) * 100 : (last.volume > 0 ? 100 : 0);
-        const arrow = volumePct > VOLUME_FLAT_THRESHOLD_PCT ? '📈' : volumePct < -VOLUME_FLAT_THRESHOLD_PCT ? '📉' : '➡️';
-        const volumeSign = volumePct > 0 ? '+' : '';
-
-        const repsDiff = last.totalReps - baseline.totalReps;
-        const weightDiff = Math.round((last.maxWeight - baseline.maxWeight) * 10) / 10;
-
-        // Con temporalidades largas, la sesión disponible más cercana puede no caer
-        // justo en la fecha pedida — mostramos su fecha real para que quede claro.
-        const baselineDateNote = timeframe === 'last' ? '' : ` <small style="color:var(--text-faint);">(vs. ${baseline.date})</small>`;
-
-        html += `<div style="margin-bottom: 6px; padding: 8px; background: var(--bg-elevated); border-radius: 6px;">
-                <strong>${exName}</strong> ${arrow}${baselineDateNote}<br>
-                <small style="color: var(--text-muted);">Volumen: ${Math.round(baseline.volume).toLocaleString('es-AR')}kg → ${Math.round(last.volume).toLocaleString('es-AR')}kg (${volumeSign}${Math.round(volumePct)}%) · Reps: ${baseline.totalReps}→${last.totalReps} (${repsDiff > 0 ? '+' : ''}${repsDiff}) · Peso máx: ${baseline.maxWeight}kg→${last.maxWeight}kg (${weightDiff > 0 ? '+' : ''}${weightDiff}kg)</small>
-            </div>`;
-    });
-
-    document.getElementById('progressionData').innerHTML = html || '<small>Insuficientes datos</small>';
+function routineLabelOf(key) {
+    if (!key) return 'Sin rutina';
+    return customRoutineLabels[key] || ROUTINE_LABELS[key] || `Rutina ${key}`;
 }
 
+/** Historial por ejercicio (volumen, reps y peso máximo por sesión) y la rutina más reciente de cada uno. */
+function buildProgressionHistory(workouts) {
+    const history = {};
+    const lastRoutine = {};
+    [...workouts].sort((a, b) => (a.date || '').localeCompare(b.date || '')).forEach(w => {
+        if (!w || !w.date || !Array.isArray(w.exercises)) return;
+        w.exercises.forEach(ex => {
+            if (!ex || !ex.name) return;
+            const weights = parseWeightList(ex.weight, ex.reps);
+            const totalReps = calculateExerciseTotalReps(ex);
+            if (weights.length === 0 && totalReps === 0) return;
+            (history[ex.name] ||= []).push({
+                date: w.date,
+                volume: calculateExerciseVolume(ex),
+                totalReps,
+                maxWeight: weights.length > 0 ? Math.max(...weights) : 0
+            });
+            lastRoutine[ex.name] = w.routine || '';
+        });
+    });
+    return { history, lastRoutine };
+}
+
+function progressionRowHtml(exName, history, timeframe) {
+    const last = history[history.length - 1];
+    const candidates = history.slice(0, history.length - 1);
+    let baseline;
+    if (timeframe === 'last') {
+        baseline = candidates[candidates.length - 1];
+    } else {
+        const refDate = new Date(last.date + 'T00:00:00');
+        refDate.setMonth(refDate.getMonth() - parseInt(timeframe, 10));
+        baseline = findClosestSession(candidates, refDate);
+    }
+
+    // Señal principal: volumen total (peso × reps de todas las series). Es lo que indica
+    // progreso cuando sube el peso pero bajan las reps (o viceversa).
+    const volumePct = baseline.volume > 0 ? ((last.volume - baseline.volume) / baseline.volume) * 100 : (last.volume > 0 ? 100 : 0);
+    const arrow = volumePct > VOLUME_FLAT_THRESHOLD_PCT ? '📈' : volumePct < -VOLUME_FLAT_THRESHOLD_PCT ? '📉' : '➡️';
+    const sign = n => (n > 0 ? '+' : '') + n;
+    const repsDiff = last.totalReps - baseline.totalReps;
+    const weightDiff = Math.round((last.maxWeight - baseline.maxWeight) * 10) / 10;
+    // Con temporalidades largas la sesión más cercana puede no caer justo en la fecha pedida.
+    const baselineDateNote = timeframe === 'last' ? '' : ` <small class="progression-vs">(vs. ${escapeHtml(baseline.date)})</small>`;
+    return `<button type="button" class="progression-row" data-exercise="${escapeHtml(exName)}">
+            <span class="progression-name"><strong>${escapeHtml(exName)}</strong> ${arrow}${baselineDateNote}</span>
+            <small>Volumen: ${Math.round(baseline.volume).toLocaleString('es-AR')}kg → ${Math.round(last.volume).toLocaleString('es-AR')}kg (${sign(Math.round(volumePct))}%) · Reps: ${baseline.totalReps}→${last.totalReps} (${sign(repsDiff)}) · Peso máx: ${baseline.maxWeight}kg→${last.maxWeight}kg (${sign(weightDiff)}kg)</small>
+            <span class="progression-open" aria-hidden="true">📊</span>
+        </button>`;
+}
+
+function generateProgressionAnalysis() {
+    const box = document.getElementById('progressionData');
+    if (!box) return;
+    const workouts = repo.workouts.all();
+    const timeframe = document.getElementById('progressionTimeframe')?.value || 'last';
+    const grouping = document.getElementById('progressionGrouping')?.value || 'all';
+    const { history, lastRoutine } = buildProgressionHistory(Array.isArray(workouts) ? workouts : []);
+
+    let names = Object.keys(history).filter(n => history[n].length >= 2);
+    if (grouping === 'last') {
+        const latest = [...workouts].filter(w => w && w.date && Array.isArray(w.exercises))
+            .sort((a, b) => a.date.localeCompare(b.date) || (a.id || 0) - (b.id || 0)).pop();
+        const inLatest = new Set((latest?.exercises || []).map(e => e && e.name));
+        names = names.filter(n => inLatest.has(n));
+    }
+    if (names.length === 0) {
+        box.innerHTML = '<p class="progression-empty">Todavía no hay datos suficientes: cada ejercicio necesita al menos dos sesiones para compararlo.</p>';
+        return;
+    }
+
+    const groupOf = grouping === 'routine' ? n => routineLabelOf(lastRoutine[n])
+        : grouping === 'muscle' ? n => getMuscleGroup(n) : () => '';
+    const groups = {};
+    names.forEach(n => { (groups[groupOf(n)] ||= []).push(n); });
+    const order = grouping === 'muscle'
+        ? [...Object.keys(MUSCLE_GROUPS), 'Otro'].filter(g => groups[g])
+        : Object.keys(groups).sort((a, b) => a.localeCompare(b, 'es'));
+
+    box.innerHTML = order.map(g => {
+        const rows = groups[g].sort((a, b) => a.localeCompare(b, 'es')).map(n => progressionRowHtml(n, history[n], timeframe)).join('');
+        if (!g) return rows;
+        const icon = grouping === 'muscle' ? ((MUSCLE_GROUPS[g] || {}).icon || '📌') + ' ' : '';
+        return `<details class="progression-group" open>
+                <summary>${icon}${escapeHtml(g)} <small>(${groups[g].length})</small></summary>
+                ${rows}
+            </details>`;
+    }).join('');
+}
+
+function bindProgression() {
+    const box = document.getElementById('progressionData');
+    box?.addEventListener('click', e => {
+        const row = e.target.closest('.progression-row');
+        if (row) openExerciseDetail(row.dataset.exercise);
+    });
+    document.getElementById('progressionGrouping')?.addEventListener('change', generateProgressionAnalysis);
+    document.getElementById('exerciseDetailGroup')?.addEventListener('change', e => changeExerciseDetailGroup(e.target.value));
+}

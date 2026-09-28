@@ -6,7 +6,7 @@ const HELP_SECTIONS = [
         id: 'ventajas', icon: '✨', title: 'Lo que tiene esta app',
         html: `
             <ul>
-                <li><b>Contador de reps con cadencia y voz:</b> te marca el ritmo de cada repetición, te da tiempo para prepararte y te alienta ("¡la mitad!", "¡última!") sin dejar de decirte en qué rep vas. Podés grabar tu propia voz para cada aviso.</li>
+                <li><b>Contador de reps con cadencia y voz:</b> te marca el ritmo de cada repetición, te da tiempo para prepararte y te alienta ("¡la mitad!", "¡última!") sin dejar de decirte en qué rep vas. Elegí el estilo de la voz (neutro, tierno, militar, motivador o calma) o grabá / subí tus propios audios.</li>
                 <li><b>Programas con progresión automática:</b> te dice cuántas reps y qué peso hacer cada día (primero subís reps, después peso).</li>
                 <li><b>Unilaterales de verdad:</b> cada serie se marca de un lado y del otro, con unos segundos para cambiar de lado en vez de un descanso.</li>
                 <li><b>Descanso y Tabata guiados por voz,</b> con aviso a los 10 segundos y ±15 s en el momento.</li>
@@ -16,7 +16,9 @@ const HELP_SECTIONS = [
                 <li><b>Cualquier tipo de ejercicio:</b> kg, solo reps, tiempo en la unidad que prefieras, duración o distancia con km/h calculado.</li>
                 <li><b>Récords más justos:</b> también cuenta como récord hacer lo mismo con menos descanso.</li>
                 <li><b>Plan semanal con recordatorios</b> en tu calendario.</li>
-                <li><b>Sin cuenta y sin internet:</b> tus datos quedan en tu teléfono, y el backup se lleva todo.</li>
+                <li><b>Compartir rutinas por link</b> (ideal para entrenadores y alumnos), <b>medallas</b> que se ganan con tu historial y <b>fotos de progreso</b>.</li>
+                <li><b>Pensada para todos:</b> colores que se leen bien en cualquier tema (norma WCAG AA), opción para daltonismo y botones grandes.</li>
+                <li><b>Sin cuenta y sin internet:</b> tus datos quedan en tu teléfono, y el backup se lleva todo (con contraseña si querés).</li>
             </ul>`
     },
     {
@@ -27,9 +29,10 @@ const HELP_SECTIONS = [
                 <li><b>Sin cuenta:</b> todo se guarda en este celular (o navegador). Nada se sube a internet.</li>
                 <li><b>Funciona sin internet</b> una vez que la abriste al menos una vez.</li>
                 <li><b>Instalala como app:</b> en Android, menú ⋮ del navegador → <i>Instalar app</i> o <i>Agregar a pantalla de inicio</i>. En iPhone (Safari), botón Compartir → <i>Agregar a inicio</i>.</li>
-                <li><b>Barra de abajo</b> (en el celular): Inicio, Entrenar, Historial y Progreso, al alcance del pulgar. <b>Más</b> (o el ☰ de arriba) abre el resto: Tabata, Medidas, Variantes y Ajustes. Mientras escribís, la barra se esconde para no tapar el teclado.</li>
+                <li><b>Barra de abajo</b> (en el celular): Inicio, Entrenar, Historial y Progreso, al alcance del pulgar. <b>Más</b> (o el ☰ de arriba) abre el resto: Medidas, Biblioteca, Perfil y Ajustes. Mientras escribís, la barra se esconde para no tapar el teclado.</li>
+                <li><b>Si recargás la página</b> (o se cierra la app), volvés a la misma pantalla, con las mismas secciones abiertas y a la misma altura.</li>
                 <li><b>☀️ / 🌙</b> cambia entre tema claro y oscuro. <b>🔅</b> mantiene la pantalla encendida mientras entrenás.</li>
-                <li><b>Ajustes:</b> cada sección está cerrada y muestra en una línea qué tiene; tocá la que necesites para abrirla. En <b>General</b>: el color de la app, km o millas, el día en que empieza tu semana y los segundos para cambiar de lado en los unilaterales.</li>
+                <li><b>Ajustes:</b> cada sección está cerrada y muestra en una línea qué tiene; tocá la que necesites para abrirla. En <b>General</b>: el color de la app, km o millas, el día en que empieza tu semana y los segundos para cambiar de lado en los unilaterales. Los 6 colores tienen una versión para tema claro y otra para oscuro, y todos se leen bien (contraste de la norma WCAG AA).</li>
                 <li><b>Ajustes → Accesibilidad:</b> botones y campos <b>grandes</b> o <b>muy grandes</b> (para usar con una mano o con dedos grandes) , <b>alto contraste</b> (texto oscuro sobre los botones de color, para leer mejor al sol) y <b>colores para daltonismo</b> (azul y naranja en vez de verde y rojo).</li>
             </ul>
             <p class="help-tip">💾 Como los datos viven en el celular, descargá un <b>backup</b> de vez en cuando (Ajustes → Datos). Es lo que te permite recuperar todo si cambiás de teléfono o borrás el navegador.</p>`
@@ -38,10 +41,10 @@ const HELP_SECTIONS = [
         id: 'entrenar', icon: '🏋️', title: 'Entrenar: una sesión paso a paso',
         html: `
             <ol>
-                <li>En <b>Entrenar</b>, elegí la rutina del día en el selector.</li>
+                <li>En <b>Entrenar</b>, pestaña <b>🏋️ Rutina</b>, elegí la rutina del día en el selector (o tocá ▶ Entrenar en la Biblioteca). Para intervalos, pestaña <b>⏱️ Tabata / Intervalos</b>.</li>
                 <li>Tocá <b>▶ Iniciar Rutina</b> para medir la duración. Si te olvidás, arranca sola cuando cargás el primer dato.</li>
                 <li>En cada ejercicio, cargá las series y tocá <b>✓</b> al terminar cada una: arranca el descanso.</li>
-                <li>Al final, en <b>Finalizar Sesión</b>, elegí cómo te sentiste, revisá la fecha, sumá una nota si querés y tocá <b>✅ GUARDAR SESIÓN</b>.</li>
+                <li>Al terminar, tocá el botón fijo <b>✅ Terminar</b> (abajo a la derecha, aparece cuando ya cargaste algo). Te muestra un resumen y te pide confirmar: elegí cómo te sentiste, sumá una nota y tocá <b>Guardar sesión</b>, o <b>Seguir entrenando</b> si lo tocaste sin querer. También está la sección <b>Finalizar Sesión</b> al final, con la fecha.</li>
             </ol>
             <p><b>No perdés nada:</b> lo que vas cargando se guarda solo. Si cerrás la app sin guardar, al volver te recupera la sesión del día.</p>
             <p>Solo se guardan las series que marcaste con ✓ o en las que escribiste algo. Lo que se ve en gris no se guarda por sí solo.</p>`
@@ -151,14 +154,15 @@ const HELP_SECTIONS = [
             <ul>
                 <li><b>Crear:</b> en Entrenar, escribí el nombre en "Nombre de rutina nueva" y tocá <b>➕ Crear</b>. Después agregale ejercicios.</li>
                 <li><b>✏️ Renombrar</b> y <b>📥 Archivar</b> aparecen al elegir una rutina. Archivar no borra nada: la rutina deja de aparecer en el selector.</li>
-                <li><b>Reservorio de Rutinas</b> (Ajustes): ahí están las archivadas, para restaurarlas. Las que creaste vos también se pueden borrar definitivamente; las sesiones ya guardadas con esa rutina siguen en el historial.</li>
+                <li><b>Biblioteca → Rutinas:</b> todas tus rutinas (las tuyas, las de programas, las básicas y las <b>archivadas</b>, para restaurarlas o borrarlas definitivamente). Desde ahí: <b>▶ Entrenar</b>, <b>🔗 Compartir</b> y <b>📥 Archivar</b>.</li>
+                <li><b>Compartir una rutina:</b> 🔗 arma un link (se manda por WhatsApp o donde quieras). Quien lo abre la agrega a su Biblioteca con un toque, con sus objetivos. No hace falta cuenta: la rutina viaja dentro del link. También se puede pegar el link en <b>Biblioteca → Importar una rutina</b>.</li>
                 <li><b>Rutina sugerida</b> (Inicio): la que hace más tiempo que no hacés. Tocala para empezarla.</li>
             </ul>`
     },
     {
         id: 'programas', icon: '🎯', title: 'Programas con progresión',
         html: `
-            <p>En <b>Inicio → Programa</b>, <b>📚 Ver programas</b> muestra programas armados (cuerpo completo, en casa, fuerza 5×5, torso/pierna, empuje/tirón/pierna, glúteos y piernas) con sus días y ejercicios.</p>
+            <p>En <b>Inicio → Programa</b> (o <b>Biblioteca → Programas</b>), <b>📚 Ver programas</b> muestra programas armados (cuerpo completo, en casa, fuerza 5×5, torso/pierna, empuje/tirón/pierna, glúteos y piernas) con sus días y ejercicios.</p>
             <ol>
                 <li><b>Empezar este programa</b> crea sus rutinas (ej. "Completo · Día A") y, si querés, pone sus días en tu plan semanal.</li>
                 <li>En Inicio ves qué día te toca y lo empezás con <b>▶ Entrenar</b>.</li>
@@ -196,15 +200,16 @@ const HELP_SECTIONS = [
             <ul>
                 <li><b>Sonido</b> (Ajustes): el aviso de fin de descanso y su volumen.</li>
                 <li><b>Voz y avisos:</b> la app habla con la voz del celular, sin internet. Cada aviso (descanso, contador, Tabata, récords) se activa por separado. También podés elegir la voz y su velocidad.</li>
-                <li><b>Mis grabaciones:</b> grabá tu voz (o la de un entrenador) para cada aviso, hasta 5 segundos. El silencio del principio y del final se recorta solo. Lo que no grabes lo dice la voz del celular; los números siempre los dice la voz del celular. Las grabaciones se incluyen en el backup.</li>
+                <li><b>Estilo:</b> <b>Neutro</b>, <b>Tierno</b>, <b>Militar</b>, <b>Motivador</b> o <b>Calma</b>. Cambia las frases ("¡Cinco más, sin excusas!") y el tono de la voz.</li>
+                <li><b>Mis grabaciones:</b> para cada aviso podés <b>● grabar</b> tu voz (o la de tu entrenador, hasta 5 segundos) o <b>📁 subir un audio</b> (un sonido o una voz, hasta 1 MB). El silencio del principio y del final se recorta solo. Lo que no grabes lo dice la voz del celular con el estilo elegido; los números siempre los dice la voz del celular. Todo se incluye en el backup.</li>
             </ul>`
     },
     {
         id: 'tabata', icon: '🔥', title: 'Tabata e intervalos',
         html: `
             <ol>
-                <li>En <b>Tabata</b>, poné un nombre al bloque (ej. Burpees), los segundos de trabajo, de descanso y las rondas.</li>
-                <li><b>▶ Iniciar Bloque:</b> el timer alterna trabajo (verde) y descanso (naranja), con voz y cuenta 3-2-1.</li>
+                <li>En <b>Entrenar → pestaña ⏱️ Tabata / Intervalos</b>, poné un nombre al bloque (ej. Burpees), los segundos de trabajo, de descanso y las rondas.</li>
+                <li><b>▶ Iniciar Bloque:</b> el timer alterna trabajo y descanso (con colores distintos y el texto de la fase), con voz y cuenta 3-2-1.</li>
                 <li>Podés encadenar varios bloques. Tocar el timer corta el bloque y guarda lo hecho.</li>
                 <li><b>⏹ Finalizar Sesión Tabata</b> guarda todos los bloques juntos como un entrenamiento.</li>
             </ol>`
@@ -229,10 +234,11 @@ const HELP_SECTIONS = [
         id: 'progreso', icon: '📈', title: 'Progreso y récords',
         html: `
             <ul>
-                <li><b>Músculos trabajados:</b> una figura de frente y de espalda, coloreada según las series por semana de cada músculo (sin calentamiento), en tu color de acento: cuanto más intenso el color, más trabajado (gris = sin trabajo). La lista dice si cada músculo está en el rango habitual para ganar músculo (10 a 20 por semana). Tocá un músculo para ver qué ejercicios lo trabajaron. Se puede mirar <b>esta semana (en curso)</b>, con lo que falta para llegar al rango y los días que quedan; la semana pasada, o el promedio de las últimas 4 o 12 semanas. El día en que empieza la semana (lunes, domingo o sábado) se elige en Ajustes → General.</li>
-                <li><b>Análisis de Progresión:</b> cada ejercicio comparado con la sesión anterior o con hace 1, 3, 6 o 12 meses (volumen, reps y peso máximo).</li>
-                <li><b>Progreso por Ejercicio:</b> un mini gráfico por ejercicio, agrupados por músculo y filtrables por rutina. Tocá uno para ver el gráfico completo: peso promedio, 1RM estimado, reps y volumen.</li>
-                <li><b>Cambiar de grupo muscular:</b> mantené apretada una tarjeta y arrastrala a otro grupo.</li>
+                <li>Las secciones están cerradas: tocá la que quieras ver.</li>
+                <li><b>Músculos trabajados:</b> una figura de frente y de espalda con las series de cada músculo (sin calentamiento), en 5 niveles bien distintos: <b>sin trabajo</b> (gris), <b>bajo</b>, <b>moderado</b>, <b>ideal</b> (color pleno con borde: 10 a 20 series por semana, el rango habitual para ganar músculo) y <b>alto</b> (con rayas: más de 20). Tocá un músculo para ver qué ejercicios lo trabajaron.</li>
+                <li><b>Período del mapa:</b> <b>últimos 7 días</b> (los 7 días corridos hasta hoy, no depende de la semana; es el que viene por defecto), <b>esta semana</b> (en curso, con lo que falta para el rango y los días que quedan), la semana pasada, o el promedio de las últimas 4 o 12 semanas. El día en que empieza la semana se elige en Ajustes → General.</li>
+                <li><b>Análisis de Progresión:</b> cada ejercicio comparado con la sesión anterior o con hace 1, 3, 6 o 12 meses (volumen, reps y peso máximo). En <b>Ver</b> elegís: todos los ejercicios, los de la <b>última sesión</b>, agrupados <b>por rutina</b> o <b>por grupo muscular</b> (pecho, espalda, piernas…).</li>
+                <li><b>Tocá un ejercicio</b> para abrir sus gráficos: peso promedio, 1RM estimado, reps y volumen. Ahí mismo podés <b>cambiarle el grupo muscular</b>.</li>
             </ul>
             <p><b>Qué cuenta como récord</b> al guardar una sesión: más peso, más reps, más volumen, o el mismo esfuerzo con menos descanso. En cardio: más distancia, más velocidad o más duración. El calentamiento no cuenta.</p>`
     },
@@ -263,19 +269,51 @@ const HELP_SECTIONS = [
             </ul>`
     },
     {
-        id: 'medidas', icon: '📏', title: 'Medidas corporales y variantes',
+        id: 'medidas', icon: '📏', title: 'Medidas corporales y fotos',
         html: `
             <ul>
-                <li><b>Medidas:</b> cargá fecha y peso (obligatorios) y, si querés, grasa, músculo, agua y cintura. El gráfico de <i>Evolución</i> muestra cómo cambian, y podés fijar la escala.</li>
-                <li><b>Variantes:</b> alternativas para cada ejercicio, agrupadas por músculo, con un link a videos de la técnica.</li>
+                <li><b>Medidas:</b> cargá fecha y peso (obligatorios) y, si querés, grasa, músculo, agua, cintura y una <b>📷 foto de progreso</b>. El gráfico de <i>Evolución</i> muestra cómo cambian, y podés fijar la escala. Las fotos se ven en <b>Perfil → Fotos de progreso</b>.</li>
+                <li><b>Variantes:</b> ahora están en <b>Biblioteca → Ejercicios</b>: alternativas para cada ejercicio, agrupadas por músculo, con un link a videos de la técnica.</li>
+            </ul>`
+    },
+    {
+        id: 'biblioteca', icon: '📚', title: 'Biblioteca: rutinas y ejercicios',
+        html: `
+            <p>En <b>Biblioteca</b> (menú Más) están todas tus rutinas y todos los ejercicios, en dos pestañas:</p>
+            <ul>
+                <li><b>🗂️ Rutinas:</b> las tuyas, las de programas, las básicas y las archivadas. Cada una muestra sus ejercicios y cuándo la hiciste por última vez, con <b>▶ Entrenar</b>, <b>🔗 Compartir</b> y <b>📥 Archivar</b>. Abajo, <b>Importar una rutina</b> pegando el link que te pasaron.</li>
+                <li><b>💪 Ejercicios:</b> todo lo que entrenaste, agrupado por músculo, con tu última marca. Tocá uno para ver sus gráficos y cambiarle el grupo muscular. Debajo, <b>Variantes y videos</b> de cada ejercicio.</li>
+            </ul>`
+    },
+    {
+        id: 'perfil', icon: '👤', title: 'Perfil, medallas y fotos',
+        html: `
+            <ul>
+                <li><b>Tu nombre y tu foto:</b> tocá el círculo para elegir la foto.</li>
+                <li><b>Tu actividad:</b> sesiones, días entrenados, horas, semanas seguidas, récords y kilos levantados, además de tu mejor racha y tu ejercicio más hecho.</li>
+                <li><b>Medallas:</b> 6 familias (constancia, semanas seguidas, kilos, récords, horas y cardio) con 6 niveles: bronce, plata, oro, platino, diamante y leyenda. Se ganan con tu historial real y muestran cuánto falta para el próximo nivel. <b>📤</b> arma una imagen de la medalla para compartir en tus redes.</li>
+                <li><b>Fotos de progreso:</b> <b>📷 Agregar foto de hoy</b>, o sumala al cargar tus medidas. Se guardan comprimidas en tu celular. Tocá una para verla grande o borrarla. Consejo: misma luz y misma pose cada 2 a 4 semanas.</li>
+                <li><b>Contacto:</b> tu email y teléfono. Por ahora quedan solo en tu celular; cuando llegue la cuenta, desde acá vas a poder cambiarlos.</li>
+            </ul>`
+    },
+    {
+        id: 'privacidad', icon: '🔒', title: 'Privacidad y seguridad',
+        html: `
+            <ul>
+                <li><b>Tus datos quedan en tu celular.</b> La app no manda nada a ningún servidor ni usa servicios de terceros: hasta las fuentes y los gráficos vienen dentro de la app.</li>
+                <li><b>Backups:</b> si lo vas a mandar por mail o WhatsApp, <b>protegelo con contraseña</b> (Ajustes → Datos).</li>
+                <li><b>Fotos:</b> no salen de tu celular (solo van dentro del backup).</li>
+                <li><b>Rutinas por link:</b> importá solo las de personas de confianza. Igual, la app revisa el link, descarta lo que no corresponde y te pide confirmar antes de guardar.</li>
+                <li>La app se revisó en busca de fallas de seguridad y se corrigieron (detalle técnico en docs/SEGURIDAD.md).</li>
             </ul>`
     },
     {
         id: 'datos', icon: '💾', title: 'Tus datos y el backup',
         html: `
             <ul>
-                <li><b>📥 Descargar backup</b> (Ajustes → Datos) baja un archivo con <b>todo</b>: sesiones, medidas, rutinas y sus nombres, archivados, ajustes y grabaciones de voz.</li>
-                <li><b>📤 Cargar backup</b> lo restaura. Antes te muestra qué contiene y te pide confirmación. Si el archivo tiene algún problema, no cambia nada.</li>
+                <li><b>📥 Descargar backup</b> (Ajustes → Datos) baja un archivo con <b>todo</b>: sesiones, medidas, rutinas y sus nombres, archivados, ajustes, grabaciones de voz, perfil y fotos.</li>
+                <li><b>Proteger con contraseña:</b> tildá la opción antes de descargar. El archivo queda cifrado (AES-256): sin la contraseña no se puede abrir, y si alguien lo modifica, tampoco. <b>Si olvidás la contraseña no hay forma de recuperarlo</b>: guardala bien. Recomendado si lo mandás por mail o WhatsApp.</li>
+                <li><b>📤 Cargar backup</b> lo restaura. Si está protegido, te pide la contraseña. Antes te muestra qué contiene y te pide confirmación. Si el archivo tiene algún problema, no cambia nada.</li>
                 <li><b>Cambiar de celular:</b> descargá el backup en el viejo, pasalo (mail, Drive, WhatsApp) y cargalo en el nuevo.</li>
                 <li><b>Unificar Ejercicios Duplicados:</b> si el mismo ejercicio quedó con dos nombres, juntalos y se unen sus estadísticas.</li>
                 <li><b>🗑️ Resetear todo</b> borra todos los datos de este celular. No se puede deshacer: hacé un backup antes.</li>
@@ -284,6 +322,9 @@ const HELP_SECTIONS = [
 ];
 
 const HELP_FAQ = [
+    ['¿Cómo le paso una rutina a un alumno (o a un amigo)?', 'En Biblioteca → Rutinas, tocá 🔗 en la rutina y mandá el link por WhatsApp. Quien lo abre la agrega a su Biblioteca con un toque, con los objetivos de cada ejercicio. No hace falta cuenta.'],
+    ['Olvidé la contraseña de un backup protegido.', 'No se puede recuperar: la contraseña no se guarda en ningún lado (así nadie más puede abrirlo). Si todavía tenés los datos en el celular, descargá un backup nuevo.'],
+    ['¿Dónde quedó Tabata? ¿Y Variantes?', 'Tabata ahora es una pestaña dentro de Entrenar (⏱️ Tabata / Intervalos). Variantes está en Biblioteca → Ejercicios.'],
     ['Los botones me quedan chicos o me cuesta distinguir los colores.', 'En Ajustes → Accesibilidad podés agrandar botones y campos (Grandes o Muy grandes) y activar los colores para daltonismo, que cambian el verde y el rojo por azul y naranja.'],
     ['¿Qué es la C que aparece al tocar el número de una serie?', 'Marca esa serie como de calentamiento. Se guarda, pero no cuenta para récords, volumen ni el mapa de músculos. Tocá la C de nuevo para que vuelva a ser una serie normal.'],
     ['¿Por qué algunos valores se ven en gris?', 'Son los de la última vez que hiciste ese ejercicio, como sugerencia. No se guardan hasta que tocás ✓ o escribís algo en esa serie.'],

@@ -128,13 +128,38 @@ function speakCue(ids, text, key, opts = {}) {
     const st = loadVoiceSettings();
     if (!st.enabled || (key && st[key] === false)) return;
     if (st.useRecordings && ids.length > 0 && playRecordings(ids, opts)) return;
-    speak(text, null, opts);
+    speak(styledCueText(ids, text), null, opts);
 }
 
 function previewCue(id) {
     unlockAudio();
     const cue = VOICE_CUES.find(c => c.id === id);
-    if (!playRecordings([id])) speak(cue?.text || '');
+    if (!playRecordings([id])) speak(styledCueText([id], cue?.text || ''));
+}
+
+// --- Subir un audio (voz o sonido) desde un archivo ---
+const MAX_UPLOAD_BYTES = 1024 * 1024; // 1 MB: un aviso dura unos segundos
+
+function uploadCueAudio(id) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'audio/*';
+    input.onchange = async () => {
+        const file = input.files && input.files[0];
+        if (!file) return;
+        if (!/^audio\//.test(file.type)) { showToast('Elegí un archivo de audio (mp3, m4a, wav, ogg…)', 'error'); return; }
+        if (file.size > MAX_UPLOAD_BYTES) { showToast('El audio es muy largo: tiene que pesar menos de 1 MB (unos segundos).', 'error', 4500); return; }
+        unlockAudio();
+        try {
+            await saveRecordingData(id, await file.arrayBuffer(), file.type);
+            renderRecordingsUI();
+            showToast('🔊 Audio guardado para este aviso');
+            previewCue(id);
+        } catch (e) {
+            showToast('No se pudo leer ese audio. Probá con otro formato (mp3 o m4a).', 'error', 4500);
+        }
+    };
+    input.click();
 }
 
 // --- Grabar ---
@@ -220,11 +245,7 @@ function updateRecordingCountdown() {
 function renderRecordingsUI() {
     const box = document.getElementById('recordingsList');
     if (!box) return;
-    if (!canRecord()) {
-        box.innerHTML = '<p style="color:var(--text-faint); font-size:13px;">Este navegador no permite grabar audio desde la app (hace falta abrirla desde su dirección https, no como archivo).</p>';
-        return;
-    }
-    let html = '';
+    let html = canRecord() ? '' : '<p style="color:var(--text-faint); font-size:13px;">Este navegador no permite grabar desde la app (hace falta abrirla desde su dirección https). Igual podés subir un audio con 📁.</p>';
     let lastGroup = '';
     VOICE_CUES.forEach(cue => {
         if (cue.group !== lastGroup) {
@@ -234,7 +255,7 @@ function renderRecordingsUI() {
         const meta = recordingMeta[cue.id];
         const recording = recState && recState.id === cue.id;
         const status = recording ? 'Grabando… hablá ahora'
-            : meta ? `🎙️ Tu grabación (${formatNumber(meta.duration)} s)` : 'Voz del celular';
+            : meta ? `🎙️ Tu audio (${formatNumber(meta.duration)} s)` : `Voz del celular: «${escapeHtml(styledCueText([cue.id], cue.text))}»`;
         html += `<div class="rec-row${recording ? ' recording' : ''}${meta ? ' has-rec' : ''}" data-cue="${cue.id}">
                 <div class="rec-info">
                     <div class="rec-label">«${escapeHtml(cue.text)}»</div>
@@ -242,6 +263,7 @@ function renderRecordingsUI() {
                 </div>
                 <div class="rec-actions">
                     <button type="button" class="rec-btn rec-record" onclick="toggleRecording('${cue.id}')">${recording ? '■ Listo' : meta ? '● Regrabar' : '● Grabar'}</button>
+                    <button type="button" class="rec-btn" onclick="uploadCueAudio('${cue.id}')" aria-label="Subir un audio para «${escapeHtml(cue.text)}»" title="Subir audio">📁</button>
                     <button type="button" class="rec-btn" onclick="previewCue('${cue.id}')" aria-label="Escuchar «${escapeHtml(cue.text)}»" title="Escuchar">▶</button>
                     <button type="button" class="rec-btn" onclick="removeRecording('${cue.id}')" aria-label="Borrar grabación de «${escapeHtml(cue.text)}»" title="Borrar"${meta ? '' : ' disabled'}>🗑</button>
                 </div>

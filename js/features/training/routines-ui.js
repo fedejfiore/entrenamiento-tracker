@@ -15,7 +15,7 @@ function populateRoutineOptions() {
     keys.forEach(key => {
         const exercises = customRoutines[key] || routines[key] || [];
         const label = customRoutineLabels[key] || ROUTINE_LABELS[key] || `Rutina ${key}${exercises[0] ? ' (' + exercises[0] + '…)' : ''}`;
-        html += `<option value="${key}">${label}</option>`;
+        html += `<option value="${escapeHtml(key)}">${escapeHtml(label)}</option>`;
     });
     select.innerHTML = html;
     if (keys.includes(currentValue)) select.value = currentValue;
@@ -184,7 +184,7 @@ function renderArchivedRoutinesList() {
         const label = customRoutineLabels[key] || ROUTINE_LABELS[key] || `Rutina ${key}`;
         const isCustom = Object.prototype.hasOwnProperty.call(customRoutines, key);
         return `<div style="display:flex; align-items:center; justify-content:space-between; gap:8px; padding:8px 0; border-bottom:1px solid var(--border);">
-            <span style="font-size:13px;">${label}</span>
+            <span style="font-size:13px;">${escapeHtml(label)}</span>
             <div style="display:flex; gap:6px;">
                 <button type="button" class="small" style="width:auto;" data-action="restore-routine" data-routine="${escapeHtml(key)}">↩️ Restaurar</button>
                 ${isCustom ? `<button type="button" class="danger small" style="width:auto;" data-action="delete-routine" data-routine="${escapeHtml(key)}" title="Eliminar definitivamente (no se puede deshacer)">🗑</button>` : ''}
@@ -229,6 +229,7 @@ function deleteCustomRoutineForever(key) {
 
     renderArchivedRoutinesList();
     populateRoutineOptions();
+    if (typeof renderLibrary === 'function') renderLibrary();
     showToast(`🗑 Rutina "${label}" eliminada definitivamente`);
 }
 

@@ -7,13 +7,14 @@ const WEEK_START_OPTIONS = [[1, 'Lunes'], [0, 'Domingo'], [6, 'Sábado']];
 const SIDE_SWITCH_DEFAULT = 5;
 
 // Color de acento: botones, destacados y el mapa de músculos. [clave, nombre, muestra]
+// [clave, nombre, muestra en tema oscuro, muestra en tema claro] (los mismos tonos de css/tokens.css)
 const ACCENT_OPTIONS = [
-    ['naranja', 'Naranja', '#ff6b35'],
-    ['turquesa', 'Turquesa', '#14b8a6'],
-    ['azul', 'Azul', '#3b82f6'],
-    ['fucsia', 'Rosa fucsia', '#ec4899'],
-    ['verde', 'Verde', '#22c55e'],
-    ['violeta', 'Violeta', '#8b5cf6']
+    ['naranja', 'Naranja', '#ff6b35', '#c2410c'],
+    ['turquesa', 'Turquesa', '#2dd4bf', '#0f766e'],
+    ['azul', 'Azul', '#60a5fa', '#1d4ed8'],
+    ['fucsia', 'Rosa fucsia', '#f472b6', '#be185d'],
+    ['verde', 'Verde', '#4ade80', '#166534'],
+    ['violeta', 'Violeta', '#a78bfa', '#6d28d9']
 ];
 
 function currentAccent() {
@@ -82,8 +83,8 @@ function bindGeneralSettings() {
     if (accents) {
         const render = () => {
             const cur = currentAccent();
-            accents.innerHTML = ACCENT_OPTIONS.map(([k, label, color]) =>
-                `<button type="button" class="accent-choice${k === cur ? ' on' : ''}" role="radio" aria-checked="${k === cur}" data-accent="${k}" style="--swatch:${color}" title="${label}"><span></span>${label}</button>`).join('');
+            accents.innerHTML = ACCENT_OPTIONS.map(([k, label, dark, light]) =>
+                `<button type="button" class="accent-choice${k === cur ? ' on' : ''}" role="radio" aria-checked="${k === cur}" data-accent="${k}" style="--swatch-dark:${dark};--swatch-light:${light}" title="${label}"><span></span>${label}</button>`).join('');
         };
         render();
         accents.addEventListener('click', e => {

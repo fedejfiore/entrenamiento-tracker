@@ -1,8 +1,10 @@
 // Tiempos: unidades de carga (seg, m:ss, min, h:mm), forma guardada y textos legibles.
 // Script clásico (no módulo): comparte el ámbito global con el resto de la app.
 
-function formatDuration(minutes) {
-    if (minutes == null) return null;
+function formatDuration(value) {
+    // Solo números: la duración puede venir de un backup (dato externo) y se muestra como HTML.
+    const minutes = Math.round(Number(value));
+    if (value == null || !Number.isFinite(minutes)) return null;
     if (minutes < 60) return `${minutes} min`;
     const h = Math.floor(minutes / 60);
     const m = minutes % 60;
