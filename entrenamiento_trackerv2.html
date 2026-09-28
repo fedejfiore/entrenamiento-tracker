@@ -220,7 +220,7 @@
             <div data-screen="progreso">
                 <div class="section" id="muscleMapSection">
                     <h2>🗺️ Músculos trabajados</h2>
-                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Series efectivas por músculo (sin calentamiento). Entre 10 y 20 por semana es el rango habitual para ganar músculo: cuanto más oscuro, más trabajado. Tocá un músculo para ver sus ejercicios. El día en que empieza la semana se elige en Ajustes.</div>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Series efectivas por músculo (sin calentamiento). Entre 10 y 20 por semana es el rango habitual para ganar músculo: cuanto más intenso el color, más trabajado. Tocá un músculo para ver sus ejercicios. El día en que empieza la semana se elige en Ajustes.</div>
                     <select id="muscleMapPeriod" aria-label="Período del mapa de músculos">
                         <option value="week">Esta semana (en curso)</option>
                         <option value="lastweek">Semana pasada</option>
@@ -317,9 +317,13 @@
                     <h2>⚙️ General</h2>
                     <label for="weekStartSelect" class="settings-label">La semana empieza el</label>
                     <select id="weekStartSelect"></select>
+                    <label for="distanceUnitSelect" class="settings-label">Distancia en cardio</label>
+                    <select id="distanceUnitSelect"></select>
                     <label for="sideSwitchSelect" class="settings-label">Cambio de lado en ejercicios unilaterales</label>
                     <select id="sideSwitchSelect"></select>
                     <div style="font-size: 12px; color: var(--text-muted);">Tiempo para acomodarse entre un lado y el otro (no es descanso).</div>
+                    <div class="settings-label" id="accentLabel">Color de la app</div>
+                    <div id="accentChoices" class="accent-choices" role="radiogroup" aria-labelledby="accentLabel"></div>
                 </div>
 
                 <div class="section">
@@ -549,6 +553,7 @@
 
     <script src="js/core/utils.js"></script>
     <script src="js/core/time.js"></script>
+    <script src="js/core/units.js"></script>
     <script src="js/data/store.js"></script>
     <script src="js/data/schema.js"></script>
     <script src="js/domain/catalog.js"></script>

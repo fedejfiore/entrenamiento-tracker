@@ -94,14 +94,16 @@
 .muscle.selected { stroke: var(--text); stroke-width: 2; }
 
 /* Niveles: gris (nada), naranja claro/medio (poco/moderado), verde (rango ideal), rojo (mucho) */
-/* Escala de un solo color: de claro (poco) a oscuro e intenso (mucho). */
+/* Escala de intensidad del color de acento: cuanto más fuerte el color, más trabajado.
+   Se mezcla con el fondo, así funciona en los dos temas (en claro va de pálido a intenso;
+   en oscuro, de apagado a vivo) y con cualquier color elegido. */
 .muscle-map, .muscle-legend, .muscle-list {
     --heat-0: var(--bg-elevated);
-    --heat-1: #ffd9c7;
-    --heat-2: #ffab85;
-    --heat-3: #f57a45;
-    --heat-4: #d4531c;
-    --heat-5: #8f300b;
+    --heat-1: color-mix(in srgb, var(--brand) 30%, var(--bg-card));
+    --heat-2: color-mix(in srgb, var(--brand) 48%, var(--bg-card));
+    --heat-3: color-mix(in srgb, var(--brand) 66%, var(--bg-card));
+    --heat-4: color-mix(in srgb, var(--brand) 82%, var(--bg-card));
+    --heat-5: var(--brand);
 }
 .lvl-0 { fill: var(--heat-0); background: var(--heat-0); }
 .lvl-1 { fill: var(--heat-1); background: var(--heat-1); }
@@ -176,3 +178,13 @@
 .stack-more { font-size: 12px; color: var(--text-faint); }
 .stepper-hint { font-size: 12px; color: var(--brand); font-weight: 600; white-space: nowrap; align-self: center; }
 .stepper-hint:empty { display: none; }
+
+/* Ajustes → General: color de la app */
+.accent-choices { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 6px; margin-bottom: 6px; }
+.accent-choice {
+    display: flex; align-items: center; gap: 6px; margin: 0; padding: 6px 8px; min-height: 36px;
+    font-size: 12px; background: var(--bg-elevated); color: var(--text); border: 2px solid transparent; border-radius: var(--radius-sm);
+}
+.accent-choice span { width: 16px; height: 16px; border-radius: 50%; background: var(--swatch); flex-shrink: 0; }
+.accent-choice.on { border-color: var(--swatch); font-weight: 700; }
+.accent-choice:hover { box-shadow: none; transform: none; }

@@ -9,8 +9,8 @@ function formatSetValue(set, type) {
     if (type === 'bw') return v('reps') ? `${v('reps')} reps` : '';
     if (type === 'time' || type === 'min') return dur;
     if (type === 'km') {
-        // Bici / correr: duración · km · km/h
-        return [dur, v('km') ? `${num('km')}km` : '', formatSpeed(computeSpeed(parseTimeSeconds(v('time')), parseDecimal(v('km'))))].filter(Boolean).join(' · ');
+        // Bici / correr: duración · distancia · velocidad (en km o millas, según Ajustes)
+        return [dur, formatDistance(parseDecimal(v('km'))), formatSpeed(computeSpeed(parseTimeSeconds(v('time')), parseDecimal(v('km'))))].filter(Boolean).join(' · ');
     }
     return '';
 }

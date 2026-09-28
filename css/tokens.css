@@ -48,6 +48,18 @@ html[data-theme="light"] {
     --shadow-md: 0 6px 20px rgba(0,0,0,0.08);
 }
 
+/* Color de acento elegido en Ajustes → General (naranja es el de :root). */
+html[data-accent="turquesa"] { --brand: #14b8a6; --brand-dark: #0d9488; --brand-rgb: 20, 184, 166; }
+html[data-theme="light"][data-accent="turquesa"] { --brand: #0d9488; --brand-dark: #0f766e; --brand-rgb: 13, 148, 136; }
+html[data-accent="azul"] { --brand: #3b82f6; --brand-dark: #2563eb; --brand-rgb: 59, 130, 246; }
+html[data-theme="light"][data-accent="azul"] { --brand: #2563eb; --brand-dark: #1d4ed8; --brand-rgb: 37, 99, 235; }
+html[data-accent="fucsia"] { --brand: #ec4899; --brand-dark: #db2777; --brand-rgb: 236, 72, 153; }
+html[data-theme="light"][data-accent="fucsia"] { --brand: #db2777; --brand-dark: #be185d; --brand-rgb: 219, 39, 119; }
+html[data-accent="verde"] { --brand: #22c55e; --brand-dark: #16a34a; --brand-rgb: 34, 197, 94; }
+html[data-theme="light"][data-accent="verde"] { --brand: #16a34a; --brand-dark: #15803d; --brand-rgb: 22, 163, 74; }
+html[data-accent="violeta"] { --brand: #8b5cf6; --brand-dark: #7c3aed; --brand-rgb: 139, 92, 246; }
+html[data-theme="light"][data-accent="violeta"] { --brand: #7c3aed; --brand-dark: #6d28d9; --brand-rgb: 124, 58, 237; }
+
 * {
     margin: 0;
     padding: 0;

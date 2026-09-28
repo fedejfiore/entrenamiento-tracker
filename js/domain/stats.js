@@ -243,7 +243,7 @@ function detectCardioPRs(ex, prev) {
     const c = cardioMetrics(ex.sets);
     if (ex.type === 'km') {
         if (prev.maxKm > 0 && c.totalKm > prev.maxKm) {
-            prs.push(`${ex.name}: distancia ${formatNumber(c.totalKm)}km (antes ${formatNumber(prev.maxKm)}km)`);
+            prs.push(`${ex.name}: distancia ${formatDistance(c.totalKm)} (antes ${formatDistance(prev.maxKm)})`);
         }
         if (prev.bestSpeed && c.bestSpeed && Math.round(c.bestSpeed * 10) > Math.round(prev.bestSpeed * 10)) {
             prs.push(`${ex.name}: velocidad ${formatSpeed(c.bestSpeed)} (antes ${formatSpeed(prev.bestSpeed)})`);

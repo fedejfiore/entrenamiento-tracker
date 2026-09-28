@@ -40,6 +40,7 @@ const STORAGE_SCHEMA = {
     trainingDaysPlanHistory: { group: 'data', type: 'array', default: [], description: 'Plan semanal: días, horarios y aviso previo, con la fecha (lunes) desde la que rige.' },
 
     // ---- Preferencias ----
+    accentColor: { group: 'prefs', format: 'text', type: 'string', default: null, description: 'Color de acento: naranja, turquesa, azul, fucsia, verde o violeta.' },
     theme: { group: 'prefs', format: 'text', type: 'string', default: null, description: 'Tema: "light" o "dark".' },
     soundType: { group: 'prefs', format: 'text', type: 'string', default: null, description: 'Sonido de fin de descanso.' },
     soundVolume: { group: 'prefs', format: 'text', type: 'string', default: null, description: 'Volumen 0-100.' },

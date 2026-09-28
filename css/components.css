@@ -48,7 +48,7 @@ input[type="checkbox"] {
 /* TOAST */
 #toastContainer {
     position: fixed;
-    bottom: 20px;
+    bottom: calc(20px + env(safe-area-inset-bottom, 0px));
     right: 20px;
     left: 20px;
     z-index: 3000;
@@ -88,7 +88,7 @@ input[type="checkbox"] {
     #toastContainer {
         left: 12px;
         right: 12px;
-        bottom: 12px;
+        bottom: calc(12px + env(safe-area-inset-bottom, 0px));
         align-items: stretch;
     }
 

@@ -1,10 +1,12 @@
 /* Timer de descanso, contador de reps, ajustes de voz, grabaciones y música. */
 
-/* TIMER FLOTANTE (descanso / Tabata) */
+/* TIMER FLOTANTE (descanso / Tabata). Todo lo fijo abajo suma env(safe-area-inset-bottom):
+   así no queda tapado por la barra de navegación de Android (atrás / inicio) ni por la
+   barra de gestos del iPhone. */
 .rest-timer-widget {
     display: none;
     position: fixed;
-    bottom: 20px;
+    bottom: calc(20px + env(safe-area-inset-bottom, 0px));
     right: 20px;
     background: #1a1d24;
     color: white;
@@ -84,7 +86,7 @@
     .rest-timer-widget.rest-mode {
         left: 12px;
         right: 12px;
-        bottom: 12px;
+        bottom: calc(12px + env(safe-area-inset-bottom, 0px));
         padding: 10px 12px;
         font-size: 26px;
     }
@@ -98,7 +100,7 @@
     position: fixed;
     left: 12px;
     right: 12px;
-    bottom: 12px;
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
     z-index: 2100;
     display: flex;
     flex-direction: column;
@@ -154,7 +156,7 @@
 .rep-counter-controls button:hover { background: rgba(255,255,255,0.2); box-shadow: none; transform: none; }
 .rep-counter-tempo { flex: 0 0 auto; min-width: 70px; text-align: center; font-weight: 700; }
 
-body.rep-counter-open .app-main { padding-bottom: 340px; }
+body.rep-counter-open .app-main { padding-bottom: calc(340px + env(safe-area-inset-bottom, 0px)); }
 
 /* Configuración: interruptores y deslizadores */
 .toggle-row {
@@ -215,4 +217,4 @@ body.rep-counter-open .app-main { padding-bottom: 340px; }
 .music-row button:hover { background: var(--bg-subtle); box-shadow: none; transform: none; }
 
 /* Que la barra no tape el final de la página (ej. el botón Guardar) */
-body.rest-timer-open .app-main { padding-bottom: 120px; }
+body.rest-timer-open .app-main { padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px)); }

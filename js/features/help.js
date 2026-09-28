@@ -29,6 +29,7 @@ const HELP_SECTIONS = [
                 <li><b>Instalala como app:</b> en Android, menú ⋮ del navegador → <i>Instalar app</i> o <i>Agregar a pantalla de inicio</i>. En iPhone (Safari), botón Compartir → <i>Agregar a inicio</i>.</li>
                 <li><b>Menú ☰</b> (arriba a la izquierda): Inicio, Entrenar, Tabata, Historial, Progreso, Medidas, Variantes y Ajustes.</li>
                 <li><b>☀️ / 🌙</b> cambia entre tema claro y oscuro. <b>🔅</b> mantiene la pantalla encendida mientras entrenás.</li>
+                <li><b>Ajustes → General:</b> el color de la app (naranja, turquesa, azul, rosa fucsia, verde o violeta), km o millas, el día en que empieza tu semana y los segundos para cambiar de lado en los unilaterales.</li>
             </ul>
             <p class="help-tip">💾 Como los datos viven en el celular, descargá un <b>backup</b> de vez en cuando (Ajustes → Datos). Es lo que te permite recuperar todo si cambiás de teléfono o borrás el navegador.</p>`
     },
@@ -54,7 +55,7 @@ const HELP_SECTIONS = [
                 <li><b>RIR:</b> repeticiones que te quedaban en reserva. <b>F</b> = llegaste al fallo; 1, 2, 3, 4+ = cuántas más podrías haber hecho.</li>
                 <li><b>📝</b> agrega una nota a esa serie (ej. "se me fue la técnica").</li>
                 <li><b>+ Agregar serie</b> suma una abajo; <b>−</b> quita la última. Si estaba completada o tenía datos, te pregunta antes.</li>
-                <li><b>Calentamiento:</b> tocá el número de la serie y pasa a <b>C</b>. Se guarda, pero no cuenta para volumen ni récords.</li>
+                <li><b>Calentamiento (la C):</b> tocá el número de la serie y pasa a <b>C</b>: es una serie de calentamiento o aproximación. Se guarda, pero no cuenta para volumen, récords ni el mapa de músculos. Tocá la C para volver a serie normal.</li>
                 <li><b>Nota del ejercicio:</b> abajo de las series. La nota de la última vez aparece con 💡.</li>
                 <li><b>Ejercicio terminado:</b> cuando todas sus series tienen ✓, el bloque se contrae y muestra un resumen. Tocá <b>▸</b> al lado del nombre para volver a abrirlo (y <b>▾</b> para contraerlo cuando quieras).</li>
                 <li>Punto o coma da igual: <b>22.5</b> y <b>22,5</b> se guardan igual.</li>
@@ -81,7 +82,7 @@ const HELP_SECTIONS = [
                 <li><b>Solo reps:</b> peso corporal (flexiones, dominadas).</li>
                 <li><b>Tiempo:</b> esfuerzos por tiempo con descanso (plancha, isométricos).</li>
                 <li><b>Duración:</b> actividades largas sin descanso entre series (fútbol, clases).</li>
-                <li><b>Tiempo + km:</b> cardio con distancia (bici, correr). La velocidad en km/h se calcula sola.</li>
+                <li><b>Tiempo + km:</b> cardio con distancia (bici, correr). La velocidad se calcula sola. Si preferís <b>millas y mph</b>, cambialo en Ajustes → General: tu historial no cambia (se guarda en km y se convierte al mostrarlo).</li>
             </ul>
             <p>Al agregar un ejercicio nuevo, la app sugiere el tipo por el nombre ("Plancha" → Tiempo, "Bici" → Tiempo + km). El tipo vale para ese ejercicio en todas las rutinas. Cambiarlo no toca el historial ni borra lo que cargaste hoy.</p>
             <p>En cardio, en vez de RIR aparece <b>Esfuerzo</b> (Suave, Media, Alta, Máx).</p>`
@@ -227,7 +228,7 @@ const HELP_SECTIONS = [
         id: 'progreso', icon: '📈', title: 'Progreso y récords',
         html: `
             <ul>
-                <li><b>Músculos trabajados:</b> una figura de frente y de espalda, coloreada según las series por semana de cada músculo (sin calentamiento), en un solo color: cuanto más oscuro, más trabajado. La lista dice si cada músculo está en el rango habitual para ganar músculo (10 a 20 por semana). Tocá un músculo para ver qué ejercicios lo trabajaron. Se puede mirar <b>esta semana (en curso)</b>, con lo que falta para llegar al rango y los días que quedan; la semana pasada, o el promedio de las últimas 4 o 12 semanas. El día en que empieza la semana (lunes, domingo o sábado) se elige en Ajustes → General.</li>
+                <li><b>Músculos trabajados:</b> una figura de frente y de espalda, coloreada según las series por semana de cada músculo (sin calentamiento), en tu color de acento: cuanto más intenso el color, más trabajado (gris = sin trabajo). La lista dice si cada músculo está en el rango habitual para ganar músculo (10 a 20 por semana). Tocá un músculo para ver qué ejercicios lo trabajaron. Se puede mirar <b>esta semana (en curso)</b>, con lo que falta para llegar al rango y los días que quedan; la semana pasada, o el promedio de las últimas 4 o 12 semanas. El día en que empieza la semana (lunes, domingo o sábado) se elige en Ajustes → General.</li>
                 <li><b>Análisis de Progresión:</b> cada ejercicio comparado con la sesión anterior o con hace 1, 3, 6 o 12 meses (volumen, reps y peso máximo).</li>
                 <li><b>Progreso por Ejercicio:</b> un mini gráfico por ejercicio, agrupados por músculo y filtrables por rutina. Tocá uno para ver el gráfico completo: peso promedio, 1RM estimado, reps y volumen.</li>
                 <li><b>Cambiar de grupo muscular:</b> mantené apretada una tarjeta y arrastrala a otro grupo.</li>
@@ -282,6 +283,7 @@ const HELP_SECTIONS = [
 ];
 
 const HELP_FAQ = [
+    ['¿Qué es la C que aparece al tocar el número de una serie?', 'Marca esa serie como de calentamiento. Se guarda, pero no cuenta para récords, volumen ni el mapa de músculos. Tocá la C de nuevo para que vuelva a ser una serie normal.'],
     ['¿Por qué algunos valores se ven en gris?', 'Son los de la última vez que hiciste ese ejercicio, como sugerencia. No se guardan hasta que tocás ✓ o escribís algo en esa serie.'],
     ['Se me escondieron las series de los ejercicios.', 'Pasaba en versiones anteriores al reordenar ejercicios. Ya está corregido; si alguna vez ves los bloques achicados, volvé a elegir la rutina en el selector y se ven normales.'],
     ['Toco los puntos ⠿ pero no se mueve el ejercicio.', 'Hay que mantenerlos apretados un momento, hasta que se llenen de color y el celular vibre. Recién ahí arrastrá. Así se evita mover algo sin querer.'],

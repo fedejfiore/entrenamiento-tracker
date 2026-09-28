@@ -10,6 +10,7 @@ const ROOT = path.resolve(__dirname, '..', '..');
 const CORE_FILES = [
     'js/core/utils.js',
     'js/core/time.js',
+    'js/core/units.js',
     'js/data/store.js',
     'js/data/schema.js',
     'js/domain/catalog.js',

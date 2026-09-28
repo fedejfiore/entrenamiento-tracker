@@ -130,10 +130,6 @@ function computeSpeed(sec, km) {
     return sec > 0 && km > 0 ? km / (sec / 3600) : null;
 }
 
-function formatSpeed(kmh) {
-    return kmh ? `${formatNumber(Math.round(kmh * 10) / 10)} km/h` : '';
-}
-
 // Descanso: "90" = 90 segundos (acá sí, un número suelto son segundos).
 function parseRestSeconds(str) {
     const s = String(str || '').trim();

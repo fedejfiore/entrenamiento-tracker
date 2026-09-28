@@ -15,7 +15,7 @@ function showSetStepper(input) {
     if (setStepperEl && setStepperEl.parentNode === row && setStepperEl.dataset.field === field && setStepperEl.dataset.unit === (timeUnit || '')) return;
 
     hideSetStepper();
-    const unit = field === 'kg' ? 'kg' : field === 'km' ? 'km' : (field === 'time' || field === 'rest') ? 's' : '';
+    const unit = field === 'kg' ? 'kg' : field === 'km' ? distanceUnitDef().label : (field === 'time' || field === 'rest') ? 's' : '';
     const label = s => {
         const sign = s > 0 ? '+' : '−';
         const abs = Math.abs(s);
@@ -26,7 +26,7 @@ function showSetStepper(input) {
     setStepperEl.className = 'set-stepper';
     setStepperEl.dataset.field = field;
     setStepperEl.dataset.unit = timeUnit || '';
-    setStepperEl.innerHTML = `<span class="set-stepper-label">${field === 'rest' ? 'Desc.' : field === 'time' ? 'Tiempo' : SET_FIELDS[field].head}</span>`
+    setStepperEl.innerHTML = `<span class="set-stepper-label">${field === 'rest' ? 'Desc.' : field === 'time' ? 'Tiempo' : field === 'km' ? distanceUnitDef().head : SET_FIELDS[field].head}</span>`
         + steps.map(s => `<button type="button" data-step="${s}" class="${s > 0 ? 'up' : 'down'}">${label(s)}</button>`).join('')
         + (field === 'kg' ? '<span class="stepper-hint" aria-live="polite"></span><button type="button" class="stepper-tool" data-tool="plates" title="Calculadora de discos / placas" aria-label="Calculadora de discos o placas">🧮</button>' : '');
     // pointerdown sin foco: tocar un botón no cierra ni abre el teclado.

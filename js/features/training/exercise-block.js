@@ -43,11 +43,14 @@ function buildSetRowHtml(type, label, set = {}, prev = {}, unit = 'mss') {
         const tu = TIME_UNITS[unit] || TIME_UNITS.mss;
         const inputmode = isTime ? tu.inputmode : f.inputmode;
         const hint = isTime ? tu.hint : f.hint;
-        const prevVal = isTime ? timeInputValue(prev.time, unit) : String(prev[field] || '');
-        const value = isTime ? timeInputValue(set.time, unit) : String(set[field] || '');
+        const shown = (s, f) => f === 'km' ? kmStringToDisplay(s[f]) : String(s[f] || '');
+        const prevVal = isTime ? timeInputValue(prev.time, unit) : shown(prev, field);
+        const value = isTime ? timeInputValue(set.time, unit) : shown(set, field);
         const pattern = inputmode === 'numeric' ? ' pattern="[0-9]*"' : '';
-        const head = isTime ? `Tiempo en ${tu.label}` : f.head;
-        return `<input type="text" inputmode="${inputmode}"${pattern} autocomplete="off" data-f="${field}"${isTime ? ` data-unit="${unit}"` : ''} data-prev="${escapeHtml(prevVal)}" placeholder="${escapeHtml(prevVal || hint)}" value="${escapeHtml(value)}" aria-label="${head}, serie ${n}"${hidden ? ' hidden' : ''}>`;
+        const head = isTime ? `Tiempo en ${tu.label}` : field === 'km' ? `Distancia en ${distanceUnitDef().label}` : f.head;
+        // Distancia: el valor exacto en km viaja aparte, así mostrarlo redondeado en millas no lo cambia.
+        const exactKm = field === 'km' && set.km ? ` data-km="${escapeHtml(String(set.km))}"` : '';
+        return `<input type="text" inputmode="${inputmode}"${pattern} autocomplete="off" data-f="${field}"${isTime ? ` data-unit="${unit}"` : ''}${exactKm} data-prev="${escapeHtml(prevVal)}" placeholder="${escapeHtml(prevVal || hint)}" value="${escapeHtml(value)}" aria-label="${head}, serie ${n}"${hidden ? ' hidden' : ''}>`;
     };
     // Los campos de otros tipos quedan ocultos (no se pierden si se cambia el tipo).
     const visibleInputs = def.cols.map(f => metricInput(f, false)).join('');
@@ -71,12 +74,12 @@ function buildSetRowHtml(type, label, set = {}, prev = {}, unit = 'mss') {
         </div>`;
 }
 
-// Km/h calculado de minutos + km. Si todavía no se cargó nada, se calcula con lo de
+// Velocidad (km/h o mph) calculada del tiempo y la distancia. Si todavía no se cargó nada, se calcula con lo de
 // la última vez y se ve en gris, igual que las sugerencias de los campos.
 function buildSpeedCellHtml(set, prev) {
     const own = computeSpeed(parseTimeSeconds(set.time), parseDecimal(set.km));
     const speed = own || computeSpeed(parseTimeSeconds(set.time || prev.time), parseDecimal(set.km || prev.km));
-    return `<span class="set-calc${own ? '' : ' is-prev'}" data-calc="speed" aria-label="Velocidad en km/h">${speed ? formatNumber(Math.round(speed * 10) / 10) : '–'}</span>`;
+    return `<span class="set-calc${own ? '' : ' is-prev'}" data-calc="speed" aria-label="Velocidad en ${distanceUnitDef().speed}">${speed ? formatNumber(Math.round(kmToDisplay(speed) * 10) / 10) : '–'}</span>`;
 }
 
 function updateSetCalc(row) {
@@ -98,8 +101,8 @@ function buildSetsTableHtml(type, sets, prevSets, unit = 'mss') {
             <span>#</span>
             ${def.cols.map(f => f === 'time'
                 ? `<button type="button" class="time-unit-btn" data-action="cycle-time-unit" title="Cambiar unidad: segundos, m:ss, minutos u h:mm" aria-label="Unidad de tiempo: ${TIME_UNITS[unit].label}. Tocá para cambiarla">${TIME_UNITS[unit].head} ⇄</button>`
-                : `<span>${SET_FIELDS[f].head}</span>`).join('')}
-            ${def.calc === 'speed' ? '<span title="Velocidad calculada">Km/h</span>' : ''}
+                : `<span>${f === 'km' ? distanceUnitDef().head : SET_FIELDS[f].head}</span>`).join('')}
+            ${def.calc === 'speed' ? `<span title="Velocidad calculada">${distanceUnitDef().speedHead}</span>` : ''}
             ${def.rest ? '<span title="Descanso en segundos">Desc s</span>' : ''}
             <span title="${scale.title}">${scale.head}</span>
             <span>✓</span>
@@ -175,7 +178,7 @@ function buildLastSummaryText(stats, type) {
     if (type === 'km') {
         record = [
             stats.maxTotalSec ? formatDurationHuman(stats.maxTotalSec) : '',
-            stats.maxKm ? `${formatNumber(stats.maxKm)}km` : '',
+            formatDistance(stats.maxKm),
             formatSpeed(stats.bestSpeed)
         ].filter(Boolean).join(' · ');
     }
@@ -198,6 +201,11 @@ function readSetRow(row) {
             // Lo tipeado depende de la unidad del campo; se guarda siempre igual.
             const sec = parseTimeInput(v, el.dataset.unit);
             if (sec != null) set.time = formatSecondsClock(sec);
+            return;
+        }
+        if (el.dataset.f === 'km') {
+            // Si no se tocó lo que se mostró, vale el km exacto (sin el redondeo de pantalla).
+            set.km = el.dataset.km && kmStringToDisplay(el.dataset.km) === v ? el.dataset.km : displayStringToKm(v);
             return;
         }
         set[el.dataset.f] = v;
@@ -252,7 +260,14 @@ function toggleWarmup(btn) {
     btn.setAttribute('aria-pressed', on ? 'true' : 'false');
     renumberSets(block);
     saveWorkoutDraft();
+    // La "C" no se explica sola: la primera vez de cada sesión se aclara qué significa.
+    if (on && !warmupHintShown) {
+        warmupHintShown = true;
+        showToast('C = serie de calentamiento: se guarda, pero no cuenta para récords ni volumen. Tocá la C para volver a serie normal.', 'success', 4500);
+    }
 }
+
+let warmupHintShown = false;
 
 function toggleSetDone(btn) {
     const row = btn.closest('.set-row');
@@ -421,7 +436,8 @@ function addSet(btn) {
             if (el.dataset.f === 'note') return;
             const v = el.value.trim() || el.dataset.prev || '';
             if (!v) return;
-            prev[el.dataset.f] = el.dataset.f === 'time' ? formatSecondsClock(parseTimeInput(v, el.dataset.unit)) : v;
+            prev[el.dataset.f] = el.dataset.f === 'time' ? formatSecondsClock(parseTimeInput(v, el.dataset.unit))
+                : el.dataset.f === 'km' ? displayStringToKm(v) : v;
         });
     }
 
