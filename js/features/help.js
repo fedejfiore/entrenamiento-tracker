@@ -6,11 +6,13 @@ const HELP_SECTIONS = [
         id: 'ventajas', icon: '✨', title: 'Lo que tiene esta app',
         html: `
             <ul>
-                <li><b>Contador de reps con cadencia y voz:</b> te marca el ritmo de cada repetición, te da tiempo para prepararte y te alienta ("¡la mitad!", "¡última!"). Podés grabar tu propia voz para cada aviso.</li>
+                <li><b>Contador de reps con cadencia y voz:</b> te marca el ritmo de cada repetición, te da tiempo para prepararte y te alienta ("¡la mitad!", "¡última!") sin dejar de decirte en qué rep vas. Podés grabar tu propia voz para cada aviso.</li>
+                <li><b>Programas con progresión automática:</b> te dice cuántas reps y qué peso hacer cada día (primero subís reps, después peso).</li>
+                <li><b>Unilaterales de verdad:</b> cada serie se marca de un lado y del otro, con unos segundos para cambiar de lado en vez de un descanso.</li>
                 <li><b>Descanso y Tabata guiados por voz,</b> con aviso a los 10 segundos y ±15 s en el momento.</li>
                 <li><b>Rutinas y gráficos sin límite:</b> otras apps cobran por tener más de 3 o 4 rutinas o por ver tu progreso.</li>
-                <li><b>Mapa de músculos</b> con cuántas series por semana hace cada uno, comparado con el rango ideal.</li>
-                <li><b>Superseries y circuitos</b> que manejan solos el descanso, y <b>calculadora de discos</b>.</li>
+                <li><b>Mapa de músculos</b> con cuántas series por semana hace cada uno, comparado con el rango ideal, y la semana en curso.</li>
+                <li><b>Superseries y circuitos</b> que manejan solos el descanso, y <b>calculadora de discos y de placas</b> (poleas y máquinas).</li>
                 <li><b>Cualquier tipo de ejercicio:</b> kg, solo reps, tiempo en la unidad que prefieras, duración o distancia con km/h calculado.</li>
                 <li><b>Récords más justos:</b> también cuenta como récord hacer lo mismo con menos descanso.</li>
                 <li><b>Plan semanal con recordatorios</b> en tu calendario.</li>
@@ -54,6 +56,7 @@ const HELP_SECTIONS = [
                 <li><b>+ Agregar serie</b> suma una abajo; <b>−</b> quita la última. Si estaba completada o tenía datos, te pregunta antes.</li>
                 <li><b>Calentamiento:</b> tocá el número de la serie y pasa a <b>C</b>. Se guarda, pero no cuenta para volumen ni récords.</li>
                 <li><b>Nota del ejercicio:</b> abajo de las series. La nota de la última vez aparece con 💡.</li>
+                <li><b>Ejercicio terminado:</b> cuando todas sus series tienen ✓, el bloque se contrae y muestra un resumen. Tocá <b>▸</b> al lado del nombre para volver a abrirlo (y <b>▾</b> para contraerlo cuando quieras).</li>
                 <li>Punto o coma da igual: <b>22.5</b> y <b>22,5</b> se guardan igual.</li>
             </ul>`
     },
@@ -66,7 +69,8 @@ const HELP_SECTIONS = [
                 <li><b>Reps:</b> −1, +1 · <b>Km:</b> ±0,5 y ±1</li>
                 <li><b>Tiempo y descanso:</b> según la unidad (segundos o minutos)</li>
             </ul>
-            <p>Si el campo está vacío, parte del valor de la última vez. La barra queda visible aunque cierres el teclado, y se va al marcar la serie con ✓.</p>`
+            <p>Si el campo está vacío, parte del valor de la última vez. La barra se va sola cuando terminás de editar: al tocar <i>Listo</i> o cerrar el teclado, al tocar fuera de la serie o al marcarla con ✓.</p>
+            <p>En las máquinas de placas, junto al peso se ve en qué placa va la clavija (ej. <b>placa 7</b>).</p>`
     },
     {
         id: 'tipos', icon: '⚖️', title: 'Tipos de medición (kg, reps, tiempo, km)',
@@ -118,14 +122,26 @@ const HELP_SECTIONS = [
             </ul>`
     },
     {
-        id: 'discos', icon: '🧮', title: 'Calculadora de discos',
+        id: 'unilaterales', icon: '↔️', title: 'Ejercicios unilaterales (de a un lado)',
+        html: `
+            <p>En ejercicios como remo a un brazo, búlgara o curl femoral unilateral, cada serie se hace de un lado y después del otro.</p>
+            <ul>
+                <li>Tocá <b>↔</b> debajo del nombre para marcarlo como unilateral (queda <b>↔ Por lado</b>). Los que tienen "a un brazo", "unilateral" o "búlgara" en el nombre ya vienen marcados.</li>
+                <li>El primer ✓ marca un lado: la serie queda en <b>½</b> y solo tenés unos segundos para cambiar de lado (5 por defecto, se cambia en Ajustes → General), no un descanso. El segundo ✓ la completa y recién ahí arranca el descanso.</li>
+                <li>Con <b>▶ Contar reps</b> cuenta un lado, te avisa "Cambiá de lado", cuenta el otro y después descansás.</li>
+                <li>Las reps y el peso que cargás son <b>por lado</b>.</li>
+            </ul>`
+    },
+    {
+        id: 'discos', icon: '🧮', title: 'Calculadora de discos y de placas',
         html: `
             <p>Al tocar el peso de una serie, en la barra de botones rápidos aparece <b>🧮</b>. Te dice qué discos poner de cada lado de la barra para ese peso.</p>
             <ul>
                 <li>Elegí la barra (olímpica de 20 kg, de 15, técnica, Z o sin barra) y tocá los discos que tenés en tu gimnasio. La app los recuerda.</li>
                 <li>Busca la combinación con menos discos, aunque falten algunos. Si el peso no se puede armar exacto, te muestra el más cercano por debajo y por encima.</li>
                 <li><b>Usar este peso</b> lo pasa a la serie.</li>
-            </ul>`
+            </ul>
+            <p><b>Máquinas de placas y poleas:</b> en <i>Equipo</i> elegí <b>Máquina de placas / polea</b> y te dice en qué placa va la clavija. Por defecto: unos 5 kg sin placas (el carro y el cable), 10 kg con la clavija en la primera placa y 5 kg más por placa. Cambialo según tu máquina: queda guardado para ese ejercicio. Los ejercicios de polea, jalón o máquina ya arrancan en este modo. Son valores aproximados: cada máquina (y cada sistema de roldanas) es distinta.</p>`
     },
     {
         id: 'rutinas', icon: '📚', title: 'Rutinas',
@@ -136,6 +152,18 @@ const HELP_SECTIONS = [
                 <li><b>Reservorio de Rutinas</b> (Ajustes): ahí están las archivadas, para restaurarlas. Las que creaste vos también se pueden borrar definitivamente; las sesiones ya guardadas con esa rutina siguen en el historial.</li>
                 <li><b>Rutina sugerida</b> (Inicio): la que hace más tiempo que no hacés. Tocala para empezarla.</li>
             </ul>`
+    },
+    {
+        id: 'programas', icon: '🎯', title: 'Programas con progresión',
+        html: `
+            <p>En <b>Inicio → Programa</b>, <b>📚 Ver programas</b> muestra programas armados (cuerpo completo, en casa, fuerza 5×5, torso/pierna, empuje/tirón/pierna, glúteos y piernas) con sus días y ejercicios.</p>
+            <ol>
+                <li><b>Empezar este programa</b> crea sus rutinas (ej. "Completo · Día A") y, si querés, pone sus días en tu plan semanal.</li>
+                <li>En Inicio ves qué día te toca y lo empezás con <b>▶ Entrenar</b>.</li>
+                <li>Cada ejercicio muestra su objetivo (🎯 3 × 8–12) y qué hacer hoy. Los valores sugeridos aparecen en gris: si los hiciste, tocá ✓.</li>
+            </ol>
+            <p><b>Progresión doble: primero reps, después peso.</b> Con el mismo peso vas sumando una rep por serie. Cuando llegás al tope del rango en todas las series, la app te sugiere subir el peso (de a 2,5 o 5 kg, o una placa en las máquinas) y volver al mínimo del rango. Si no llegaste al mínimo, repetís el peso. En los de peso corporal, al llegar arriba te sugiere una variante más difícil.</p>
+            <p><b>Terminar</b> deja las rutinas y todo tu historial; solo se dejan de mostrar los objetivos.</p>`
     },
     {
         id: 'descanso', icon: '⏳', title: 'Timer de descanso',
@@ -154,7 +182,8 @@ const HELP_SECTIONS = [
             <ol>
                 <li>Primero te da unos segundos para prepararte (5 por defecto): "Preparate… 3, 2, 1, ¡Ya!".</li>
                 <li>Un tic por rep marca el ritmo, y uno más grave a mitad de cada rep marca la <b>ida y vuelta</b>.</li>
-                <li>La voz te acompaña: la mitad, quedan cinco, quedan dos, ¡última!</li>
+                <li>La voz dice el número al empezar cada rep y los ánimos (la mitad, quedan cinco, quedan dos, ¡última!) a mitad de la rep, así nunca perdés la cuenta.</li>
+                <li>En los unilaterales cuenta un lado, te da unos segundos para cambiar y cuenta el otro.</li>
                 <li>Al terminar, marca la serie como hecha y arranca el descanso.</li>
             </ol>
             <p>Mientras cuenta: <b>🐢 Más lento / 🐇 Más rápido</b> (la cadencia queda guardada para ese ejercicio), <b>⏸ Pausa</b>, <b>±1 rep</b> y <b>✕</b> para detenerlo. La cantidad de reps sale de lo cargado en la serie o, si está vacía, de la última vez.</p>`
@@ -198,7 +227,7 @@ const HELP_SECTIONS = [
         id: 'progreso', icon: '📈', title: 'Progreso y récords',
         html: `
             <ul>
-                <li><b>Músculos trabajados:</b> una figura de frente y de espalda, coloreada según las series por semana de cada músculo (sin calentamiento): gris sin trabajo, naranja poco o moderado, verde en el rango habitual para ganar músculo (10 a 20) y rojo si te pasás. Tocá un músculo para ver qué ejercicios lo trabajaron. Se puede mirar la última semana, el último mes o los últimos 3 meses.</li>
+                <li><b>Músculos trabajados:</b> una figura de frente y de espalda, coloreada según las series por semana de cada músculo (sin calentamiento), en un solo color: cuanto más oscuro, más trabajado. La lista dice si cada músculo está en el rango habitual para ganar músculo (10 a 20 por semana). Tocá un músculo para ver qué ejercicios lo trabajaron. Se puede mirar <b>esta semana (en curso)</b>, con lo que falta para llegar al rango y los días que quedan; la semana pasada, o el promedio de las últimas 4 o 12 semanas. El día en que empieza la semana (lunes, domingo o sábado) se elige en Ajustes → General.</li>
                 <li><b>Análisis de Progresión:</b> cada ejercicio comparado con la sesión anterior o con hace 1, 3, 6 o 12 meses (volumen, reps y peso máximo).</li>
                 <li><b>Progreso por Ejercicio:</b> un mini gráfico por ejercicio, agrupados por músculo y filtrables por rutina. Tocá uno para ver el gráfico completo: peso promedio, 1RM estimado, reps y volumen.</li>
                 <li><b>Cambiar de grupo muscular:</b> mantené apretada una tarjeta y arrastrala a otro grupo.</li>
@@ -210,6 +239,7 @@ const HELP_SECTIONS = [
         html: `
             <ul>
                 <li><b>Hoy:</b> fecha, último entreno, duración de la sesión en curso y la rutina sugerida.</li>
+                <li><b>Programa:</b> el programa en curso y qué día te toca (ver <i>Programas con progresión</i>).</li>
                 <li><b>Estadísticas:</b> total de entrenamientos, desde cuándo y promedio semanal.</li>
                 <li><b>Calendario:</b> los días entrenados de cada mes, con ◀ ▶ para moverte.</li>
                 <li><b>Últimas Rutinas:</b> peso y reps promedio de tus últimas sesiones de fuerza.</li>

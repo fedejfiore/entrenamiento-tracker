@@ -155,6 +155,47 @@ class RoutineRepository {
         });
     }
 
+    /** Objetivos (series, rango de reps…) de los ejercicios de una rutina, o {}. */
+    targets(routineKey) { return this.store.get('routineTargets')[routineKey] || {}; }
+
+    activeProgram() {
+        const p = this.store.get('activeProgram');
+        return p && p.id ? p : null;
+    }
+
+    /**
+     * Empieza un programa en una sola transacción: crea (o actualiza) sus rutinas con los
+     * objetivos de cada ejercicio y lo marca como el programa en curso.
+     * days: [{ key, label, exercises: [nombres], targets: { ejercicioNormalizado: {...} } }]
+     */
+    startProgram(programId, days, startedAt) {
+        this.store.transaction(tx => {
+            const custom = tx.get('customRoutines');
+            const labels = tx.get('customRoutineLabels');
+            const targets = tx.get('routineTargets');
+            days.forEach(d => {
+                custom[d.key] = [...d.exercises];
+                labels[d.key] = d.label;
+                targets[d.key] = d.targets;
+            });
+            tx.set('customRoutines', custom);
+            tx.set('customRoutineLabels', labels);
+            tx.set('routineTargets', targets);
+            tx.set('activeProgram', { id: programId, startedAt, routines: days.map(d => d.key) });
+        });
+    }
+
+    /** Termina el programa: se van los objetivos, las rutinas y su historial quedan. */
+    endProgram() {
+        this.store.transaction(tx => {
+            const active = tx.get('activeProgram');
+            const targets = tx.get('routineTargets');
+            (active.routines || []).forEach(k => { delete targets[k]; });
+            tx.set('routineTargets', targets);
+            tx.set('activeProgram', {});
+        });
+    }
+
     hasPlanHistory() { return this.store.has('trainingDaysPlanHistory'); }
     planHistory() { return this.store.get('trainingDaysPlanHistory'); }
     savePlanHistory(list) { this.store.set('trainingDaysPlanHistory', list); }

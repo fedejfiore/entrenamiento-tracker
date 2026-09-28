@@ -48,12 +48,13 @@ class ExerciseLog {
      * @param sets   series ya normalizadas (cleanSetForSave)
      * @param note   nota del ejercicio
      */
-    constructor({ name, type = 'kg', sets = [], note = '', superset = null }) {
+    constructor({ name, type = 'kg', sets = [], note = '', superset = null, unilateral = false }) {
         this.name = String(name || '').trim();
         this.type = EXERCISE_TYPES[type] ? type : 'kg';
         this.sets = sets.map(s => s instanceof SetEntry ? s : new SetEntry(s));
         this.note = note || '';
         this.superset = superset || null; // letra de la superserie ("A", "B"…), si se hizo en una
+        this.unilateral = !!unilateral;   // de a un lado: las reps y el peso son por lado
     }
 
     /**
@@ -64,6 +65,7 @@ class ExerciseLog {
         const sets = this.sets.map(s => s.toJSON());
         const out = { name: this.name, type: this.type, sets, ...legacyStringsFromSets(sets, this.type), note: this.note };
         if (this.superset) out.superset = this.superset;
+        if (this.unilateral) out.unilateral = true;
         return out;
     }
 
@@ -71,6 +73,7 @@ class ExerciseLog {
         assertValid(ex && typeof ex === 'object', `${where}: el ejercicio tiene que ser un objeto.`);
         assertValid(typeof ex.name === 'string' && ex.name.trim() !== '', `${where}: falta el nombre del ejercicio.`);
         if (ex.type !== undefined) assertValid(!!EXERCISE_TYPES[ex.type], `${where}: tipo de medición desconocido "${ex.type}".`);
+        if (ex.unilateral !== undefined) assertValid(typeof ex.unilateral === 'boolean', `${where}: "unilateral" tiene que ser verdadero/falso.`);
         if (ex.superset !== undefined) assertValid(/^[A-Z]$/.test(ex.superset), `${where}: superserie inválida "${ex.superset}".`);
         if (ex.sets !== undefined) {
             assertValid(Array.isArray(ex.sets), `${where}: "sets" tiene que ser una lista.`);

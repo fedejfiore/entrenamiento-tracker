@@ -4,7 +4,8 @@
 // ▶ en un bloque cuenta la próxima serie sin tildar: primero unos segundos para
 // prepararse, después un tic por rep al ritmo elegido (con un tic más grave a mitad
 // de cada rep para marcar el cambio de dirección: ida / vuelta) y ánimo por voz. Al terminar
-// marca la serie como hecha, lo que arranca el descanso.
+// marca la serie como hecha, lo que arranca el descanso. En los unilaterales cuenta un
+// lado, da unos segundos para cambiar de lado (sin descanso) y cuenta el otro.
 const REP_TEMPO_MIN = 1;
 
 const REP_TEMPO_MAX = 8;
@@ -32,9 +33,11 @@ function startRepCounter(btn) {
     const repsEl = row.querySelector('[data-f="reps"]');
     const target = parseInt(repsEl?.value || repsEl?.dataset.prev, 10) || 10;
     const tempo = loadExerciseTempos()[normalizeForCompare(name)] || st.tempo;
+    const unilateral = block.dataset.unilateral === '1';
 
     repState = {
-        block, row, name, target, tempo,
+        block, row, name, target, tempo, unilateral,
+        side: unilateral && row.classList.contains('half') ? 2 : 1,
         phase: 'prep',
         prepSeconds: st.prepSeconds,
         prepEndsAt: Date.now() + st.prepSeconds * 1000,
@@ -45,8 +48,7 @@ function startRepCounter(btn) {
         pausedAt: null
     };
 
-    const label = row.querySelector('.set-num')?.textContent || '';
-    document.getElementById('repCounterTitle').textContent = `${name} · ${label === WARMUP_LABEL ? 'Calentamiento' : 'Serie ' + label}`;
+    renderRepCounterTitle();
     const panel = document.getElementById('repCounter');
     panel.hidden = false;
     document.body.classList.add('rep-counter-open');
@@ -54,6 +56,13 @@ function startRepCounter(btn) {
     speakCue(['repPrep'], 'Preparate');
     renderRepCounter();
     repTimer = setInterval(repCounterTick, 50);
+}
+
+function renderRepCounterTitle() {
+    const s = repState;
+    const label = s.row.querySelector('.set-num')?.textContent || '';
+    const side = s.unilateral ? ` · Lado ${s.side}` : '';
+    document.getElementById('repCounterTitle').textContent = `${s.name} · ${label === WARMUP_LABEL ? 'Calentamiento' : 'Serie ' + label}${side}`;
 }
 
 function repCounterTick() {
@@ -73,6 +82,7 @@ function repCounterTick() {
         }
         if (left <= 0) {
             s.phase = 'reps';
+            s.switching = false;
             s.rep = 1;
             s.repStartedAt = now;
             s.midCued = false;
@@ -88,6 +98,9 @@ function repCounterTick() {
     if (!s.midCued && elapsed >= repMs / 2) {
         s.midCued = true;
         playTick(520, 0.06, 0.35);
+        // El ánimo va a mitad de la rep, DESPUÉS del número: el conteo nunca se pierde.
+        const cue = repCue(s.rep, s.target, loadVoiceSettings().encourage);
+        if (cue) speakCue(cue.ids, cue.text, null, { interrupt: false });
     }
     if (elapsed >= repMs) {
         if (s.rep >= s.target) {
@@ -103,7 +116,7 @@ function repCounterTick() {
     renderRepCounter();
 }
 
-// Qué se dice al empezar cada rep: el ánimo tiene prioridad sobre el número.
+// Ánimo para una rep (se dice a mitad de la rep, después de su número), o null.
 function repCue(rep, target, encourage) {
     const left = target - rep + 1; // incluye la que empieza
     if (encourage) {
@@ -121,14 +134,32 @@ function onRepStart(first) {
     const s = repState;
     const st = loadVoiceSettings();
     playTick(1200, 0.08);
-    const cue = repCue(s.rep, s.target, st.encourage);
-    if (cue) speakCue(cue.ids, cue.text);
-    else if (first) speakCue(['repGo'], '¡Ya!');
+    // Al empezar cada rep se dice su número (la primera es el "¡Ya!").
+    if (first) speakCue(['repGo'], '¡Ya!');
     else if (st.countAloud) speak(String(s.rep));
 }
 
 function finishRepCounter() {
     const s = repState;
+    // Unilateral: terminado el primer lado, pausa corta para cambiar y se cuenta el otro.
+    if (s.unilateral && s.side === 1) {
+        s.side = 2;
+        s.row.classList.add('half');
+        const check = s.row.querySelector('.set-check');
+        if (check) check.textContent = '½';
+        saveWorkoutDraft();
+        const secs = Math.max(2, loadAppSettings().sideSwitchSeconds);
+        s.phase = 'prep';
+        s.switching = true;
+        s.prepSeconds = secs;
+        s.prepEndsAt = Date.now() + secs * 1000;
+        s.lastPrepSecond = null;
+        s.rep = 0;
+        speakCue(['repSwitch'], 'Cambiá de lado');
+        renderRepCounterTitle();
+        renderRepCounter();
+        return;
+    }
     clearInterval(repTimer);
     repTimer = null;
     s.phase = 'done';
@@ -214,7 +245,7 @@ function renderRepCounter() {
 
     if (s.phase === 'prep') {
         const left = Math.max(0, Math.ceil((s.prepEndsAt - now) / 1000));
-        phaseEl.textContent = s.pausedAt ? 'En pausa' : 'Preparate';
+        phaseEl.textContent = s.pausedAt ? 'En pausa' : s.switching ? 'Cambiá de lado' : 'Preparate';
         valueEl.textContent = String(left);
         subEl.textContent = `${s.target} reps`;
         bar.style.width = '0%';

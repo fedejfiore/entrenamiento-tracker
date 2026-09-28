@@ -35,6 +35,8 @@ class WorkoutScreen {
             'remove-set': el => removeLastSet(el),
             'add-set': el => addSet(el),
             'count-reps': el => startRepCounter(el),
+            'toggle-unilateral': el => toggleUnilateral(el),
+            'toggle-collapse': el => toggleBlockCollapsed(el),
             'restore-archived': el => restoreArchivedExercise(this.routine, el.dataset.exercise),
             'toggle-collapsible': el => toggleVariantGroup(el.dataset.target),
             'quick-add': () => quickAddExercise(this.routine),
@@ -82,6 +84,7 @@ class WorkoutScreen {
             if (e.target.dataset?.f && e.target.closest?.('.set-row')) {
                 if (e.isTrusted) sanitizeSetInput(e.target);
                 updateSetCalc(e.target.closest('.set-row'));
+                if (e.target.dataset.f === 'kg') updateStepperHint(e.target.closest('.set-row'));
             }
             if (e.target.classList?.contains('set-note')) {
                 e.target.closest('.set-row')?.querySelector('.set-note-btn')?.classList.toggle('has-note', !!e.target.value.trim());

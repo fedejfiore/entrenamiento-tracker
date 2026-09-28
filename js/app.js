@@ -59,6 +59,9 @@ class App {
         bindSupersetModal();
         bindPlateCalculator();
         bindMuscleMap();
+        initSetStepperAutoHide();
+        bindGeneralSettings();
+        bindPrograms();
 
         // El audio solo puede sonar después de un toque del usuario.
         document.addEventListener('pointerdown', unlockAudio, { once: true, capture: true });

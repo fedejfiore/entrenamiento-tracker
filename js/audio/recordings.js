@@ -15,6 +15,7 @@ const VOICE_CUES = [
     { id: 'repFive', group: 'Contador de reps', text: '¡Dale, quedan cinco!' },
     { id: 'repTwo', group: 'Contador de reps', text: '¡Quedan dos!' },
     { id: 'repLast', group: 'Contador de reps', text: '¡Última!' },
+    { id: 'repSwitch', group: 'Contador de reps', text: 'Cambiá de lado' },
     { id: 'repDone', group: 'Contador de reps', text: '¡Bien! Serie terminada' },
     { id: 'tabataWork', group: 'Tabata', text: '¡Trabajo!' },
     { id: 'tabataRest', group: 'Tabata', text: 'Descanso' },
@@ -97,12 +98,14 @@ function stopCuePlayback() {
     cueSources = [];
 }
 
-function playRecordings(ids) {
+function playRecordings(ids, opts = {}) {
     const ctx = getAudioCtx();
     const buffers = ids.map(id => recordingBuffers[id]);
     if (!ctx || buffers.some(b => !b)) return false;
-    stopCuePlayback();
-    if (voiceSupported()) speechSynthesis.cancel();
+    if (opts.interrupt !== false) {
+        stopCuePlayback();
+        if (voiceSupported()) speechSynthesis.cancel();
+    }
     const gain = ctx.createGain();
     gain.gain.value = Math.max(0.1, loadSoundSettings().volume / 100);
     gain.connect(ctx.destination);
@@ -119,12 +122,13 @@ function playRecordings(ids) {
 }
 
 // Aviso con posible grabación propia: ids = qué grabaciones sonarían (en orden),
-// text = lo que dice la voz del celular si falta alguna, key = interruptor del aviso.
-function speakCue(ids, text, key) {
+// text = lo que dice la voz del celular si falta alguna, key = interruptor del aviso,
+// opts.interrupt = false para no cortar lo que se está diciendo.
+function speakCue(ids, text, key, opts = {}) {
     const st = loadVoiceSettings();
     if (!st.enabled || (key && st[key] === false)) return;
-    if (st.useRecordings && ids.length > 0 && playRecordings(ids)) return;
-    speak(text);
+    if (st.useRecordings && ids.length > 0 && playRecordings(ids, opts)) return;
+    speak(text, null, opts);
 }
 
 function previewCue(id) {

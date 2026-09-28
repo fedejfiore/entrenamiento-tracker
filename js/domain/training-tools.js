@@ -95,18 +95,68 @@ function muscleSetsByGroup(workouts, fromStr, toStr, groupOf) {
 }
 
 // Nivel de color según series por semana (el rango habitual para ganar músculo es 10-20).
+// La escala es de un solo color: más oscuro / intenso cuanto más se entrenó.
 const MUSCLE_LEVELS = [
     { min: 0, label: 'Sin trabajo' },
-    { min: 0.5, label: 'Poco (menos de 6 por semana)' },
-    { min: 6, label: 'Moderado (6 a 9)' },
-    { min: 10, label: 'Rango ideal (10 a 20)' },
-    { min: 20.5, label: 'Mucho (más de 20)' }
+    { min: 0.5, label: '1 a 5' },
+    { min: 6, label: '6 a 9' },
+    { min: 10, label: '10 a 15 (rango ideal)' },
+    { min: 15.5, label: '16 a 20 (rango ideal)' },
+    { min: 20.5, label: 'Más de 20' }
 ];
+
+const MUSCLE_IDEAL_RANGE = { min: 10, max: 20 };
+
+/**
+ * Rango de fechas de cada período del mapa, respetando el día en que empieza la semana.
+ * 'week' = semana en curso (hasta hoy), 'lastweek' = la anterior completa, '4w' / '12w' =
+ * semanas completas anteriores a la actual. weeks = por cuánto dividir para el promedio.
+ */
+function muscleMapRange(period, today, weekStartDay = 1) {
+    const start = getWeekStart(today, weekStartDay);
+    const shift = (d, days) => { const x = new Date(d); x.setDate(x.getDate() + days); return x; };
+    if (period === 'week') {
+        const dayIndex = Math.round((new Date(today).setHours(0, 0, 0, 0) - start.getTime()) / 86400000);
+        return { from: formatDateLocal(start), to: formatDateLocal(today), weeks: 1, inProgress: true, daysLeft: 6 - dayIndex };
+    }
+    const weeks = period === '12w' ? 12 : period === '4w' ? 4 : 1;
+    return { from: formatDateLocal(shift(start, -7 * weeks)), to: formatDateLocal(shift(start, -1)), weeks, inProgress: false, daysLeft: 0 };
+}
 
 function muscleLevel(weeklySets) {
     let level = 0;
     MUSCLE_LEVELS.forEach((l, i) => { if (weeklySets >= l.min) level = i; });
     return level;
+}
+
+// ---------- Máquinas de placas (poleas) ----------
+
+// Valores típicos de una polea o máquina de placas: sin clavija pesa unos 5 kg (el carro y
+// el cable), con la clavija en la primera placa unos 10 kg, y cada placa suma 5 kg.
+const DEFAULT_STACK = { empty: 5, first: 10, step: 5, count: 20 };
+
+// Nombres que suelen ser de polea o máquina de placas (se puede cambiar a mano).
+function isLikelyStackMachine(name) {
+    const n = normalizeForCompare(name || '');
+    return /polea|cable|maquina|jalon|pec ?deck|cruce|crossover|face ?pull|extension de (cuadriceps|piernas)|curl femoral|aductor|abductor|remo sentado|remo bajo|tricep(s)? (en )?polea|pullover en polea/.test(n);
+}
+
+/**
+ * Placa donde va la clavija para acercarse a `target` kg en una máquina de placas.
+ * Peso con la clavija en la placa n (1 = la primera): first + (n - 1) * step; sin clavija, empty.
+ * Devuelve la placa del peso exacto o, si no hay, las dos más cercanas (abajo y arriba).
+ */
+function calculateStack(target, stack = DEFAULT_STACK) {
+    const { empty, first, step } = { ...DEFAULT_STACK, ...stack };
+    const count = Math.max(1, Math.round(stack.count || DEFAULT_STACK.count));
+    const weightAt = n => Math.round((n === 0 ? empty : first + (n - 1) * step) * 100) / 100;
+    if (!(target > 0) || !(step > 0)) return { pin: 0, achieved: weightAt(0), exact: false, below: null, above: null };
+    let pin = 0;
+    for (let n = 1; n <= count; n++) if (weightAt(n) <= target + 1e-9) pin = n;
+    const achieved = weightAt(pin);
+    const exact = Math.abs(achieved - target) < 1e-9;
+    const above = !exact && pin < count ? { pin: pin + 1, weight: weightAt(pin + 1) } : null;
+    return { pin, achieved, exact, below: exact ? null : { pin, weight: achieved }, above, max: weightAt(count) };
 }
 
 // ---------- Superseries ----------

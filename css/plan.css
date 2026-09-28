@@ -69,3 +69,25 @@
     text-align: center;
 }
 .plan-gcal:hover { background: var(--bg-subtle); }
+
+/* ---- Programas prearmados ---- */
+.program-empty, .program-intro { font-size: 13px; color: var(--text-muted); margin-bottom: 10px; }
+.program-active strong { display: block; font-size: 16px; }
+.program-active small { display: block; color: var(--text-muted); font-size: 12px; }
+.program-active p { margin: 8px 0; }
+.program-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.program-actions button { width: auto; margin: 0; }
+.program-actions button.success { flex: 1 1 100%; }
+.program-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; margin-bottom: 10px; background: var(--bg-subtle); }
+.program-card.current { border-color: var(--brand); }
+.program-card-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.program-card small { display: block; color: var(--text-muted); font-size: 12px; margin: 2px 0 6px; }
+.program-card p { font-size: 13px; margin-bottom: 6px; }
+.program-card details { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+.program-card details ul { margin: 6px 0 0 16px; }
+.program-card details li { margin-bottom: 4px; }
+.program-card button { margin: 0; }
+.program-tier { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--bg-elevated); color: var(--text-muted); }
+.program-tier.tier-pro { background: rgba(var(--brand-rgb), 0.18); color: var(--brand); }
+.program-target { display: block; margin-top: 4px; font-size: 12px; color: var(--text-muted); }
+.program-target.program-weight { color: var(--success); font-weight: 600; }

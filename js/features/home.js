@@ -20,6 +20,7 @@ function updateSidebar() {
     if (!currentSessionStartTime) updateSessionDurationDisplay();
 
     renderPlanSection(); // plan semanal, estado de la semana y aviso de "hoy toca"
+    renderProgramsSection(); // programa en curso y próximo día
 
     const weeklyVolumeEl = document.getElementById('weeklyVolume');
     if (weeklyVolumeEl) {

@@ -58,13 +58,13 @@ function buildSetRowHtml(type, label, set = {}, prev = {}, unit = 'mss') {
         .map(([v, optLabel]) => `<option value="${v}"${(set.effort || '') === v ? ' selected' : ''}>${optLabel}</option>`)
         .join('');
 
-    return `<div class="set-row${set.done ? ' done' : ''}${set.warmup ? ' warmup' : ''}">
+    return `<div class="set-row${set.done ? ' done' : ''}${set.half && !set.done ? ' half' : ''}${set.warmup ? ' warmup' : ''}">
             <button type="button" class="set-num" data-action="toggle-warmup" aria-pressed="${set.warmup ? 'true' : 'false'}" title="Tocá para marcar/desmarcar como calentamiento" aria-label="Serie ${n}: marcar como calentamiento">${set.warmup ? WARMUP_LABEL : label}</button>
             ${visibleInputs}
             ${def.calc === 'speed' ? buildSpeedCellHtml(set, prev) : ''}
             <input type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" data-f="rest" data-prev="${escapeHtml(prevRest)}" placeholder="${escapeHtml(prevRest || String(DEFAULT_REST_SECONDS))}" value="${escapeHtml(set.rest || '')}" aria-label="Descanso en segundos, serie ${n}"${def.rest ? '' : ' hidden'}>
             <select data-f="effort" aria-label="${scale.title}, serie ${n}">${effortOptions}</select>
-            <button type="button" class="set-check" aria-pressed="${set.done ? 'true' : 'false'}" aria-label="Serie ${n} hecha" data-action="toggle-done">✓</button>
+            <button type="button" class="set-check" aria-pressed="${set.done ? 'true' : 'false'}" aria-label="Serie ${n} hecha" data-action="toggle-done">${set.half && !set.done ? '½' : '✓'}</button>
             <button type="button" class="set-note-btn${set.note ? ' has-note' : ''}" aria-label="Nota de la serie ${n}" title="Nota de la serie" data-action="toggle-set-note">📝</button>
             ${hiddenInputs}
             <input type="text" class="set-note" data-f="note" autocomplete="off" placeholder="Nota de la serie (ej: se me fue la técnica)" value="${escapeHtml(set.note || '')}"${set.note ? '' : ' hidden'}>
@@ -111,13 +111,20 @@ function buildSetsTableHtml(type, sets, prevSets, unit = 'mss') {
     return head + rows;
 }
 
+// Valores sugeridos de cada serie: lo de la última vez o, si la rutina es de un programa,
+// lo que toca hoy según su progresión (js/features/programs.js).
+function getBlockPrevSets(name, type, routine = document.getElementById('routine')?.value) {
+    const prev = getPrevSets(name, type);
+    return programPrevSets(routine, name, prev) || prev;
+}
+
 // Genera el bloque de un ejercicio a partir de las últimas veces que se hizo.
 // Se usa tanto al armar la lista completa como al agregar un ejercicio suelto,
 // así nunca hace falta reconstruir (y perder) los bloques que ya tenían datos cargados.
 function buildExerciseRowHtml(idx, ex, routine) {
     const stats = exerciseStats[ex] || {};
     const type = getExerciseType(ex, routine);
-    const prevSets = getPrevSets(ex, type);
+    const prevSets = getBlockPrevSets(ex, type, routine);
     // Misma estructura que la última vez (incluidas las series de calentamiento).
     const initialSets = prevSets.length > 0
         ? prevSets.map(p => (p && p.warmup) ? { warmup: true } : {})
@@ -126,17 +133,24 @@ function buildExerciseRowHtml(idx, ex, routine) {
     const safeName = escapeHtml(ex);
     const timeUnit = getTimeUnit(ex, type);
     const superset = getSupersetLetter(routine, ex);
+    const unilateral = isUnilateral(ex);
 
-    return `<div class="exercise-row" id="row_${idx}" data-name="${safeName}" data-type="${type}" data-time-unit="${timeUnit}"${superset ? ` data-superset="${superset}"` : ''}>
+    return `<div class="exercise-row" id="row_${idx}" data-name="${safeName}" data-type="${type}" data-time-unit="${timeUnit}" data-unilateral="${unilateral ? '1' : '0'}"${superset ? ` data-superset="${superset}"` : ''}>
             <div class="exercise-row-header">
                 <button type="button" class="drag-handle" aria-label="Reordenar ${safeName}: mantené apretado y arrastrá, o usá las flechas ↑ ↓" title="Mantené apretado y arrastrá para reordenar">${DRAG_DOTS_SVG}</button>
                 <div class="exercise-title">
-                    <strong id="exname_${idx}" data-action="open-detail" data-dblaction="rename-exercise" title="Tocá para ver el progreso · doble toque para renombrar" style="cursor:pointer;">${safeName}</strong>
+                    <div class="exercise-name-line">
+                        <strong id="exname_${idx}" data-action="open-detail" data-dblaction="rename-exercise" title="Tocá para ver el progreso · doble toque para renombrar" style="cursor:pointer;">${safeName}</strong>
+                        <button type="button" class="collapse-btn" data-action="toggle-collapse" aria-expanded="true" aria-label="Contraer ${safeName}" title="Contraer / expandir">▾</button>
+                    </div>
+                    <div class="exercise-done-summary" hidden></div>
                     <div class="exercise-meta">
                         <select class="type-chip" aria-label="Cómo se mide ${safeName}" data-change="change-type">${buildTypeOptionsHtml(type)}</select>
+                        <button type="button" class="side-chip${unilateral ? ' on' : ''}" data-action="toggle-unilateral" aria-pressed="${unilateral ? 'true' : 'false'}" title="${unilateral ? 'Unilateral: cada serie se marca por lado (tocá para desactivar)' : 'Marcar como unilateral (de a un lado)'}">↔${unilateral ? ' Por lado' : ''}</button>
                 <button type="button" class="superset-chip${superset ? ' on' : ''}" data-action="superset" title="${superset ? `Superserie ${superset} (tocá para cambiarla)` : 'Armar una superserie con otro ejercicio'}">🔗${superset ? ' ' + superset : ''}</button>
                         <span class="exercise-last">${buildLastSummaryText(stats, type)}</span>
                     </div>
+                    ${programTargetLineHtml(routine, ex)}
                     ${stats.lastNote ? `<small style="color:var(--brand); font-style:italic; display:block; margin-top:3px;">💡 ${escapeHtml(stats.lastNote)}</small>` : ''}
                 </div>
                 <div class="exercise-row-actions">
@@ -189,6 +203,7 @@ function readSetRow(row) {
         set[el.dataset.f] = v;
     });
     if (row.classList.contains('done')) set.done = true;
+    else if (row.classList.contains('half')) set.half = true; // unilateral: un lado hecho (solo borrador)
     if (row.classList.contains('warmup')) set.warmup = true;
     return set;
 }
@@ -209,7 +224,7 @@ function renumberSets(block) {
 }
 
 function renderBlockSets(block, type, sets) {
-    const prevSets = getPrevSets(getBlockName(block), type);
+    const prevSets = getBlockPrevSets(getBlockName(block), type);
     const table = block.querySelector('.sets-table');
     if (!table) return;
     const unit = getTimeUnit(getBlockName(block), type);
@@ -223,6 +238,7 @@ function applySetsToBlock(block, sets, note) {
     if (Array.isArray(sets) && sets.length > 0) renderBlockSets(block, block.dataset.type, sets);
     const noteEl = block.querySelector('.exercise-note');
     if (noteEl && note) noteEl.value = note;
+    if (isBlockComplete(block)) setBlockCollapsed(block, true);
 }
 
 // Serie de calentamiento / aproximación: se registra igual, pero no cuenta para
@@ -244,11 +260,15 @@ function toggleSetDone(btn) {
     if (!row || !block) return;
 
     if (row.classList.contains('done')) {
-        row.classList.remove('done');
+        row.classList.remove('done', 'half');
         btn.setAttribute('aria-pressed', 'false');
+        btn.textContent = '✓';
+        setBlockCollapsed(block, false);
         saveWorkoutDraft();
         return;
     }
+    const unilateral = block.dataset.unilateral === '1';
+    const secondSide = unilateral && row.classList.contains('half');
 
     const type = block.dataset.type;
     // Serie sin tocar: se completa con lo de la última vez (lo que se ve en gris).
@@ -266,20 +286,113 @@ function toggleSetDone(btn) {
         return;
     }
 
+    // Unilateral, primer lado: queda a medias (½) y solo hay unos segundos para acomodarse.
+    if (unilateral && !secondSide) {
+        row.classList.add('half');
+        btn.textContent = '½';
+        try { navigator.vibrate && navigator.vibrate(20); } catch (e) {}
+        maybeAutoStartSessionTimer();
+        saveWorkoutDraft();
+        runSideSwitch(loadAppSettings().sideSwitchSeconds);
+        return;
+    }
+    cancelSideSwitch();
+
     const hasRest = !!(EXERCISE_TYPES[type] || EXERCISE_TYPES.kg).rest;
     const restEl = row.querySelector('[data-f="rest"]');
     const restSeconds = hasRest ? (parseRestSeconds(restEl?.value) ?? parseRestSeconds(restEl?.dataset.prev) ?? DEFAULT_REST_SECONDS) : 0;
     if (hasRest && restEl && !restEl.value.trim()) restEl.value = String(restSeconds);
     updateSetCalc(row);
 
+    row.classList.remove('half');
     row.classList.add('done');
+    btn.textContent = '✓';
     btn.setAttribute('aria-pressed', 'true');
     if (row.querySelector('.set-stepper')) hideSetStepper();
     try { navigator.vibrate && navigator.vibrate(20); } catch (e) {}
     maybeAutoStartSessionTimer();
     saveWorkoutDraft();
+    // Todas las series hechas: el bloque se contrae solo (se vuelve a abrir con ▸).
+    if (isBlockComplete(block)) setTimeout(() => { if (isBlockComplete(block)) setBlockCollapsed(block, true); }, 700);
     if (goToNextInSuperset(block, row)) return; // superserie: el descanso va al final de la vuelta
     if (restSeconds > 0) runRestTimer(restSeconds);
+}
+
+// ---- Unilaterales: pausa corta para cambiar de lado (no es descanso) ----
+let sideSwitchTimer = null;
+
+let sideSwitchToast = null;
+
+function runSideSwitch(seconds) {
+    cancelSideSwitch();
+    speakCue(['repSwitch'], 'Cambiá de lado');
+    if (!seconds) return;
+    sideSwitchToast = showToast(`↔ Cambiá de lado · ${seconds} s`, 'success', seconds * 1000);
+    sideSwitchTimer = setTimeout(() => {
+        sideSwitchTimer = null;
+        playTick(1200, 0.08);
+        speakCue(['repGo'], '¡Ya!');
+    }, seconds * 1000);
+}
+
+function cancelSideSwitch() {
+    if (sideSwitchTimer) { clearTimeout(sideSwitchTimer); sideSwitchTimer = null; }
+    sideSwitchToast?.remove();
+    sideSwitchToast = null;
+}
+
+function toggleUnilateral(btn) {
+    const block = btn.closest('.exercise-row');
+    if (!block) return;
+    const name = getBlockName(block);
+    const on = block.dataset.unilateral !== '1';
+    saveUnilateral(name, on);
+    block.dataset.unilateral = on ? '1' : '0';
+    btn.classList.toggle('on', on);
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    btn.textContent = on ? '↔ Por lado' : '↔';
+    btn.title = on ? 'Unilateral: cada serie se marca por lado (tocá para desactivar)' : 'Marcar como unilateral (de a un lado)';
+    if (!on) {
+        // Las series que habían quedado a medias vuelven a estar sin hacer.
+        block.querySelectorAll('.set-row.half').forEach(r => {
+            r.classList.remove('half');
+            const check = r.querySelector('.set-check');
+            if (check) check.textContent = '✓';
+        });
+    }
+    saveWorkoutDraft();
+    showToast(on ? `↔ ${name}: cada serie se marca de un lado y del otro, sin descanso en el medio` : `${name}: ya no es unilateral`, 'success', 2600);
+}
+
+// ---- Contraer un bloque terminado ----
+function isBlockComplete(block) {
+    const rows = [...block.querySelectorAll('.set-row')];
+    return rows.length > 0 && rows.every(r => r.classList.contains('done'));
+}
+
+function setBlockCollapsed(block, collapsed) {
+    if (!block) return;
+    block.classList.toggle('collapsed', collapsed);
+    const btn = block.querySelector('.collapse-btn');
+    if (btn) {
+        btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+        btn.textContent = collapsed ? '▸' : '▾';
+        btn.setAttribute('aria-label', `${collapsed ? 'Expandir' : 'Contraer'} ${getBlockName(block)}`);
+    }
+    const summary = block.querySelector('.exercise-done-summary');
+    if (summary) {
+        const rows = [...block.querySelectorAll('.set-row')];
+        const done = rows.filter(r => r.classList.contains('done')).length;
+        const text = formatSetsSummary(readBlockSets(block).filter(s => s.done && !s.warmup), block.dataset.type);
+        summary.textContent = `${done === rows.length ? '✓ ' : ''}${done} de ${rows.length} series${text ? ' · ' + text : ''}`;
+        summary.hidden = !collapsed;
+    }
+    if (collapsed && block.contains(document.activeElement)) document.activeElement.blur();
+}
+
+function toggleBlockCollapsed(btn) {
+    const block = btn.closest('.exercise-row');
+    if (block) setBlockCollapsed(block, !block.classList.contains('collapsed'));
 }
 
 function toggleSetNote(btn) {
@@ -300,7 +413,7 @@ function addSet(btn) {
 
     // Sugerencia para la serie nueva: esa misma serie de la última sesión o, si
     // la vez pasada hiciste menos series, lo que tiene la serie de arriba.
-    const prevSets = getPrevSets(getBlockName(block), type);
+    const prevSets = getBlockPrevSets(getBlockName(block), type);
     let prev = prevSets[n - 1];
     if (!prev && rows.length > 0) {
         prev = {};

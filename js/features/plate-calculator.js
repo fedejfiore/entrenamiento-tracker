@@ -1,24 +1,55 @@
-// Calculadora de discos: qué discos poner de cada lado de la barra para un peso.
-// Se abre con 🧮 al tocar el campo de kg de una serie; recuerda la barra y los discos que
-// tenés (preferencia "plateCalculator"). "Usar este peso" lo pasa a la serie.
+// Calculadora de peso: qué discos poner de cada lado de la barra o, en una máquina de
+// placas (polea), en qué placa va la clavija. Se abre con 🧮 al tocar el campo de kg de una
+// serie; recuerda la barra, los discos que tenés y, por ejercicio, si es de barra o de placas
+// y cómo es esa máquina (preferencia "plateCalculator"). "Usar este peso" lo pasa a la serie.
 
 let plateTargetInput = null; // campo de kg de la serie desde donde se abrió
+
+let plateExercise = '';       // ejercicio de esa serie (para recordar barra / placas)
 
 function loadPlatePrefs() {
     const saved = db.get('plateCalculator');
     return {
         bar: BAR_OPTIONS.some(([v]) => v === saved.bar) ? saved.bar : 20,
-        plates: Array.isArray(saved.plates) && saved.plates.length ? saved.plates : DEFAULT_PLATES
+        plates: Array.isArray(saved.plates) && saved.plates.length ? saved.plates : DEFAULT_PLATES,
+        modes: saved.modes && typeof saved.modes === 'object' ? saved.modes : {},
+        stacks: saved.stacks && typeof saved.stacks === 'object' ? saved.stacks : {}
     };
 }
 
 function savePlatePrefs(prefs) {
-    try { db.set('plateCalculator', prefs); } catch (e) {}
+    try { db.set('plateCalculator', { ...loadPlatePrefs(), ...prefs }); } catch (e) {}
+}
+
+// ¿El ejercicio se hace en una máquina de placas? Lo elegido a mano, o por el nombre.
+function plateModeFor(name) {
+    const saved = loadPlatePrefs().modes[normalizeForCompare(name || '')];
+    return saved === 'stack' || saved === 'bar' ? saved : (isLikelyStackMachine(name) ? 'stack' : 'bar');
+}
+
+function stackFor(name) {
+    return { ...DEFAULT_STACK, ...(loadPlatePrefs().stacks[normalizeForCompare(name || '')] || {}) };
+}
+
+// Texto corto para la barra +/- de la serie: "placa 7" en las máquinas de placas.
+function stackHintText(name, kg) {
+    if (!name || !(kg > 0) || plateModeFor(name) !== 'stack') return '';
+    const r = calculateStack(kg, stackFor(name));
+    return r.pin === 0 ? 'sin placas' : `placa ${r.pin}${r.exact ? '' : ' ≈'}`;
 }
 
 function openPlateCalculator(kgInput) {
     plateTargetInput = kgInput || null;
+    plateExercise = kgInput ? getBlockName(kgInput.closest('.exercise-row')) : '';
     const prefs = loadPlatePrefs();
+    const mode = plateExercise ? plateModeFor(plateExercise) : 'bar';
+    const stack = stackFor(plateExercise);
+    document.getElementById('plateMode').value = mode;
+    document.getElementById('stackEmpty').value = String(stack.empty).replace('.', ',');
+    document.getElementById('stackFirst').value = String(stack.first).replace('.', ',');
+    document.getElementById('stackStep').value = String(stack.step).replace('.', ',');
+    document.getElementById('stackCount').value = String(stack.count);
+    document.getElementById('plateForExercise').textContent = plateExercise ? `Para: ${plateExercise}` : '';
     const start = parseDecimal(kgInput?.value) || parseDecimal(kgInput?.dataset.prev) || 60;
     document.getElementById('plateTarget').value = String(start).replace('.', ',');
     document.getElementById('plateBar').innerHTML = BAR_OPTIONS
@@ -33,6 +64,47 @@ function openPlateCalculator(kgInput) {
 function closePlateCalculator() {
     document.getElementById('plateModal')?.classList.remove('open');
     plateTargetInput = null;
+}
+
+function currentStackInputs() {
+    const num = (id, def) => { const v = parseDecimal(document.getElementById(id).value); return v >= 0 ? v : def; };
+    return {
+        empty: num('stackEmpty', DEFAULT_STACK.empty),
+        first: num('stackFirst', DEFAULT_STACK.first),
+        step: num('stackStep', DEFAULT_STACK.step) || DEFAULT_STACK.step,
+        count: Math.min(60, Math.max(1, Math.round(num('stackCount', DEFAULT_STACK.count)))) || DEFAULT_STACK.count
+    };
+}
+
+// Pila de placas: la clavija marcada en la placa que corresponde.
+function stackVisualHtml(pin, count) {
+    const shown = Math.min(count, Math.max(pin + 3, 8));
+    const rows = Array.from({ length: shown }, (_, i) => {
+        const n = i + 1;
+        return `<span class="stack-plate${n <= pin ? ' lifted' : ''}${n === pin ? ' pinned' : ''}">${n === pin ? '📍 ' : ''}${n}</span>`;
+    }).join('');
+    return `<div class="stack-visual" aria-hidden="true">${rows}${shown < count ? '<span class="stack-more">…</span>' : ''}</div>`;
+}
+
+function renderStackResult(target) {
+    const stack = currentStackInputs();
+    if (plateExercise) {
+        const prefs = loadPlatePrefs();
+        savePlatePrefs({ stacks: { ...prefs.stacks, [normalizeForCompare(plateExercise)]: stack } });
+    }
+    const box = document.getElementById('plateResult');
+    const useBtn = document.getElementById('plateUse');
+    if (!target) { box.innerHTML = '<p class="plate-msg">Escribí el peso.</p>'; useBtn.disabled = true; return; }
+    const r = calculateStack(target, stack);
+    const w = kg => `${formatNumber(kg)} kg`;
+    const warn = r.exact ? '' : `<p class="plate-warn">No hay una placa con ${w(target)} exacto. Lo más cercano: <b>placa ${r.below.pin} (${w(r.below.weight)})</b>${r.above ? ` o <b>placa ${r.above.pin} (${w(r.above.weight)})</b>` : ''}.</p>`;
+    box.innerHTML = `${warn}
+        <p class="plate-side-text">Clavija en la <b>${r.pin === 0 ? 'ninguna placa (solo el carro)' : 'placa ' + r.pin}</b></p>
+        ${stackVisualHtml(r.pin, stack.count)}
+        <p class="plate-total">≈ <b>${w(r.achieved)}</b> · sin placas ${w(stack.empty)}, 1ª placa ${w(stack.first)}, +${w(stack.step)} por placa. Son aproximados: cada máquina (y las poleas con roldanas) cambia.</p>`;
+    useBtn.disabled = false;
+    useBtn.dataset.weight = r.achieved;
+    useBtn.textContent = `Usar ${formatNumber(r.achieved)} kg en la serie`;
 }
 
 function currentPlateInputs() {
@@ -54,6 +126,11 @@ function plateVisualHtml(perSide) {
 }
 
 function renderPlateResult() {
+    const mode = document.getElementById('plateMode').value;
+    document.getElementById('plateBarFields').hidden = mode === 'stack';
+    document.getElementById('plateStackFields').hidden = mode !== 'stack';
+    document.getElementById('plateTitle').textContent = mode === 'stack' ? '🧮 Máquina de placas' : '🧮 Calculadora de discos';
+    if (mode === 'stack') { renderStackResult(parseDecimal(document.getElementById('plateTarget').value)); return; }
     const { target, bar, plates } = currentPlateInputs();
     savePlatePrefs({ bar, plates });
     const box = document.getElementById('plateResult');
@@ -108,4 +185,17 @@ function bindPlateCalculator() {
         renderPlateResult();
     });
     document.getElementById('plateBar').addEventListener('change', renderPlateResult);
+    document.getElementById('plateMode').addEventListener('change', e => {
+        if (plateExercise) {
+            const prefs = loadPlatePrefs();
+            savePlatePrefs({ modes: { ...prefs.modes, [normalizeForCompare(plateExercise)]: e.target.value } });
+        }
+        renderPlateResult();
+    });
+    ['stackEmpty', 'stackFirst', 'stackStep', 'stackCount'].forEach(id => {
+        document.getElementById(id).addEventListener('input', e => {
+            e.target.value = id === 'stackCount' ? e.target.value.replace(/\D/g, '') : sanitizeDecimalInput(e.target.value);
+            renderPlateResult();
+        });
+    });
 }

@@ -51,12 +51,16 @@ function pickVoice(settings) {
 
 // key: qué aviso es (para respetar su interruptor). Corta lo que se estaba diciendo:
 // con reps rápidas es mejor decir el número actual que quedar atrasado.
-function speak(text, key) {
+// opts.interrupt = false: se encola detrás de lo que se está diciendo (el ánimo a mitad
+// de rep no corta el número).
+function speak(text, key, opts = {}) {
     const st = loadVoiceSettings();
     if (!st.enabled || (key && st[key] === false) || !voiceSupported()) return;
     try {
-        stopCuePlayback();
-        speechSynthesis.cancel();
+        if (opts.interrupt !== false) {
+            stopCuePlayback();
+            speechSynthesis.cancel();
+        }
         const u = new SpeechSynthesisUtterance(text);
         const voice = pickVoice(st);
         if (voice) u.voice = voice;

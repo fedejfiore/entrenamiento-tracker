@@ -83,6 +83,11 @@
                     </div>
                 </div>
 
+                <div class="section" id="programsSection">
+                    <h2>📚 Programa</h2>
+                    <div id="programStatus"></div>
+                </div>
+
                 <div class="section" id="planSection">
                     <h2>🗓️ Mi plan semanal</h2>
                     <div class="plan-status" id="weekStatus"></div>
@@ -215,12 +220,14 @@
             <div data-screen="progreso">
                 <div class="section" id="muscleMapSection">
                     <h2>🗺️ Músculos trabajados</h2>
-                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Series efectivas por músculo (sin calentamiento), en promedio por semana. Entre 10 y 20 por semana es el rango habitual para ganar músculo. Tocá un músculo para ver sus ejercicios.</div>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Series efectivas por músculo (sin calentamiento). Entre 10 y 20 por semana es el rango habitual para ganar músculo: cuanto más oscuro, más trabajado. Tocá un músculo para ver sus ejercicios. El día en que empieza la semana se elige en Ajustes.</div>
                     <select id="muscleMapPeriod" aria-label="Período del mapa de músculos">
-                        <option value="7">Últimos 7 días</option>
-                        <option value="30">Últimos 30 días</option>
-                        <option value="90">Últimos 3 meses</option>
+                        <option value="week">Esta semana (en curso)</option>
+                        <option value="lastweek">Semana pasada</option>
+                        <option value="4w">Últimas 4 semanas (promedio)</option>
+                        <option value="12w">Últimas 12 semanas (promedio)</option>
                     </select>
+                    <div id="muscleMapRangeInfo" class="muscle-range-info"></div>
                     <div id="muscleMap" class="muscle-map"></div>
                     <div id="muscleMapLegend" class="muscle-legend"></div>
                     <div id="muscleMapList" class="muscle-list"></div>
@@ -304,6 +311,15 @@
                     <h2>❓ Ayuda</h2>
                     <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Cómo funciona cada parte de la app, con buscador y preguntas frecuentes.</div>
                     <button type="button" id="openHelpBtn">📖 Cómo usar la app</button>
+                </div>
+
+                <div class="section">
+                    <h2>⚙️ General</h2>
+                    <label for="weekStartSelect" class="settings-label">La semana empieza el</label>
+                    <select id="weekStartSelect"></select>
+                    <label for="sideSwitchSelect" class="settings-label">Cambio de lado en ejercicios unilaterales</label>
+                    <select id="sideSwitchSelect"></select>
+                    <div style="font-size: 12px; color: var(--text-muted);">Tiempo para acomodarse entre un lado y el otro (no es descanso).</div>
                 </div>
 
                 <div class="section">
@@ -465,14 +481,39 @@
                 <h3 id="plateTitle">🧮 Calculadora de discos</h3>
                 <button type="button" class="small" style="width:auto;" data-plate-action="close" aria-label="Cerrar">✕</button>
             </div>
+            <div id="plateForExercise" class="plate-for"></div>
+            <label class="range-label" for="plateMode">Equipo</label>
+            <select id="plateMode">
+                <option value="bar">Barra con discos</option>
+                <option value="stack">Máquina de placas / polea</option>
+            </select>
             <label class="range-label" for="plateTarget">Peso total (kg)</label>
             <input type="text" id="plateTarget" inputmode="decimal" autocomplete="off">
-            <label class="range-label" for="plateBar">Barra</label>
-            <select id="plateBar"></select>
-            <div class="range-label">Discos que tenés (tocá para activar o desactivar)</div>
-            <div id="plateChoices" class="plate-choices"></div>
+            <div id="plateBarFields">
+                <label class="range-label" for="plateBar">Barra</label>
+                <select id="plateBar"></select>
+                <div class="range-label">Discos que tenés (tocá para activar o desactivar)</div>
+                <div id="plateChoices" class="plate-choices"></div>
+            </div>
+            <div id="plateStackFields" class="stack-fields" hidden>
+                <label>Sin placas (kg)<input type="text" id="stackEmpty" inputmode="decimal" autocomplete="off"></label>
+                <label>1ª placa (kg)<input type="text" id="stackFirst" inputmode="decimal" autocomplete="off"></label>
+                <label>Cada placa suma (kg)<input type="text" id="stackStep" inputmode="decimal" autocomplete="off"></label>
+                <label>Cantidad de placas<input type="text" id="stackCount" inputmode="numeric" pattern="[0-9]*" autocomplete="off"></label>
+            </div>
             <div id="plateResult" class="plate-result"></div>
             <button type="button" class="success" id="plateUse" data-plate-action="use">Usar este peso</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="programsModal" role="dialog" aria-modal="true" aria-labelledby="programsTitle">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="programsTitle">📚 Programas</h3>
+                <button type="button" class="small" style="width:auto;" data-program-action="close" aria-label="Cerrar">✕</button>
+            </div>
+            <p class="program-intro">Cada ejercicio tiene un rango de reps. Con el mismo peso vas sumando reps; cuando llegás al tope en todas las series, la app te sugiere subir el peso y volver al mínimo. Los valores sugeridos aparecen en gris: tildá ✓ para usarlos.</p>
+            <div id="programList"></div>
         </div>
     </div>
 
@@ -516,6 +557,7 @@
     <script src="js/domain/models.js"></script>
     <script src="js/domain/plan.js"></script>
     <script src="js/domain/training-tools.js"></script>
+    <script src="js/domain/programs.js"></script>
     <script src="js/data/migrations.js"></script>
     <script src="js/data/repositories.js"></script>
     <script src="js/data/recording-repository.js"></script>
@@ -549,6 +591,8 @@
     <script src="js/features/plan-screen.js"></script>
     <script src="js/features/muscle-map.js"></script>
     <script src="js/features/plate-calculator.js"></script>
+    <script src="js/features/general-settings.js"></script>
+    <script src="js/features/programs.js"></script>
     <script src="js/features/backup.js"></script>
     <script src="js/features/help.js"></script>
     <script src="js/ui/navigation.js"></script>

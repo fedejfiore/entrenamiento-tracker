@@ -1,4 +1,5 @@
-// Preferencias por ejercicio: tipo de medición, unidad de tiempo, grupo muscular y cadencia.
+// Preferencias por ejercicio: tipo de medición, unidad de tiempo, grupo muscular, cadencia
+// y si es unilateral (de a un lado).
 // Todas se guardan por nombre normalizado (sin mayúsculas ni tildes), así "Plancha" y
 // "plancha" comparten la misma preferencia en cualquier rutina.
 
@@ -67,6 +68,26 @@ class ExercisePreferences {
         this.store.set('exerciseGroupOverrides', this.groupOverrides);
     }
 
+    // ---- Unilateral: cada serie se hace de un lado y después del otro ----
+    unilateral(name) {
+        const saved = this.store.get('exerciseUnilateral')[ExercisePreferences.key(name)];
+        return typeof saved === 'boolean' ? saved : ExercisePreferences.inferUnilateral(name);
+    }
+
+    setUnilateral(name, on) {
+        this.store.transaction(tx => {
+            const all = tx.get('exerciseUnilateral');
+            all[ExercisePreferences.key(name)] = !!on;
+            tx.set('exerciseUnilateral', all);
+        });
+    }
+
+    // Sugerencia por el nombre ("remo a un brazo", "búlgara", "unilateral"...).
+    static inferUnilateral(name) {
+        const n = normalizeForCompare(name || '');
+        return /unilateral|\bun brazo|\buna pierna|\buna mano|\bun lado|single|bulgar|pistol/.test(n);
+    }
+
     // ---- Cadencia del contador de reps (segundos por rep) ----
     tempo(name) { return this.store.get('exerciseTempos')[ExercisePreferences.key(name)]; }
 
@@ -91,3 +112,5 @@ function saveGroupOverride(exerciseName, group) { exercisePrefs.setMuscleGroup(e
 function getMuscleGroup(exerciseName) { return exercisePrefs.muscleGroup(exerciseName); }
 function loadExerciseTempos() { return db.get('exerciseTempos'); }
 function saveExerciseTempo(name, tempo) { exercisePrefs.setTempo(name, tempo); }
+function isUnilateral(name) { return exercisePrefs.unilateral(name); }
+function saveUnilateral(name, on) { exercisePrefs.setUnilateral(name, on); }

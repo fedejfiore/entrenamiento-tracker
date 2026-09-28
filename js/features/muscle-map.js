@@ -1,11 +1,13 @@
 // Progreso → "Músculos trabajados": figura de frente y espalda coloreada según las series
-// efectivas por músculo (sin calentamiento), llevadas a promedio semanal para compararlas
-// con el rango habitual de 10 a 20 series por semana. Tocar un músculo muestra su detalle.
+// efectivas por músculo (sin calentamiento), por semana, para compararlas con el rango
+// habitual de 10 a 20 series por semana. Las semanas empiezan el día elegido en Ajustes; la
+// semana en curso muestra lo que va hasta hoy. Tocar un músculo muestra su detalle.
 
 const MUSCLE_MAP_PERIODS = {
-    '7': { label: 'Últimos 7 días', days: 7 },
-    '30': { label: 'Últimos 30 días', days: 30 },
-    '90': { label: 'Últimos 3 meses', days: 90 }
+    week: 'Esta semana (en curso)',
+    lastweek: 'Semana pasada',
+    '4w': 'Últimas 4 semanas (promedio)',
+    '12w': 'Últimas 12 semanas (promedio)'
 };
 
 let muscleMapSelected = null;
@@ -52,38 +54,51 @@ function muscleFigureSvg(regions, caption) {
 }
 
 function muscleMapData() {
-    const periodKey = document.getElementById('muscleMapPeriod')?.value || '7';
-    const days = (MUSCLE_MAP_PERIODS[periodKey] || MUSCLE_MAP_PERIODS['7']).days;
-    const to = getLocalDateString();
-    const fromDate = new Date();
-    fromDate.setDate(fromDate.getDate() - (days - 1));
-    const from = formatDateLocal(fromDate);
-    const byGroup = muscleSetsByGroup(repo.workouts.all(), from, to, getMuscleGroup);
-    const weekly = sets => Math.round(sets * 7 / days * 10) / 10;
-    return { byGroup, weekly, days };
+    const select = document.getElementById('muscleMapPeriod');
+    const period = MUSCLE_MAP_PERIODS[select?.value] ? select.value : 'week';
+    const range = muscleMapRange(period, new Date(), loadAppSettings().weekStart);
+    const byGroup = muscleSetsByGroup(repo.workouts.all(), range.from, range.to, getMuscleGroup);
+    const weekly = sets => Math.round(sets / range.weeks * 10) / 10;
+    return { byGroup, weekly, range };
 }
 
 function renderMuscleMap() {
     const box = document.getElementById('muscleMap');
     if (!box) return;
-    const { byGroup, weekly } = muscleMapData();
+    const { byGroup, weekly, range } = muscleMapData();
     box.innerHTML = muscleFigureSvg(BODY_FRONT, 'Frente') + muscleFigureSvg(BODY_BACK, 'Espalda');
     box.querySelectorAll('[data-group]').forEach(el => {
         const g = el.dataset.group;
         const level = muscleLevel(weekly(byGroup[g]?.sets || 0));
         el.setAttribute('class', `muscle lvl-${level}${muscleMapSelected === g ? ' selected' : ''}`);
         el.setAttribute('tabindex', '0');
-        el.innerHTML = `<title>${g}: ${formatNumber(weekly(byGroup[g]?.sets || 0))} series por semana</title>`;
+        el.innerHTML = `<title>${g}: ${formatNumber(weekly(byGroup[g]?.sets || 0))} series${range.weeks > 1 ? ' por semana' : ''}</title>`;
     });
 
     const legend = document.getElementById('muscleMapLegend');
     if (legend) {
         legend.innerHTML = MUSCLE_LEVELS.map((l, i) => `<span class="muscle-legend-item"><i class="lvl-${i}"></i>${l.label}</span>`).join('');
     }
-    renderMuscleMapList(byGroup, weekly);
+    const info = document.getElementById('muscleMapRangeInfo');
+    if (info) {
+        const d = str => new Date(str + 'T00:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'numeric' });
+        info.textContent = `Del ${d(range.from)} al ${d(range.to)}` + (range.inProgress
+            ? ` · semana en curso, ${range.daysLeft === 0 ? 'último día' : range.daysLeft === 1 ? 'queda 1 día' : `quedan ${range.daysLeft} días`}`
+            : range.weeks > 1 ? ` · promedio de ${range.weeks} semanas` : '');
+    }
+    renderMuscleMapList(byGroup, weekly, range);
 }
 
-function renderMuscleMapList(byGroup, weekly) {
+// Texto de cada músculo respecto del rango ideal (en la semana en curso, lo que falta).
+function muscleRangeNote(w, range) {
+    const { min, max } = MUSCLE_IDEAL_RANGE;
+    if (w > max) return 'por encima del rango';
+    if (w >= min) return 'en rango ✓';
+    if (range.inProgress) return w > 0 ? `faltan ${formatNumber(Math.ceil(min - w))} para el rango` : 'todavía sin series';
+    return w > 0 ? 'por debajo del rango' : '';
+}
+
+function renderMuscleMapList(byGroup, weekly, range) {
     const list = document.getElementById('muscleMapList');
     if (!list) return;
     const groups = [...MAPPED_GROUPS, ...Object.keys(byGroup).filter(g => !MAPPED_GROUPS.includes(g))];
@@ -100,7 +115,7 @@ function renderMuscleMapList(byGroup, weekly) {
         return `<div class="muscle-row" data-group="${escapeHtml(r.g)}">
                 <span class="muscle-dot lvl-${level}"></span>
                 <div class="muscle-row-text">
-                    <strong>${escapeHtml(r.g)}</strong>${offMap} · ${formatNumber(w)} series/semana
+                    <strong>${escapeHtml(r.g)}</strong>${offMap} · ${formatNumber(w)} series${range.weeks > 1 ? '/semana' : ''}${muscleRangeNote(w, range) ? ` · <span class="muscle-note">${muscleRangeNote(w, range)}</span>` : ''}
                     ${detail ? `<small>${detail}</small>` : '<small>Sin series en este período</small>'}
                 </div>
             </div>`;

@@ -65,3 +65,23 @@ test('borrar una rutina limpia plantilla, nombre y archivados en una transacció
     assert.equal(routines.archivedExercises().YOGA, undefined);
     assert.deepEqual([...routines.archived()], ['B']);
 });
+
+test('empezar un programa crea sus rutinas con objetivos; terminarlo deja las rutinas', () => {
+    const { store, routines } = setup();
+    routines.create('MIA', 'Mi rutina');
+    const days = [
+        { key: 'PRG_X_A', label: 'X · Día A', exercises: ['Sentadilla', 'Remo'], targets: { sentadilla: { sets: 3, repsMin: 8, repsMax: 12 } } },
+        { key: 'PRG_X_B', label: 'X · Día B', exercises: ['Press'], targets: {} }
+    ];
+    routines.startProgram('x', days, '2026-09-28');
+    assert.deepEqual([...store.get('customRoutines').PRG_X_A], ['Sentadilla', 'Remo']);
+    assert.equal(store.get('customRoutineLabels').PRG_X_B, 'X · Día B');
+    assert.equal(routines.targets('PRG_X_A').sentadilla.repsMax, 12);
+    assert.equal(routines.activeProgram().id, 'x');
+    assert.ok(store.get('customRoutines').MIA, 'no toca las rutinas propias');
+
+    routines.endProgram();
+    assert.equal(routines.activeProgram(), null);
+    assert.deepEqual(JSON.parse(JSON.stringify(routines.targets('PRG_X_A'))), {});
+    assert.ok(store.get('customRoutines').PRG_X_A, 'las rutinas del programa quedan');
+});

@@ -31,9 +31,12 @@ const STORAGE_SCHEMA = {
     archivedExercises: { group: 'data', type: 'object', default: {}, description: 'Ejercicios archivados por rutina.' },
     exerciseTypes: { group: 'data', type: 'object', default: {}, description: 'Tipo de medición por ejercicio (kg, bw, time, min, km).' },
     exerciseTimeUnits: { group: 'data', type: 'object', default: {}, description: 'Unidad de carga del tiempo por ejercicio (seg, mss, min, hmm).' },
+    exerciseUnilateral: { group: 'data', type: 'object', default: {}, description: 'Ejercicios que se hacen de a un lado (true/false elegido a mano).' },
     exerciseTempos: { group: 'data', type: 'object', default: {}, description: 'Cadencia del contador de reps por ejercicio (s/rep).' },
     exerciseGroupOverrides: { group: 'data', type: 'object', default: {}, description: 'Grupo muscular elegido a mano por ejercicio.' },
     routineSupersets: { group: 'data', type: 'object', default: {}, description: 'Superseries por rutina: { rutina: { ejercicioNormalizado: "A" } }.' },
+    routineTargets: { group: 'data', type: 'object', default: {}, description: 'Objetivos por rutina y ejercicio (series, rango de reps, descanso, incremento): { rutina: { ejercicioNormalizado: {...} } }.' },
+    activeProgram: { group: 'data', type: 'object', default: {}, description: 'Programa prearmado en curso: { id, startedAt, routines: [claves] }.' },
     trainingDaysPlanHistory: { group: 'data', type: 'array', default: [], description: 'Plan semanal: días, horarios y aviso previo, con la fecha (lunes) desde la que rige.' },
 
     // ---- Preferencias ----
@@ -44,6 +47,7 @@ const STORAGE_SCHEMA = {
     musicLinks: { group: 'prefs', type: 'object', default: {}, description: 'Playlists de Spotify / YouTube Music.' },
     bodyChartScale: { group: 'prefs', type: 'object', default: {}, description: 'Escala manual del gráfico de medidas.' },
     plateCalculator: { group: 'prefs', type: 'object', default: {}, description: 'Calculadora de discos: barra y discos disponibles.' },
+    appSettings: { group: 'prefs', type: 'object', default: {}, description: 'Ajustes generales: día en que empieza la semana, segundos para cambiar de lado.' },
     wakeLockEnabled: { group: 'prefs', format: 'text', type: 'string', default: null, description: 'Pantalla siempre encendida ("1"/"0").' },
 
     // ---- Estado temporal de la sesión en curso ----

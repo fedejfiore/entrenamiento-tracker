@@ -14,5 +14,6 @@ function showToast(message, type = 'success', duration = 3200) {
         toast.classList.add('fadeout');
         setTimeout(() => toast.remove(), 300);
     }, duration);
+    return toast;
 }
 

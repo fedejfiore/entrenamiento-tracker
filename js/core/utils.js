@@ -63,6 +63,14 @@ function formatDateLocal(d) {
     return `${year}-${month}-${day}`;
 }
 
+// Primer día de la semana que contiene a date. startDay: 0 = domingo, 1 = lunes, 6 = sábado.
+function getWeekStart(date, startDay = 1) {
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() - ((d.getDay() - startDay + 7) % 7));
+    return d;
+}
+
 function getMonday(date) {
     const d = new Date(date);
     d.setHours(0, 0, 0, 0);
