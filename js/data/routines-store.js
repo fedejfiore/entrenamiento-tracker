@@ -119,47 +119,10 @@ function loadTrainingDaysPlanHistory() {
     // "desde siempre" para no alterar retroactivamente semanas ya calculadas.
     const legacyPlan = db.get('trainingDaysPlan');
     const history = (Array.isArray(legacyPlan) && legacyPlan.length > 0) ? [{ date: '1970-01-01', days: legacyPlan }] : [];
+    // (El plan vigente y cómo se guarda: js/features/plan-screen.js y js/domain/plan.js.)
     repo.routines.savePlanHistory(history);
     return history;
 }
 
 // Plan vigente para la semana que arranca en weekStart: el más reciente cuya
 // fecha de vigencia sea anterior o igual al lunes de esa semana.
-function getPlanForWeek(weekStart) {
-    const history = loadTrainingDaysPlanHistory();
-    const weekMondayStr = formatDateLocal(weekStart);
-    const applicable = history
-        .filter(e => e.date <= weekMondayStr)
-        .sort((a, b) => a.date.localeCompare(b.date));
-    return applicable.length > 0 ? applicable[applicable.length - 1].days : [];
-}
-
-function loadTrainingDaysPlan() {
-    const plan = getPlanForWeek(getMonday(new Date()));
-    document.querySelectorAll('.day-plan-checkbox').forEach(cb => {
-        cb.checked = plan.includes(parseInt(cb.value, 10));
-    });
-    return plan;
-}
-
-function saveTrainingDaysPlan() {
-    const selected = [...document.querySelectorAll('.day-plan-checkbox:checked')]
-        .map(cb => parseInt(cb.value, 10))
-        .sort((a, b) => a - b);
-    const mondayStr = formatDateLocal(getMonday(new Date()));
-    const current = getPlanForWeek(getMonday(new Date())).slice().sort((a, b) => a - b);
-
-    if (JSON.stringify(selected) === JSON.stringify(current)) return; // sin cambios reales
-
-    // El cambio rige desde la semana en curso: no reescribe semanas ya pasadas.
-    const history = loadTrainingDaysPlanHistory();
-    const lastEntry = history[history.length - 1];
-    if (lastEntry && lastEntry.date === mondayStr) {
-        lastEntry.days = selected; // ya se había cambiado esta semana: actualizar, no duplicar
-    } else {
-        history.push({ date: mondayStr, days: selected });
-    }
-    repo.routines.savePlanHistory(history);
-    updateSidebar();
-}
-

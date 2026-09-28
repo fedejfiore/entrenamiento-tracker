@@ -1,0 +1,71 @@
+/* Inicio → plan semanal y aviso de "hoy toca". */
+
+.plan-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding: 12px 14px;
+    border-radius: var(--radius);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    font-size: 14px;
+}
+.plan-banner[hidden] { display: none; }
+.plan-banner.due { border-color: var(--brand); background: rgba(var(--brand-rgb), 0.12); }
+.plan-banner.done { border-color: var(--success); }
+.plan-banner button { width: auto; margin: 0; flex-shrink: 0; }
+
+.plan-status { font-weight: 600; margin-bottom: 4px; }
+.plan-next { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; }
+
+.plan-editor {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); /* en celular: un día por fila, sin cortar la hora */
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.plan-day {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-subtle);
+}
+.plan-day.on { border-color: var(--brand); background: rgba(var(--brand-rgb), 0.1); }
+
+.plan-day-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 58px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.plan-day-toggle input { margin: 0; accent-color: var(--brand); }
+
+.plan-time {
+    margin: 0;
+    padding: 6px 4px;
+    min-width: 0;
+    flex: 1;
+}
+.plan-time:disabled { opacity: 0.35; }
+
+.plan-gcal {
+    display: block;
+    padding: 11px 14px;
+    margin-bottom: 8px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-elevated);
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    text-align: center;
+}
+.plan-gcal:hover { background: var(--bg-subtle); }

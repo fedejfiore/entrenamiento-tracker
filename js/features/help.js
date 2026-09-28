@@ -177,6 +177,21 @@ const HELP_SECTIONS = [
             </ul>`
     },
     {
+        id: 'plan', icon: '🗓️', title: 'Plan semanal y recordatorios',
+        html: `
+            <ol>
+                <li>En <b>Inicio → Mi plan semanal</b>, tildá los días que entrenás y poné el horario de cada uno (puede ser distinto cada día).</li>
+                <li>Elegí con cuánta anticipación querés el aviso y tocá <b>💾 Guardar plan</b>.</li>
+                <li>Agregalo a tu calendario: <b>📅 Google Calendar</b> (un botón por cada horario) o <b>📥 Agregar al calendario del celular</b> (iPhone y otros calendarios).</li>
+            </ol>
+            <ul>
+                <li>Los avisos los da el <b>calendario del celular</b>, así llegan aunque la app esté cerrada.</li>
+                <li>Al abrir la app, arriba de Inicio ves si hoy toca entrenar (con la rutina sugerida para empezar de un toque), si ya entrenaste o si es día de descanso.</li>
+                <li>El estado de la semana te dice si vas al día con tu plan.</li>
+                <li>Cambiar el plan rige desde esta semana: las semanas anteriores se siguen evaluando con el plan que tenían. Si cambiás días u horarios, borrá los eventos viejos del calendario y volvé a agregarlos.</li>
+            </ul>`
+    },
+    {
         id: 'medidas', icon: '📏', title: 'Medidas corporales y variantes',
         html: `
             <ul>
@@ -203,6 +218,7 @@ const HELP_FAQ = [
     ['Toco los puntos ⠿ pero no se mueve el ejercicio.', 'Hay que mantenerlos apretados un momento, hasta que se llenen de color y el celular vibre. Recién ahí arrastrá. Así se evita mover algo sin querer.'],
     ['La voz o los sonidos no se escuchan.', 'Revisá el volumen del celular y de la app (Ajustes → Sonido). En iPhone, el interruptor de silencio los apaga. El navegador solo deja sonar audio después de tocar la pantalla al menos una vez.'],
     ['El timer no suena con la pantalla bloqueada.', 'Una app web no puede sonar de forma confiable con la pantalla bloqueada. Tocá 🔅 (arriba) para que la pantalla quede encendida mientras entrenás.'],
+    ['¿Por qué los avisos del plan llegan por el calendario y no como notificación de la app?', 'Una app web no puede programar notificaciones confiables sin un servidor. El calendario del celular sí avisa a la hora exacta, aunque la app esté cerrada. En la futura versión instalable desde Google Play, los avisos van a ser notificaciones de la propia app.'],
     ['Cargué mal una sesión, ¿cómo la corrijo?', 'En Historial, ✏️ cambia la fecha y 🗑 borra la sesión. Para cargarla bien, volvé a Entrenar y guardala de nuevo.'],
     ['¿Qué es el 1RM estimado?', 'El peso máximo que podrías levantar una sola vez, calculado a partir de tus series (fórmula de Epley). Sirve para comparar tu fuerza aunque cambies peso y reps.'],
     ['¿Qué es el volumen?', 'La suma de peso × reps de todas tus series efectivas. Es una buena medida del trabajo total: si subís el peso pero bajan las reps, el volumen dice si en total hiciste más.'],

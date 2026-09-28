@@ -55,6 +55,7 @@ class App {
         bindArchivedRoutinesList();
         bindHistoryList();
         bindHelp();
+        bindPlanSection();
 
         // El audio solo puede sonar después de un toque del usuario.
         document.addEventListener('pointerdown', unlockAudio, { once: true, capture: true });
@@ -100,6 +101,7 @@ class App {
         restoreTabataSessionBlocks();
         renderVariantsCatalog();
         initScreens();
+        maybeRemindTodayPlan();
     }
 
     /**

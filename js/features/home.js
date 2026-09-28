@@ -19,12 +19,7 @@ function updateSidebar() {
     updateSuggestedRoutine();
     if (!currentSessionStartTime) updateSessionDurationDisplay();
 
-    loadTrainingDaysPlan(); // sincroniza los checkboxes con el plan vigente esta semana
-
-    const weekStatusEl = document.getElementById('weekStatus');
-    if (weekStatusEl) {
-        weekStatusEl.textContent = WEEK_STATUS_LABELS[getWeekStatus(workouts, getPlanForWeek(getMonday(new Date())), getMonday(new Date()))];
-    }
+    renderPlanSection(); // plan semanal, estado de la semana y aviso de "hoy toca"
 
     const weeklyVolumeEl = document.getElementById('weeklyVolume');
     if (weeklyVolumeEl) {

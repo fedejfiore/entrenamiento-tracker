@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>💪 Tracker de Entrenamiento</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0f1115">
@@ -10,7 +10,7 @@
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="Entreno">
     <script src="js/boot.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,6 +24,7 @@
     <link rel="stylesheet" href="css/timers-audio.css">
     <link rel="stylesheet" href="css/progress.css">
     <link rel="stylesheet" href="css/help.css">
+    <link rel="stylesheet" href="css/plan.css">
     <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
@@ -44,6 +45,7 @@
         <main class="app-main">
             <!-- INICIO -->
             <div data-screen="inicio">
+                <div id="todayPlanBanner" class="plan-banner" hidden></div>
                 <div class="section">
                     <h2>📅 Hoy</h2>
                     <div class="stat-box">
@@ -78,6 +80,20 @@
                         <div class="stat-label">Promedio semanal</div>
                         <div class="stat-value" id="weeklyAvgWorkouts" style="font-size: 15px;">-</div>
                     </div>
+                </div>
+
+                <div class="section" id="planSection">
+                    <h2>🗓️ Mi plan semanal</h2>
+                    <div class="plan-status" id="weekStatus"></div>
+                    <div class="plan-next" id="planNext"></div>
+                    <div id="planEditor" class="plan-editor"></div>
+                    <label class="range-label" for="planRemind">Avisarme</label>
+                    <select id="planRemind"></select>
+                    <button type="button" data-plan-action="save">💾 Guardar plan</button>
+                    <div class="settings-subtitle">Recordatorios en el celular</div>
+                    <div class="settings-hint" style="margin: 0 0 8px;">Los avisos los da el calendario de tu celular: llegan aunque la app esté cerrada. Si cambiás el plan, borrá los eventos viejos del calendario y volvé a agregarlos.</div>
+                    <div id="planGoogleLinks"></div>
+                    <button type="button" data-plan-action="ics">📥 Agregar al calendario del celular (iPhone y otros)</button>
                 </div>
 
                 <div class="section">
@@ -454,6 +470,7 @@
     <script src="js/domain/legacy-format.js"></script>
     <script src="js/domain/sets.js"></script>
     <script src="js/domain/models.js"></script>
+    <script src="js/domain/plan.js"></script>
     <script src="js/data/migrations.js"></script>
     <script src="js/data/repositories.js"></script>
     <script src="js/data/recording-repository.js"></script>
@@ -483,6 +500,7 @@
     <script src="js/features/progress.js"></script>
     <script src="js/features/body-metrics.js"></script>
     <script src="js/features/home.js"></script>
+    <script src="js/features/plan-screen.js"></script>
     <script src="js/features/backup.js"></script>
     <script src="js/features/help.js"></script>
     <script src="js/ui/navigation.js"></script>

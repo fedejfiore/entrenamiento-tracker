@@ -33,7 +33,7 @@ const STORAGE_SCHEMA = {
     exerciseTimeUnits: { group: 'data', type: 'object', default: {}, description: 'Unidad de carga del tiempo por ejercicio (seg, mss, min, hmm).' },
     exerciseTempos: { group: 'data', type: 'object', default: {}, description: 'Cadencia del contador de reps por ejercicio (s/rep).' },
     exerciseGroupOverrides: { group: 'data', type: 'object', default: {}, description: 'Grupo muscular elegido a mano por ejercicio.' },
-    trainingDaysPlanHistory: { group: 'data', type: 'array', default: [], description: 'Días de entrenamiento planeados, con fecha desde la que rigen.' },
+    trainingDaysPlanHistory: { group: 'data', type: 'array', default: [], description: 'Plan semanal: días, horarios y aviso previo, con la fecha (lunes) desde la que rige.' },
 
     // ---- Preferencias ----
     theme: { group: 'prefs', format: 'text', type: 'string', default: null, description: 'Tema: "light" o "dark".' },
@@ -50,6 +50,7 @@ const STORAGE_SCHEMA = {
     activeSessionEnd: { group: 'session', format: 'text', type: 'string', default: null, description: 'Fin de la sesión en curso (ms).' },
     activeTabataBlocks: { group: 'session', type: 'array', default: [], description: 'Bloques de Tabata de la sesión en curso.' },
     activeScreen: { group: 'session', format: 'text', type: 'string', default: null, description: 'Última pantalla abierta.' },
+    planReminderShown: { group: 'session', format: 'text', type: 'string', default: null, description: 'Último día (AAAA-MM-DD) en que se avisó "hoy toca entrenar".' },
 
     // ---- Control interno ----
     schemaVersion: { group: 'meta', format: 'text', type: 'string', default: null, description: 'Versión del esquema de datos (ver migraciones).' },

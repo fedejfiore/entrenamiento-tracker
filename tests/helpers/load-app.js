@@ -33,7 +33,10 @@ function loadApp(files = CORE_FILES) {
         btoa: globalThis.btoa,
         atob: globalThis.atob,
         setTimeout,
-        clearTimeout
+        clearTimeout,
+        TextEncoder,
+        URL,
+        URLSearchParams
     });
     files.forEach(file => {
         const code = fs.readFileSync(path.join(ROOT, file), 'utf8');
