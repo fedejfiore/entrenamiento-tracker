@@ -25,6 +25,8 @@ node --test "tests/**/*.test.js"   # pruebas automáticas (Node 22 o más nuevo)
 - Formato de los datos, backup y esquema SQL propuesto: [docs/MODELO-DE-DATOS.md](docs/MODELO-DE-DATOS.md)
 - Plan para pasar a app nativa (Android/iOS) manteniendo la web: [docs/MIGRACION-NATIVA.md](docs/MIGRACION-NATIVA.md)
 - Diseño del modo entrenador (panel para gestionar alumnos): [docs/MODO-ENTRENADOR.md](docs/MODO-ENTRENADOR.md)
+- Servidor propio (VPS + Docker + PostgreSQL) y sincronización sin internet primero: [docs/SERVIDOR-Y-SINCRONIZACION.md](docs/SERVIDOR-Y-SINCRONIZACION.md)
+- Decisiones de producto, plan gratis/Pro, programas, IA e idiomas: [docs/HOJA-DE-RUTA.md](docs/HOJA-DE-RUTA.md)
 - Tutorial para el usuario: dentro de la app, Ajustes → Ayuda (contenido en `js/features/help.js`)
 
 Al agregar o renombrar un archivo JS o CSS: sumarlo también a `PRECACHE_URLS` en
