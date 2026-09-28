@@ -1,7 +1,6 @@
-// Service worker del Tracker de Entrenamiento.
-// Sólo corre bajo un contexto seguro real (https/localhost) — abrir el HTML
-// directo desde el celular (content://) nunca va a registrar esto, y está bien:
-// para ese caso queda el fallback de video del wake lock en el HTML.
+// Service worker del Tracker de Entrenamiento: guarda en caché la página y todos sus
+// archivos para que la app abra sin conexión. Sólo corre en un contexto seguro
+// (https o localhost).
 //
 // Subí SW_VERSION cada vez que edites el HTML/CSS/JS de forma significativa,
 // para que los clientes descarten el caché viejo en vez de seguir sirviéndolo.

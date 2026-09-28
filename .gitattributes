@@ -1,0 +1,5 @@
+# Fin de línea LF en el repo para todo el texto (evita diferencias por Windows/Mac).
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.jpeg binary
