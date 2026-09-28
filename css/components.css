@@ -1,0 +1,183 @@
+/* Componentes comunes: checkboxes, emojis, toasts, expandibles, historial y chips. */
+
+/* CHECKBOXES */
+input[type="checkbox"] {
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    margin: 0 6px 0 0;
+}
+
+.checkbox-group {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    padding: 6px 4px;
+    cursor: pointer;
+}
+
+/* EMOJI BUTTONS */
+.emoji-btn {
+    display: inline-block;
+    font-size: 28px;
+    cursor: pointer;
+    padding: 8px;
+    margin: 4px;
+    border-radius: var(--radius-sm);
+    border: 2px solid transparent;
+    transition: all 0.2s;
+    background: var(--bg-subtle);
+}
+
+.emoji-btn:hover {
+    background: var(--bg-elevated);
+}
+
+.emoji-btn.selected {
+    background: rgba(var(--brand-rgb), 0.16);
+    border-color: var(--brand);
+    transform: scale(1.15);
+}
+
+/* TOAST */
+#toastContainer {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    left: 20px;
+    z-index: 3000;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    pointer-events: none;
+}
+
+.toast {
+    background: var(--success);
+    color: white;
+    padding: 14px 20px;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-md);
+    animation: slideIn 0.25s ease-out;
+    max-width: 360px;
+    font-size: 14px;
+    line-height: 1.4;
+    white-space: pre-line;
+}
+
+.toast.error {
+    background: var(--danger);
+}
+
+.toast.pr {
+    background: linear-gradient(135deg, var(--warning), var(--brand));
+}
+
+.toast.fadeout {
+    animation: fadeOut 0.3s ease-in forwards;
+}
+
+@media (max-width: 768px) {
+    #toastContainer {
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        align-items: stretch;
+    }
+
+    .toast {
+        max-width: none;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(120%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; transform: translateY(6px); }
+}
+
+/* EXPANDIBLES (variantes de ejercicio) */
+.collapsible {
+    cursor: pointer;
+    padding: 12px;
+    background: var(--bg-subtle);
+    border-radius: var(--radius-sm);
+    margin-bottom: 8px;
+    user-select: none;
+}
+
+.collapsible:hover {
+    background: var(--bg-elevated);
+}
+
+.collapsible-content {
+    display: none;
+    padding: 12px;
+    background: var(--bg-subtle);
+    border-radius: var(--radius-sm);
+    margin-bottom: 12px;
+}
+
+.collapsible-content.active {
+    display: block;
+}
+
+/* HISTORY ITEM */
+.history-item {
+    padding: 12px;
+    border-left: 3px solid var(--brand);
+    background: var(--bg-subtle);
+    border-radius: var(--radius-sm);
+    margin-bottom: 10px;
+    font-size: 13px;
+}
+
+.history-item small {
+    color: var(--text-muted);
+    display: block;
+    margin-top: 6px;
+}
+
+/* CHIPS (duración, volumen, rutina, PR) */
+.stat-chip {
+    display: inline-block;
+    background: var(--bg-elevated);
+    color: var(--text-muted);
+    padding: 2px 9px;
+    border-radius: 10px;
+    font-size: 0.78em;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.stat-chip.brand {
+    background: var(--brand);
+    color: white;
+}
+
+.stat-chip.pr {
+    background: var(--warning);
+    color: #402d00;
+}
+
+.stat-chip.tabata {
+    background: #8b5cf6;
+    color: white;
+}

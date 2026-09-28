@@ -1,0 +1,232 @@
+/* Progreso: mini-gráficos, modal de detalle y calendario. */
+
+/* GRILLA DE MINI-GRÁFICOS POR EJERCICIO */
+.mini-chart-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.mini-chart-card {
+    position: relative;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px;
+    cursor: grab;
+    transition: background 0.15s, transform 0.15s;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.mini-chart-card:hover {
+    background: var(--bg-elevated);
+    transform: translateY(-1px);
+}
+
+.mini-chart-card.dragging-source {
+    opacity: 0.35;
+}
+
+.mini-chart-drag-ghost {
+    position: fixed;
+    z-index: 3000;
+    pointer-events: none;
+    box-shadow: var(--shadow-md);
+    transform: scale(1.04);
+    cursor: grabbing;
+}
+
+.mini-chart-grid.drop-target-active {
+    outline: 2px dashed var(--brand);
+    outline-offset: 6px;
+    border-radius: var(--radius-sm);
+}
+
+.mini-chart-move-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    margin: 0;
+    border-radius: 50%;
+    font-size: 14px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    color: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+.move-group-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.move-group-list button {
+    width: 100%;
+    text-align: left;
+    background: var(--bg-subtle);
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+.move-group-list button:hover {
+    background: var(--bg-elevated);
+}
+
+.mini-chart-title {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    padding-right: 26px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mini-chart-canvas-wrap {
+    position: relative;
+    height: 46px;
+    overflow: hidden;
+}
+
+.mini-chart-last {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 6px;
+}
+
+@media (min-width: 640px) {
+    .mini-chart-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 900px) {
+    .mini-chart-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+/* MODAL (detalle de ejercicio) */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 2500;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal-overlay.open {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    padding: 20px;
+    max-width: 640px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-md);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.modal-header h3 {
+    font-family: var(--font-heading);
+    font-size: 18px;
+    font-weight: 500;
+}
+
+/* CALENDARIO DE ENTRENAMIENTOS */
+.calendar-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.calendar-nav button {
+    width: auto;
+    padding: 6px 14px;
+    margin: 0;
+}
+
+.calendar-month-label {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 15px;
+    text-transform: capitalize;
+}
+
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 4px;
+    font-size: 10px;
+    color: var(--text-faint);
+    text-align: center;
+    font-weight: 700;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+
+.calendar-cell {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    background: var(--bg-subtle);
+    color: var(--text-faint);
+    font-size: 11px;
+}
+
+.calendar-cell.empty {
+    background: transparent;
+}
+
+.calendar-cell.trained {
+    color: white;
+    font-weight: 700;
+}
+
+.calendar-cell.trained.low {
+    background: rgba(57, 217, 138, 0.35);
+    color: var(--text);
+}
+
+.calendar-cell.trained.mid {
+    background: rgba(57, 217, 138, 0.65);
+}
+
+.calendar-cell.trained.high {
+    background: var(--success);
+}
+
+.calendar-cell.today {
+    box-shadow: 0 0 0 2px var(--brand) inset;
+}

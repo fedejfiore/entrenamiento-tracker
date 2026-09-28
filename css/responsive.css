@@ -1,0 +1,41 @@
+/* Ajustes por tamaño de pantalla y barra de scroll (va último: pisa a los anteriores). */
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .app-main {
+        padding: 14px 12px 32px;
+    }
+
+    .section {
+        padding: 14px;
+    }
+
+    button {
+        padding: 9px 14px;
+        font-size: 13px;
+    }
+}
+
+@media (min-width: 900px) {
+    .app-main {
+        padding: 32px 40px 60px;
+    }
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-page);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--bg-elevated);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-faint);
+}
