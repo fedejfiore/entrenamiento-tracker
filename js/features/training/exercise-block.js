@@ -59,13 +59,13 @@ function buildSetRowHtml(type, label, set = {}, prev = {}, unit = 'mss') {
         .join('');
 
     return `<div class="set-row${set.done ? ' done' : ''}${set.warmup ? ' warmup' : ''}">
-            <button type="button" class="set-num" onclick="toggleWarmup(this)" aria-pressed="${set.warmup ? 'true' : 'false'}" title="Tocá para marcar/desmarcar como calentamiento" aria-label="Serie ${n}: marcar como calentamiento">${set.warmup ? WARMUP_LABEL : label}</button>
+            <button type="button" class="set-num" data-action="toggle-warmup" aria-pressed="${set.warmup ? 'true' : 'false'}" title="Tocá para marcar/desmarcar como calentamiento" aria-label="Serie ${n}: marcar como calentamiento">${set.warmup ? WARMUP_LABEL : label}</button>
             ${visibleInputs}
             ${def.calc === 'speed' ? buildSpeedCellHtml(set, prev) : ''}
             <input type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" data-f="rest" data-prev="${escapeHtml(prevRest)}" placeholder="${escapeHtml(prevRest || String(DEFAULT_REST_SECONDS))}" value="${escapeHtml(set.rest || '')}" aria-label="Descanso en segundos, serie ${n}"${def.rest ? '' : ' hidden'}>
             <select data-f="effort" aria-label="${scale.title}, serie ${n}">${effortOptions}</select>
-            <button type="button" class="set-check" aria-pressed="${set.done ? 'true' : 'false'}" aria-label="Serie ${n} hecha" onclick="toggleSetDone(this)">✓</button>
-            <button type="button" class="set-note-btn${set.note ? ' has-note' : ''}" aria-label="Nota de la serie ${n}" title="Nota de la serie" onclick="toggleSetNote(this)">📝</button>
+            <button type="button" class="set-check" aria-pressed="${set.done ? 'true' : 'false'}" aria-label="Serie ${n} hecha" data-action="toggle-done">✓</button>
+            <button type="button" class="set-note-btn${set.note ? ' has-note' : ''}" aria-label="Nota de la serie ${n}" title="Nota de la serie" data-action="toggle-set-note">📝</button>
             ${hiddenInputs}
             <input type="text" class="set-note" data-f="note" autocomplete="off" placeholder="Nota de la serie (ej: se me fue la técnica)" value="${escapeHtml(set.note || '')}"${set.note ? '' : ' hidden'}>
         </div>`;
@@ -97,7 +97,7 @@ function buildSetsTableHtml(type, sets, prevSets, unit = 'mss') {
     const head = `<div class="sets-head">
             <span>#</span>
             ${def.cols.map(f => f === 'time'
-                ? `<button type="button" class="time-unit-btn" onclick="cycleTimeUnit(this)" title="Cambiar unidad: segundos, m:ss, minutos u h:mm" aria-label="Unidad de tiempo: ${TIME_UNITS[unit].label}. Tocá para cambiarla">${TIME_UNITS[unit].head} ⇄</button>`
+                ? `<button type="button" class="time-unit-btn" data-action="cycle-time-unit" title="Cambiar unidad: segundos, m:ss, minutos u h:mm" aria-label="Unidad de tiempo: ${TIME_UNITS[unit].label}. Tocá para cambiarla">${TIME_UNITS[unit].head} ⇄</button>`
                 : `<span>${SET_FIELDS[f].head}</span>`).join('')}
             ${def.calc === 'speed' ? '<span title="Velocidad calculada">Km/h</span>' : ''}
             ${def.rest ? '<span title="Descanso en segundos">Desc s</span>' : ''}
@@ -128,25 +128,25 @@ function buildExerciseRowHtml(idx, ex, routine) {
 
     return `<div class="exercise-row" id="row_${idx}" data-name="${safeName}" data-type="${type}" data-time-unit="${timeUnit}">
             <div class="exercise-row-header">
-                <button type="button" class="drag-handle" aria-label="Reordenar ${safeName}: arrastrá, o usá las flechas ↑ ↓" title="Arrastrá para reordenar">${DRAG_DOTS_SVG}</button>
+                <button type="button" class="drag-handle" aria-label="Reordenar ${safeName}: mantené apretado y arrastrá, o usá las flechas ↑ ↓" title="Mantené apretado y arrastrá para reordenar">${DRAG_DOTS_SVG}</button>
                 <div class="exercise-title">
-                    <strong id="exname_${idx}" onclick="openExerciseDetailFromRow(${idx})" ondblclick="editExerciseName(${idx}, '${routine}')" style="cursor:pointer;">${ex}</strong>
+                    <strong id="exname_${idx}" data-action="open-detail" data-dblaction="rename-exercise" title="Tocá para ver el progreso · doble toque para renombrar" style="cursor:pointer;">${safeName}</strong>
                     <div class="exercise-meta">
-                        <select class="type-chip" aria-label="Cómo se mide ${safeName}" onchange="changeExerciseType(this)">${buildTypeOptionsHtml(type)}</select>
+                        <select class="type-chip" aria-label="Cómo se mide ${safeName}" data-change="change-type">${buildTypeOptionsHtml(type)}</select>
                         <span class="exercise-last">${buildLastSummaryText(stats, type)}</span>
                     </div>
                     ${stats.lastNote ? `<small style="color:var(--brand); font-style:italic; display:block; margin-top:3px;">💡 ${escapeHtml(stats.lastNote)}</small>` : ''}
                 </div>
                 <div class="exercise-row-actions">
-                    <button type="button" onclick="archiveExerciseFromRow(${idx}, '${routine}')" title="Archivar (guardar para después, sin perder el historial)">📥</button>
-                    <button type="button" class="danger" onclick="deleteRowQuick(${idx}, '${routine}')" title="Quitar de la sesión de hoy">✕</button>
+                    <button type="button" data-action="archive-exercise" title="Archivar (guardar para después, sin perder el historial)">📥</button>
+                    <button type="button" class="danger" data-action="remove-exercise" title="Quitar de la sesión de hoy">✕</button>
                 </div>
             </div>
             <div class="sets-table t-${type}">${buildSetsTableHtml(type, initialSets, prevSets, timeUnit)}</div>
             <div class="sets-controls">
-                <button type="button" onclick="removeLastSet(this)" aria-label="Quitar la última serie" title="Quitar la última serie"${setCount <= 1 ? ' disabled' : ''}>−</button>
-                <button type="button" onclick="addSet(this)">+ Agregar serie</button>
-                <button type="button" class="rep-count-btn" onclick="startRepCounter(this)" title="Cuenta la próxima serie con cadencia y voz">▶ Contar reps</button>
+                <button type="button" data-action="remove-set" aria-label="Quitar la última serie" title="Quitar la última serie"${setCount <= 1 ? ' disabled' : ''}>−</button>
+                <button type="button" data-action="add-set">+ Agregar serie</button>
+                <button type="button" class="rep-count-btn" data-action="count-reps" title="Cuenta la próxima serie con cadencia y voz">▶ Contar reps</button>
             </div>
             <input type="text" class="exercise-note" id="note_${idx}" autocomplete="off" placeholder="Nota del ejercicio (opcional)">
         </div>`;

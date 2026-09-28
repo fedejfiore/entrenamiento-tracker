@@ -189,8 +189,8 @@ function renderArchivedRoutinesList() {
         return `<div style="display:flex; align-items:center; justify-content:space-between; gap:8px; padding:8px 0; border-bottom:1px solid var(--border);">
             <span style="font-size:13px;">${label}</span>
             <div style="display:flex; gap:6px;">
-                <button type="button" class="small" style="width:auto;" onclick="restoreRoutine('${key}')">↩️ Restaurar</button>
-                ${isCustom ? `<button type="button" class="danger small" style="width:auto;" onclick="deleteCustomRoutineForever('${key}')" title="Eliminar definitivamente (no se puede deshacer)">🗑</button>` : ''}
+                <button type="button" class="small" style="width:auto;" data-action="restore-routine" data-routine="${escapeHtml(key)}">↩️ Restaurar</button>
+                ${isCustom ? `<button type="button" class="danger small" style="width:auto;" data-action="delete-routine" data-routine="${escapeHtml(key)}" title="Eliminar definitivamente (no se puede deshacer)">🗑</button>` : ''}
             </div>
         </div>`;
     }).join('');

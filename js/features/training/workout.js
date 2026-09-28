@@ -9,12 +9,12 @@ function buildArchivedExercisesHtml(routine, archivedNames) {
     const uid = `archivedExercises_${normalizeForCompare(routine).replace(/[^a-z0-9]+/g, '_')}`;
     const items = archivedNames.map(name =>
         `<div style="display:flex; align-items:center; justify-content:space-between; gap:8px; padding:6px 0; border-bottom:1px solid var(--border);">
-            <span style="font-size:13px;">${name}</span>
-            <button type="button" class="small" style="width:auto;" onclick="restoreArchivedExercise('${routine}', '${name.replace(/'/g, "\\'")}')">↩️ Restaurar</button>
+            <span style="font-size:13px;">${escapeHtml(name)}</span>
+            <button type="button" class="small" style="width:auto;" data-action="restore-archived" data-exercise="${escapeHtml(name)}">↩️ Restaurar</button>
         </div>`
     ).join('');
 
-    return `<div class="collapsible" onclick="toggleVariantGroup('${uid}')">▶ 📥 Reservorio de ejercicios (${archivedNames.length})</div>
+    return `<div class="collapsible" data-action="toggle-collapsible" data-target="${uid}">▶ 📥 Reservorio de ejercicios (${archivedNames.length})</div>
         <div class="collapsible-content" id="${uid}">${items}</div>`;
 }
 
@@ -49,6 +49,7 @@ function restoreArchivedExercise(routine, name) {
 }
 
 function loadRoutineExercises() {
+    reorderController.finish(); // si quedó un arrastre a medias, se cierra y la vista vuelve a la normalidad
     const routine = document.getElementById('routine').value;
     const container = document.getElementById('exercisesContainer');
     if (!container) return;
@@ -73,7 +74,7 @@ function loadRoutineExercises() {
     const archivedNames = archivedExercises[routine] || [];
     const archivedSet = new Set(archivedNames.map(normalizeForCompare));
 
-    let html = `<div class="sets-legend">Arrastrá desde los puntos ⠿ para reordenar · Tocá el número de serie para marcarla como calentamiento (C) · ✓ marca la serie y arranca el descanso · RIR: reps que te quedaban (F = al fallo)</div>`;
+    let html = `<div class="sets-legend">Mantené apretados los puntos ⠿ y arrastrá para reordenar · Tocá el número de serie para marcarla como calentamiento (C) · ✓ marca la serie y arranca el descanso · RIR: reps que te quedaban (F = al fallo)</div>`;
     exercises.forEach((ex, idx) => {
         if (!ex) return;
         if (archivedSet.has(normalizeForCompare(ex))) return;
@@ -85,11 +86,11 @@ function loadRoutineExercises() {
     html += `<div id="archivedExercisesAnchor">${buildArchivedExercisesHtml(routine, archivedNames)}</div>`;
 
     html += `<div id="quickAddWrapper" style="margin-top: 10px;">
-        <input type="text" id="quickAddExercise" list="exerciseNamesList" placeholder="Nuevo ejercicio (o elegí uno existente)" oninput="onQuickAddNameInput('${routine}')" style="margin-bottom: 0;">
+        <input type="text" id="quickAddExercise" list="exerciseNamesList" placeholder="Nuevo ejercicio (o elegí uno existente)" data-input="quick-add-name" style="margin-bottom: 0;">
         <datalist id="exerciseNamesList"></datalist>
         <div class="quick-add-type-row">
-            <select id="quickAddType" aria-label="Cómo se mide el ejercicio nuevo" onchange="this.dataset.touched = '1'" style="flex: 1;">${buildTypeOptionsHtml('kg')}</select>
-            <button onclick="quickAddExercise('${routine}')" style="flex: 0 0 auto; width: auto;">+ Agregar</button>
+            <select id="quickAddType" aria-label="Cómo se mide el ejercicio nuevo" data-change="quick-add-type" style="flex: 1;">${buildTypeOptionsHtml('kg')}</select>
+            <button data-action="quick-add" style="flex: 0 0 auto; width: auto;">+ Agregar</button>
         </div>
     </div>`;
     container.innerHTML = html;

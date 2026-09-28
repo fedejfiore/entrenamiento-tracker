@@ -50,35 +50,9 @@ class App {
             });
         });
 
-        const exercises = document.getElementById('exercisesContainer');
-        exercises.addEventListener('input', (e) => {
-            if (e.target.dataset?.f && e.target.closest?.('.set-row')) {
-                if (e.isTrusted) sanitizeSetInput(e.target);
-                updateSetCalc(e.target.closest('.set-row'));
-            }
-            if (e.target.classList?.contains('set-note')) {
-                e.target.closest('.set-row')?.querySelector('.set-note-btn')?.classList.toggle('has-note', !!e.target.value.trim());
-            }
-            if (isSessionDataEvent(e)) maybeAutoStartSessionTimer();
-            saveWorkoutDraft();
-        });
-        exercises.addEventListener('change', (e) => {
-            if (e.target.dataset?.f === 'time' && e.target.value.trim()) {
-                const unit = e.target.dataset.unit;
-                e.target.value = formatTimeForUnit(parseTimeInput(e.target.value, unit), unit);
-            }
-            if (isSessionDataEvent(e)) maybeAutoStartSessionTimer();
-            saveWorkoutDraft();
-        });
-        // Nota de serie vacía: al salir del campo se vuelve a esconder.
-        exercises.addEventListener('focusout', (e) => {
-            if (e.target.classList?.contains('set-note') && !e.target.value.trim()) e.target.hidden = true;
-        });
-        exercises.addEventListener('focusin', (e) => {
-            if (e.target.closest?.('.set-row') && e.target.dataset?.f) showSetStepper(e.target);
-        });
-        exercises.addEventListener('pointerdown', (e) => onReorderHandlePointerDown(e));
-        exercises.addEventListener('keydown', (e) => onReorderHandleKeyDown(e));
+        // Pantalla Entrenar y lista de rutinas archivadas: eventos delegados.
+        workoutScreen.bind();
+        bindArchivedRoutinesList();
 
         // El audio solo puede sonar después de un toque del usuario.
         document.addEventListener('pointerdown', unlockAudio, { once: true, capture: true });

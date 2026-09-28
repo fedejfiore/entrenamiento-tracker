@@ -1,13 +1,207 @@
-// Reordenar bloques con drag & drop (mouse, touch y teclado).
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+// Reordenar bloques de ejercicio con drag & drop (touch, mouse y teclado).
+//
+// Cómo se usa: mantener apretados los puntos ⠿ hasta que se llenan de color (y vibra),
+// y recién ahí arrastrar. El "mantener" evita mover un bloque sin querer al tocar.
+// Mientras se arrastra, los bloques se achican a su encabezado para moverlos cómodo.
+//
+// Robustez (antes el gesto podía quedar "trabado" y las series escondidas):
+// - El fin del gesto se escucha en toda la ventana, no solo en la manija: en el celular
+//   el "soltar" puede llegar a otro elemento, sobre todo porque al mover el bloque en la
+//   página el navegador pierde el seguimiento del dedo sobre la manija.
+// - Cualquier final (soltar, cancelar, salir de la app, volver a cargar la rutina) pasa
+//   por finish(), que SIEMPRE devuelve la vista a la normalidad.
 
-// Pointer Events: el mismo código sirve para mouse y touch. La manija tiene
-// touch-action:none (arrastrar desde ahí no scrollea), pero deslizar el dedo sobre
-// el resto del bloque scrollea normal. Mientras se arrastra, los bloques se colapsan
-// a su encabezado para poder mover ejercicios largos sin recorrer media pantalla.
-const REORDER_START_THRESHOLD_PX = 5;
+const REORDER_HOLD_MS = { touch: 700, mouse: 300 };
+const REORDER_HOLD_TOLERANCE_PX = 10; // moverse más que esto durante el "mantener" lo cancela
 
-let reorderState = null;
+class ReorderController {
+    constructor(containerId) {
+        this.containerId = containerId;
+        this.state = null;
+        this.onMove = this.onMove.bind(this);
+        this.onEnd = this.onEnd.bind(this);
+        this.onHidden = this.onHidden.bind(this);
+    }
+
+    get container() { return document.getElementById(this.containerId); }
+
+    onPointerDown(e) {
+        const handle = e.target.closest?.('.drag-handle');
+        if (!handle) return;
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+        const block = handle.closest('.exercise-row');
+        if (!block) return;
+
+        // Un gesto anterior que quedó sin terminar no puede bloquear este.
+        if (this.state) this.finish();
+
+        e.preventDefault();
+        const holdMs = e.pointerType === 'mouse' ? REORDER_HOLD_MS.mouse : REORDER_HOLD_MS.touch;
+        this.state = {
+            block, handle,
+            pointerId: e.pointerId,
+            startX: e.clientX,
+            startY: e.clientY,
+            lastClientY: e.clientY,
+            grabOffset: e.clientY - block.getBoundingClientRect().top,
+            active: false,
+            raf: null,
+            holdTimer: setTimeout(() => this.arm(), holdMs)
+        };
+        handle.style.setProperty('--hold-ms', `${holdMs}ms`);
+        handle.classList.add('drag-holding');
+
+        window.addEventListener('pointermove', this.onMove, { passive: false });
+        window.addEventListener('pointerup', this.onEnd);
+        window.addEventListener('pointercancel', this.onEnd);
+        window.addEventListener('blur', this.onHidden);
+        document.addEventListener('visibilitychange', this.onHidden);
+    }
+
+    /** Terminó el "mantener apretado": ya se puede arrastrar. */
+    arm() {
+        const st = this.state;
+        if (!st) return;
+        st.active = true;
+        st.orderBefore = getExerciseOrder();
+        st.handle.classList.remove('drag-holding');
+        st.handle.classList.add('drag-armed');
+        try { navigator.vibrate && navigator.vibrate(25); } catch (err) {}
+
+        this.container.classList.add('is-reordering');
+        st.block.classList.add('reordering');
+
+        // Al achicarse los bloques todo se corre: se scrollea para que el bloque siga bajo el dedo.
+        const rect = st.block.getBoundingClientRect();
+        const grab = Math.min(st.grabOffset, rect.height / 2);
+        window.scrollBy(0, rect.top - (st.lastClientY - grab));
+
+        st.startNaturalTop = st.block.offsetTop;
+        st.startPointerDocY = st.lastClientY + window.scrollY;
+        st.raf = requestAnimationFrame(() => this.autoScrollTick());
+    }
+
+    onMove(e) {
+        const st = this.state;
+        if (!st || e.pointerId !== st.pointerId) return;
+        e.preventDefault();
+        st.lastClientY = e.clientY;
+        if (!st.active) {
+            // Si se mueve mucho antes de completar el "mantener", no era un arrastre.
+            const moved = Math.hypot(e.clientX - st.startX, e.clientY - st.startY);
+            if (moved > REORDER_HOLD_TOLERANCE_PX) this.finish();
+            return;
+        }
+        this.update(e.clientY);
+    }
+
+    onEnd(e) {
+        const st = this.state;
+        if (!st || (e.pointerId !== undefined && e.pointerId !== st.pointerId)) return;
+        this.finish();
+    }
+
+    // La ventana perdió el foco (llamada, notificación, cambio de app) o pasó a segundo plano.
+    onHidden(e) {
+        if (e.type === 'blur' || document.visibilityState === 'hidden') this.finish();
+    }
+
+    update(clientY) {
+        const st = this.state;
+        if (!st || !st.active) return;
+        const block = st.block;
+        const desiredTop = st.startNaturalTop + (clientY + window.scrollY - st.startPointerDocY);
+
+        let prev = exerciseBlockSiblings(block, -1);
+        while (prev && desiredTop < prev.offsetTop + prev.offsetHeight / 2) {
+            const oldTop = prev.offsetTop;
+            block.parentNode.insertBefore(block, prev);
+            flipFrom(prev, oldTop);
+            prev = exerciseBlockSiblings(block, -1);
+        }
+        let next = exerciseBlockSiblings(block, 1);
+        while (next && desiredTop + block.offsetHeight > next.offsetTop + next.offsetHeight / 2) {
+            const oldTop = next.offsetTop;
+            block.parentNode.insertBefore(next, block);
+            flipFrom(next, oldTop);
+            next = exerciseBlockSiblings(block, 1);
+        }
+        block.style.transform = `translateY(${desiredTop - block.offsetTop}px)`;
+    }
+
+    // Autoscroll cerca de los bordes, para llevar un bloque más allá de lo visible.
+    autoScrollTick() {
+        const st = this.state;
+        if (!st || !st.active) return;
+        const y = st.lastClientY;
+        const vh = window.innerHeight;
+        let delta = 0;
+        if (y < DRAG_EDGE_SCROLL_ZONE_PX) {
+            delta = -Math.ceil((DRAG_EDGE_SCROLL_ZONE_PX - y) / DRAG_EDGE_SCROLL_ZONE_PX * DRAG_EDGE_SCROLL_MAX_SPEED);
+        } else if (y > vh - DRAG_EDGE_SCROLL_ZONE_PX) {
+            delta = Math.ceil((y - (vh - DRAG_EDGE_SCROLL_ZONE_PX)) / DRAG_EDGE_SCROLL_ZONE_PX * DRAG_EDGE_SCROLL_MAX_SPEED);
+        }
+        if (delta !== 0) {
+            const before = window.scrollY;
+            window.scrollBy(0, delta);
+            if (window.scrollY !== before) this.update(y);
+        }
+        st.raf = requestAnimationFrame(() => this.autoScrollTick());
+    }
+
+    /** Termina el gesto (del modo que sea) y guarda el orden si cambió. */
+    finish() {
+        const st = this.state;
+        if (!st) { this.resetView(); return; }
+        this.state = null;
+        clearTimeout(st.holdTimer);
+        if (st.raf) cancelAnimationFrame(st.raf);
+        window.removeEventListener('pointermove', this.onMove);
+        window.removeEventListener('pointerup', this.onEnd);
+        window.removeEventListener('pointercancel', this.onEnd);
+        window.removeEventListener('blur', this.onHidden);
+        document.removeEventListener('visibilitychange', this.onHidden);
+        st.handle.classList.remove('drag-holding', 'drag-armed');
+        this.resetView();
+        if (!st.active) return;
+
+        // Al expandir todo de nuevo, que el bloque soltado quede a la vista.
+        st.block.scrollIntoView({ block: 'center' });
+        if (getExerciseOrder() !== st.orderBefore) {
+            persistExerciseOrder();
+            saveWorkoutDraft();
+        }
+    }
+
+    /** Vista normal: ningún bloque achicado ni desplazado. */
+    resetView() {
+        const container = this.container;
+        if (!container) return;
+        container.classList.remove('is-reordering');
+        container.querySelectorAll('.exercise-row').forEach(el => {
+            el.classList.remove('reordering');
+            el.style.transition = '';
+            el.style.transform = '';
+        });
+    }
+
+    // Accesible con teclado: foco en la manija + flechas arriba/abajo.
+    onKeyDown(e) {
+        const handle = e.target.closest?.('.drag-handle');
+        if (!handle || (e.key !== 'ArrowUp' && e.key !== 'ArrowDown')) return;
+        e.preventDefault();
+        const block = handle.closest('.exercise-row');
+        const sibling = exerciseBlockSiblings(block, e.key === 'ArrowUp' ? -1 : 1);
+        if (!sibling) return;
+        if (e.key === 'ArrowUp') block.parentNode.insertBefore(block, sibling);
+        else block.parentNode.insertBefore(sibling, block);
+        handle.focus();
+        persistExerciseOrder();
+        saveWorkoutDraft();
+    }
+}
+
+const reorderController = new ReorderController('exercisesContainer');
 
 function exerciseBlockSiblings(block, dir) {
     let el = dir < 0 ? block.previousElementSibling : block.nextElementSibling;
@@ -30,148 +224,6 @@ function flipFrom(el, oldTop) {
     el.style.transform = '';
 }
 
-function onReorderHandlePointerDown(e) {
-    const handle = e.target.closest('.drag-handle');
-    if (!handle || reorderState) return;
-    if (e.pointerType === 'mouse' && e.button !== 0) return;
-    const block = handle.closest('.exercise-row');
-    const container = document.getElementById('exercisesContainer');
-    if (!block || !container) return;
-
-    e.preventDefault();
-    try { handle.setPointerCapture(e.pointerId); } catch (err) {}
-
-    reorderState = {
-        block, handle, container,
-        pointerId: e.pointerId,
-        startClientY: e.clientY,
-        lastClientY: e.clientY,
-        grabOffset: e.clientY - block.getBoundingClientRect().top,
-        active: false,
-        raf: null
-    };
-    handle.addEventListener('pointermove', onReorderPointerMove);
-    handle.addEventListener('pointerup', onReorderPointerEnd);
-    handle.addEventListener('pointercancel', onReorderPointerEnd);
-}
-
-// Recién arranca al mover unos píxeles: un toque suelto en la manija no colapsa nada.
-function beginReorder(clientY) {
-    const st = reorderState;
-    st.active = true;
-    st.orderBefore = getExerciseOrder();
-    st.container.classList.add('is-reordering');
-    st.block.classList.add('reordering');
-    try { navigator.vibrate && navigator.vibrate(15); } catch (err) {}
-
-    // Al colapsar, todo se corre: se scrollea para que el bloque siga bajo el dedo.
-    const rect = st.block.getBoundingClientRect();
-    const grab = Math.min(st.grabOffset, rect.height / 2);
-    window.scrollBy(0, rect.top - (clientY - grab));
-
-    st.startNaturalTop = st.block.offsetTop;
-    st.startPointerDocY = clientY + window.scrollY;
-    st.raf = requestAnimationFrame(reorderAutoScrollTick);
-}
-
-function updateReorder(clientY) {
-    const st = reorderState;
-    if (!st || !st.active) return;
-    st.lastClientY = clientY;
-    const block = st.block;
-    const desiredTop = st.startNaturalTop + (clientY + window.scrollY - st.startPointerDocY);
-
-    let prev = exerciseBlockSiblings(block, -1);
-    while (prev && desiredTop < prev.offsetTop + prev.offsetHeight / 2) {
-        const oldTop = prev.offsetTop;
-        block.parentNode.insertBefore(block, prev);
-        flipFrom(prev, oldTop);
-        prev = exerciseBlockSiblings(block, -1);
-    }
-    let next = exerciseBlockSiblings(block, 1);
-    while (next && desiredTop + block.offsetHeight > next.offsetTop + next.offsetHeight / 2) {
-        const oldTop = next.offsetTop;
-        block.parentNode.insertBefore(next, block);
-        flipFrom(next, oldTop);
-        next = exerciseBlockSiblings(block, 1);
-    }
-
-    block.style.transform = `translateY(${desiredTop - block.offsetTop}px)`;
-}
-
-function onReorderPointerMove(e) {
-    const st = reorderState;
-    if (!st || e.pointerId !== st.pointerId) return;
-    e.preventDefault();
-    if (!st.active) {
-        if (Math.abs(e.clientY - st.startClientY) < REORDER_START_THRESHOLD_PX) return;
-        beginReorder(e.clientY);
-    }
-    updateReorder(e.clientY);
-}
-
-function reorderAutoScrollTick() {
-    const st = reorderState;
-    if (!st || !st.active) return;
-    const y = st.lastClientY;
-    const vh = window.innerHeight;
-    let delta = 0;
-    if (y < DRAG_EDGE_SCROLL_ZONE_PX) {
-        delta = -Math.ceil((DRAG_EDGE_SCROLL_ZONE_PX - y) / DRAG_EDGE_SCROLL_ZONE_PX * DRAG_EDGE_SCROLL_MAX_SPEED);
-    } else if (y > vh - DRAG_EDGE_SCROLL_ZONE_PX) {
-        delta = Math.ceil((y - (vh - DRAG_EDGE_SCROLL_ZONE_PX)) / DRAG_EDGE_SCROLL_ZONE_PX * DRAG_EDGE_SCROLL_MAX_SPEED);
-    }
-    if (delta !== 0) {
-        const before = window.scrollY;
-        window.scrollBy(0, delta);
-        if (window.scrollY !== before) updateReorder(y);
-    }
-    st.raf = requestAnimationFrame(reorderAutoScrollTick);
-}
-
-function onReorderPointerEnd(e) {
-    const st = reorderState;
-    if (!st || e.pointerId !== st.pointerId) return;
-    const { block, handle, container, active, orderBefore } = st;
-    if (st.raf) cancelAnimationFrame(st.raf);
-    handle.removeEventListener('pointermove', onReorderPointerMove);
-    handle.removeEventListener('pointerup', onReorderPointerEnd);
-    handle.removeEventListener('pointercancel', onReorderPointerEnd);
-    reorderState = null;
-    if (!active) return;
-
-    container.querySelectorAll('.exercise-row').forEach(el => { el.style.transition = ''; el.style.transform = ''; });
-    block.classList.remove('reordering');
-    container.classList.remove('is-reordering');
-    // Al expandir todo de nuevo, que el bloque soltado quede a la vista.
-    block.scrollIntoView({ block: 'center' });
-
-    if (getExerciseOrder() !== orderBefore) {
-        persistExerciseOrder();
-        saveWorkoutDraft();
-    }
-}
-
-// Accesible con teclado: foco en la manija + flechas arriba/abajo.
-function onReorderHandleKeyDown(e) {
-    const handle = e.target.closest('.drag-handle');
-    if (!handle || (e.key !== 'ArrowUp' && e.key !== 'ArrowDown')) return;
-    e.preventDefault();
-    const block = handle.closest('.exercise-row');
-    if (e.key === 'ArrowUp') {
-        const prev = exerciseBlockSiblings(block, -1);
-        if (!prev) return;
-        block.parentNode.insertBefore(block, prev);
-    } else {
-        const next = exerciseBlockSiblings(block, 1);
-        if (!next) return;
-        block.parentNode.insertBefore(next, block);
-    }
-    handle.focus();
-    persistExerciseOrder();
-    saveWorkoutDraft();
-}
-
 // El orden nuevo queda guardado en la rutina (la próxima vez aparece igual).
 // Los ejercicios que no están en pantalla (archivados o quitados solo por hoy)
 // conservan su lugar; los visibles se reacomodan en los lugares que ocupaban.
@@ -189,4 +241,3 @@ function persistExerciseOrder() {
     customRoutines[routine] = list.map(n => domSet.has(normalizeForCompare(n)) ? domNames[k++] : n);
     saveCustomRoutines();
 }
-
