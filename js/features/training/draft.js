@@ -27,16 +27,16 @@ function saveWorkoutDraft() {
         mood: selectedMood,
         exercises
     };
-    try { localStorage.setItem('workoutDraft', JSON.stringify(draft)); } catch (e) {}
+    try { db.set('workoutDraft', draft); } catch (e) {}
 }
 
 function clearWorkoutDraft() {
-    try { localStorage.removeItem('workoutDraft'); } catch (e) {}
+    try { db.remove('workoutDraft'); } catch (e) {}
 }
 
 function restoreWorkoutDraft() {
     let draft;
-    try { draft = JSON.parse(localStorage.getItem('workoutDraft') || 'null'); } catch (e) { return; }
+    try { draft = db.get('workoutDraft'); } catch (e) { return; }
     if (!draft || !draft.routine) return;
 
     // Un draft de un día distinto es una sesión abandonada: se descarta.

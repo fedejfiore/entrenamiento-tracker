@@ -1,4 +1,5 @@
-// Grabaciones propias para cada aviso (IndexedDB) y su reproducción.
+// Grabaciones propias para cada aviso: grabar, reproducir y pantalla de ajustes.
+// El guardado en IndexedDB está en js/data/recording-repository.js.
 // Script clásico (no módulo): comparte el ámbito global con el resto de la app.
 
 // Cada aviso puede tener una grabación propia (tu voz, la de un entrenador). Si
@@ -24,35 +25,10 @@ const VOICE_CUES = [
 
 const MAX_RECORDING_MS = 5000;
 
-const REC_DB_NAME = 'entrenamientoAudio';
-
-const REC_STORE = 'recordings';
-
 const recordingMeta = {};     // id -> { mime, duration, updatedAt }
 const recordingBuffers = {};  // id -> AudioBuffer listo para sonar (sin silencios)
 let recState = null;          // grabación en curso
 let cueSources = [];          // grabaciones sonando ahora
-
-// --- IndexedDB (se guarda ArrayBuffer + tipo: más compatible que guardar Blobs en iPhone) ---
-function recDb() {
-    return new Promise((resolve, reject) => {
-        if (!('indexedDB' in window)) { reject(new Error('Sin IndexedDB')); return; }
-        const req = indexedDB.open(REC_DB_NAME, 1);
-        req.onupgradeneeded = () => req.result.createObjectStore(REC_STORE, { keyPath: 'id' });
-        req.onsuccess = () => resolve(req.result);
-        req.onerror = () => reject(req.error);
-    });
-}
-
-async function recTx(mode, fn) {
-    const db = await recDb();
-    return new Promise((resolve, reject) => {
-        const tx = db.transaction(REC_STORE, mode);
-        const req = fn(tx.objectStore(REC_STORE));
-        tx.oncomplete = () => { db.close(); resolve(req ? req.result : undefined); };
-        tx.onerror = () => { db.close(); reject(tx.error); };
-    });
-}
 
 function decodeAudio(arrayBuffer) {
     const ctx = getAudioCtx();
@@ -88,7 +64,7 @@ function trimSilence(buffer) {
 
 async function loadRecordings() {
     let all = [];
-    try { all = await recTx('readonly', s => s.getAll()) || []; } catch (e) { return; }
+    try { all = await recordingRepo.all(); } catch (e) { return; }
     for (const rec of all) {
         recordingMeta[rec.id] = { mime: rec.mime, duration: rec.duration, updatedAt: rec.updatedAt };
         try { recordingBuffers[rec.id] = trimSilence(await decodeAudio(rec.data)); }
@@ -100,7 +76,7 @@ async function loadRecordings() {
 async function saveRecordingData(id, arrayBuffer, mime) {
     const decoded = await decodeAudio(arrayBuffer); // si no se puede leer, no se guarda
     const rec = { id, mime, data: arrayBuffer, duration: Math.round(decoded.duration * 10) / 10, updatedAt: Date.now() };
-    await recTx('readwrite', s => s.put(rec));
+    await recordingRepo.put(rec);
     recordingMeta[id] = { mime, duration: rec.duration, updatedAt: rec.updatedAt };
     recordingBuffers[id] = trimSilence(decoded);
 }
@@ -109,7 +85,7 @@ async function removeRecording(id) {
     if (!recordingMeta[id]) return;
     const cue = VOICE_CUES.find(c => c.id === id);
     if (!confirm(`¿Borrar tu grabación de «${cue?.text || id}»? Vuelve a sonar la voz del celular.`)) return;
-    try { await recTx('readwrite', s => s.delete(id)); } catch (e) {}
+    try { await recordingRepo.delete(id); } catch (e) {}
     delete recordingMeta[id];
     delete recordingBuffers[id];
     renderRecordingsUI();
@@ -269,37 +245,3 @@ function renderRecordingsUI() {
     });
     box.innerHTML = html;
 }
-
-// --- Backup: las grabaciones viajan dentro del JSON (en base64) ---
-function arrayBufferToBase64(buf) {
-    const bytes = new Uint8Array(buf);
-    let bin = '';
-    for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
-    return btoa(bin);
-}
-
-function base64ToArrayBuffer(b64) {
-    const bin = atob(b64);
-    const bytes = new Uint8Array(bin.length);
-    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-    return bytes.buffer;
-}
-
-async function exportRecordings() {
-    let all = [];
-    try { all = await recTx('readonly', s => s.getAll()) || []; } catch (e) { return {}; }
-    const out = {};
-    all.forEach(rec => { out[rec.id] = { mime: rec.mime, duration: rec.duration, updatedAt: rec.updatedAt, data: arrayBufferToBase64(rec.data) }; });
-    return out;
-}
-
-// Un backup con grabaciones las reemplaza; uno viejo (sin grabaciones) no toca las actuales.
-async function importRecordings(recordings) {
-    if (!recordings || typeof recordings !== 'object') return;
-    await recTx('readwrite', s => s.clear());
-    for (const [id, rec] of Object.entries(recordings)) {
-        if (!rec || !rec.data) continue;
-        await recTx('readwrite', s => s.put({ id, mime: rec.mime, duration: rec.duration, updatedAt: rec.updatedAt || Date.now(), data: base64ToArrayBuffer(rec.data) }));
-    }
-}
-

@@ -36,7 +36,7 @@ function getRoutineSuggestionRanking() {
         });
     if (keys.length === 0) return [];
 
-    let workouts = JSON.parse(localStorage.getItem('workouts') || '[]');
+    let workouts = repo.workouts.all();
     if (!Array.isArray(workouts)) workouts = [];
     const lastDone = {};
     workouts.forEach(w => {
@@ -109,8 +109,11 @@ function createNewRoutine() {
     const key = slugifyRoutineKey(name);
     customRoutines[key] = [];
     customRoutineLabels[key] = name;
-    saveCustomRoutines();
-    saveCustomRoutineLabels();
+    // Plantilla y nombre juntos: nunca queda una rutina sin nombre o un nombre sin rutina.
+    db.transaction(() => {
+        saveCustomRoutines();
+        saveCustomRoutineLabels();
+    });
 
     input.value = '';
     populateRoutineOptions();
@@ -222,13 +225,15 @@ function deleteCustomRoutineForever(key) {
     loadCustomRoutineLabels();
     delete customRoutines[key];
     delete customRoutineLabels[key];
-    saveCustomRoutines();
-    saveCustomRoutineLabels();
-
     archivedRoutines.delete(key);
-    saveArchivedRoutines();
     delete archivedExercises[key];
-    saveArchivedExercises();
+    // Las cuatro claves en una sola transacción: la rutina se borra entera o no se borra.
+    db.transaction(() => {
+        saveCustomRoutines();
+        saveCustomRoutineLabels();
+        saveArchivedRoutines();
+        saveArchivedExercises();
+    });
 
     renderArchivedRoutinesList();
     populateRoutineOptions();

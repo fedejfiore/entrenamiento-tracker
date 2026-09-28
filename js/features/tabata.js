@@ -167,32 +167,40 @@ function finishTabataSession() {
         return sum + b.roundsCompleted * b.workSec + restRoundsElapsed * b.restSec;
     }, 0);
 
-    let workouts = JSON.parse(localStorage.getItem('workouts') || '[]');
-    workouts.push({
-        id: Date.now(),
+    const session = WorkoutSession.create({
         date: getLocalDateString(),
         type: 'tabata',
         blocks: tabataSessionBlocks,
         duration: Math.max(1, Math.round(totalDurationSec / 60))
     });
-    localStorage.setItem('workouts', JSON.stringify(workouts));
+
+    // La sesión y el borrado de los bloques en curso van juntos (todo o nada).
+    try {
+        db.transaction(tx => {
+            repo.workouts.add(session);
+            tx.remove('activeTabataBlocks');
+        });
+    } catch (err) {
+        console.error('No se pudo guardar la sesión Tabata:', err);
+        showToast(`❌ No se pudo guardar la sesión Tabata. ${err.message}`, 'error', 6000);
+        return;
+    }
 
     showToast(`✅ Sesión Tabata guardada — ${tabataSessionBlocks.length} bloque(s)`);
 
     tabataSessionBlocks = [];
-    localStorage.removeItem('activeTabataBlocks');
     renderTabataSessionBlocks();
     displayWorkoutHistory();
     updateSidebar();
 }
 
 function saveTabataSessionBlocksDraft() {
-    try { localStorage.setItem('activeTabataBlocks', JSON.stringify(tabataSessionBlocks)); } catch (e) {}
+    try { db.set('activeTabataBlocks', tabataSessionBlocks); } catch (e) {}
 }
 
 function restoreTabataSessionBlocks() {
     try {
-        const saved = JSON.parse(localStorage.getItem('activeTabataBlocks') || '[]');
+        const saved = db.get('activeTabataBlocks');
         if (Array.isArray(saved) && saved.length > 0) {
             tabataSessionBlocks = saved;
             renderTabataSessionBlocks();

@@ -469,7 +469,7 @@ function closeExerciseDetail() {
 const VOLUME_FLAT_THRESHOLD_PCT = 2;
 
 function generateProgressionAnalysis() {
-    let workouts = JSON.parse(localStorage.getItem('workouts') || '[]');
+    let workouts = repo.workouts.all();
     if (!Array.isArray(workouts)) workouts = [];
 
     // Agrupar por ejercicio: volumen total, reps totales y peso máximo de cada sesión

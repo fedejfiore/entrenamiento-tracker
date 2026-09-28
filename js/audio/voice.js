@@ -22,13 +22,13 @@ const VOICE_DEFAULTS = {
 const REST_WARN_SECONDS = 10;
 
 function loadVoiceSettings() {
-    try { return { ...VOICE_DEFAULTS, ...(JSON.parse(localStorage.getItem('voiceSettings') || '{}') || {}) }; }
+    try { return { ...VOICE_DEFAULTS, ...(db.get('voiceSettings') || {}) }; }
     catch (e) { return { ...VOICE_DEFAULTS }; }
 }
 
 function saveVoiceSettings(patch) {
     const next = { ...loadVoiceSettings(), ...patch };
-    localStorage.setItem('voiceSettings', JSON.stringify(next));
+    db.set('voiceSettings', next);
     applyVoiceSettingsToPage(next);
     return next;
 }

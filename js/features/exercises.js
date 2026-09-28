@@ -85,33 +85,43 @@ function unifyFromSelectors() {
 
 // Renombra un ejercicio en TODAS las rutinas (base + personalizadas) y en todo
 // el historial de sesiones ya guardadas, para fusionar sus estadísticas.
+// Renombra en rutinas e historial en UNA transacción: o queda unificado en todos lados,
+// o (si algo falla) no cambia nada.
 function unifyExerciseName(oldName, newName) {
     loadCustomRoutines();
-    const allRoutineKeys = new Set([...Object.keys(routines), ...Object.keys(customRoutines)]);
-    allRoutineKeys.forEach(key => {
-        const list = customRoutines[key] || routines[key];
-        if (!list || !list.some(n => normalizeForCompare(n) === normalizeForCompare(oldName))) return;
-        if (!customRoutines[key]) {
-            customRoutines[key] = JSON.parse(JSON.stringify(routines[key]));
-        }
-        customRoutines[key] = customRoutines[key].map(n =>
-            normalizeForCompare(n) === normalizeForCompare(oldName) ? newName : n
-        );
-    });
-    saveCustomRoutines();
-
-    let workouts = JSON.parse(localStorage.getItem('workouts') || '[]');
     let changed = 0;
-    workouts.forEach(w => {
-        if (!w || !Array.isArray(w.exercises)) return;
-        w.exercises.forEach(ex => {
-            if (ex && ex.name && normalizeForCompare(ex.name) === normalizeForCompare(oldName)) {
-                ex.name = newName;
-                changed++;
-            }
+    try {
+        db.transaction(() => {
+            const allRoutineKeys = new Set([...Object.keys(routines), ...Object.keys(customRoutines)]);
+            allRoutineKeys.forEach(key => {
+                const list = customRoutines[key] || routines[key];
+                if (!list || !list.some(n => normalizeForCompare(n) === normalizeForCompare(oldName))) return;
+                if (!customRoutines[key]) {
+                    customRoutines[key] = JSON.parse(JSON.stringify(routines[key]));
+                }
+                customRoutines[key] = customRoutines[key].map(n =>
+                    normalizeForCompare(n) === normalizeForCompare(oldName) ? newName : n
+                );
+            });
+            saveCustomRoutines();
+
+            const workouts = repo.workouts.all();
+            workouts.forEach(w => {
+                if (!w || !Array.isArray(w.exercises)) return;
+                w.exercises.forEach(ex => {
+                    if (ex && ex.name && normalizeForCompare(ex.name) === normalizeForCompare(oldName)) {
+                        ex.name = newName;
+                        changed++;
+                    }
+                });
+            });
+            repo.workouts.saveAll(workouts);
         });
-    });
-    localStorage.setItem('workouts', JSON.stringify(workouts));
+    } catch (err) {
+        loadCustomRoutines(); // la memoria vuelve a lo guardado
+        showToast(`❌ No se pudo unificar. ${err.message}`, 'error', 6000);
+        return;
+    }
 
     showToast(`✅ Unificado: ${changed} registro(s) del historial ahora usan "${newName}".`);
 

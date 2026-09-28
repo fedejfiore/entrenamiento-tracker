@@ -47,7 +47,7 @@ function showScreen(screenId, fromClick) {
     const titleEl = document.getElementById('topbarTitle');
     if (titleEl && meta) titleEl.textContent = meta.label;
 
-    try { localStorage.setItem('activeScreen', screenId); } catch (e) {}
+    try { db.set('activeScreen', screenId); } catch (e) {}
 
     if (SCREEN_ON_SHOW[screenId]) SCREEN_ON_SHOW[screenId]();
 
@@ -92,12 +92,12 @@ function toggleTheme() {
     const isLight = document.documentElement.getAttribute('data-theme') === 'light';
     const next = isLight ? 'dark' : 'light';
     applyTheme(next);
-    try { localStorage.setItem('theme', next); } catch (e) {}
+    try { db.set('theme', next); } catch (e) {}
 }
 
 function initTheme() {
     let saved = 'dark';
-    try { saved = localStorage.getItem('theme') || 'dark'; } catch (e) {}
+    try { saved = db.get('theme') || 'dark'; } catch (e) {}
     applyTheme(saved);
 }
 

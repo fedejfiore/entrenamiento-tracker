@@ -10,7 +10,7 @@ const MUSIC_APPS = {
 };
 
 function loadMusicLinks() {
-    try { return JSON.parse(localStorage.getItem('musicLinks') || '{}') || {}; } catch (e) { return {}; }
+    try { return db.get('musicLinks') || {}; } catch (e) { return {}; }
 }
 
 function initMusicSettingsUI() {
@@ -35,7 +35,7 @@ function saveMusicLink(key, input) {
         }
         links[key] = url.href;
     }
-    localStorage.setItem('musicLinks', JSON.stringify(links));
+    db.set('musicLinks', links);
     showToast(raw ? `🎵 Playlist de ${MUSIC_APPS[key].label} guardada` : `Se borró la playlist de ${MUSIC_APPS[key].label}`);
 }
 

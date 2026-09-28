@@ -10,7 +10,7 @@ const WEEK_STATUS_LABELS = {
 };
 
 function updateSidebar() {
-    const workouts = JSON.parse(localStorage.getItem('workouts') || '[]');
+    const workouts = repo.workouts.all();
     document.getElementById('totalWorkouts').textContent = workouts.length;
 
     if (workouts.length > 0) {
@@ -81,7 +81,7 @@ let recentRoutinesExpanded = false;
 
 function toggleRecentRoutinesExpanded() {
     recentRoutinesExpanded = !recentRoutinesExpanded;
-    let workouts = JSON.parse(localStorage.getItem('workouts') || '[]');
+    let workouts = repo.workouts.all();
     if (!Array.isArray(workouts)) workouts = [];
     renderRecentRoutineAverages(workouts);
 }
@@ -135,7 +135,7 @@ function renderMonthCalendar() {
     const labelEl = document.getElementById('calendarMonthLabel');
     if (!container) return;
 
-    let workouts = JSON.parse(localStorage.getItem('workouts') || '[]');
+    let workouts = repo.workouts.all();
     if (!Array.isArray(workouts)) workouts = [];
 
     const base = new Date();

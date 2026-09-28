@@ -6,10 +6,10 @@ let restTimerAudioCtx = null;
 function loadSoundSettings() {
     let volume = 100;
     try {
-        const saved = localStorage.getItem('soundVolume');
+        const saved = db.get('soundVolume');
         if (saved !== null) volume = Math.max(0, Math.min(100, parseInt(saved, 10)));
     } catch (e) {}
-    const type = localStorage.getItem('soundType') || 'classic';
+    const type = db.get('soundType') || 'classic';
     return { type, volume };
 }
 
@@ -25,13 +25,13 @@ function initSoundSettingsUI() {
 
 function saveSoundSettings() {
     const type = document.getElementById('soundType')?.value || 'classic';
-    localStorage.setItem('soundType', type);
+    db.set('soundType', type);
 }
 
 function onSoundVolumeInput() {
     const vol = document.getElementById('soundVolume')?.value ?? '100';
     document.getElementById('soundVolumeLabel').textContent = vol + '%';
-    localStorage.setItem('soundVolume', vol);
+    db.set('soundVolume', vol);
 }
 
 function testSound() {

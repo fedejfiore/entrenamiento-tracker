@@ -2,23 +2,26 @@
 // Script clásico (no módulo): comparte el ámbito global con el resto de la app.
 
 function saveBodyMetrics() {
-    const body = {
+    const body = BodyMeasurement.create({
         date: document.getElementById('bodyDate').value,
         weight: parseFloat(document.getElementById('bodyWeight').value),
         fat: parseFloat(document.getElementById('bodyFat').value),
         muscle: parseFloat(document.getElementById('bodyMuscle').value),
         water: parseFloat(document.getElementById('bodyWater').value),
         waist: parseFloat(document.getElementById('bodyWaist').value)
-    };
+    });
 
     if (!body.weight || !body.date) {
         showToast('Completá fecha y peso', 'error');
         return;
     }
 
-    let metrics = JSON.parse(localStorage.getItem('bodyMetrics') || '[]');
-    metrics.push(body);
-    localStorage.setItem('bodyMetrics', JSON.stringify(metrics));
+    try {
+        repo.bodyMetrics.add(body);
+    } catch (err) {
+        showToast(`❌ No se pudo guardar la medida. ${err.message}`, 'error', 6000);
+        return;
+    }
 
     showToast('✅ Métricas guardadas');
     updateBodyChart();
@@ -31,11 +34,11 @@ let bodyChart;
 function saveBodyChartScale() {
     const min = document.getElementById('bodyChartYMin')?.value || '';
     const max = document.getElementById('bodyChartYMax')?.value || '';
-    localStorage.setItem('bodyChartScale', JSON.stringify({ min, max }));
+    db.set('bodyChartScale', { min, max });
 }
 
 function loadBodyChartScale() {
-    const saved = JSON.parse(localStorage.getItem('bodyChartScale') || '{}');
+    const saved = db.get('bodyChartScale');
     const minEl = document.getElementById('bodyChartYMin');
     const maxEl = document.getElementById('bodyChartYMax');
     if (minEl && saved.min !== undefined) minEl.value = saved.min;
@@ -45,7 +48,7 @@ function loadBodyChartScale() {
 function updateBodyChart() {
     saveBodyChartScale();
 
-    let metrics = JSON.parse(localStorage.getItem('bodyMetrics') || '[]');
+    let metrics = repo.bodyMetrics.all();
     if (!Array.isArray(metrics) || metrics.length === 0) return;
 
     let labels = metrics.map(m => m?.date || '').filter(Boolean);

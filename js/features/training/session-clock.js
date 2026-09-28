@@ -11,7 +11,7 @@ let sessionDurationInterval = null;
 // guardada hoy (en vez de dejar el dato en blanco aunque ya hayas entrenado).
 function getTodaysLastSessionDurationLabel() {
     const today = getLocalDateString();
-    let workouts = JSON.parse(localStorage.getItem('workouts') || '[]');
+    let workouts = repo.workouts.all();
     if (!Array.isArray(workouts)) workouts = [];
     const todays = workouts.filter(w => w && w.date === today && w.duration != null);
     if (todays.length === 0) return '-';
@@ -69,8 +69,10 @@ function startRoutineManually() {
     if (currentSessionStartTime) return;
     currentSessionStartTime = Date.now();
     currentSessionEndTime = null;
-    localStorage.setItem('activeSessionStart', String(currentSessionStartTime));
-    localStorage.removeItem('activeSessionEnd');
+    db.transaction(tx => {
+        tx.set('activeSessionStart', String(currentSessionStartTime));
+        tx.remove('activeSessionEnd');
+    });
     updateSessionDurationDisplay();
     updateRoutineTimeStatusUI();
     if (!sessionDurationInterval) {
@@ -94,7 +96,7 @@ function finishRoutineManually() {
     }
     if (currentSessionEndTime) return;
     currentSessionEndTime = Date.now();
-    localStorage.setItem('activeSessionEnd', String(currentSessionEndTime));
+    db.set('activeSessionEnd', String(currentSessionEndTime));
     if (sessionDurationInterval) {
         clearInterval(sessionDurationInterval);
         sessionDurationInterval = null;
@@ -106,8 +108,7 @@ function finishRoutineManually() {
 function stopSessionTimer() {
     currentSessionStartTime = null;
     currentSessionEndTime = null;
-    localStorage.removeItem('activeSessionStart');
-    localStorage.removeItem('activeSessionEnd');
+    clearStoredSessionTimes();
     if (sessionDurationInterval) {
         clearInterval(sessionDurationInterval);
         sessionDurationInterval = null;
@@ -117,7 +118,7 @@ function stopSessionTimer() {
 }
 
 function restoreSessionTimer() {
-    const savedStart = localStorage.getItem('activeSessionStart');
+    const savedStart = db.get('activeSessionStart');
     if (!savedStart) return;
     currentSessionStartTime = parseInt(savedStart, 10);
     if (isNaN(currentSessionStartTime)) {
@@ -130,12 +131,11 @@ function restoreSessionTimer() {
     // una hora vieja a la próxima sesión que se guarde.
     if (formatDateLocal(new Date(currentSessionStartTime)) !== formatDateLocal(new Date())) {
         currentSessionStartTime = null;
-        localStorage.removeItem('activeSessionStart');
-        localStorage.removeItem('activeSessionEnd');
+        clearStoredSessionTimes();
         return;
     }
 
-    const savedEnd = localStorage.getItem('activeSessionEnd');
+    const savedEnd = db.get('activeSessionEnd');
     currentSessionEndTime = savedEnd ? parseInt(savedEnd, 10) : null;
     if (isNaN(currentSessionEndTime)) currentSessionEndTime = null;
 
@@ -146,3 +146,10 @@ function restoreSessionTimer() {
     }
 }
 
+// Inicio y fin de la sesión en curso se borran juntos (nunca queda uno sin el otro).
+function clearStoredSessionTimes() {
+    db.transaction(tx => {
+        tx.remove('activeSessionStart');
+        tx.remove('activeSessionEnd');
+    });
+}

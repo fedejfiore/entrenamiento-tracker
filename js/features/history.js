@@ -81,7 +81,7 @@ function renderTabataHistoryItem(w) {
 
 // Todas las sesiones guardadas (sin límite), más nueva primero.
 function getAllSessions() {
-    let workouts = JSON.parse(localStorage.getItem('workouts') || '[]');
+    let workouts = repo.workouts.all();
     if (!Array.isArray(workouts)) workouts = [];
     return workouts
         .filter(w => w && w.date && (w.type === 'tabata' || (w.exercises && Array.isArray(w.exercises))))
@@ -182,7 +182,7 @@ function toggleSession(uid) {
 }
 
 function editWorkoutDate(workoutId) {
-    let workouts = JSON.parse(localStorage.getItem('workouts') || '[]');
+    let workouts = repo.workouts.all();
     const workout = workouts.find(w => w.id === workoutId);
     if (!workout) return;
 
@@ -195,7 +195,12 @@ function editWorkoutDate(workoutId) {
     }
 
     workout.date = newDate;
-    localStorage.setItem('workouts', JSON.stringify(workouts));
+    try {
+        repo.workouts.saveAll(workouts);
+    } catch (err) {
+        showToast(`❌ No se pudo cambiar la fecha. ${err.message}`, 'error', 6000);
+        return;
+    }
     displayWorkoutHistory();
     updateSidebar();
 }

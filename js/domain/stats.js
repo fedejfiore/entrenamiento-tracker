@@ -5,7 +5,7 @@ let exerciseStats = {};
 
 function calculateStats() {
     exerciseStats = {};
-    let workouts = JSON.parse(localStorage.getItem('workouts') || '[]');
+    let workouts = repo.workouts.all();
     if (!Array.isArray(workouts)) workouts = [];
     
     workouts.forEach(w => {
@@ -269,7 +269,7 @@ function getPrevSets(name, type) {
 
 // Historial de peso promedio + 1RM estimado de un ejercicio, sesión a sesión.
 function getExerciseHistoryData(exName) {
-    let workouts = JSON.parse(localStorage.getItem('workouts') || '[]');
+    let workouts = repo.workouts.all();
     if (!Array.isArray(workouts)) workouts = [];
 
     const data = [];

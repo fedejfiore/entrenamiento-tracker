@@ -86,7 +86,7 @@ async function toggleWakeLock() {
         const ok = await requestWakeLock();
         if (!ok) {
             wakeLockEnabled = false;
-            try { localStorage.setItem('wakeLockEnabled', '0'); } catch (e) {}
+            try { db.set('wakeLockEnabled', '0'); } catch (e) {}
             updateWakeLockBtn();
             alert(!('wakeLock' in navigator)
                 ? 'Este navegador no soporta mantener la pantalla encendida.'
@@ -98,20 +98,20 @@ async function toggleWakeLock() {
         releaseWakeLockNow();
         wakeLockEnabled = false;
     }
-    try { localStorage.setItem('wakeLockEnabled', wakeLockEnabled ? '1' : '0'); } catch (e) {}
+    try { db.set('wakeLockEnabled', wakeLockEnabled ? '1' : '0'); } catch (e) {}
     updateWakeLockBtn();
 }
 
 function initWakeLock() {
     let saved = '0';
-    try { saved = localStorage.getItem('wakeLockEnabled') || '0'; } catch (e) {}
+    try { saved = db.get('wakeLockEnabled') || '0'; } catch (e) {}
     wakeLockEnabled = saved === '1';
     updateWakeLockBtn();
     if (wakeLockEnabled) {
         requestWakeLock().then(ok => {
             if (!ok) {
                 wakeLockEnabled = false;
-                try { localStorage.setItem('wakeLockEnabled', '0'); } catch (e) {}
+                try { db.set('wakeLockEnabled', '0'); } catch (e) {}
             }
             updateWakeLockBtn();
         });

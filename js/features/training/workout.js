@@ -166,8 +166,8 @@ function editExerciseName(idx, routine) {
     customRoutines[routine][pos] = trimmed;
     saveCustomRoutines();
     // El tipo de medición acompaña al ejercicio renombrado.
-    const oldType = exerciseTypes[normalizeForCompare(currentName)];
-    if (oldType && !exerciseTypes[normalizeForCompare(trimmed)]) saveExerciseType(trimmed, oldType);
+    const oldType = exercisePrefs.rawType(currentName);
+    if (oldType && !exercisePrefs.hasType(trimmed)) saveExerciseType(trimmed, oldType);
     elem.textContent = trimmed;
     const block = elem.closest('.exercise-row');
     if (block) block.dataset.name = trimmed;
@@ -228,7 +228,7 @@ function quickAddExercise(routine) {
     // Tipo de medición: el que se eligió a mano, o el sugerido si el ejercicio
     // todavía no tenía uno (uno existente conserva el suyo si no se tocó el selector).
     const typeSelect = document.getElementById('quickAddType');
-    if (typeSelect && (typeSelect.dataset.touched || !exerciseTypes[normalizeForCompare(name)])) {
+    if (typeSelect && (typeSelect.dataset.touched || !exercisePrefs.hasType(name))) {
         saveExerciseType(name, typeSelect.value);
     }
 
@@ -272,13 +272,12 @@ function saveWorkoutSession() {
             .map(set => cleanSetForSave(set, type));
         if (!name || sets.length === 0) return;
 
-        exercises.push({
+        exercises.push(new ExerciseLog({
             name,
             type,
             sets,
-            ...legacyStringsFromSets(sets, type),
             note: (block.querySelector('.exercise-note')?.value || '').trim()
-        });
+        }).toJSON());
     });
 
     if (exercises.length === 0) {
@@ -287,9 +286,6 @@ function saveWorkoutSession() {
     }
 
     const generalNotes = document.getElementById('sessionNotes').value.trim();
-
-    cancelRestTimer(); // no dejar el widget de descanso corriendo después de guardar
-    stopRepCounter(true);
 
     // Si el cronómetro quedó marcado de un día distinto al que se está guardando
     // (se inició/finalizó y nunca se guardó, o la pestaña quedó abierta de un día
@@ -308,9 +304,7 @@ function saveWorkoutSession() {
     const { prs, notes: progressNotes } = detectPRs(exercises, exerciseStats);
     const volume = calculateSessionVolume(exercises);
 
-    let workouts = JSON.parse(localStorage.getItem('workouts') || '[]');
-    workouts.push({
-        id: Date.now(),
+    const session = WorkoutSession.create({
         date: date,
         routine: routine,
         exercises: exercises,
@@ -323,7 +317,23 @@ function saveWorkoutSession() {
         prs: prs,
         progressNotes: progressNotes
     });
-    localStorage.setItem('workouts', JSON.stringify(workouts));
+
+    // Todo junto o nada: la sesión nueva, el borrador y el reloj de la sesión en curso.
+    // Si no se pudo guardar, el formulario queda como estaba para reintentar.
+    try {
+        db.transaction(tx => {
+            repo.workouts.add(session);
+            tx.remove('workoutDraft');
+            tx.remove('activeSessionStart');
+            tx.remove('activeSessionEnd');
+        });
+    } catch (err) {
+        console.error('No se pudo guardar la sesión:', err);
+        showToast(`❌ No se pudo guardar la sesión. ${err.message}`, 'error', 6000);
+        return;
+    }
+    cancelRestTimer(); // no dejar el widget de descanso corriendo después de guardar
+    stopRepCounter(true);
     stopSessionTimer();
     clearWorkoutDraft();
 

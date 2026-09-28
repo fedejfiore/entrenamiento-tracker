@@ -1,0 +1,65 @@
+// Esquema de todo lo que la app guarda. Cada clave declara:
+//   type     'array' | 'object' | 'string' | 'number' | 'any'
+//   format   'json' (por defecto) | 'text' (se guarda tal cual, sin comillas de JSON)
+//   default  valor cuando no hay nada guardado
+//   group    'data'    datos del usuario                → van al backup
+//            'prefs'   preferencias y ajustes           → van al backup
+//            'session' estado temporal de la sesión     → NO van al backup
+//            'meta'    control interno (versión)        → NO van al backup
+//            'legacy'  claves de versiones viejas: solo se leen para migrar
+//   validate (opcional) valida el valor completo antes de guardarlo
+//
+// Es también el mapa para una base de datos real: ver docs/MODELO-DE-DATOS.md.
+
+const SCHEMA_VERSION = 2;
+
+const STORAGE_SCHEMA = {
+    // ---- Datos del usuario ----
+    workouts: {
+        group: 'data', type: 'array', default: [],
+        description: 'Sesiones guardadas (fuerza y Tabata).',
+        validate: list => WorkoutSession.validateList(list)
+    },
+    bodyMetrics: {
+        group: 'data', type: 'array', default: [],
+        description: 'Medidas corporales (peso, grasa, músculo, agua, cintura).',
+        validate: list => BodyMeasurement.validateList(list)
+    },
+    customRoutines: { group: 'data', type: 'object', default: {}, description: 'Rutinas del usuario: clave → lista ordenada de ejercicios.' },
+    customRoutineLabels: { group: 'data', type: 'object', default: {}, description: 'Nombre visible de cada rutina.' },
+    archivedRoutines: { group: 'data', type: 'array', default: [], description: 'Rutinas archivadas (no se borran).' },
+    archivedExercises: { group: 'data', type: 'object', default: {}, description: 'Ejercicios archivados por rutina.' },
+    exerciseTypes: { group: 'data', type: 'object', default: {}, description: 'Tipo de medición por ejercicio (kg, bw, time, min, km).' },
+    exerciseTimeUnits: { group: 'data', type: 'object', default: {}, description: 'Unidad de carga del tiempo por ejercicio (seg, mss, min, hmm).' },
+    exerciseTempos: { group: 'data', type: 'object', default: {}, description: 'Cadencia del contador de reps por ejercicio (s/rep).' },
+    exerciseGroupOverrides: { group: 'data', type: 'object', default: {}, description: 'Grupo muscular elegido a mano por ejercicio.' },
+    trainingDaysPlanHistory: { group: 'data', type: 'array', default: [], description: 'Días de entrenamiento planeados, con fecha desde la que rigen.' },
+
+    // ---- Preferencias ----
+    theme: { group: 'prefs', format: 'text', type: 'string', default: null, description: 'Tema: "light" o "dark".' },
+    soundType: { group: 'prefs', format: 'text', type: 'string', default: null, description: 'Sonido de fin de descanso.' },
+    soundVolume: { group: 'prefs', format: 'text', type: 'string', default: null, description: 'Volumen 0-100.' },
+    voiceSettings: { group: 'prefs', type: 'object', default: {}, description: 'Avisos por voz y contador de reps.' },
+    musicLinks: { group: 'prefs', type: 'object', default: {}, description: 'Playlists de Spotify / YouTube Music.' },
+    bodyChartScale: { group: 'prefs', type: 'object', default: {}, description: 'Escala manual del gráfico de medidas.' },
+    wakeLockEnabled: { group: 'prefs', format: 'text', type: 'string', default: null, description: 'Pantalla siempre encendida ("1"/"0").' },
+
+    // ---- Estado temporal de la sesión en curso ----
+    workoutDraft: { group: 'session', type: 'any', default: null, description: 'Series cargadas y todavía no guardadas.' },
+    activeSessionStart: { group: 'session', format: 'text', type: 'string', default: null, description: 'Inicio de la sesión en curso (ms).' },
+    activeSessionEnd: { group: 'session', format: 'text', type: 'string', default: null, description: 'Fin de la sesión en curso (ms).' },
+    activeTabataBlocks: { group: 'session', type: 'array', default: [], description: 'Bloques de Tabata de la sesión en curso.' },
+    activeScreen: { group: 'session', format: 'text', type: 'string', default: null, description: 'Última pantalla abierta.' },
+
+    // ---- Control interno ----
+    schemaVersion: { group: 'meta', format: 'text', type: 'string', default: null, description: 'Versión del esquema de datos (ver migraciones).' },
+    version: { group: 'meta', format: 'text', type: 'string', default: null, description: 'Versión del formato de backup de la app vieja.' },
+    preMigrationBackup: { group: 'meta', format: 'text', type: 'string', default: null, description: 'Copia automática previa a la última migración.' },
+
+    // ---- Claves de versiones anteriores (solo lectura para migrar) ----
+    deletedBaseRoutines: { group: 'legacy', type: 'array', default: null, description: 'Nombre viejo de archivedRoutines.' },
+    trainingDaysPlan: { group: 'legacy', type: 'any', default: null, description: 'Plan de días viejo (sin historial).' },
+    workoutSessions: { group: 'legacy', type: 'array', default: [], description: 'Formato de sesiones de una versión muy vieja.' }
+};
+
+const BACKUP_GROUPS = ['data', 'prefs'];

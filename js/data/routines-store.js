@@ -1,5 +1,6 @@
 // Rutinas del usuario: personalizadas, nombres, archivadas y plan de días.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+// Estado en memoria de las pantallas; se lee y guarda a través de db (js/data/store.js).
+// Las cargas iniciales las hace app.js DESPUÉS de correr las migraciones.
 
 let customRoutines = {};
 
@@ -11,18 +12,15 @@ let customRoutineLabels = {};
 // rutinas que no se están usando ahora como para ir preparando rutinas futuras sin
 // que aparezcan en la lista actual.
 function loadArchivedRoutines() {
-    try {
-        // Migra la clave vieja (solo rutinas base) si todavía no existe la nueva.
-        const raw = localStorage.getItem('archivedRoutines') ?? localStorage.getItem('deletedBaseRoutines') ?? '[]';
-        const saved = JSON.parse(raw);
-        return new Set(Array.isArray(saved) ? saved : []);
-    } catch (e) { return new Set(); }
+    // Si falta la clave nueva se usa la vieja (solo rutinas base); la migración 2 la copia.
+    const saved = db.has('archivedRoutines') ? db.get('archivedRoutines') : db.get('deletedBaseRoutines');
+    return new Set(Array.isArray(saved) ? saved : []);
 }
 
-let archivedRoutines = loadArchivedRoutines();
+let archivedRoutines = new Set();
 
 function saveArchivedRoutines() {
-    localStorage.setItem('archivedRoutines', JSON.stringify([...archivedRoutines]));
+    db.set('archivedRoutines', [...archivedRoutines]);
 }
 
 function isRoutineVisible(key) {
@@ -35,37 +33,31 @@ function isRoutineVisible(key) {
 let archivedExercises = {};
 
 function loadArchivedExercises() {
-    try {
-        const saved = localStorage.getItem('archivedExercises');
-        archivedExercises = saved ? JSON.parse(saved) : {};
-    } catch (e) { archivedExercises = {}; }
+    archivedExercises = db.get('archivedExercises');
 }
 
 function saveArchivedExercises() {
-    localStorage.setItem('archivedExercises', JSON.stringify(archivedExercises));
+    db.set('archivedExercises', archivedExercises);
 }
 
 function loadCustomRoutines() {
-    const saved = localStorage.getItem('customRoutines');
-    if (saved) customRoutines = JSON.parse(saved);
+    customRoutines = db.get('customRoutines');
 }
 
 function loadCustomRoutineLabels() {
-    const saved = localStorage.getItem('customRoutineLabels');
-    if (saved) customRoutineLabels = JSON.parse(saved);
+    customRoutineLabels = db.get('customRoutineLabels');
 }
 
 function saveCustomRoutineLabels() {
-    localStorage.setItem('customRoutineLabels', JSON.stringify(customRoutineLabels));
+    db.set('customRoutineLabels', customRoutineLabels);
 }
 
 function saveCustomRoutines() {
-    localStorage.setItem('customRoutines', JSON.stringify(customRoutines));
+    db.set('customRoutines', customRoutines);
 }
 
 function getLastRoutineNote(routine) {
-    let workouts = JSON.parse(localStorage.getItem('workouts') || '[]');
-    if (!Array.isArray(workouts)) workouts = [];
+    const workouts = repo.workouts.all();
     for (let i = workouts.length - 1; i >= 0; i--) {
         if (workouts[i] && workouts[i].routine === routine && workouts[i].notes) {
             return workouts[i].notes;
@@ -107,27 +99,29 @@ function slugifyRoutineKey(name) {
 
 function initializeData() {
     // Primera vez: arrancar sin historial, solo con las rutinas base del código
-    if (!localStorage.getItem('workouts')) {
-        localStorage.setItem('workouts', JSON.stringify([]));
-    }
-    if (!localStorage.getItem('bodyMetrics')) {
-        localStorage.setItem('bodyMetrics', JSON.stringify([]));
-    }
-    localStorage.setItem('version', '2.0');
+    db.transaction(tx => {
+        if (!db.has('workouts')) {
+            tx.set('workouts', []);
+            // Instalación nueva: no hay datos viejos que migrar. (Si ya había datos, la
+            // versión la marca solo runMigrations: así una migración fallida se reintenta.)
+            if (!db.has('schemaVersion')) tx.set('schemaVersion', String(SCHEMA_VERSION));
+        }
+        if (!db.has('bodyMetrics')) tx.set('bodyMetrics', []);
+        tx.set('version', '2.0');
+    });
 }
 
 // Historial de planes semanales: cada entrada dice desde qué lunes rige esa
 // cantidad/selección de días. Así, cambiar el plan hoy no reescribe cómo se
 // evaluaron semanas que ya pasaron con el plan anterior.
 function loadTrainingDaysPlanHistory() {
-    const saved = localStorage.getItem('trainingDaysPlanHistory');
-    if (saved) return JSON.parse(saved);
+    if (db.has('trainingDaysPlanHistory')) return db.get('trainingDaysPlanHistory');
 
     // Migración desde el formato viejo (un solo plan global): se asume vigente
     // "desde siempre" para no alterar retroactivamente semanas ya calculadas.
-    const legacyPlan = JSON.parse(localStorage.getItem('trainingDaysPlan') || 'null');
-    const history = (legacyPlan && legacyPlan.length > 0) ? [{ date: '1970-01-01', days: legacyPlan }] : [];
-    localStorage.setItem('trainingDaysPlanHistory', JSON.stringify(history));
+    const legacyPlan = db.get('trainingDaysPlan');
+    const history = (Array.isArray(legacyPlan) && legacyPlan.length > 0) ? [{ date: '1970-01-01', days: legacyPlan }] : [];
+    db.set('trainingDaysPlanHistory', history);
     return history;
 }
 
@@ -167,7 +161,7 @@ function saveTrainingDaysPlan() {
     } else {
         history.push({ date: mondayStr, days: selected });
     }
-    localStorage.setItem('trainingDaysPlanHistory', JSON.stringify(history));
+    db.set('trainingDaysPlanHistory', history);
     updateSidebar();
 }
 
