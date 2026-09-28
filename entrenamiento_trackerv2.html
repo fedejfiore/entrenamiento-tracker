@@ -485,6 +485,21 @@
         .sets-table.t-min { --set-cols: 22px 1fr 84px 40px 28px; }
         .sets-table.t-km { --set-cols: 22px 1fr 1fr 1fr 62px 40px 28px; }
 
+        /* Encabezado del tiempo: botón que cambia la unidad */
+        .time-unit-btn {
+            width: 100%;
+            margin: 0;
+            padding: 2px 0;
+            min-height: 22px;
+            background: rgba(var(--brand-rgb), 0.12);
+            color: var(--brand);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            border-radius: 6px;
+        }
+        .time-unit-btn:hover { background: rgba(var(--brand-rgb), 0.2); box-shadow: none; transform: none; }
+
         /* Columna calculada (km/h): no editable */
         .set-calc {
             text-align: center;
@@ -1062,6 +1077,36 @@
         .range-label { display: block; font-size: 13px; color: var(--text-muted); margin: 10px 0 4px; }
         .settings-hint { font-size: 11px; color: var(--text-faint); margin: -6px 0 8px; }
 
+        /* Mis grabaciones */
+        .rec-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .rec-info { flex: 1; min-width: 0; }
+        .rec-label { font-size: 14px; }
+        .rec-status { font-size: 11px; color: var(--text-faint); margin-top: 2px; }
+        .rec-row.has-rec .rec-status { color: var(--success); }
+        .rec-row.recording .rec-status { color: var(--danger); font-weight: 700; }
+        .rec-actions { display: flex; gap: 4px; flex-shrink: 0; }
+        .rec-btn {
+            width: auto;
+            margin: 0;
+            min-height: 40px;
+            min-width: 40px;
+            padding: 6px 10px;
+            font-size: 13px;
+            background: var(--bg-elevated);
+            color: var(--text);
+        }
+        .rec-btn:hover { background: var(--bg-subtle); box-shadow: none; transform: none; }
+        .rec-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+        .rec-btn.rec-record { color: var(--danger); min-width: 96px; }
+        .rec-row.recording .rec-btn.rec-record { background: var(--danger); color: #fff; animation: recPulse 1s infinite; }
+        @keyframes recPulse { 50% { opacity: 0.7; } }
+
         /* Botones de música en Entrenar */
         .music-row { display: flex; align-items: center; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
         .music-row-label { font-size: 13px; color: var(--text-muted); margin-right: 2px; }
@@ -1636,6 +1681,13 @@
                 </div>
 
                 <div class="section">
+                    <h2>🎙️ Mis grabaciones</h2>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Grabá tu voz (o la de quien quieras) para cada aviso: hasta 5 segundos, y el silencio del principio y del final se recorta solo. Lo que no grabes lo dice la voz del celular; los números siempre los dice la voz del celular. Las grabaciones quedan en este celular y se incluyen en el backup.</div>
+                    <label class="toggle-row"><input type="checkbox" data-voice="useRecordings" onchange="onVoiceSettingChange(this)"><span>Usar mis grabaciones</span></label>
+                    <div id="recordingsList"></div>
+                </div>
+
+                <div class="section">
                     <h2>🎵 Música</h2>
                     <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Pegá el link de tu playlist (en la app de música: Compartir → Copiar link) y la abrís con un toque desde Entrenar. Sin link, se abre la app en su inicio. Pausar o pasar de tema se hace desde la app de música o desde los controles del celular: una web no puede manejar otra app.</div>
                     <label class="range-label" for="musicLink_spotify">Playlist de Spotify</label>
@@ -1966,7 +2018,10 @@
             saveWorkoutDraft();
         });
         exercisesContainerEl.addEventListener('change', (e) => {
-            if (e.target.dataset?.f === 'time' && e.target.dataset.mode !== 'min' && e.target.value.trim()) e.target.value = formatTimeValue(e.target.value);
+            if (e.target.dataset?.f === 'time' && e.target.value.trim()) {
+                const unit = e.target.dataset.unit;
+                e.target.value = formatTimeForUnit(parseTimeInput(e.target.value, unit), unit);
+            }
             if (isSessionDataEvent(e)) maybeAutoStartSessionTimer();
             saveWorkoutDraft();
         });
@@ -2284,8 +2339,8 @@
 
                     const weightStr = ex.weight || '';
                     const repsStr = ex.reps || '';
-                    const weights = weightStr.split('-').map(x => parseDecimal(x)).filter(x => x != null);
-                    const reps = repsStr.split('-').map(x => parseInt(x)).filter(x => !isNaN(x));
+                    const weights = parseWeightList(weightStr, repsStr);
+                    const reps = parseRepsList(repsStr);
 
                     if (weights.length > 0) {
                         exerciseStats[ex.name].lastWeight = ex.weight;
@@ -2309,8 +2364,8 @@
 
         // ========== VOLUMEN, PRs Y 1RM ESTIMADO ==========
         function calculateExerciseVolume(ex) {
-            const weights = (ex.weight || '').split('-').map(x => parseDecimal(x)).filter(x => x != null);
-            const reps = (ex.reps || '').split('-').map(x => parseInt(x)).filter(x => !isNaN(x));
+            const weights = parseWeightList(ex.weight, ex.reps);
+            const reps = parseRepsList(ex.reps);
             const len = Math.min(weights.length, reps.length);
             let volume = 0;
             for (let i = 0; i < len; i++) {
@@ -2326,14 +2381,14 @@
 
         // Suma de reps de todas las series (a diferencia de maxReps, que solo mira la serie más alta)
         function calculateExerciseTotalReps(ex) {
-            const reps = (ex.reps || '').split('-').map(x => parseInt(x)).filter(x => !isNaN(x));
+            const reps = parseRepsList(ex.reps);
             return reps.reduce((sum, r) => sum + r, 0);
         }
 
         // Fórmula de Epley: 1RM = peso × (1 + reps/30)
         function estimate1RMForExercise(ex) {
-            const weights = (ex.weight || '').split('-').map(x => parseDecimal(x)).filter(x => x != null);
-            const reps = (ex.reps || '').split('-').map(x => parseInt(x)).filter(x => !isNaN(x));
+            const weights = parseWeightList(ex.weight, ex.reps);
+            const reps = parseRepsList(ex.reps);
             const len = Math.min(weights.length, reps.length);
             let max1RM = 0;
             for (let i = 0; i < len; i++) {
@@ -2345,10 +2400,7 @@
 
         // Promedio del descanso entre series (string tipo "90-90-120" -> segundos promedio).
         function averagePauseSeconds(pauseStr) {
-            const parts = (pauseStr || '')
-                .split('-')
-                .map(p => parseInt(p.replace(/\D/g, ''), 10))
-                .filter(n => !isNaN(n));
+            const parts = parsePauseList(pauseStr);
             if (parts.length === 0) return null;
             return parts.reduce((a, b) => a + b, 0) / parts.length;
         }
@@ -2374,8 +2426,8 @@
                     return;
                 }
 
-                const weights = (ex.weight || '').split('-').map(x => parseDecimal(x)).filter(x => x != null);
-                const reps = (ex.reps || '').split('-').map(x => parseInt(x)).filter(x => !isNaN(x));
+                const weights = parseWeightList(ex.weight, ex.reps);
+                const reps = parseRepsList(ex.reps);
                 const maxWeight = weights.length > 0 ? Math.max(...weights) : 0;
                 const maxReps = reps.length > 0 ? Math.max(...reps) : 0;
                 const volume = calculateExerciseVolume(ex);
@@ -2413,8 +2465,8 @@
                 // mención en vez de quedar en silencio, porque "hiciste menos, más rápido"
                 // es información útil aunque no sea un PR.
                 if (!hasPR && pauseImproved) {
-                    const lastWeights = (prev.lastWeight || '').split('-').map(x => parseDecimal(x)).filter(x => x != null);
-                    const lastReps = (prev.lastReps || '').split('-').map(x => parseInt(x)).filter(x => !isNaN(x));
+                    const lastWeights = parseWeightList(prev.lastWeight, prev.lastReps);
+                    const lastReps = parseRepsList(prev.lastReps);
                     const lastMaxWeight = lastWeights.length > 0 ? Math.max(...lastWeights) : null;
                     const lastMaxReps = lastReps.length > 0 ? Math.max(...lastReps) : null;
 
@@ -2465,17 +2517,15 @@
         // Cómo se mide cada ejercicio. Es global por nombre (no por rutina): "Plancha" se
         // mide en tiempo en cualquier rutina donde aparezca. Cambiar el tipo no toca el
         // historial ya guardado, solo qué columnas se cargan de acá en adelante.
-        // timeMode: 'clock' = m:ss para esfuerzos cortos (plancha: se tipea "45" → 0:45);
-        // 'min' = minutos para cosas largas (fútbol, bici: "60" o "32,5"). Sin esta
-        // distinción, tipear "60" en un partido quedaría en 0:60 en vez de 60 minutos.
         // rest: si la serie tiene columna de descanso (y dispara el timer al tildarla).
-        // calc: columna calculada (km/h a partir de minutos y km).
+        // calc: columna calculada (km/h a partir del tiempo y los km).
+        // La unidad del tiempo (seg, m:ss, min, h:mm) se elige por ejercicio: ver TIME_UNITS.
         const EXERCISE_TYPES = {
             kg:   { label: 'Kg + reps', cols: ['reps', 'kg'], effort: 'rir', defaultSets: 3, rest: true },
             bw:   { label: 'Solo reps', cols: ['reps'], effort: 'rir', defaultSets: 3, rest: true },
-            time: { label: 'Tiempo (m:ss)', cols: ['time'], effort: 'rpe', defaultSets: 1, rest: true, timeMode: 'clock' },
-            min:  { label: 'Minutos', cols: ['time'], effort: 'rpe', defaultSets: 1, rest: false, timeMode: 'min' },
-            km:   { label: 'Min + km', cols: ['time', 'km'], effort: 'rpe', defaultSets: 1, rest: false, timeMode: 'min', calc: 'speed' }
+            time: { label: 'Tiempo', cols: ['time'], effort: 'rpe', defaultSets: 1, rest: true },
+            min:  { label: 'Duración', cols: ['time'], effort: 'rpe', defaultSets: 1, rest: false },
+            km:   { label: 'Tiempo + km', cols: ['time', 'km'], effort: 'rpe', defaultSets: 1, rest: false, calc: 'speed' }
         };
 
         function isCardioType(type) {
@@ -2506,8 +2556,6 @@
             kg:   [-5, -2.5, 2.5, 5],
             reps: [-1, 1],
             km:   [-1, -0.5, 0.5, 1],
-            time: [-60, -15, 15, 60],
-            timeMin: [-5, -1, 1, 5],
             rest: [-15, 15]
         };
 
@@ -2555,17 +2603,91 @@
             return String(str ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
         }
 
-        // ========== TIEMPO: "m:ss" / "h:mm:ss" ==========
-        // Un número suelto (formato viejo del fútbol, "90") se toma como minutos.
+        // ========== TIEMPO ==========
+        // Se guarda siempre igual ("m:ss" o "h:mm:ss"); lo que cambia es cómo se CARGA,
+        // según la unidad que cada uno prefiera para cada ejercicio (se cambia tocando el
+        // encabezado de la columna):
+        //   seg → segundos                               "45"
+        //   mss → minutos:segundos, tipo microondas      "145" → 1:45
+        //   min → minutos, con coma o punto              "60", "32,5"
+        //   hmm → horas:minutos, tipo microondas         "105" → 1:05
+        const TIME_UNITS = {
+            seg: { head: 'Seg', label: 'segundos', inputmode: 'numeric', hint: 's' },
+            mss: { head: 'm:ss', label: 'minutos:segundos', inputmode: 'numeric', hint: 'm:ss' },
+            min: { head: 'Min', label: 'minutos', inputmode: 'decimal', hint: 'min' },
+            hmm: { head: 'h:mm', label: 'horas:minutos', inputmode: 'numeric', hint: 'h:mm' }
+        };
+        const TIME_UNIT_ORDER = ['seg', 'mss', 'min', 'hmm'];
+        const DEFAULT_TIME_UNIT_BY_TYPE = { time: 'mss', min: 'min', km: 'min' };
+        // Botones de ajuste rápido del tiempo, en segundos, según la unidad.
+        const TIME_STEPS = {
+            seg: [-15, -5, 5, 15],
+            mss: [-60, -15, 15, 60],
+            min: [-300, -60, 60, 300],
+            hmm: [-900, -300, 300, 900]
+        };
+
+        function loadTimeUnits() {
+            try { return JSON.parse(localStorage.getItem('exerciseTimeUnits') || '{}') || {}; } catch (e) { return {}; }
+        }
+
+        function getTimeUnit(name, type) {
+            const saved = loadTimeUnits()[normalizeForCompare(name || '')];
+            return TIME_UNITS[saved] ? saved : (DEFAULT_TIME_UNIT_BY_TYPE[type] || 'mss');
+        }
+
+        function saveTimeUnit(name, unit) {
+            const all = loadTimeUnits();
+            all[normalizeForCompare(name)] = unit;
+            localStorage.setItem('exerciseTimeUnits', JSON.stringify(all));
+        }
+
+        // Forma guardada -> segundos. Un número suelto (fútbol viejo "60") son minutos.
         function parseTimeSeconds(str) {
             const s = String(str || '').trim();
             if (!s) return null;
             if (!s.includes(':')) {
-                const min = parseFloat(s.replace(',', '.'));
-                return isNaN(min) ? null : Math.round(min * 60);
+                const min = parseDecimal(s);
+                return min == null ? null : Math.round(min * 60);
             }
             const parts = s.split(':').map(x => parseInt(x, 10) || 0);
             return parts.reduce((acc, p) => acc * 60 + p, 0);
+        }
+
+        // Lo que se tipeó en un campo -> segundos, según la unidad de ese campo.
+        function parseTimeInput(raw, unit) {
+            let s = String(raw ?? '').trim();
+            if (!s) return null;
+            if (unit === 'seg') {
+                const n = parseDecimal(s.replace(/[^\d.,]/g, ''));
+                return n == null ? null : Math.round(n);
+            }
+            if (unit === 'min' && !s.includes(':')) {
+                const n = parseDecimal(s);
+                return n == null ? null : Math.round(n * 60);
+            }
+            if (!s.includes(':')) s = formatTimeDigits(s);
+            const p = s.split(':').map(x => parseInt(x, 10) || 0);
+            if (p.length >= 3) return p[0] * 3600 + p[1] * 60 + p[2];
+            return unit === 'hmm' ? p[0] * 3600 + p[1] * 60 : p[0] * 60 + p[1];
+        }
+
+        // Segundos -> cómo se muestra dentro del campo, según la unidad.
+        function formatTimeForUnit(sec, unit) {
+            if (sec == null || isNaN(sec)) return '';
+            sec = Math.max(0, Math.round(sec));
+            const pad = n => String(n).padStart(2, '0');
+            if (unit === 'seg') return String(sec);
+            if (unit === 'min') return String(Math.round(sec / 60 * 100) / 100).replace('.', ',');
+            if (unit === 'hmm') {
+                const totalMin = Math.round(sec / 60);
+                return `${Math.floor(totalMin / 60)}:${pad(totalMin % 60)}`;
+            }
+            return `${Math.floor(sec / 60)}:${pad(sec % 60)}`;
+        }
+
+        function timeInputValue(saved, unit) {
+            return formatTimeForUnit(parseTimeSeconds(saved), unit);
         }
 
         // "22,5", "22.5" → 22.5. Punto o coma, lo que traiga el teclado.
@@ -2590,11 +2712,13 @@
         // Limpia un campo de serie mientras se tipea (o se pega), según su tipo.
         function sanitizeSetInput(el) {
             const f = el.dataset.f;
+            const unit = el.dataset.unit;
             let v = el.value;
             if (f === 'reps') v = v.replace(/\D/g, '');
             else if (f === 'rest') v = v.replace(/[^\d:]/g, '');
             else if (f === 'kg' || f === 'km') v = sanitizeDecimalInput(v);
-            else if (f === 'time' && el.dataset.mode === 'min') v = v.includes(':') ? v.replace(/[^\d:]/g, '') : sanitizeDecimalInput(v);
+            else if (f === 'time' && unit === 'seg') v = v.replace(/\D/g, '');
+            else if (f === 'time' && unit === 'min') v = v.includes(':') ? v.replace(/[^\d:]/g, '') : sanitizeDecimalInput(v);
             else if (f === 'time') v = formatTimeDigits(v);
             if (v !== el.value) el.value = v;
         }
@@ -2609,7 +2733,7 @@
         }
 
         // Mientras se tipea: los dígitos entran por la derecha, como en un microondas.
-        // "4" → "0:04", "45" → "0:45", "145" → "1:45", "9000" → "90:00".
+        // "4" → "0:04", "45" → "0:45", "145" → "1:45". Sirve para m:ss y para h:mm.
         function formatTimeDigits(raw) {
             const digits = String(raw || '').replace(/\D/g, '').replace(/^0+/, '').slice(0, 6);
             if (!digits) return '';
@@ -2617,20 +2741,19 @@
             return `${parseInt(padded.slice(0, -2), 10)}:${padded.slice(-2)}`;
         }
 
-        // Forma canónica para guardar: siempre "m:ss" (o "h:mm:ss").
+        // Forma guardada: siempre "m:ss" (o "h:mm:ss" desde una hora).
         function formatTimeValue(v) {
             const sec = parseTimeSeconds(v);
             return sec == null ? '' : formatSecondsClock(sec);
         }
 
-        // Para leer, siempre con unidades, así nunca hay duda de si son minutos,
-        // minutos y segundos u horas: "45 s", "1 min 45 s", "60 min", "1 h 05 min".
-        // minutesOnly: para partidos/clases (tipo Minutos) se lee mejor "60 min" que "1 h".
-        function formatDurationHuman(sec, minutesOnly = false) {
+        // Para leer: la forma más simple, siempre con unidades.
+        // "45 s", "1 min 30 s", "32 min", "1 h", "1 h 05 min", "1 h 05 min 30 s".
+        function formatDurationHuman(sec) {
             if (sec == null) return '';
             sec = Math.round(sec);
-            const h = minutesOnly ? 0 : Math.floor(sec / 3600);
-            const m = Math.floor((sec - h * 3600) / 60);
+            const h = Math.floor(sec / 3600);
+            const m = Math.floor((sec % 3600) / 60);
             const sc = sec % 60;
             const pad = n => String(n).padStart(2, '0');
             if (h) return `${h} h${m ? ` ${pad(m)} min` : ''}${sc ? ` ${pad(sc)} s` : ''}`;
@@ -2638,18 +2761,63 @@
             return `${sc} s`;
         }
 
-        // Cómo se muestra un tiempo guardado dentro del campo, según el modo del tipo.
-        function timeInputValue(v, mode) {
-            const sec = parseTimeSeconds(v);
-            if (sec == null) return '';
-            return mode === 'min' ? String(Math.round(sec / 60 * 100) / 100).replace('.', ',') : formatSecondsClock(sec);
+        // km/h a partir de segundos y km (null si falta alguno).
+        function computeSpeed(sec, km) {
+            return sec > 0 && km > 0 ? km / (sec / 3600) : null;
         }
 
-        // km/h a partir de un tiempo y una distancia (null si falta alguno).
-        function computeSpeed(timeVal, kmVal) {
-            const sec = parseTimeSeconds(timeVal);
-            const km = parseDecimal(kmVal);
-            return sec > 0 && km > 0 ? km / (sec / 3600) : null;
+        // ========== LECTURA TOLERANTE DEL FORMATO VIEJO ==========
+        // Las sesiones viejas guardan cada columna como texto ("12-10-8", "50-55-60",
+        // "90s"). Cada usuario pudo haber tipeado distinto, así que se acepta cualquier
+        // separador razonable sin perder el orden de las series.
+
+        // Reps (siempre enteras): cualquier cosa que no sea un número separa series.
+        // "12-10-8" = "12,10,8" = "12 10 8" = "12/10/8"; "4x12" = 4 series de 12.
+        function parseRepsList(str) {
+            const s = String(str ?? '').trim().toLowerCase();
+            if (!s) return [];
+            const nx = s.match(/^(\d+)\s*[x×*]\s*(\d+)$/);
+            if (nx) return Array(Math.min(parseInt(nx[1], 10), 50)).fill(parseInt(nx[2], 10));
+            return s.split(/\D+/).filter(Boolean).map(n => parseInt(n, 10));
+        }
+
+        // Pesos: "-", ";", "/", "+", "|" o espacios separan series; coma o punto es decimal.
+        // Caso ambiguo sin otro separador ("50,55"): son dos series solo si hay esa misma
+        // cantidad de series en reps, la parte decimal tiene 2+ dígitos y los dos números
+        // se parecen (50 y 55 sí; 22 y 5 no → 22,5 kg). Varias comas = lista ("50,55,60").
+        function parseWeightList(str, repsStr) {
+            const s = String(str ?? '').trim().toLowerCase().replace(/kgs?|kilos?/g, ' ').trim();
+            if (!s) return [];
+            let parts;
+            if (/[-;\/|+]/.test(s) || /\d\s+\d/.test(s)) {
+                parts = s.split(/[-;\/|+]|\s+/);
+            } else {
+                const seps = s.match(/[.,]/g) || [];
+                if (seps.length > 1) {
+                    parts = s.split(/[.,]/);
+                } else if (seps.length === 1) {
+                    const [a, b] = s.split(/[.,]/);
+                    const na = parseFloat(a), nb = parseFloat(b);
+                    const setsInReps = parseRepsList(repsStr).length;
+                    const looksLikeTwoSets = setsInReps === 2 && b.length >= 2 && nb >= na * 0.5 && nb <= na * 2;
+                    parts = looksLikeTwoSets ? [a, b] : [s];
+                } else {
+                    parts = [s];
+                }
+            }
+            return parts.map(p => parseDecimal(p.replace(/[^\d.,]/g, ''))).filter(n => n != null);
+        }
+
+        // Pausas en segundos: "90", "90s", "1:30", "2m" / "2min"; separadas igual que las reps.
+        function parsePauseList(str) {
+            const s = String(str ?? '').trim().toLowerCase();
+            if (!s) return [];
+            return s.split(/[-;\/|+,\s]+/).filter(Boolean).map(p => {
+                if (p.includes(':')) return parseTimeSeconds(p);
+                const n = parseDecimal(p.replace(/[^\d.]/g, ''));
+                if (n == null) return null;
+                return /m/.test(p) && !/ms/.test(p) ? Math.round(n * 60) : Math.round(n);
+            }).filter(n => n != null);
         }
 
         function formatSpeed(kmh) {
@@ -2663,10 +2831,9 @@
         // Convierte el formato viejo ("15-15-15" en reps, "50-50" en peso, "90-90" en pausa)
         // a una lista de series. Si hay menos pesos que reps, el último peso se repite.
         function setsFromLegacy(ex, type) {
-            const split = str => String(str || '').split('-').map(x => x.trim()).filter(Boolean);
-            const reps = split(ex.reps);
-            const weights = split(ex.weight);
-            const pauses = split(ex.pause);
+            const reps = parseRepsList(ex.reps).map(String);
+            const weights = parseWeightList(ex.weight, ex.reps).map(String);
+            const pauses = parsePauseList(ex.pause).map(String);
             const pick = (arr, i) => arr.length === 0 ? '' : (arr[i] ?? arr[arr.length - 1]);
 
             if (isCardioType(type)) {
@@ -2675,7 +2842,7 @@
                 const effort = LEGACY_INTENSITY_TO_EFFORT[normalizeForCompare(ex.reps || '')] || '';
                 // Si "reps" son números (ej. Bici "1-1" con peso "9"), cada uno es una vuelta
                 // y el valor se repite: 2 series de 9 km. Con texto ("alta") es una sola.
-                const rounds = reps.filter(r => /^\d+$/.test(r)).length;
+                const rounds = reps.length;
                 const count = Math.max(weights.length, rounds);
                 return Array.from({ length: count }, (_, i) => pick(weights, i)).map((w, i) => type === 'km'
                     ? { km: w, rest: pick(pauses, i), effort }
@@ -2693,13 +2860,13 @@
         function formatSetValue(set, type) {
             const v = f => String(set?.[f] || '').trim();
             const num = f => { const n = parseDecimal(v(f)); return n == null ? '' : formatNumber(n); };
-            const dur = formatDurationHuman(parseTimeSeconds(v('time')), type === 'min');
+            const dur = formatDurationHuman(parseTimeSeconds(v('time')));
             if (type === 'kg') return v('kg') ? `${v('reps') || '?'}×${num('kg')}kg` : v('reps');
             if (type === 'bw') return v('reps') ? `${v('reps')} reps` : '';
             if (type === 'time' || type === 'min') return dur;
             if (type === 'km') {
                 // Bici / correr: duración · km · km/h
-                return [dur, v('km') ? `${num('km')}km` : '', formatSpeed(computeSpeed(v('time'), v('km')))].filter(Boolean).join(' · ');
+                return [dur, v('km') ? `${num('km')}km` : '', formatSpeed(computeSpeed(parseTimeSeconds(v('time')), parseDecimal(v('km'))))].filter(Boolean).join(' · ');
             }
             return '';
         }
@@ -2743,7 +2910,7 @@
                     totalSec += sec;
                     maxSetSec = Math.max(maxSetSec, sec);
                 }
-                const speed = computeSpeed(s.time, s.km);
+                const speed = computeSpeed(sec, km);
                 if (speed && (bestSpeed == null || speed > bestSpeed)) bestSpeed = speed;
             });
             return { totalKm: Math.round(totalKm * 100) / 100, totalSec, maxSetSec, bestSpeed };
@@ -2763,7 +2930,7 @@
                     prs.push(`${ex.name}: duración ${formatDurationHuman(c.totalSec)} (antes ${formatDurationHuman(prev.maxTotalSec)})`);
                 }
             } else if (prev.maxSetSec > 0 && c.maxSetSec > prev.maxSetSec) {
-                prs.push(`${ex.name}: ${formatDurationHuman(c.maxSetSec, ex.type === 'min')} (antes ${formatDurationHuman(prev.maxSetSec, ex.type === 'min')})`);
+                prs.push(`${ex.name}: ${formatDurationHuman(c.maxSetSec)} (antes ${formatDurationHuman(prev.maxSetSec)})`);
             }
             return prs;
         }
@@ -2771,22 +2938,22 @@
         // Una fila = una serie. Los valores de la última sesión se muestran en gris
         // (placeholder) y se guardan en data-prev: al tildar una serie vacía se completan
         // solos, así repetir lo de la vez pasada es un solo toque.
-        function buildSetRowHtml(type, label, set = {}, prev = {}) {
+        function buildSetRowHtml(type, label, set = {}, prev = {}, unit = 'mss') {
             const def = EXERCISE_TYPES[type] || EXERCISE_TYPES.kg;
             const scale = EFFORT_SCALES[def.effort];
             const n = set.warmup ? 'de calentamiento' : label;
 
-            const timeMode = def.timeMode || 'clock';
             const metricInput = (field, hidden) => {
                 const f = SET_FIELDS[field];
                 const isTime = field === 'time';
-                const inputmode = isTime && timeMode === 'min' ? 'decimal' : f.inputmode;
-                const hint = isTime && timeMode === 'min' ? 'min' : f.hint;
-                const prevVal = isTime ? timeInputValue(prev.time, timeMode) : String(prev[field] || '');
-                const value = isTime ? timeInputValue(set.time, timeMode) : String(set[field] || '');
+                const tu = TIME_UNITS[unit] || TIME_UNITS.mss;
+                const inputmode = isTime ? tu.inputmode : f.inputmode;
+                const hint = isTime ? tu.hint : f.hint;
+                const prevVal = isTime ? timeInputValue(prev.time, unit) : String(prev[field] || '');
+                const value = isTime ? timeInputValue(set.time, unit) : String(set[field] || '');
                 const pattern = inputmode === 'numeric' ? ' pattern="[0-9]*"' : '';
-                const head = isTime && timeMode === 'min' ? 'Minutos' : f.head;
-                return `<input type="text" inputmode="${inputmode}"${pattern} autocomplete="off" data-f="${field}"${isTime ? ` data-mode="${timeMode}"` : ''} data-prev="${escapeHtml(prevVal)}" placeholder="${escapeHtml(prevVal || hint)}" value="${escapeHtml(value)}" aria-label="${head}, serie ${n}"${hidden ? ' hidden' : ''}>`;
+                const head = isTime ? `Tiempo en ${tu.label}` : f.head;
+                return `<input type="text" inputmode="${inputmode}"${pattern} autocomplete="off" data-f="${field}"${isTime ? ` data-unit="${unit}"` : ''} data-prev="${escapeHtml(prevVal)}" placeholder="${escapeHtml(prevVal || hint)}" value="${escapeHtml(value)}" aria-label="${head}, serie ${n}"${hidden ? ' hidden' : ''}>`;
             };
             // Los campos de otros tipos quedan ocultos (no se pierden si se cambia el tipo).
             const visibleInputs = def.cols.map(f => metricInput(f, false)).join('');
@@ -2813,8 +2980,8 @@
         // Km/h calculado de minutos + km. Si todavía no se cargó nada, se calcula con lo de
         // la última vez y se ve en gris, igual que las sugerencias de los campos.
         function buildSpeedCellHtml(set, prev) {
-            const own = computeSpeed(set.time, set.km);
-            const speed = own || computeSpeed(set.time || prev.time, set.km || prev.km);
+            const own = computeSpeed(parseTimeSeconds(set.time), parseDecimal(set.km));
+            const speed = own || computeSpeed(parseTimeSeconds(set.time || prev.time), parseDecimal(set.km || prev.km));
             return `<span class="set-calc${own ? '' : ' is-prev'}" data-calc="speed" aria-label="Velocidad en km/h">${speed ? formatNumber(Math.round(speed * 10) / 10) : '–'}</span>`;
         }
 
@@ -2823,8 +2990,9 @@
             if (!cell) return;
             const val = f => row.querySelector(`[data-f="${f}"]`);
             const t = val('time'), k = val('km');
-            const own = computeSpeed(t?.value, k?.value);
-            const speed = own || computeSpeed(t?.value || t?.dataset.prev, k?.value || k?.dataset.prev);
+            const unit = t?.dataset.unit;
+            const own = computeSpeed(parseTimeInput(t?.value, unit), parseDecimal(k?.value));
+            const speed = own || computeSpeed(parseTimeInput(t?.value || t?.dataset.prev, unit), parseDecimal(k?.value || k?.dataset.prev));
             cell.textContent = speed ? formatNumber(Math.round(speed * 10) / 10) : '–';
             cell.classList.toggle('is-prev', !own);
         }
@@ -2835,12 +3003,14 @@
             return sets.map(s => (s && s.warmup) ? WARMUP_LABEL : String(++k));
         }
 
-        function buildSetsTableHtml(type, sets, prevSets) {
+        function buildSetsTableHtml(type, sets, prevSets, unit = 'mss') {
             const def = EXERCISE_TYPES[type] || EXERCISE_TYPES.kg;
             const scale = EFFORT_SCALES[def.effort];
-            const head = `<div class="sets-head" aria-hidden="true">
+            const head = `<div class="sets-head">
                     <span>#</span>
-                    ${def.cols.map(f => `<span>${f === 'time' && def.timeMode === 'min' ? 'Min' : SET_FIELDS[f].head}</span>`).join('')}
+                    ${def.cols.map(f => f === 'time'
+                        ? `<button type="button" class="time-unit-btn" onclick="cycleTimeUnit(this)" title="Cambiar unidad: segundos, m:ss, minutos u h:mm" aria-label="Unidad de tiempo: ${TIME_UNITS[unit].label}. Tocá para cambiarla">${TIME_UNITS[unit].head} ⇄</button>`
+                        : `<span>${SET_FIELDS[f].head}</span>`).join('')}
                     ${def.calc === 'speed' ? '<span title="Velocidad calculada">Km/h</span>' : ''}
                     ${def.rest ? '<span title="Descanso en segundos">Desc s</span>' : ''}
                     <span title="${scale.title}">${scale.head}</span>
@@ -2849,7 +3019,7 @@
                 </div>`;
             const lastPrev = prevSets[prevSets.length - 1] || {};
             const labels = setLabels(sets);
-            const rows = sets.map((set, i) => buildSetRowHtml(type, labels[i], set || {}, prevSets[i] || lastPrev)).join('');
+            const rows = sets.map((set, i) => buildSetRowHtml(type, labels[i], set || {}, prevSets[i] || lastPrev, unit)).join('');
             return head + rows;
         }
 
@@ -2878,8 +3048,9 @@
                 : Array.from({ length: EXERCISE_TYPES[type].defaultSets }, () => ({}));
             const setCount = initialSets.length;
             const safeName = escapeHtml(ex);
+            const timeUnit = getTimeUnit(ex, type);
 
-            return `<div class="exercise-row" id="row_${idx}" data-name="${safeName}" data-type="${type}">
+            return `<div class="exercise-row" id="row_${idx}" data-name="${safeName}" data-type="${type}" data-time-unit="${timeUnit}">
                     <div class="exercise-row-header">
                         <button type="button" class="drag-handle" aria-label="Reordenar ${safeName}: arrastrá, o usá las flechas ↑ ↓" title="Arrastrá para reordenar">${DRAG_DOTS_SVG}</button>
                         <div class="exercise-title">
@@ -2895,7 +3066,7 @@
                             <button type="button" class="danger" onclick="deleteRowQuick(${idx}, '${routine}')" title="Quitar de la sesión de hoy">✕</button>
                         </div>
                     </div>
-                    <div class="sets-table t-${type}">${buildSetsTableHtml(type, initialSets, prevSets)}</div>
+                    <div class="sets-table t-${type}">${buildSetsTableHtml(type, initialSets, prevSets, timeUnit)}</div>
                     <div class="sets-controls">
                         <button type="button" onclick="removeLastSet(this)" aria-label="Quitar la última serie" title="Quitar la última serie"${setCount <= 1 ? ' disabled' : ''}>−</button>
                         <button type="button" onclick="addSet(this)">+ Agregar serie</button>
@@ -2916,7 +3087,7 @@
                     formatSpeed(stats.bestSpeed)
                 ].filter(Boolean).join(' · ');
             }
-            if ((type === 'time' || type === 'min') && stats.maxSetSec) record = `Máx ${formatDurationHuman(stats.maxSetSec, type === 'min')}`;
+            if ((type === 'time' || type === 'min') && stats.maxSetSec) record = `Máx ${formatDurationHuman(stats.maxSetSec)}`;
             if (!summary) return 'Sin registros previos';
             return `Últ: ${escapeHtml(summary)}${record ? `<br>🏆 ${escapeHtml(record)}` : ''}`;
         }
@@ -2931,7 +3102,14 @@
             const set = {};
             row.querySelectorAll('[data-f]').forEach(el => {
                 const v = (el.value || '').trim();
-                if (v) set[el.dataset.f] = v;
+                if (!v) return;
+                if (el.dataset.f === 'time') {
+                    // Lo tipeado depende de la unidad del campo; se guarda siempre igual.
+                    const sec = parseTimeInput(v, el.dataset.unit);
+                    if (sec != null) set.time = formatSecondsClock(sec);
+                    return;
+                }
+                set[el.dataset.f] = v;
             });
             if (row.classList.contains('done')) set.done = true;
             if (row.classList.contains('warmup')) set.warmup = true;
@@ -2966,8 +3144,10 @@
             const prevSets = getPrevSets(getBlockName(block), type);
             const table = block.querySelector('.sets-table');
             if (!table) return;
+            const unit = getTimeUnit(getBlockName(block), type);
+            block.dataset.timeUnit = unit;
             table.className = `sets-table t-${type}`;
-            table.innerHTML = buildSetsTableHtml(type, sets.length > 0 ? sets : [{}], prevSets);
+            table.innerHTML = buildSetsTableHtml(type, sets.length > 0 ? sets : [{}], prevSets, unit);
             updateSetControls(block);
         }
 
@@ -3058,11 +3238,12 @@
                 rows[rows.length - 1].querySelectorAll('input[data-f]').forEach(el => {
                     if (el.dataset.f === 'note') return;
                     const v = el.value.trim() || el.dataset.prev || '';
-                    if (v) prev[el.dataset.f] = v;
+                    if (!v) return;
+                    prev[el.dataset.f] = el.dataset.f === 'time' ? formatSecondsClock(parseTimeInput(v, el.dataset.unit)) : v;
                 });
             }
 
-            table.insertAdjacentHTML('beforeend', buildSetRowHtml(type, String(n), {}, prev || {}));
+            table.insertAdjacentHTML('beforeend', buildSetRowHtml(type, String(n), {}, prev || {}, block.dataset.timeUnit || getTimeUnit(getBlockName(block), type)));
             renumberSets(block);
             updateSetControls(block);
             saveWorkoutDraft();
@@ -3105,6 +3286,21 @@
             showToast(`"${name}" ahora se mide en: ${EXERCISE_TYPES[newType].label}. El historial anterior no cambia.`);
         }
 
+        // Tocar el encabezado del tiempo pasa por segundos → m:ss → minutos → h:mm. Los
+        // valores ya cargados se convierten (no se pierden) y la elección queda guardada.
+        function cycleTimeUnit(btn) {
+            const block = btn.closest('.exercise-row');
+            if (!block) return;
+            const name = getBlockName(block);
+            const current = block.dataset.timeUnit || getTimeUnit(name, block.dataset.type);
+            const next = TIME_UNIT_ORDER[(TIME_UNIT_ORDER.indexOf(current) + 1) % TIME_UNIT_ORDER.length];
+            const sets = readBlockSets(block);
+            saveTimeUnit(name, next);
+            renderBlockSets(block, block.dataset.type, sets);
+            saveWorkoutDraft();
+            showToast(`⏱ ${name}: tiempo en ${TIME_UNITS[next].label}`, 'success', 1800);
+        }
+
         // ========== AJUSTE RÁPIDO (+/-) ==========
         // Al tocar un campo de la serie aparece debajo una barra con botones para
         // subir/bajar (±2,5 / ±5 kg, ±1 rep, ±15 s...). Queda visible aunque se cierre el
@@ -3113,24 +3309,25 @@
 
         function showSetStepper(input) {
             const field = input.dataset.f;
-            const minMode = field === 'time' && input.dataset.mode === 'min';
-            const steps = minMode ? SET_STEPS.timeMin : SET_STEPS[field];
+            const timeUnit = field === 'time' ? (input.dataset.unit || 'mss') : null;
+            const steps = timeUnit ? TIME_STEPS[timeUnit] : SET_STEPS[field];
             const row = input.closest('.set-row');
             if (!steps || !row) { hideSetStepper(); return; }
-            if (setStepperEl && setStepperEl.parentNode === row && setStepperEl.dataset.field === field) return;
+            if (setStepperEl && setStepperEl.parentNode === row && setStepperEl.dataset.field === field && setStepperEl.dataset.unit === (timeUnit || '')) return;
 
             hideSetStepper();
-            const unit = field === 'kg' ? 'kg' : field === 'km' ? 'km' : minMode ? 'm' : (field === 'time' || field === 'rest') ? 's' : '';
+            const unit = field === 'kg' ? 'kg' : field === 'km' ? 'km' : (field === 'time' || field === 'rest') ? 's' : '';
             const label = s => {
                 const sign = s > 0 ? '+' : '−';
                 const abs = Math.abs(s);
-                if (field === 'time' && !minMode && abs >= 60) return `${sign}${abs / 60}m`;
+                if (field === 'time' && abs >= 60) return `${sign}${abs / 60}m`;
                 return `${sign}${abs.toLocaleString('es-AR')}${unit}`;
             };
             setStepperEl = document.createElement('div');
             setStepperEl.className = 'set-stepper';
             setStepperEl.dataset.field = field;
-            setStepperEl.innerHTML = `<span class="set-stepper-label">${field === 'rest' ? 'Desc.' : minMode ? 'Min' : SET_FIELDS[field].head}</span>`
+            setStepperEl.dataset.unit = timeUnit || '';
+            setStepperEl.innerHTML = `<span class="set-stepper-label">${field === 'rest' ? 'Desc.' : field === 'time' ? 'Tiempo' : SET_FIELDS[field].head}</span>`
                 + steps.map(s => `<button type="button" data-step="${s}" class="${s > 0 ? 'up' : 'down'}">${label(s)}</button>`).join('');
             // pointerdown sin foco: tocar un botón no cierra ni abre el teclado.
             setStepperEl.addEventListener('pointerdown', e => e.preventDefault());
@@ -3152,10 +3349,9 @@
             if (!el) return;
             const current = el.value.trim() || el.dataset.prev || '';
             let next;
-            if (field === 'time' && el.dataset.mode === 'min') {
-                next = timeInputValue(formatSecondsClock(Math.max(0, (parseTimeSeconds(current) || 0) + delta * 60)), 'min');
-            } else if (field === 'time') {
-                next = formatSecondsClock(Math.max(0, (parseTimeSeconds(current) || 0) + delta));
+            if (field === 'time') {
+                const unit = el.dataset.unit || 'mss';
+                next = formatTimeForUnit(Math.max(0, (parseTimeInput(current, unit) || 0) + delta), unit);
             } else if (field === 'rest') {
                 next = String(Math.max(0, (parseRestSeconds(current) ?? DEFAULT_REST_SECONDS) + delta));
             } else {
@@ -3963,7 +4159,7 @@
             if (prs.length > 0) msg += `\n\n🏆 ¡Nuevo PR!\n` + prs.map(p => `• ${p}`).join('\n');
             if (progressNotes.length > 0) msg += `\n\n📝 Para tener en cuenta:\n` + progressNotes.map(n => `• ${n}`).join('\n');
             showToast(msg, prs.length > 0 ? 'pr' : 'success', (prs.length > 0 || progressNotes.length > 0) ? 5500 : 3200);
-            if (prs.length > 0) speak(prs.length === 1 ? '¡Nuevo récord!' : `¡${prs.length} récords nuevos!`, 'records');
+            if (prs.length > 0) speakCue(['record'], prs.length === 1 ? '¡Nuevo récord!' : `¡${prs.length} récords nuevos!`, 'records');
             document.getElementById('sessionNotes').value = '';
             document.getElementById('routine').value = '';
             document.getElementById('exercisesContainer').innerHTML = '';
@@ -4365,7 +4561,7 @@
                 if (!w || !w.exercises || !Array.isArray(w.exercises)) return;
                 w.exercises.forEach(e => {
                     if (e && e.name === exName && e.weight) {
-                        const weights = e.weight.split('-').map(x => parseDecimal(x)).filter(x => x != null);
+                        const weights = parseWeightList(e.weight, e.reps);
                         if (weights.length > 0) {
                             const avg = weights.reduce((a, b) => a + b) / weights.length;
                             data.push({
@@ -4865,7 +5061,7 @@
                 w.exercises.forEach(ex => {
                     if (!ex || !ex.name) return;
 
-                    const weights = (ex.weight || '').split('-').map(x => parseDecimal(x)).filter(x => x != null);
+                    const weights = parseWeightList(ex.weight, ex.reps);
                     const volume = calculateExerciseVolume(ex);
                     const totalReps = calculateExerciseTotalReps(ex);
                     if (weights.length === 0 && totalReps === 0) return;
@@ -5018,7 +5214,7 @@
             }
         }
 
-        function downloadData() {
+        async function downloadData() {
             // Guardar TODO: entrenamientos, métricas, rutinas personalizadas
             const backup = {
                 version: '2.0',
@@ -5026,7 +5222,9 @@
                 workouts: JSON.parse(localStorage.getItem('workouts') || '[]'),
                 bodyMetrics: JSON.parse(localStorage.getItem('bodyMetrics') || '[]'),
                 customRoutines: JSON.parse(localStorage.getItem('customRoutines') || '{}'),
-                exerciseTypes: JSON.parse(localStorage.getItem('exerciseTypes') || '{}')
+                exerciseTypes: JSON.parse(localStorage.getItem('exerciseTypes') || '{}'),
+                exerciseTimeUnits: JSON.parse(localStorage.getItem('exerciseTimeUnits') || '{}'),
+                recordings: await exportRecordings()
             };
 
             const json = JSON.stringify(backup, null, 2);
@@ -5134,6 +5332,7 @@
                     localStorage.setItem('bodyMetrics', JSON.stringify(backup.bodyMetrics || []));
                     localStorage.setItem('customRoutines', JSON.stringify(backup.customRoutines || {}));
                     if (backup.exerciseTypes) localStorage.setItem('exerciseTypes', JSON.stringify(backup.exerciseTypes));
+                    if (backup.exerciseTimeUnits) localStorage.setItem('exerciseTimeUnits', JSON.stringify(backup.exerciseTimeUnits));
                     localStorage.setItem('workoutSessions', JSON.stringify(backup.workoutSessions || []));
                     localStorage.setItem('version', backup.version || '2.0');
                     
@@ -5143,6 +5342,10 @@
                     const mensaje = `✅ BACKUP RESTAURADO\n\n📊 Datos cargados:\n- ${backup.workouts.length} sesiones\n- ${backup.bodyMetrics?.length || 0} mediciones\n\nTotal: ${total} registros\n\n🔄 Recargando página...`;
                     
                     console.log('🎉 Éxito:', mensaje);
+                    // Grabaciones de voz: se escriben antes de recargar para no perderlas.
+                    const recordingsRestored = importRecordings(backup.recordings)
+                        .catch(err => console.error('No se pudieron restaurar las grabaciones:', err));
+
                     alert(mensaje);
                     
                     // Limpiar input
@@ -5150,7 +5353,7 @@
                     if (fileInput) fileInput.value = '';
                     
                     // Recargar
-                    setTimeout(() => window.location.href = window.location.href, 800);
+                    recordingsRestored.finally(() => setTimeout(() => window.location.href = window.location.href, 300));
                     
                 } catch (err) {
                     console.error('❌ Error al procesar backup:', err);
@@ -5262,8 +5465,8 @@
             return recent.map(w => {
                 let totalWeight = 0, weightCount = 0, totalReps = 0, repsCount = 0;
                 w.exercises.forEach(ex => {
-                    (ex.weight || '').split('-').map(x => parseDecimal(x)).filter(x => x != null).forEach(x => { totalWeight += x; weightCount++; });
-                    (ex.reps || '').split('-').map(x => parseInt(x)).filter(x => !isNaN(x)).forEach(x => { totalReps += x; repsCount++; });
+                    parseWeightList(ex.weight, ex.reps).forEach(x => { totalWeight += x; weightCount++; });
+                    parseRepsList(ex.reps).forEach(x => { totalReps += x; repsCount++; });
                 });
                 const routineLabel = w.routine ? (customRoutineLabels[w.routine] || ROUTINE_LABELS[w.routine] || `Rutina ${w.routine}`) : 'Sin rutina';
                 return {
@@ -5535,7 +5738,7 @@
             if (remaining > 0 && remaining <= REST_WARN_SECONDS && !restTimerWarned) {
                 restTimerWarned = true;
                 playTick(880, 0.1);
-                speak('Quedan diez segundos', 'restWarn');
+                speakCue(['restWarn'], 'Quedan diez segundos', 'restWarn');
             }
             if (remaining > 0) return;
 
@@ -5544,7 +5747,7 @@
             restTimerEndsAt = null;
             playRestTimerBeep();
             // Después del beep, para que no se pisen.
-            setTimeout(() => speak('¡Vamos! A la próxima serie', 'restEnd'), 900);
+            setTimeout(() => speakCue(['restEnd'], '¡Vamos! A la próxima serie', 'restEnd'), 900);
             setTimeout(() => {
                 // Solo si en el medio no arrancó otro descanso (o un Tabata).
                 if (!restTimerInterval && !tabataState) hideTimerWidget();
@@ -5652,9 +5855,10 @@
             render(remaining);
             if (phase === 'work') {
                 const lastRound = tabataState.currentRound === tabataState.rounds && tabataState.rounds > 1;
-                speak(lastRound ? '¡Última ronda! ¡Trabajo!' : '¡Trabajo!', 'tabata');
+                if (lastRound) speakCue(['tabataLastRound', 'tabataWork'], '¡Última ronda! ¡Trabajo!', 'tabata');
+                else speakCue(['tabataWork'], '¡Trabajo!', 'tabata');
             } else {
-                speak('Descanso', 'tabata');
+                speakCue(['tabataRest'], 'Descanso', 'tabata');
             }
 
             if (tabataInterval) clearInterval(tabataInterval);
@@ -5695,7 +5899,7 @@
             tabataInterval = null;
             tabataState = null;
             hideTimerWidget();
-            speak('¡Terminaste! Muy bien', 'tabata');
+            speakCue(['tabataDone'], '¡Terminaste! Muy bien', 'tabata');
             addTabataBlockToSession(state, true);
         }
 
@@ -5893,7 +6097,8 @@
             prepSeconds: 5,      // segundos para prepararse antes de la primera rep
             tempo: 3,            // segundos por rep (cadencia) por defecto
             rate: 1.05,          // velocidad de la voz
-            voiceURI: ''         // voz elegida ('' = la primera en español)
+            voiceURI: '',        // voz elegida ('' = la primera en español)
+            useRecordings: true  // si hay una grabación propia para un aviso, suena esa
         };
         const REST_WARN_SECONDS = 10;
 
@@ -5931,6 +6136,7 @@
             const st = loadVoiceSettings();
             if (!st.enabled || (key && st[key] === false) || !voiceSupported()) return;
             try {
+                stopCuePlayback();
                 speechSynthesis.cancel();
                 const u = new SpeechSynthesisUtterance(text);
                 const voice = pickVoice(st);
@@ -5993,7 +6199,7 @@
             if (!voiceSupported()) {
                 box.innerHTML = '<p style="color:var(--text-faint); font-size:13px;">Este navegador no tiene voz disponible. Los avisos siguen sonando con beeps.</p>';
             }
-            box.querySelectorAll('[data-voice]').forEach(el => {
+            document.querySelectorAll('[data-voice]').forEach(el => {
                 const key = el.dataset.voice;
                 if (el.type === 'checkbox') el.checked = !!st[key];
                 else el.value = st[key];
@@ -6092,7 +6298,7 @@
             panel.hidden = false;
             document.body.classList.add('rep-counter-open');
             maybeAutoStartSessionTimer();
-            speak('Preparate');
+            speakCue(['repPrep'], 'Preparate');
             renderRepCounter();
             repTimer = setInterval(repCounterTick, 50);
         }
@@ -6145,15 +6351,15 @@
         }
 
         // Qué se dice al empezar cada rep: el ánimo tiene prioridad sobre el número.
-        function repCueText(rep, target, encourage) {
+        function repCue(rep, target, encourage) {
             const left = target - rep + 1; // incluye la que empieza
             if (encourage) {
-                if (rep === target && target > 1) return '¡Última!';
-                if (left === 2 && target >= 4) return '¡Quedan dos!';
+                if (rep === target && target > 1) return { ids: ['repLast'], text: '¡Última!' };
+                if (left === 2 && target >= 4) return { ids: ['repTwo'], text: '¡Quedan dos!' };
                 const half = target >= 6 && rep === Math.floor(target / 2) + 1;
-                if (half && left === 5) return '¡La mitad! ¡Quedan cinco!';
-                if (left === 5 && target >= 8) return '¡Dale, quedan cinco!';
-                if (half) return '¡Dale, la mitad!';
+                if (half && left === 5) return { ids: ['repHalf', 'repFive'], text: '¡La mitad! ¡Quedan cinco!' };
+                if (left === 5 && target >= 8) return { ids: ['repFive'], text: '¡Dale, quedan cinco!' };
+                if (half) return { ids: ['repHalf'], text: '¡Dale, la mitad!' };
             }
             return null;
         }
@@ -6162,9 +6368,9 @@
             const s = repState;
             const st = loadVoiceSettings();
             playTick(1200, 0.08);
-            const cue = repCueText(s.rep, s.target, st.encourage);
-            if (first) speak(cue || '¡Ya!');
-            else if (cue) speak(cue);
+            const cue = repCue(s.rep, s.target, st.encourage);
+            if (cue) speakCue(cue.ids, cue.text);
+            else if (first) speakCue(['repGo'], '¡Ya!');
             else if (st.countAloud) speak(String(s.rep));
         }
 
@@ -6174,7 +6380,7 @@
             repTimer = null;
             s.phase = 'done';
             renderRepCounter();
-            speak('¡Bien! Serie terminada');
+            speakCue(['repDone'], '¡Bien! Serie terminada');
 
             // Las reps contadas quedan cargadas en la serie (si no había escrito otra cosa),
             // y se marca como hecha: eso completa el peso sugerido y arranca el descanso.
@@ -6271,6 +6477,306 @@
                 valueEl.textContent = '✓';
                 subEl.textContent = `${s.target} reps`;
                 bar.style.width = '100%';
+            }
+        }
+
+        // ========== MIS GRABACIONES (voz propia para cada aviso) ==========
+        // Cada aviso puede tener una grabación propia (tu voz, la de un entrenador). Si
+        // existe, suena esa; si no, la voz del celular. Los números (1, 2, 3...) siempre
+        // los dice la voz del celular. Las grabaciones viven en el celular (IndexedDB) y se
+        // incluyen en el backup, igual que el resto de los datos.
+        const VOICE_CUES = [
+            { id: 'restWarn', group: 'Descanso', text: 'Quedan diez segundos' },
+            { id: 'restEnd', group: 'Descanso', text: '¡Vamos! A la próxima serie' },
+            { id: 'repPrep', group: 'Contador de reps', text: 'Preparate' },
+            { id: 'repGo', group: 'Contador de reps', text: '¡Ya!' },
+            { id: 'repHalf', group: 'Contador de reps', text: '¡Dale, la mitad!' },
+            { id: 'repFive', group: 'Contador de reps', text: '¡Dale, quedan cinco!' },
+            { id: 'repTwo', group: 'Contador de reps', text: '¡Quedan dos!' },
+            { id: 'repLast', group: 'Contador de reps', text: '¡Última!' },
+            { id: 'repDone', group: 'Contador de reps', text: '¡Bien! Serie terminada' },
+            { id: 'tabataWork', group: 'Tabata', text: '¡Trabajo!' },
+            { id: 'tabataRest', group: 'Tabata', text: 'Descanso' },
+            { id: 'tabataLastRound', group: 'Tabata', text: '¡Última ronda!' },
+            { id: 'tabataDone', group: 'Tabata', text: '¡Terminaste! Muy bien' },
+            { id: 'record', group: 'Récords', text: '¡Nuevo récord!' }
+        ];
+        const MAX_RECORDING_MS = 5000;
+        const REC_DB_NAME = 'entrenamientoAudio';
+        const REC_STORE = 'recordings';
+
+        const recordingMeta = {};     // id -> { mime, duration, updatedAt }
+        const recordingBuffers = {};  // id -> AudioBuffer listo para sonar (sin silencios)
+        let recState = null;          // grabación en curso
+        let cueSources = [];          // grabaciones sonando ahora
+
+        // --- IndexedDB (se guarda ArrayBuffer + tipo: más compatible que guardar Blobs en iPhone) ---
+        function recDb() {
+            return new Promise((resolve, reject) => {
+                if (!('indexedDB' in window)) { reject(new Error('Sin IndexedDB')); return; }
+                const req = indexedDB.open(REC_DB_NAME, 1);
+                req.onupgradeneeded = () => req.result.createObjectStore(REC_STORE, { keyPath: 'id' });
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => reject(req.error);
+            });
+        }
+
+        async function recTx(mode, fn) {
+            const db = await recDb();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(REC_STORE, mode);
+                const req = fn(tx.objectStore(REC_STORE));
+                tx.oncomplete = () => { db.close(); resolve(req ? req.result : undefined); };
+                tx.onerror = () => { db.close(); reject(tx.error); };
+            });
+        }
+
+        function decodeAudio(arrayBuffer) {
+            const ctx = getAudioCtx();
+            if (!ctx) return Promise.reject(new Error('Sin audio'));
+            // Copia: decodeAudioData "consume" el buffer que recibe.
+            const copy = arrayBuffer.slice(0);
+            return new Promise((resolve, reject) => {
+                const p = ctx.decodeAudioData(copy, resolve, reject);
+                if (p && p.then) p.then(resolve, reject);
+            });
+        }
+
+        // Recorta el silencio del principio y del final (siempre hay un poco entre tocar
+        // "Grabar" y empezar a hablar), así el aviso suena en el momento justo.
+        function trimSilence(buffer) {
+            const ctx = getAudioCtx();
+            const data = buffer.getChannelData(0);
+            const threshold = 0.02;
+            let start = 0, end = data.length - 1;
+            while (start < data.length && Math.abs(data[start]) < threshold) start++;
+            while (end > start && Math.abs(data[end]) < threshold) end--;
+            const pad = Math.floor(buffer.sampleRate * 0.05);
+            start = Math.max(0, start - pad);
+            end = Math.min(data.length - 1, end + pad);
+            const length = end - start + 1;
+            if (!ctx || length <= 0 || length >= data.length) return buffer;
+            const out = ctx.createBuffer(buffer.numberOfChannels, length, buffer.sampleRate);
+            for (let ch = 0; ch < buffer.numberOfChannels; ch++) {
+                out.copyToChannel(buffer.getChannelData(ch).subarray(start, end + 1), ch);
+            }
+            return out;
+        }
+
+        async function loadRecordings() {
+            let all = [];
+            try { all = await recTx('readonly', s => s.getAll()) || []; } catch (e) { return; }
+            for (const rec of all) {
+                recordingMeta[rec.id] = { mime: rec.mime, duration: rec.duration, updatedAt: rec.updatedAt };
+                try { recordingBuffers[rec.id] = trimSilence(await decodeAudio(rec.data)); }
+                catch (e) { console.error('No se pudo leer la grabación', rec.id, e); }
+            }
+            renderRecordingsUI();
+        }
+
+        async function saveRecordingData(id, arrayBuffer, mime) {
+            const decoded = await decodeAudio(arrayBuffer); // si no se puede leer, no se guarda
+            const rec = { id, mime, data: arrayBuffer, duration: Math.round(decoded.duration * 10) / 10, updatedAt: Date.now() };
+            await recTx('readwrite', s => s.put(rec));
+            recordingMeta[id] = { mime, duration: rec.duration, updatedAt: rec.updatedAt };
+            recordingBuffers[id] = trimSilence(decoded);
+        }
+
+        async function removeRecording(id) {
+            if (!recordingMeta[id]) return;
+            const cue = VOICE_CUES.find(c => c.id === id);
+            if (!confirm(`¿Borrar tu grabación de «${cue?.text || id}»? Vuelve a sonar la voz del celular.`)) return;
+            try { await recTx('readwrite', s => s.delete(id)); } catch (e) {}
+            delete recordingMeta[id];
+            delete recordingBuffers[id];
+            renderRecordingsUI();
+        }
+
+        // --- Reproducir ---
+        function stopCuePlayback() {
+            cueSources.forEach(src => { try { src.stop(); } catch (e) {} });
+            cueSources = [];
+        }
+
+        function playRecordings(ids) {
+            const ctx = getAudioCtx();
+            const buffers = ids.map(id => recordingBuffers[id]);
+            if (!ctx || buffers.some(b => !b)) return false;
+            stopCuePlayback();
+            if (voiceSupported()) speechSynthesis.cancel();
+            const gain = ctx.createGain();
+            gain.gain.value = Math.max(0.1, loadSoundSettings().volume / 100);
+            gain.connect(ctx.destination);
+            let t = ctx.currentTime + 0.02;
+            buffers.forEach(buf => {
+                const src = ctx.createBufferSource();
+                src.buffer = buf;
+                src.connect(gain);
+                src.start(t);
+                t += buf.duration + 0.05;
+                cueSources.push(src);
+            });
+            return true;
+        }
+
+        // Aviso con posible grabación propia: ids = qué grabaciones sonarían (en orden),
+        // text = lo que dice la voz del celular si falta alguna, key = interruptor del aviso.
+        function speakCue(ids, text, key) {
+            const st = loadVoiceSettings();
+            if (!st.enabled || (key && st[key] === false)) return;
+            if (st.useRecordings && ids.length > 0 && playRecordings(ids)) return;
+            speak(text);
+        }
+
+        function previewCue(id) {
+            unlockAudio();
+            const cue = VOICE_CUES.find(c => c.id === id);
+            if (!playRecordings([id])) speak(cue?.text || '');
+        }
+
+        // --- Grabar ---
+        function canRecord() {
+            return !!(navigator.mediaDevices?.getUserMedia && window.MediaRecorder && window.isSecureContext !== false);
+        }
+
+        function pickRecordingMime() {
+            const options = ['audio/webm;codecs=opus', 'audio/mp4', 'audio/webm', 'audio/ogg;codecs=opus'];
+            return options.find(m => { try { return MediaRecorder.isTypeSupported(m); } catch (e) { return false; } }) || '';
+        }
+
+        async function toggleRecording(id) {
+            if (recState) {
+                const same = recState.id === id;
+                recState.recorder.stop();
+                if (same) return;
+                await new Promise(r => setTimeout(r, 300));
+            }
+            startRecording(id);
+        }
+
+        async function startRecording(id) {
+            if (!canRecord()) {
+                showToast('Este navegador no permite grabar audio desde la app.', 'error', 4500);
+                return;
+            }
+            unlockAudio();
+            let stream;
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+            } catch (e) {
+                showToast('No hay permiso para usar el micrófono. Habilitalo en los permisos del navegador para esta app.', 'error', 5500);
+                return;
+            }
+            stopCuePlayback();
+            const mime = pickRecordingMime();
+            let recorder;
+            try { recorder = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined); }
+            catch (e) { recorder = new MediaRecorder(stream); }
+            const chunks = [];
+            recorder.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+            recorder.onstop = async () => {
+                stream.getTracks().forEach(t => t.stop());
+                clearInterval(recState?.uiTimer);
+                clearTimeout(recState?.autoStop);
+                recState = null;
+                const type = recorder.mimeType || mime || 'audio/webm';
+                const blob = new Blob(chunks, { type });
+                if (blob.size < 200) {
+                    renderRecordingsUI();
+                    showToast('No se grabó nada. Probá de nuevo.', 'error');
+                    return;
+                }
+                try {
+                    await saveRecordingData(id, await blob.arrayBuffer(), type);
+                    renderRecordingsUI();
+                    showToast('🎙️ Grabación guardada');
+                    previewCue(id);
+                } catch (e) {
+                    console.error(e);
+                    renderRecordingsUI();
+                    showToast('No se pudo guardar la grabación. Probá de nuevo.', 'error');
+                }
+            };
+            recState = {
+                id, recorder,
+                startedAt: Date.now(),
+                uiTimer: setInterval(updateRecordingCountdown, 200),
+                autoStop: setTimeout(() => { if (recorder.state === 'recording') recorder.stop(); }, MAX_RECORDING_MS)
+            };
+            recorder.start();
+            renderRecordingsUI();
+        }
+
+        function updateRecordingCountdown() {
+            if (!recState) return;
+            const btn = document.querySelector(`.rec-row[data-cue="${recState.id}"] .rec-record`);
+            const left = Math.max(0, Math.ceil((MAX_RECORDING_MS - (Date.now() - recState.startedAt)) / 1000));
+            if (btn) btn.textContent = `■ Listo (${left})`;
+        }
+
+        function renderRecordingsUI() {
+            const box = document.getElementById('recordingsList');
+            if (!box) return;
+            if (!canRecord()) {
+                box.innerHTML = '<p style="color:var(--text-faint); font-size:13px;">Este navegador no permite grabar audio desde la app (hace falta abrirla desde su dirección https, no como archivo).</p>';
+                return;
+            }
+            let html = '';
+            let lastGroup = '';
+            VOICE_CUES.forEach(cue => {
+                if (cue.group !== lastGroup) {
+                    html += `<div class="settings-subtitle">${cue.group}</div>`;
+                    lastGroup = cue.group;
+                }
+                const meta = recordingMeta[cue.id];
+                const recording = recState && recState.id === cue.id;
+                const status = recording ? 'Grabando… hablá ahora'
+                    : meta ? `🎙️ Tu grabación (${formatNumber(meta.duration)} s)` : 'Voz del celular';
+                html += `<div class="rec-row${recording ? ' recording' : ''}${meta ? ' has-rec' : ''}" data-cue="${cue.id}">
+                        <div class="rec-info">
+                            <div class="rec-label">«${escapeHtml(cue.text)}»</div>
+                            <div class="rec-status">${status}</div>
+                        </div>
+                        <div class="rec-actions">
+                            <button type="button" class="rec-btn rec-record" onclick="toggleRecording('${cue.id}')">${recording ? '■ Listo' : meta ? '● Regrabar' : '● Grabar'}</button>
+                            <button type="button" class="rec-btn" onclick="previewCue('${cue.id}')" aria-label="Escuchar «${escapeHtml(cue.text)}»" title="Escuchar">▶</button>
+                            <button type="button" class="rec-btn" onclick="removeRecording('${cue.id}')" aria-label="Borrar grabación de «${escapeHtml(cue.text)}»" title="Borrar"${meta ? '' : ' disabled'}>🗑</button>
+                        </div>
+                    </div>`;
+            });
+            box.innerHTML = html;
+        }
+
+        // --- Backup: las grabaciones viajan dentro del JSON (en base64) ---
+        function arrayBufferToBase64(buf) {
+            const bytes = new Uint8Array(buf);
+            let bin = '';
+            for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+            return btoa(bin);
+        }
+
+        function base64ToArrayBuffer(b64) {
+            const bin = atob(b64);
+            const bytes = new Uint8Array(bin.length);
+            for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+            return bytes.buffer;
+        }
+
+        async function exportRecordings() {
+            let all = [];
+            try { all = await recTx('readonly', s => s.getAll()) || []; } catch (e) { return {}; }
+            const out = {};
+            all.forEach(rec => { out[rec.id] = { mime: rec.mime, duration: rec.duration, updatedAt: rec.updatedAt, data: arrayBufferToBase64(rec.data) }; });
+            return out;
+        }
+
+        // Un backup con grabaciones las reemplaza; uno viejo (sin grabaciones) no toca las actuales.
+        async function importRecordings(recordings) {
+            if (!recordings || typeof recordings !== 'object') return;
+            await recTx('readwrite', s => s.clear());
+            for (const [id, rec] of Object.entries(recordings)) {
+                if (!rec || !rec.data) continue;
+                await recTx('readwrite', s => s.put({ id, mime: rec.mime, duration: rec.duration, updatedAt: rec.updatedAt || Date.now(), data: base64ToArrayBuffer(rec.data) }));
             }
         }
 
@@ -6562,6 +7068,8 @@
         initSoundSettingsUI();
         initVoiceSettingsUI();
         initMusicSettingsUI();
+        renderRecordingsUI();
+        loadRecordings();
         populateRoutineOptions();
         populateUnifySelectors();
         displayWorkoutHistory();
