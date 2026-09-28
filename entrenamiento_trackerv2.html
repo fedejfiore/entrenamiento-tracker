@@ -637,11 +637,18 @@
         }
 
         .sets-controls {
-            display: grid;
-            grid-template-columns: 48px 1fr;
+            display: flex;
             gap: 6px;
             margin-top: 8px;
         }
+
+        .sets-controls button:first-child { flex: 0 0 48px; }
+        .sets-controls button:not(:first-child) { flex: 1; }
+        .sets-controls .rep-count-btn { color: var(--brand); }
+
+        /* El contador de reps solo tiene sentido en ejercicios con reps */
+        .exercise-row:not([data-type="kg"]):not([data-type="bw"]) .rep-count-btn,
+        body.rep-counter-off .rep-count-btn { display: none; }
 
         .sets-controls button {
             margin: 0;
@@ -969,6 +976,97 @@
             .rest-timer-widget.rest-mode .rest-timer-controls { flex: 1; justify-content: flex-end; }
             .rest-timer-widget.rest-mode .rest-timer-controls button { flex: 1; max-width: 72px; }
         }
+
+        /* CONTADOR DE REPS: panel fijo abajo, grande para verlo de lejos */
+        .rep-counter {
+            position: fixed;
+            left: 12px;
+            right: 12px;
+            bottom: 12px;
+            z-index: 2100;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 12px;
+            max-width: 520px;
+            margin: 0 auto;
+            background: #14161b;
+            color: #fff;
+            border: 1px solid rgba(var(--brand-rgb), 0.5);
+            border-radius: var(--radius);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .rep-counter[hidden] { display: none; }
+
+        .rep-counter-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            opacity: 0.85;
+        }
+
+        .rep-counter-close {
+            width: 40px;
+            min-height: 40px;
+            margin: 0;
+            padding: 0;
+            background: rgba(255,255,255,0.12);
+        }
+
+        .rep-counter-body { text-align: center; }
+        .rep-counter-phase { font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--brand); }
+        .rep-counter-value { font-family: var(--font-heading); font-size: 72px; font-weight: 600; line-height: 1; }
+        .rep-counter-sub { font-size: 13px; opacity: 0.8; }
+
+        .rep-counter-bar { height: 8px; border-radius: 4px; background: rgba(255,255,255,0.12); overflow: hidden; }
+        .rep-counter-bar > div { height: 100%; width: 0; background: var(--brand); }
+
+        .rep-counter-controls { display: flex; align-items: center; gap: 6px; }
+        .rep-counter-controls button {
+            flex: 1;
+            margin: 0;
+            min-height: 46px;
+            padding: 8px 4px;
+            font-size: 14px;
+            background: rgba(255,255,255,0.12);
+            color: #fff;
+        }
+        .rep-counter-controls button:hover { background: rgba(255,255,255,0.2); box-shadow: none; transform: none; }
+        .rep-counter-tempo { flex: 0 0 auto; min-width: 70px; text-align: center; font-weight: 700; }
+
+        body.rep-counter-open .app-main { padding-bottom: 340px; }
+
+        /* Configuración: interruptores y deslizadores */
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            font-size: 14px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border);
+        }
+        .toggle-row input[type="checkbox"] { flex-shrink: 0; margin: 0; accent-color: var(--brand); }
+        .settings-subtitle {
+            margin: 14px 0 2px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-faint);
+        }
+        .range-label { display: block; font-size: 13px; color: var(--text-muted); margin: 10px 0 4px; }
+        .settings-hint { font-size: 11px; color: var(--text-faint); margin: -6px 0 8px; }
+
+        /* Botones de música en Entrenar */
+        .music-row { display: flex; align-items: center; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+        .music-row-label { font-size: 13px; color: var(--text-muted); margin-right: 2px; }
+        .music-row button { margin: 0; flex: 1; background: var(--bg-elevated); color: var(--text); }
+        .music-row button:hover { background: var(--bg-subtle); box-shadow: none; transform: none; }
 
         /* Que la barra no tape el final de la página (ej. el botón Guardar) */
         body.rest-timer-open .app-main { padding-bottom: 120px; }
@@ -1341,6 +1439,11 @@
                     </div>
                     <div id="routineTimeStatus" style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;"></div>
                     <a href="#" id="btnResetRoutineTimer" onclick="event.preventDefault(); resetRoutineTimer();" style="display:none; font-size: 12px; color: var(--danger);">↺ Reiniciar marcado de tiempo</a>
+                    <div class="music-row">
+                        <span class="music-row-label">🎵 Música</span>
+                        <button type="button" class="small" onclick="openMusic('spotify')">Spotify</button>
+                        <button type="button" class="small" onclick="openMusic('ytmusic')">YouTube Music</button>
+                    </div>
                 </div>
 
                 <div class="section exercises-section">
@@ -1503,6 +1606,45 @@
                 </div>
 
                 <div class="section">
+                    <h2>🗣️ Voz y avisos</h2>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">La app te habla con la voz del celular (funciona sin internet). Cada aviso se activa o desactiva por separado. En iPhone, el interruptor de silencio puede apagar la voz.</div>
+                    <div id="voiceSettingsBox">
+                        <label class="toggle-row"><input type="checkbox" data-voice="enabled" onchange="onVoiceSettingChange(this)"><span><strong>Voz activada</strong></span></label>
+                        <div id="voiceOptions">
+                            <div class="settings-subtitle">Descanso entre series</div>
+                        <label class="toggle-row"><input type="checkbox" data-voice="restWarn" onchange="onVoiceSettingChange(this)"><span>Avisar cuando quedan 10 segundos</span></label>
+                        <label class="toggle-row"><input type="checkbox" data-voice="restEnd" onchange="onVoiceSettingChange(this)"><span>Avisar el final («¡Vamos! A la próxima serie»)</span></label>
+                            <div class="settings-subtitle">Contador de reps</div>
+                        <label class="toggle-row"><input type="checkbox" data-voice="repCounter" onchange="onVoiceSettingChange(this)"><span>Botón «▶ Contar reps» en cada ejercicio</span></label>
+                        <label class="toggle-row"><input type="checkbox" data-voice="countAloud" onchange="onVoiceSettingChange(this)"><span>Decir el número de cada rep</span></label>
+                        <label class="toggle-row"><input type="checkbox" data-voice="encourage" onchange="onVoiceSettingChange(this)"><span>Ánimo: «la mitad», «quedan cinco», «quedan dos», «¡última!»</span></label>
+                            <label class="range-label">Tiempo para prepararte antes de arrancar: <strong id="voicePrepLabel"></strong></label>
+                            <input type="range" min="3" max="15" step="1" data-voice="prepSeconds" oninput="onVoiceSettingChange(this)">
+                            <label class="range-label">Cadencia inicial: <strong id="voiceTempoLabel"></strong></label>
+                            <input type="range" min="1" max="8" step="0.5" data-voice="tempo" oninput="onVoiceSettingChange(this)">
+                            <div class="settings-hint">Mientras contás podés hacerla más lenta o más rápida; queda guardada para ese ejercicio.</div>
+                            <div class="settings-subtitle">Otros</div>
+                        <label class="toggle-row"><input type="checkbox" data-voice="tabata" onchange="onVoiceSettingChange(this)"><span>Tabata: trabajo, descanso, última ronda y 3-2-1</span></label>
+                        <label class="toggle-row"><input type="checkbox" data-voice="records" onchange="onVoiceSettingChange(this)"><span>«¡Nuevo récord!» al guardar la sesión</span></label>
+                            <div class="settings-subtitle">Voz</div>
+                            <select id="voiceSelect" data-voice="voiceURI" onchange="onVoiceSettingChange(this)"></select>
+                            <label class="range-label">Velocidad de la voz: <strong id="voiceRateLabel"></strong></label>
+                            <input type="range" min="0.8" max="1.4" step="0.05" data-voice="rate" oninput="onVoiceSettingChange(this)">
+                            <button type="button" onclick="testVoice()">▶ Probar voz</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>🎵 Música</h2>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Pegá el link de tu playlist (en la app de música: Compartir → Copiar link) y la abrís con un toque desde Entrenar. Sin link, se abre la app en su inicio. Pausar o pasar de tema se hace desde la app de música o desde los controles del celular: una web no puede manejar otra app.</div>
+                    <label class="range-label" for="musicLink_spotify">Playlist de Spotify</label>
+                    <input type="url" id="musicLink_spotify" inputmode="url" autocomplete="off" placeholder="https://open.spotify.com/playlist/..." onchange="saveMusicLink('spotify', this)">
+                    <label class="range-label" for="musicLink_ytmusic">Playlist de YouTube Music</label>
+                    <input type="url" id="musicLink_ytmusic" inputmode="url" autocomplete="off" placeholder="https://music.youtube.com/playlist?list=..." onchange="saveMusicLink('ytmusic', this)">
+                </div>
+
+                <div class="section">
                     <h2>🔗 Unificar Ejercicios Duplicados</h2>
                     <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Si dos nombres son el mismo ejercicio (ej. "Mariposa" y "Aperturas en mariposa"), elegilos acá para juntar sus estadísticas e historial. Sin tipear, para no fallar por una tilde o un espacio de más.</div>
                     <select id="unifySource"><option value="">Ejercicio a renombrar...</option></select>
@@ -1541,6 +1683,29 @@
                 <button type="button" onclick="adjustRestTimer(15)" aria-label="Sumar 15 segundos">+15s</button>
                 <button type="button" class="skip" onclick="cancelRestTimer()">Saltar</button>
             </div>
+        </div>
+    </div>
+
+    <div id="repCounter" class="rep-counter" hidden role="dialog" aria-label="Contador de reps">
+        <div class="rep-counter-head">
+            <span id="repCounterTitle"></span>
+            <button type="button" class="rep-counter-close" onclick="stopRepCounter()" aria-label="Detener el contador">✕</button>
+        </div>
+        <div class="rep-counter-body">
+            <div class="rep-counter-phase" id="repCounterPhase"></div>
+            <div class="rep-counter-value" id="repCounterValue"></div>
+            <div class="rep-counter-sub" id="repCounterSub"></div>
+        </div>
+        <div class="rep-counter-bar"><div id="repCounterProgress"></div></div>
+        <div class="rep-counter-controls">
+            <button type="button" onclick="adjustRepTempo(0.5)">🐢 Más lento</button>
+            <span id="repCounterTempo" class="rep-counter-tempo"></span>
+            <button type="button" onclick="adjustRepTempo(-0.5)">🐇 Más rápido</button>
+        </div>
+        <div class="rep-counter-controls">
+            <button type="button" onclick="adjustRepTarget(-1)">−1 rep</button>
+            <button type="button" id="repCounterPauseBtn" onclick="toggleRepCounterPause()">⏸ Pausa</button>
+            <button type="button" onclick="adjustRepTarget(1)">+1 rep</button>
         </div>
     </div>
 
@@ -2119,7 +2284,7 @@
 
                     const weightStr = ex.weight || '';
                     const repsStr = ex.reps || '';
-                    const weights = weightStr.split('-').map(x => parseFloat(x)).filter(x => !isNaN(x));
+                    const weights = weightStr.split('-').map(x => parseDecimal(x)).filter(x => x != null);
                     const reps = repsStr.split('-').map(x => parseInt(x)).filter(x => !isNaN(x));
 
                     if (weights.length > 0) {
@@ -2144,7 +2309,7 @@
 
         // ========== VOLUMEN, PRs Y 1RM ESTIMADO ==========
         function calculateExerciseVolume(ex) {
-            const weights = (ex.weight || '').split('-').map(x => parseFloat(x)).filter(x => !isNaN(x));
+            const weights = (ex.weight || '').split('-').map(x => parseDecimal(x)).filter(x => x != null);
             const reps = (ex.reps || '').split('-').map(x => parseInt(x)).filter(x => !isNaN(x));
             const len = Math.min(weights.length, reps.length);
             let volume = 0;
@@ -2167,7 +2332,7 @@
 
         // Fórmula de Epley: 1RM = peso × (1 + reps/30)
         function estimate1RMForExercise(ex) {
-            const weights = (ex.weight || '').split('-').map(x => parseFloat(x)).filter(x => !isNaN(x));
+            const weights = (ex.weight || '').split('-').map(x => parseDecimal(x)).filter(x => x != null);
             const reps = (ex.reps || '').split('-').map(x => parseInt(x)).filter(x => !isNaN(x));
             const len = Math.min(weights.length, reps.length);
             let max1RM = 0;
@@ -2209,7 +2374,7 @@
                     return;
                 }
 
-                const weights = (ex.weight || '').split('-').map(x => parseFloat(x)).filter(x => !isNaN(x));
+                const weights = (ex.weight || '').split('-').map(x => parseDecimal(x)).filter(x => x != null);
                 const reps = (ex.reps || '').split('-').map(x => parseInt(x)).filter(x => !isNaN(x));
                 const maxWeight = weights.length > 0 ? Math.max(...weights) : 0;
                 const maxReps = reps.length > 0 ? Math.max(...reps) : 0;
@@ -2248,7 +2413,7 @@
                 // mención en vez de quedar en silencio, porque "hiciste menos, más rápido"
                 // es información útil aunque no sea un PR.
                 if (!hasPR && pauseImproved) {
-                    const lastWeights = (prev.lastWeight || '').split('-').map(x => parseFloat(x)).filter(x => !isNaN(x));
+                    const lastWeights = (prev.lastWeight || '').split('-').map(x => parseDecimal(x)).filter(x => x != null);
                     const lastReps = (prev.lastReps || '').split('-').map(x => parseInt(x)).filter(x => !isNaN(x));
                     const lastMaxWeight = lastWeights.length > 0 ? Math.max(...lastWeights) : null;
                     const lastMaxReps = lastReps.length > 0 ? Math.max(...lastReps) : null;
@@ -2325,7 +2490,7 @@
             reps: { head: 'Reps', inputmode: 'numeric', hint: '–' },
             kg:   { head: 'Kg', inputmode: 'decimal', hint: '–' },
             km:   { head: 'Km', inputmode: 'decimal', hint: '–' },
-            time: { head: 'Tiempo', inputmode: 'numeric', hint: 'm:ss' }
+            time: { head: 'm:ss', inputmode: 'numeric', hint: 'm:ss' }
         };
 
         // RIR = reps que quedaban en reserva (0 = al fallo). Para cardio/tiempo no tiene
@@ -2458,11 +2623,19 @@
             return sec == null ? '' : formatSecondsClock(sec);
         }
 
-        // Para leer: "60 min" si son minutos justos, si no "1:45" / "32:30".
-        function formatDurationHuman(sec) {
+        // Para leer, siempre con unidades, así nunca hay duda de si son minutos,
+        // minutos y segundos u horas: "45 s", "1 min 45 s", "60 min", "1 h 05 min".
+        // minutesOnly: para partidos/clases (tipo Minutos) se lee mejor "60 min" que "1 h".
+        function formatDurationHuman(sec, minutesOnly = false) {
             if (sec == null) return '';
-            if (sec >= 60 && sec % 60 === 0) return `${sec / 60} min`;
-            return formatSecondsClock(sec);
+            sec = Math.round(sec);
+            const h = minutesOnly ? 0 : Math.floor(sec / 3600);
+            const m = Math.floor((sec - h * 3600) / 60);
+            const sc = sec % 60;
+            const pad = n => String(n).padStart(2, '0');
+            if (h) return `${h} h${m ? ` ${pad(m)} min` : ''}${sc ? ` ${pad(sc)} s` : ''}`;
+            if (m) return `${m} min${sc ? ` ${pad(sc)} s` : ''}`;
+            return `${sc} s`;
         }
 
         // Cómo se muestra un tiempo guardado dentro del campo, según el modo del tipo.
@@ -2500,7 +2673,11 @@
                 // Cardio / fútbol viejo: "peso" guardaba minutos (o km) y "reps" la intensidad.
                 if (weights.length === 0) return [];
                 const effort = LEGACY_INTENSITY_TO_EFFORT[normalizeForCompare(ex.reps || '')] || '';
-                return weights.map((w, i) => type === 'km'
+                // Si "reps" son números (ej. Bici "1-1" con peso "9"), cada uno es una vuelta
+                // y el valor se repite: 2 series de 9 km. Con texto ("alta") es una sola.
+                const rounds = reps.filter(r => /^\d+$/.test(r)).length;
+                const count = Math.max(weights.length, rounds);
+                return Array.from({ length: count }, (_, i) => pick(weights, i)).map((w, i) => type === 'km'
                     ? { km: w, rest: pick(pauses, i), effort }
                     : { time: formatTimeValue(w), rest: pick(pauses, i), effort });
             }
@@ -2516,7 +2693,7 @@
         function formatSetValue(set, type) {
             const v = f => String(set?.[f] || '').trim();
             const num = f => { const n = parseDecimal(v(f)); return n == null ? '' : formatNumber(n); };
-            const dur = formatDurationHuman(parseTimeSeconds(v('time')));
+            const dur = formatDurationHuman(parseTimeSeconds(v('time')), type === 'min');
             if (type === 'kg') return v('kg') ? `${v('reps') || '?'}×${num('kg')}kg` : v('reps');
             if (type === 'bw') return v('reps') ? `${v('reps')} reps` : '';
             if (type === 'time' || type === 'min') return dur;
@@ -2586,7 +2763,7 @@
                     prs.push(`${ex.name}: duración ${formatDurationHuman(c.totalSec)} (antes ${formatDurationHuman(prev.maxTotalSec)})`);
                 }
             } else if (prev.maxSetSec > 0 && c.maxSetSec > prev.maxSetSec) {
-                prs.push(`${ex.name}: ${formatDurationHuman(c.maxSetSec)} (antes ${formatDurationHuman(prev.maxSetSec)})`);
+                prs.push(`${ex.name}: ${formatDurationHuman(c.maxSetSec, ex.type === 'min')} (antes ${formatDurationHuman(prev.maxSetSec, ex.type === 'min')})`);
             }
             return prs;
         }
@@ -2665,7 +2842,7 @@
                     <span>#</span>
                     ${def.cols.map(f => `<span>${f === 'time' && def.timeMode === 'min' ? 'Min' : SET_FIELDS[f].head}</span>`).join('')}
                     ${def.calc === 'speed' ? '<span title="Velocidad calculada">Km/h</span>' : ''}
-                    ${def.rest ? '<span title="Descanso en segundos">Desc.</span>' : ''}
+                    ${def.rest ? '<span title="Descanso en segundos">Desc s</span>' : ''}
                     <span title="${scale.title}">${scale.head}</span>
                     <span>✓</span>
                     <span></span>
@@ -2677,43 +2854,6 @@
         }
 
         const DEFAULT_MATCH_MINUTES = 60;
-
-        // Corrección única del historial: los partidos quedaron guardados con 90 minutos
-        // (el valor sugerido de antes) pero en realidad duran 60. Se pregunta una sola vez;
-        // si se acepta, solo cambian los partidos que tienen exactamente 90 minutos.
-        function offerFutbolDurationFix() {
-            if (localStorage.getItem('futbolDurationFixAsked')) return;
-            let workouts;
-            try { workouts = JSON.parse(localStorage.getItem('workouts') || '[]'); } catch (e) { return; }
-            if (!Array.isArray(workouts)) return;
-
-            const WRONG_SEC = 90 * 60;
-            const matches = [];
-            workouts.forEach(w => (w?.exercises || []).forEach(ex => {
-                if (!ex || !/futbol|partido/.test(normalizeForCompare(ex.name || ''))) return;
-                const inSets = Array.isArray(ex.sets) && ex.sets.some(s => parseTimeSeconds(s.time) === WRONG_SEC);
-                const inLegacy = !Array.isArray(ex.sets) && parseDecimal(ex.weight) === 90;
-                if (inSets || inLegacy) matches.push(ex);
-            }));
-            if (matches.length === 0) return;
-
-            localStorage.setItem('futbolDurationFixAsked', '1');
-            const ok = confirm(`⚽ Hay ${matches.length} partido${matches.length === 1 ? '' : 's'} de fútbol guardado${matches.length === 1 ? '' : 's'} con 90 minutos.\n\n¿Los corrijo a ${DEFAULT_MATCH_MINUTES} minutos? (Solo cambia la duración del partido, nada más.)`);
-            if (!ok) return;
-
-            const fixed = formatSecondsClock(DEFAULT_MATCH_MINUTES * 60);
-            matches.forEach(ex => {
-                if (Array.isArray(ex.sets)) {
-                    ex.sets.forEach(s => { if (parseTimeSeconds(s.time) === WRONG_SEC) s.time = fixed; });
-                } else {
-                    ex.weight = String(DEFAULT_MATCH_MINUTES);
-                }
-            });
-            localStorage.setItem('workouts', JSON.stringify(workouts));
-            calculateStats();
-            displayWorkoutHistory();
-            showToast(`✅ ${matches.length} partido${matches.length === 1 ? '' : 's'} corregido${matches.length === 1 ? '' : 's'} a ${DEFAULT_MATCH_MINUTES} min`);
-        }
 
         // Lo que se sugiere en gris: la última sesión o, si nunca se hizo, un valor típico.
         function getPrevSets(name, type) {
@@ -2759,6 +2899,7 @@
                     <div class="sets-controls">
                         <button type="button" onclick="removeLastSet(this)" aria-label="Quitar la última serie" title="Quitar la última serie"${setCount <= 1 ? ' disabled' : ''}>−</button>
                         <button type="button" onclick="addSet(this)">+ Agregar serie</button>
+                        <button type="button" class="rep-count-btn" onclick="startRepCounter(this)" title="Cuenta la próxima serie con cadencia y voz">▶ Contar reps</button>
                     </div>
                     <input type="text" class="exercise-note" id="note_${idx}" autocomplete="off" placeholder="Nota del ejercicio (opcional)">
                 </div>`;
@@ -2775,7 +2916,7 @@
                     formatSpeed(stats.bestSpeed)
                 ].filter(Boolean).join(' · ');
             }
-            if ((type === 'time' || type === 'min') && stats.maxSetSec) record = `Máx ${formatDurationHuman(stats.maxSetSec)}`;
+            if ((type === 'time' || type === 'min') && stats.maxSetSec) record = `Máx ${formatDurationHuman(stats.maxSetSec, type === 'min')}`;
             if (!summary) return 'Sin registros previos';
             return `Últ: ${escapeHtml(summary)}${record ? `<br>🏆 ${escapeHtml(record)}` : ''}`;
         }
@@ -3778,6 +3919,7 @@
             const generalNotes = document.getElementById('sessionNotes').value.trim();
 
             cancelRestTimer(); // no dejar el widget de descanso corriendo después de guardar
+            stopRepCounter(true);
 
             // Si el cronómetro quedó marcado de un día distinto al que se está guardando
             // (se inició/finalizó y nunca se guardó, o la pestaña quedó abierta de un día
@@ -3821,6 +3963,7 @@
             if (prs.length > 0) msg += `\n\n🏆 ¡Nuevo PR!\n` + prs.map(p => `• ${p}`).join('\n');
             if (progressNotes.length > 0) msg += `\n\n📝 Para tener en cuenta:\n` + progressNotes.map(n => `• ${n}`).join('\n');
             showToast(msg, prs.length > 0 ? 'pr' : 'success', (prs.length > 0 || progressNotes.length > 0) ? 5500 : 3200);
+            if (prs.length > 0) speak(prs.length === 1 ? '¡Nuevo récord!' : `¡${prs.length} récords nuevos!`, 'records');
             document.getElementById('sessionNotes').value = '';
             document.getElementById('routine').value = '';
             document.getElementById('exercisesContainer').innerHTML = '';
@@ -4222,7 +4365,7 @@
                 if (!w || !w.exercises || !Array.isArray(w.exercises)) return;
                 w.exercises.forEach(e => {
                     if (e && e.name === exName && e.weight) {
-                        const weights = e.weight.split('-').map(x => parseFloat(x)).filter(x => !isNaN(x));
+                        const weights = e.weight.split('-').map(x => parseDecimal(x)).filter(x => x != null);
                         if (weights.length > 0) {
                             const avg = weights.reduce((a, b) => a + b) / weights.length;
                             data.push({
@@ -4722,7 +4865,7 @@
                 w.exercises.forEach(ex => {
                     if (!ex || !ex.name) return;
 
-                    const weights = (ex.weight || '').split('-').map(x => parseFloat(x)).filter(x => !isNaN(x));
+                    const weights = (ex.weight || '').split('-').map(x => parseDecimal(x)).filter(x => x != null);
                     const volume = calculateExerciseVolume(ex);
                     const totalReps = calculateExerciseTotalReps(ex);
                     if (weights.length === 0 && totalReps === 0) return;
@@ -5119,7 +5262,7 @@
             return recent.map(w => {
                 let totalWeight = 0, weightCount = 0, totalReps = 0, repsCount = 0;
                 w.exercises.forEach(ex => {
-                    (ex.weight || '').split('-').map(x => parseFloat(x)).filter(x => !isNaN(x)).forEach(x => { totalWeight += x; weightCount++; });
+                    (ex.weight || '').split('-').map(x => parseDecimal(x)).filter(x => x != null).forEach(x => { totalWeight += x; weightCount++; });
                     (ex.reps || '').split('-').map(x => parseInt(x)).filter(x => !isNaN(x)).forEach(x => { totalReps += x; repsCount++; });
                 });
                 const routineLabel = w.routine ? (customRoutineLabels[w.routine] || ROUTINE_LABELS[w.routine] || `Rutina ${w.routine}`) : 'Sin rutina';
@@ -5368,12 +5511,14 @@
             // Se cuenta contra una hora de fin (no restando 1 por tick): si el celular
             // frena los intervalos con la pantalla apagada, el tiempo igual es exacto.
             restTimerEndsAt = Date.now() + totalSeconds * 1000;
+            restTimerWarned = totalSeconds <= REST_WARN_SECONDS + 2; // descansos cortos: sin aviso previo
             widget.style.display = 'block';
             tickRestTimer();
             restTimerInterval = setInterval(tickRestTimer, 250);
         }
 
         let restTimerEndsAt = null;
+        let restTimerWarned = false;
 
         function restTimerRemainingSeconds() {
             return restTimerEndsAt == null ? 0 : Math.max(0, Math.ceil((restTimerEndsAt - Date.now()) / 1000));
@@ -5387,12 +5532,19 @@
                 const sec = (remaining % 60).toString().padStart(2, '0');
                 valueEl.textContent = `${m}:${sec}`;
             }
+            if (remaining > 0 && remaining <= REST_WARN_SECONDS && !restTimerWarned) {
+                restTimerWarned = true;
+                playTick(880, 0.1);
+                speak('Quedan diez segundos', 'restWarn');
+            }
             if (remaining > 0) return;
 
             clearInterval(restTimerInterval);
             restTimerInterval = null;
             restTimerEndsAt = null;
             playRestTimerBeep();
+            // Después del beep, para que no se pisen.
+            setTimeout(() => speak('¡Vamos! A la próxima serie', 'restEnd'), 900);
             setTimeout(() => {
                 // Solo si en el medio no arrancó otro descanso (o un Tabata).
                 if (!restTimerInterval && !tabataState) hideTimerWidget();
@@ -5404,6 +5556,8 @@
             if (!restTimerInterval || restTimerEndsAt == null) return;
             restTimerEndsAt += deltaSeconds * 1000;
             if (restTimerEndsAt < Date.now()) restTimerEndsAt = Date.now();
+            // Si con +15s volvió a quedar más de 10 s, se vuelve a avisar.
+            if (restTimerRemainingSeconds() > REST_WARN_SECONDS) restTimerWarned = false;
             tickRestTimer();
         }
 
@@ -5496,6 +5650,12 @@
             roundEl.style.display = 'block';
             roundEl.textContent = `Ronda ${tabataState.currentRound} / ${tabataState.rounds}`;
             render(remaining);
+            if (phase === 'work') {
+                const lastRound = tabataState.currentRound === tabataState.rounds && tabataState.rounds > 1;
+                speak(lastRound ? '¡Última ronda! ¡Trabajo!' : '¡Trabajo!', 'tabata');
+            } else {
+                speak('Descanso', 'tabata');
+            }
 
             if (tabataInterval) clearInterval(tabataInterval);
             tabataInterval = setInterval(() => {
@@ -5507,6 +5667,7 @@
                     advanceTabata();
                 } else {
                     render(remaining);
+                    if (remaining <= 3) speak(String(remaining), 'tabata');
                 }
             }, 1000);
         }
@@ -5534,6 +5695,7 @@
             tabataInterval = null;
             tabataState = null;
             hideTimerWidget();
+            speak('¡Terminaste! Muy bien', 'tabata');
             addTabataBlockToSession(state, true);
         }
 
@@ -5714,6 +5876,449 @@
             } catch (err) {
                 console.error('No se pudo reproducir el sonido de pausa:', err);
             }
+        }
+
+        // ========== VOZ Y AVISOS ==========
+        // Usa la voz del propio celular (speechSynthesis): funciona sin internet y no pesa
+        // nada. Cada aviso se prende o apaga por separado en Configuración.
+        const VOICE_DEFAULTS = {
+            enabled: true,
+            restWarn: true,      // descanso: "quedan 10 segundos"
+            restEnd: true,       // descanso: "¡Vamos, a la próxima serie!"
+            tabata: true,        // Tabata: trabajo / descanso / última ronda / 3-2-1
+            records: true,       // "¡Nuevo récord!" al guardar
+            repCounter: true,    // botón ▶ Contar reps en cada ejercicio
+            countAloud: true,    // decir el número de cada rep
+            encourage: true,     // mitad / quedan 5 / quedan 2 / ¡última!
+            prepSeconds: 5,      // segundos para prepararse antes de la primera rep
+            tempo: 3,            // segundos por rep (cadencia) por defecto
+            rate: 1.05,          // velocidad de la voz
+            voiceURI: ''         // voz elegida ('' = la primera en español)
+        };
+        const REST_WARN_SECONDS = 10;
+
+        function loadVoiceSettings() {
+            try { return { ...VOICE_DEFAULTS, ...(JSON.parse(localStorage.getItem('voiceSettings') || '{}') || {}) }; }
+            catch (e) { return { ...VOICE_DEFAULTS }; }
+        }
+
+        function saveVoiceSettings(patch) {
+            const next = { ...loadVoiceSettings(), ...patch };
+            localStorage.setItem('voiceSettings', JSON.stringify(next));
+            applyVoiceSettingsToPage(next);
+            return next;
+        }
+
+        function voiceSupported() {
+            return 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined';
+        }
+
+        function getSpanishVoices() {
+            if (!voiceSupported()) return [];
+            return speechSynthesis.getVoices().filter(v => /^es(-|_|$)/i.test(v.lang));
+        }
+
+        function pickVoice(settings) {
+            const voices = getSpanishVoices();
+            return voices.find(v => v.voiceURI === settings.voiceURI)
+                || voices.find(v => /es-(AR|419|US|MX)/i.test(v.lang))
+                || voices[0] || null;
+        }
+
+        // key: qué aviso es (para respetar su interruptor). Corta lo que se estaba diciendo:
+        // con reps rápidas es mejor decir el número actual que quedar atrasado.
+        function speak(text, key) {
+            const st = loadVoiceSettings();
+            if (!st.enabled || (key && st[key] === false) || !voiceSupported()) return;
+            try {
+                speechSynthesis.cancel();
+                const u = new SpeechSynthesisUtterance(text);
+                const voice = pickVoice(st);
+                if (voice) u.voice = voice;
+                u.lang = voice?.lang || 'es-AR';
+                u.rate = st.rate;
+                u.volume = Math.max(0.1, loadSoundSettings().volume / 100);
+                speechSynthesis.speak(u);
+            } catch (e) {
+                console.error('No se pudo usar la voz:', e);
+            }
+        }
+
+        // iPhone/Android solo dejan sonar audio después de un toque del usuario: la primera
+        // vez que se toca algo, se "despierta" la voz y el audio con un sonido mudo.
+        let audioUnlocked = false;
+        function unlockAudio() {
+            if (audioUnlocked) return;
+            audioUnlocked = true;
+            try {
+                if (voiceSupported()) {
+                    const u = new SpeechSynthesisUtterance(' ');
+                    u.volume = 0;
+                    speechSynthesis.speak(u);
+                }
+                const ctx = getAudioCtx();
+                if (ctx && ctx.state === 'suspended') ctx.resume();
+            } catch (e) {}
+        }
+        document.addEventListener('pointerdown', unlockAudio, { once: true, capture: true });
+
+        function getAudioCtx() {
+            try {
+                if (!restTimerAudioCtx) restTimerAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (restTimerAudioCtx.state === 'suspended') restTimerAudioCtx.resume();
+                return restTimerAudioCtx;
+            } catch (e) { return null; }
+        }
+
+        // Tic corto (cadencia, cuenta regresiva). Respeta "Silencio" y el volumen.
+        function playTick(freq = 1000, dur = 0.07, gain = 0.6) {
+            const { type, volume } = loadSoundSettings();
+            if (type === 'silent' || volume === 0) return;
+            const ctx = getAudioCtx();
+            if (!ctx) return;
+            playTone(ctx, ctx.currentTime, freq, 'sine', (volume / 100) * gain, dur);
+        }
+
+        function applyVoiceSettingsToPage(st = loadVoiceSettings()) {
+            // Sin contador de reps, el botón ▶ desaparece de los bloques.
+            document.body.classList.toggle('rep-counter-off', !(st.enabled && st.repCounter));
+        }
+
+        // ---- Pantalla de Configuración ----
+        function initVoiceSettingsUI() {
+            const st = loadVoiceSettings();
+            applyVoiceSettingsToPage(st);
+            const box = document.getElementById('voiceSettingsBox');
+            if (!box) return;
+            if (!voiceSupported()) {
+                box.innerHTML = '<p style="color:var(--text-faint); font-size:13px;">Este navegador no tiene voz disponible. Los avisos siguen sonando con beeps.</p>';
+            }
+            box.querySelectorAll('[data-voice]').forEach(el => {
+                const key = el.dataset.voice;
+                if (el.type === 'checkbox') el.checked = !!st[key];
+                else el.value = st[key];
+            });
+            updateVoiceLabels(st);
+            populateVoiceSelect();
+            if (voiceSupported()) speechSynthesis.addEventListener?.('voiceschanged', populateVoiceSelect);
+        }
+
+        function onVoiceSettingChange(el) {
+            const key = el.dataset.voice;
+            let value = el.type === 'checkbox' ? el.checked : el.value;
+            if (['prepSeconds', 'tempo', 'rate'].includes(key)) value = parseFloat(value);
+            const st = saveVoiceSettings({ [key]: value });
+            updateVoiceLabels(st);
+        }
+
+        function updateVoiceLabels(st) {
+            const set = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
+            set('voiceRateLabel', `${formatNumber(st.rate)}×`);
+            set('voiceTempoLabel', `${formatNumber(st.tempo)} s por rep`);
+            set('voicePrepLabel', `${st.prepSeconds} s`);
+            const opts = document.getElementById('voiceOptions');
+            if (opts) opts.style.opacity = st.enabled ? '1' : '0.5';
+        }
+
+        function populateVoiceSelect() {
+            const sel = document.getElementById('voiceSelect');
+            if (!sel) return;
+            const st = loadVoiceSettings();
+            const voices = getSpanishVoices();
+            sel.innerHTML = '<option value="">Automática (español)</option>'
+                + voices.map(v => `<option value="${escapeHtml(v.voiceURI)}">${escapeHtml(v.name)} (${escapeHtml(v.lang)})</option>`).join('');
+            sel.value = voices.some(v => v.voiceURI === st.voiceURI) ? st.voiceURI : '';
+        }
+
+        function testVoice() {
+            unlockAudio();
+            speak('¡Dale! Quedan cinco. ¡Última!');
+        }
+
+        // ========== CONTADOR DE REPS CON CADENCIA ==========
+        // ▶ en un bloque cuenta la próxima serie sin tildar: primero unos segundos para
+        // prepararse, después un tic por rep al ritmo elegido (con un tic más grave a mitad
+        // de cada rep para marcar el cambio de dirección: ida / vuelta) y ánimo por voz. Al terminar
+        // marca la serie como hecha, lo que arranca el descanso.
+        const REP_TEMPO_MIN = 1;
+        const REP_TEMPO_MAX = 8;
+        const REP_TEMPO_STEP = 0.5;
+        let repState = null;
+        let repTimer = null;
+
+        function loadExerciseTempos() {
+            try { return JSON.parse(localStorage.getItem('exerciseTempos') || '{}') || {}; } catch (e) { return {}; }
+        }
+
+        function saveExerciseTempo(name, tempo) {
+            const all = loadExerciseTempos();
+            all[normalizeForCompare(name)] = tempo;
+            localStorage.setItem('exerciseTempos', JSON.stringify(all));
+        }
+
+        function startRepCounter(btn) {
+            const block = btn.closest('.exercise-row');
+            if (!block) return;
+            const row = [...block.querySelectorAll('.set-row')].find(r => !r.classList.contains('done'));
+            if (!row) {
+                showToast('Todas las series están hechas. Agregá una con "+ Agregar serie".', 'error');
+                return;
+            }
+            unlockAudio();
+            stopRepCounter(true);
+            cancelRestTimer();
+
+            const st = loadVoiceSettings();
+            const name = getBlockName(block);
+            const repsEl = row.querySelector('[data-f="reps"]');
+            const target = parseInt(repsEl?.value || repsEl?.dataset.prev, 10) || 10;
+            const tempo = loadExerciseTempos()[normalizeForCompare(name)] || st.tempo;
+
+            repState = {
+                block, row, name, target, tempo,
+                phase: 'prep',
+                prepSeconds: st.prepSeconds,
+                prepEndsAt: Date.now() + st.prepSeconds * 1000,
+                lastPrepSecond: null,
+                rep: 0,
+                repStartedAt: 0,
+                midCued: false,
+                pausedAt: null
+            };
+
+            const label = row.querySelector('.set-num')?.textContent || '';
+            document.getElementById('repCounterTitle').textContent = `${name} · ${label === WARMUP_LABEL ? 'Calentamiento' : 'Serie ' + label}`;
+            const panel = document.getElementById('repCounter');
+            panel.hidden = false;
+            document.body.classList.add('rep-counter-open');
+            maybeAutoStartSessionTimer();
+            speak('Preparate');
+            renderRepCounter();
+            repTimer = setInterval(repCounterTick, 50);
+        }
+
+        function repCounterTick() {
+            const s = repState;
+            if (!s || s.pausedAt) return;
+            const now = Date.now();
+
+            if (s.phase === 'prep') {
+                const left = Math.ceil((s.prepEndsAt - now) / 1000);
+                if (left !== s.lastPrepSecond) {
+                    s.lastPrepSecond = left;
+                    // 3-2-1 en voz alta (sin pisar el "Preparate" del arranque).
+                    if (left > 0 && left <= 3 && left < s.prepSeconds) {
+                        playTick(880, 0.1);
+                        speak(String(left));
+                    }
+                }
+                if (left <= 0) {
+                    s.phase = 'reps';
+                    s.rep = 1;
+                    s.repStartedAt = now;
+                    s.midCued = false;
+                    onRepStart(true);
+                }
+                renderRepCounter();
+                return;
+            }
+
+            if (s.phase !== 'reps') return;
+            const repMs = s.tempo * 1000;
+            const elapsed = now - s.repStartedAt;
+            if (!s.midCued && elapsed >= repMs / 2) {
+                s.midCued = true;
+                playTick(520, 0.06, 0.35);
+            }
+            if (elapsed >= repMs) {
+                if (s.rep >= s.target) {
+                    finishRepCounter();
+                    return;
+                }
+                s.rep++;
+                // Suma exacta (no "ahora"): así la cadencia no se va corriendo con los ticks.
+                s.repStartedAt += repMs;
+                s.midCued = false;
+                onRepStart(false);
+            }
+            renderRepCounter();
+        }
+
+        // Qué se dice al empezar cada rep: el ánimo tiene prioridad sobre el número.
+        function repCueText(rep, target, encourage) {
+            const left = target - rep + 1; // incluye la que empieza
+            if (encourage) {
+                if (rep === target && target > 1) return '¡Última!';
+                if (left === 2 && target >= 4) return '¡Quedan dos!';
+                const half = target >= 6 && rep === Math.floor(target / 2) + 1;
+                if (half && left === 5) return '¡La mitad! ¡Quedan cinco!';
+                if (left === 5 && target >= 8) return '¡Dale, quedan cinco!';
+                if (half) return '¡Dale, la mitad!';
+            }
+            return null;
+        }
+
+        function onRepStart(first) {
+            const s = repState;
+            const st = loadVoiceSettings();
+            playTick(1200, 0.08);
+            const cue = repCueText(s.rep, s.target, st.encourage);
+            if (first) speak(cue || '¡Ya!');
+            else if (cue) speak(cue);
+            else if (st.countAloud) speak(String(s.rep));
+        }
+
+        function finishRepCounter() {
+            const s = repState;
+            clearInterval(repTimer);
+            repTimer = null;
+            s.phase = 'done';
+            renderRepCounter();
+            speak('¡Bien! Serie terminada');
+
+            // Las reps contadas quedan cargadas en la serie (si no había escrito otra cosa),
+            // y se marca como hecha: eso completa el peso sugerido y arranca el descanso.
+            const repsEl = s.row.querySelector('[data-f="reps"]');
+            if (repsEl && !repsEl.value.trim()) repsEl.value = String(s.target);
+            const check = s.row.querySelector('.set-check');
+            setTimeout(() => {
+                if (repState !== s) return; // ya arrancó otro contador en el medio
+                closeRepCounterPanel();
+                repState = null;
+                if (check && !s.row.classList.contains('done')) toggleSetDone(check);
+            }, 1200);
+        }
+
+        function stopRepCounter(silent) {
+            if (repTimer) { clearInterval(repTimer); repTimer = null; }
+            const s = repState;
+            repState = null;
+            closeRepCounterPanel();
+            if (!silent && s && s.phase === 'reps') {
+                showToast(`Contador detenido en la rep ${s.rep} de ${s.target}`);
+            }
+            if (!silent && voiceSupported()) speechSynthesis.cancel();
+        }
+
+        function closeRepCounterPanel() {
+            const panel = document.getElementById('repCounter');
+            if (panel) panel.hidden = true;
+            document.body.classList.remove('rep-counter-open');
+        }
+
+        function toggleRepCounterPause() {
+            const s = repState;
+            if (!s || s.phase === 'done') return;
+            if (s.pausedAt) {
+                // Se corre todo lo que falta por el tiempo que estuvo en pausa.
+                const pausedFor = Date.now() - s.pausedAt;
+                s.prepEndsAt += pausedFor;
+                s.repStartedAt += pausedFor;
+                s.pausedAt = null;
+                speak('Seguimos');
+            } else {
+                s.pausedAt = Date.now();
+                if (voiceSupported()) speechSynthesis.cancel();
+            }
+            renderRepCounter();
+        }
+
+        // Más lento / más rápido: cambia desde la próxima rep y queda guardado para ese ejercicio.
+        function adjustRepTempo(delta) {
+            const s = repState;
+            if (!s) return;
+            s.tempo = Math.min(REP_TEMPO_MAX, Math.max(REP_TEMPO_MIN, Math.round((s.tempo + delta) * 2) / 2));
+            saveExerciseTempo(s.name, s.tempo);
+            renderRepCounter();
+        }
+
+        function adjustRepTarget(delta) {
+            const s = repState;
+            if (!s) return;
+            s.target = Math.max(Math.max(1, s.rep), s.target + delta);
+            renderRepCounter();
+        }
+
+        function renderRepCounter() {
+            const s = repState;
+            if (!s) return;
+            const phaseEl = document.getElementById('repCounterPhase');
+            const valueEl = document.getElementById('repCounterValue');
+            const subEl = document.getElementById('repCounterSub');
+            const bar = document.getElementById('repCounterProgress');
+            const tempoEl = document.getElementById('repCounterTempo');
+            const pauseBtn = document.getElementById('repCounterPauseBtn');
+            const now = s.pausedAt || Date.now();
+
+            tempoEl.textContent = `${formatNumber(s.tempo)} s/rep`;
+            pauseBtn.textContent = s.pausedAt ? '▶ Seguir' : '⏸ Pausa';
+
+            if (s.phase === 'prep') {
+                const left = Math.max(0, Math.ceil((s.prepEndsAt - now) / 1000));
+                phaseEl.textContent = s.pausedAt ? 'En pausa' : 'Preparate';
+                valueEl.textContent = String(left);
+                subEl.textContent = `${s.target} reps`;
+                bar.style.width = '0%';
+            } else if (s.phase === 'reps') {
+                const frac = Math.min(1, (now - s.repStartedAt) / (s.tempo * 1000));
+                // Ida / vuelta (neutro: en un curl se sube primero, en una sentadilla se baja).
+                phaseEl.textContent = s.pausedAt ? 'En pausa' : (frac < 0.5 ? 'Ida' : 'Vuelta');
+                valueEl.textContent = String(s.rep);
+                subEl.textContent = `de ${s.target} reps`;
+                bar.style.width = `${Math.round(frac * 100)}%`;
+            } else {
+                phaseEl.textContent = '¡Listo!';
+                valueEl.textContent = '✓';
+                subEl.textContent = `${s.target} reps`;
+                bar.style.width = '100%';
+            }
+        }
+
+        // ========== MÚSICA ==========
+        // Una web no puede manejar la reproducción de Spotify o YouTube Music (pausar,
+        // siguiente tema): eso lo controla cada app. Lo que sí se puede es abrirlas desde
+        // acá, directo en una playlist guardada, y volver a la app con el botón de atrás.
+        const MUSIC_APPS = {
+            spotify: { label: 'Spotify', home: 'https://open.spotify.com/', hosts: /(^|\.)spotify\.com$|^spotify\.link$/ },
+            ytmusic: { label: 'YouTube Music', home: 'https://music.youtube.com/', hosts: /(^|\.)youtube\.com$|^youtu\.be$/ }
+        };
+
+        function loadMusicLinks() {
+            try { return JSON.parse(localStorage.getItem('musicLinks') || '{}') || {}; } catch (e) { return {}; }
+        }
+
+        function initMusicSettingsUI() {
+            const links = loadMusicLinks();
+            Object.keys(MUSIC_APPS).forEach(key => {
+                const el = document.getElementById(`musicLink_${key}`);
+                if (el) el.value = links[key] || '';
+            });
+        }
+
+        function saveMusicLink(key, input) {
+            const raw = (input.value || '').trim();
+            const links = loadMusicLinks();
+            if (!raw) {
+                delete links[key];
+            } else {
+                let url;
+                try { url = new URL(raw); } catch (e) { url = null; }
+                if (!url || url.protocol !== 'https:' || !MUSIC_APPS[key].hosts.test(url.hostname)) {
+                    showToast(`Ese link no parece de ${MUSIC_APPS[key].label}. Copialo desde "Compartir → Copiar link".`, 'error', 4500);
+                    return;
+                }
+                links[key] = url.href;
+            }
+            localStorage.setItem('musicLinks', JSON.stringify(links));
+            showToast(raw ? `🎵 Playlist de ${MUSIC_APPS[key].label} guardada` : `Se borró la playlist de ${MUSIC_APPS[key].label}`);
+        }
+
+        function openMusic(key) {
+            const app = MUSIC_APPS[key];
+            if (!app) return;
+            const url = loadMusicLinks()[key] || app.home;
+            // Con la app instalada, el celular abre estos links directo en Spotify / YT Music.
+            window.open(url, '_blank', 'noopener');
         }
 
         // ========== PANTALLAS (menú hamburguesa: una sola sección visible a la vez) ==========
@@ -5955,6 +6560,8 @@
         loadCustomRoutines();
         loadCustomRoutineLabels();
         initSoundSettingsUI();
+        initVoiceSettingsUI();
+        initMusicSettingsUI();
         populateRoutineOptions();
         populateUnifySelectors();
         displayWorkoutHistory();
@@ -5964,8 +6571,6 @@
         updateSidebar();
         restoreSessionTimer();
         restoreWorkoutDraft();
-        // Después de que la pantalla ya cargó, para no frenar el arranque con un diálogo.
-        setTimeout(offerFutbolDurationFix, 800);
         restoreTabataSessionBlocks();
         renderVariantsCatalog();
         initScreens();
