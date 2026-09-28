@@ -23,6 +23,7 @@
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/timers-audio.css">
     <link rel="stylesheet" href="css/progress.css">
+    <link rel="stylesheet" href="css/help.css">
     <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
@@ -270,6 +271,12 @@
             <!-- AJUSTES -->
             <div data-screen="ajustes">
                 <div class="section">
+                    <h2>❓ Ayuda</h2>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Cómo funciona cada parte de la app, con buscador y preguntas frecuentes.</div>
+                    <button type="button" id="openHelpBtn">📖 Cómo usar la app</button>
+                </div>
+
+                <div class="section">
                     <h2>🔊 Sonido</h2>
                     <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Se usa para avisar cuando termina el descanso entre series y en los bloques de Tabata.</div>
 
@@ -352,7 +359,7 @@
                     <button class="success" onclick="downloadData()">📥 Descargar backup</button>
                     <button onclick="triggerFileInput()">📤 Cargar backup</button>
                     <input type="file" id="fileInput" accept=".json" style="display:none;">
-                    <button class="danger" onclick="if(confirm('¿Borrar TODO?')) { localStorage.clear(); location.reload(); }">🗑️ Resetear todo</button>
+                    <button class="danger" onclick="resetAllData()">🗑️ Resetear todo</button>
                 </div>
             </div>
         </main>
@@ -395,6 +402,17 @@
             <button type="button" onclick="adjustRepTarget(-1)">−1 rep</button>
             <button type="button" id="repCounterPauseBtn" onclick="toggleRepCounterPause()">⏸ Pausa</button>
             <button type="button" onclick="adjustRepTarget(1)">+1 rep</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay help-modal" id="helpModal" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+        <div class="modal-content help-content">
+            <div class="modal-header">
+                <h3 id="helpTitle">📖 Cómo usar la app</h3>
+                <button type="button" class="small" style="width:auto;" id="helpClose" aria-label="Cerrar la ayuda">✕</button>
+            </div>
+            <input type="search" id="helpSearch" placeholder="Buscar (ej: backup, timer, reordenar, RIR)" autocomplete="off" aria-label="Buscar en la ayuda">
+            <div id="helpContent" class="help-scroll"></div>
         </div>
     </div>
 
@@ -466,6 +484,7 @@
     <script src="js/features/body-metrics.js"></script>
     <script src="js/features/home.js"></script>
     <script src="js/features/backup.js"></script>
+    <script src="js/features/help.js"></script>
     <script src="js/ui/navigation.js"></script>
     <script src="js/app.js"></script>
 </body>

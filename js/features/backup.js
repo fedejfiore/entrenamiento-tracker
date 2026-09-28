@@ -72,3 +72,21 @@ function uploadData(file) {
     };
     reader.readAsText(file);
 }
+
+// Borra TODOS los datos de este celular (también las grabaciones). Pide confirmar dos
+// veces y ofrece antes descargar un backup, porque no se puede deshacer.
+async function resetAllData() {
+    if (!confirm('⚠️ ¿Borrar TODOS tus datos de este celular?\n\nSesiones, medidas, rutinas, ajustes y grabaciones. No se puede deshacer.')) return;
+    if (confirm('¿Querés descargar un backup antes de borrar? (Aceptar = descargar primero)')) {
+        await downloadData();
+        if (!confirm('Backup descargado. ¿Borrar todo ahora?')) return;
+    }
+    try {
+        db.transaction(tx => Object.keys(db.schema).forEach(key => tx.remove(key)));
+        await recordingRepo.clear().catch(() => {});
+    } catch (err) {
+        showToast(`❌ No se pudo borrar. ${err.message}`, 'error', 6000);
+        return;
+    }
+    window.location.reload();
+}

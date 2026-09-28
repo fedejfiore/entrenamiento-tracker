@@ -107,13 +107,10 @@ function createNewRoutine() {
     loadCustomRoutineLabels();
 
     const key = slugifyRoutineKey(name);
-    customRoutines[key] = [];
-    customRoutineLabels[key] = name;
-    // Plantilla y nombre juntos: nunca queda una rutina sin nombre o un nombre sin rutina.
-    db.transaction(() => {
-        saveCustomRoutines();
-        saveCustomRoutineLabels();
-    });
+    // Plantilla y nombre juntos (una transacción): nunca queda uno sin el otro.
+    repo.routines.create(key, name);
+    loadCustomRoutines();
+    loadCustomRoutineLabels();
 
     input.value = '';
     populateRoutineOptions();
@@ -223,17 +220,12 @@ function deleteCustomRoutineForever(key) {
 
     loadCustomRoutines();
     loadCustomRoutineLabels();
-    delete customRoutines[key];
-    delete customRoutineLabels[key];
-    archivedRoutines.delete(key);
-    delete archivedExercises[key];
-    // Las cuatro claves en una sola transacción: la rutina se borra entera o no se borra.
-    db.transaction(() => {
-        saveCustomRoutines();
-        saveCustomRoutineLabels();
-        saveArchivedRoutines();
-        saveArchivedExercises();
-    });
+    // Plantilla, nombre y archivados en una sola transacción: se borra entera o no se borra.
+    repo.routines.deleteForever(key);
+    loadCustomRoutines();
+    loadCustomRoutineLabels();
+    archivedRoutines = loadArchivedRoutines();
+    loadArchivedExercises();
 
     renderArchivedRoutinesList();
     populateRoutineOptions();

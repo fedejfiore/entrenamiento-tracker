@@ -6,8 +6,43 @@
 class WorkoutRepository {
     constructor(store) { this.store = store; }
 
-    /** Todas las sesiones (copia: modificarla no guarda nada hasta saveAll). */
-    all() { return this.store.get('workouts'); }
+    /** Sesiones vigentes (copia: modificarla no guarda nada hasta saveAll). */
+    all() { return this.store.get('workouts').filter(w => !(w && w.deletedAt)); }
+
+    /** Todas, incluidas las borradas (borrado lógico: necesarias para sincronizar). */
+    allIncludingDeleted() { return this.store.get('workouts'); }
+
+    /**
+     * Borrado lógico: la sesión se marca con deletedAt (y updatedAt) en vez de quitarse,
+     * así el borrado también se puede sincronizar con una base de datos. Desaparece de
+     * todas las pantallas y estadísticas. Devuelve la sesión borrada o null.
+     */
+    remove(id) {
+        let removed = null;
+        this.store.transaction(tx => {
+            const list = tx.get('workouts');
+            const w = list.find(x => x && !x.deletedAt && (x.id === id || x.uid === id));
+            if (!w) return;
+            const now = new Date().toISOString();
+            w.deletedAt = now;
+            w.updatedAt = now;
+            removed = w;
+            tx.set('workouts', list);
+        });
+        return removed;
+    }
+
+    /** Deshace un borrado lógico. */
+    restore(id) {
+        this.store.transaction(tx => {
+            const list = tx.get('workouts');
+            const w = list.find(x => x && x.deletedAt && (x.id === id || x.uid === id));
+            if (!w) return;
+            delete w.deletedAt;
+            w.updatedAt = new Date().toISOString();
+            tx.set('workouts', list);
+        });
+    }
 
     /** Agrega una sesión nueva, validada. Devuelve el objeto guardado. */
     add(session) {
@@ -28,14 +63,20 @@ class WorkoutRepository {
      */
     saveAll(list) {
         this.store.transaction(tx => {
-            const before = new Map(tx.get('workouts').filter(Boolean).map(w => [WorkoutRepository.keyOf(w), JSON.stringify(w)]));
+            const stored = tx.get('workouts');
+            const before = new Map(stored.filter(Boolean).map(w => [WorkoutRepository.keyOf(w), JSON.stringify(w)]));
             const now = new Date().toISOString();
             list.forEach(w => {
                 if (!w || typeof w !== 'object') return;
-                if (!w.uid) w.uid = generateId();
                 if (before.get(WorkoutRepository.keyOf(w)) !== JSON.stringify(w)) w.updatedAt = now;
             });
-            tx.set('workouts', list);
+            // `list` suele venir de all() (sin las borradas): se combinan con lo guardado para
+            // no perder las sesiones borradas lógicamente y conservar el orden original.
+            const edited = new Map(list.filter(Boolean).map(w => [WorkoutRepository.keyOf(w), w]));
+            const merged = stored.map(w => (w && edited.get(WorkoutRepository.keyOf(w))) || w);
+            const storedKeys = new Set(stored.filter(Boolean).map(WorkoutRepository.keyOf));
+            list.forEach(w => { if (w && !storedKeys.has(WorkoutRepository.keyOf(w))) merged.push(w); });
+            tx.set('workouts', merged);
         });
     }
 
@@ -58,10 +99,72 @@ class BodyMetricsRepository {
     }
 }
 
+/**
+ * Rutinas del usuario. Una rutina es una clave ("A1", "YOGA"…) con su lista ordenada de
+ * ejercicios, un nombre visible opcional, y puede estar archivada (no aparece en el
+ * selector, no se borra nada). Las rutinas base del código (catalog.js) se pueden
+ * personalizar: la versión guardada reemplaza a la base.
+ */
+class RoutineRepository {
+    constructor(store) { this.store = store; }
+
+    custom() { return this.store.get('customRoutines'); }
+    saveCustom(map) { this.store.set('customRoutines', map); }
+
+    labels() { return this.store.get('customRoutineLabels'); }
+    saveLabels(map) { this.store.set('customRoutineLabels', map); }
+
+    /** Claves archivadas. Si falta la clave nueva se usa la vieja (la migración 2 la copia). */
+    archived() {
+        const saved = this.store.has('archivedRoutines') ? this.store.get('archivedRoutines') : this.store.get('deletedBaseRoutines');
+        return new Set(Array.isArray(saved) ? saved : []);
+    }
+    saveArchived(set) { this.store.set('archivedRoutines', [...set]); }
+
+    /** { claveRutina: [ejercicios archivados] } */
+    archivedExercises() { return this.store.get('archivedExercises'); }
+    saveArchivedExercises(map) { this.store.set('archivedExercises', map); }
+
+    /** Crea una rutina vacía con su nombre visible, en una transacción. */
+    create(key, label) {
+        this.store.transaction(tx => {
+            const custom = tx.get('customRoutines');
+            const labels = tx.get('customRoutineLabels');
+            custom[key] = [];
+            labels[key] = label;
+            tx.set('customRoutines', custom);
+            tx.set('customRoutineLabels', labels);
+        });
+    }
+
+    /** Borra definitivamente una rutina personalizada: plantilla, nombre y archivados. */
+    deleteForever(key) {
+        this.store.transaction(tx => {
+            const custom = tx.get('customRoutines');
+            const labels = tx.get('customRoutineLabels');
+            const archivedEx = tx.get('archivedExercises');
+            delete custom[key];
+            delete labels[key];
+            delete archivedEx[key];
+            const archived = this.archived();
+            archived.delete(key);
+            tx.set('customRoutines', custom);
+            tx.set('customRoutineLabels', labels);
+            tx.set('archivedExercises', archivedEx);
+            tx.set('archivedRoutines', [...archived]);
+        });
+    }
+
+    hasPlanHistory() { return this.store.has('trainingDaysPlanHistory'); }
+    planHistory() { return this.store.get('trainingDaysPlanHistory'); }
+    savePlanHistory(list) { this.store.set('trainingDaysPlanHistory', list); }
+}
+
 /** Almacenamiento principal de la app: localStorage, o memoria si el navegador lo bloquea. */
 const db = new Store(LocalStorageAdapter.isAvailable() ? new LocalStorageAdapter() : new MemoryAdapter(), STORAGE_SCHEMA);
 
 const repo = {
     workouts: new WorkoutRepository(db),
-    bodyMetrics: new BodyMetricsRepository(db)
+    bodyMetrics: new BodyMetricsRepository(db),
+    routines: new RoutineRepository(db)
 };

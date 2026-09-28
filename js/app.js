@@ -53,6 +53,8 @@ class App {
         // Pantalla Entrenar y lista de rutinas archivadas: eventos delegados.
         workoutScreen.bind();
         bindArchivedRoutinesList();
+        bindHistoryList();
+        bindHelp();
 
         // El audio solo puede sonar después de un toque del usuario.
         document.addEventListener('pointerdown', unlockAudio, { once: true, capture: true });

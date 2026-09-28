@@ -1,5 +1,5 @@
-// Rutinas del usuario: personalizadas, nombres, archivadas y plan de días.
-// Estado en memoria de las pantallas; se lee y guarda a través de db (js/data/store.js).
+// Rutinas del usuario: estado en memoria de las pantallas (customRoutines, archivedRoutines…).
+// Se lee y guarda a través de repo.routines (RoutineRepository, js/data/repositories.js).
 // Las cargas iniciales las hace app.js DESPUÉS de correr las migraciones.
 
 let customRoutines = {};
@@ -12,15 +12,13 @@ let customRoutineLabels = {};
 // rutinas que no se están usando ahora como para ir preparando rutinas futuras sin
 // que aparezcan en la lista actual.
 function loadArchivedRoutines() {
-    // Si falta la clave nueva se usa la vieja (solo rutinas base); la migración 2 la copia.
-    const saved = db.has('archivedRoutines') ? db.get('archivedRoutines') : db.get('deletedBaseRoutines');
-    return new Set(Array.isArray(saved) ? saved : []);
+    return repo.routines.archived();
 }
 
 let archivedRoutines = new Set();
 
 function saveArchivedRoutines() {
-    db.set('archivedRoutines', [...archivedRoutines]);
+    repo.routines.saveArchived(archivedRoutines);
 }
 
 function isRoutineVisible(key) {
@@ -33,27 +31,27 @@ function isRoutineVisible(key) {
 let archivedExercises = {};
 
 function loadArchivedExercises() {
-    archivedExercises = db.get('archivedExercises');
+    archivedExercises = repo.routines.archivedExercises();
 }
 
 function saveArchivedExercises() {
-    db.set('archivedExercises', archivedExercises);
+    repo.routines.saveArchivedExercises(archivedExercises);
 }
 
 function loadCustomRoutines() {
-    customRoutines = db.get('customRoutines');
+    customRoutines = repo.routines.custom();
 }
 
 function loadCustomRoutineLabels() {
-    customRoutineLabels = db.get('customRoutineLabels');
+    customRoutineLabels = repo.routines.labels();
 }
 
 function saveCustomRoutineLabels() {
-    db.set('customRoutineLabels', customRoutineLabels);
+    repo.routines.saveLabels(customRoutineLabels);
 }
 
 function saveCustomRoutines() {
-    db.set('customRoutines', customRoutines);
+    repo.routines.saveCustom(customRoutines);
 }
 
 function getLastRoutineNote(routine) {
@@ -115,13 +113,13 @@ function initializeData() {
 // cantidad/selección de días. Así, cambiar el plan hoy no reescribe cómo se
 // evaluaron semanas que ya pasaron con el plan anterior.
 function loadTrainingDaysPlanHistory() {
-    if (db.has('trainingDaysPlanHistory')) return db.get('trainingDaysPlanHistory');
+    if (repo.routines.hasPlanHistory()) return repo.routines.planHistory();
 
     // Migración desde el formato viejo (un solo plan global): se asume vigente
     // "desde siempre" para no alterar retroactivamente semanas ya calculadas.
     const legacyPlan = db.get('trainingDaysPlan');
     const history = (Array.isArray(legacyPlan) && legacyPlan.length > 0) ? [{ date: '1970-01-01', days: legacyPlan }] : [];
-    db.set('trainingDaysPlanHistory', history);
+    repo.routines.savePlanHistory(history);
     return history;
 }
 
@@ -161,7 +159,7 @@ function saveTrainingDaysPlan() {
     } else {
         history.push({ date: mondayStr, days: selected });
     }
-    db.set('trainingDaysPlanHistory', history);
+    repo.routines.savePlanHistory(history);
     updateSidebar();
 }
 

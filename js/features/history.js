@@ -20,10 +20,11 @@ function renderHistoryItem(w) {
         : '';
 
     return `<div class="history-item">
-            <div onclick="toggleSession('${uid}')" style="cursor:pointer; user-select: none;">
+            <div data-action="toggle-session" data-target="${uid}" style="cursor:pointer; user-select: none;">
                 <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:4px;">
                     ${routineBadge}<strong>${w.date}</strong>
-                    <button type="button" class="small" style="width:auto; padding:2px 6px;" onclick="event.stopPropagation(); editWorkoutDate(${w.id})" title="Editar fecha">✏️</button>
+                    <button type="button" class="small" style="width:auto; padding:2px 6px;" data-action="edit-date" data-id="${w.id}" title="Editar fecha">✏️</button>
+                    <button type="button" class="small" style="width:auto; padding:2px 6px;" data-action="delete-session" data-id="${w.id}" title="Borrar sesión" aria-label="Borrar la sesión del ${w.date}">🗑</button>
                     <span>${mood}</span>${prBadge}${notesBadge}${durationChip}${volumeChip}
                 </div>
                 <div>${exes}</div>
@@ -71,7 +72,8 @@ function renderTabataHistoryItem(w) {
                 <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:4px;">
                     <span title="Tabata" class="stat-chip tabata">🔥 Tabata${blocks.length > 1 ? ` · ${blocks.length} bloques` : ''}</span>
                     <strong>${w.date}</strong>
-                    <button type="button" class="small" style="width:auto; padding:2px 6px;" onclick="event.stopPropagation(); editWorkoutDate(${w.id})" title="Editar fecha">✏️</button>
+                    <button type="button" class="small" style="width:auto; padding:2px 6px;" data-action="edit-date" data-id="${w.id}" title="Editar fecha">✏️</button>
+                    <button type="button" class="small" style="width:auto; padding:2px 6px;" data-action="delete-session" data-id="${w.id}" title="Borrar sesión" aria-label="Borrar la sesión del ${w.date}">🗑</button>
                     ${durationChip}
                 </div>
                 <div>${blocksLabel}</div>
@@ -205,3 +207,33 @@ function editWorkoutDate(workoutId) {
     updateSidebar();
 }
 
+// Borra una sesión cargada por error (borrado lógico: ver WorkoutRepository.remove).
+function deleteWorkout(workoutId) {
+    const w = repo.workouts.all().find(x => x.id === workoutId);
+    if (!w) return;
+    const routineName = customRoutineLabels[w.routine] || ROUTINE_LABELS[w.routine] || w.routine || 'entrenamiento';
+    const what = w.type === 'tabata' ? 'la sesión de Tabata' : `la sesión de ${routineName}`;
+    if (!confirm(`¿Borrar ${what} del ${w.date}?\n\nDeja de aparecer en el historial y en las estadísticas.`)) return;
+    try {
+        repo.workouts.remove(workoutId);
+    } catch (err) {
+        showToast(`❌ No se pudo borrar. ${err.message}`, 'error', 6000);
+        return;
+    }
+    displayWorkoutHistory();
+    calculateStats();
+    updateSidebar();
+    showToast('🗑 Sesión borrada');
+}
+
+// Acciones del historial por delegación (el HTML generado no lleva código).
+function bindHistoryList() {
+    document.getElementById('workoutHistory')?.addEventListener('click', e => {
+        const el = e.target.closest('[data-action]');
+        if (!el) return;
+        const id = Number(el.dataset.id);
+        if (el.dataset.action === 'toggle-session') toggleSession(el.dataset.target);
+        if (el.dataset.action === 'edit-date') editWorkoutDate(id);
+        if (el.dataset.action === 'delete-session') deleteWorkout(id);
+    });
+}
