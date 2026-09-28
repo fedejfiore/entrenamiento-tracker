@@ -41,6 +41,9 @@ const STORAGE_SCHEMA = {
 
     // ---- Preferencias ----
     accentColor: { group: 'prefs', format: 'text', type: 'string', default: null, description: 'Color de acento: naranja, turquesa, azul, fucsia, verde o violeta.' },
+    uiSize: { group: 'prefs', format: 'text', type: 'string', default: null, description: 'Tamaño de botones y campos: normal, large o xlarge.' },
+    contrast: { group: 'prefs', format: 'text', type: 'string', default: null, description: '"high" = alto contraste (texto oscuro sobre botones de color).' },
+    colorVision: { group: 'prefs', format: 'text', type: 'string', default: null, description: '"cvd" = colores para daltonismo (azul / naranja en vez de verde / rojo).' },
     theme: { group: 'prefs', format: 'text', type: 'string', default: null, description: 'Tema: "light" o "dark".' },
     soundType: { group: 'prefs', format: 'text', type: 'string', default: null, description: 'Sonido de fin de descanso.' },
     soundVolume: { group: 'prefs', format: 'text', type: 'string', default: null, description: 'Volumen 0-100.' },

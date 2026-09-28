@@ -26,6 +26,7 @@
     <link rel="stylesheet" href="css/help.css">
     <link rel="stylesheet" href="css/plan.css">
     <link rel="stylesheet" href="css/tools.css">
+    <link rel="stylesheet" href="css/accessibility.css">
     <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
@@ -41,6 +42,14 @@
         <nav class="drawer" id="drawer">
             <div class="drawer-brand">🏋️ Tracker</div>
             <div id="drawerNav"></div>
+        </nav>
+
+        <nav class="bottom-nav" id="bottomNav" aria-label="Secciones principales">
+            <button type="button" class="bottom-nav-item" data-nav-target="inicio" onclick="showScreen('inicio', true)"><span class="nav-icon" aria-hidden="true">🏠</span><span>Inicio</span></button>
+            <button type="button" class="bottom-nav-item" data-nav-target="entrenar" onclick="showScreen('entrenar', true)"><span class="nav-icon" aria-hidden="true">🏋️</span><span>Entrenar</span></button>
+            <button type="button" class="bottom-nav-item" data-nav-target="historial" onclick="showScreen('historial', true)"><span class="nav-icon" aria-hidden="true">📋</span><span>Historial</span></button>
+            <button type="button" class="bottom-nav-item" data-nav-target="progreso" onclick="showScreen('progreso', true)"><span class="nav-icon" aria-hidden="true">📊</span><span>Progreso</span></button>
+            <button type="button" class="bottom-nav-item" data-nav-more onclick="toggleDrawer()" aria-label="Más secciones"><span class="nav-icon" aria-hidden="true">☰</span><span>Más</span></button>
         </nav>
 
         <main class="app-main">
@@ -307,13 +316,13 @@
 
             <!-- AJUSTES -->
             <div data-screen="ajustes">
-                <div class="section">
+                <div class="section" data-collapsible="no">
                     <h2>❓ Ayuda</h2>
                     <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Cómo funciona cada parte de la app, con buscador y preguntas frecuentes.</div>
                     <button type="button" id="openHelpBtn">📖 Cómo usar la app</button>
                 </div>
 
-                <div class="section">
+                <div class="section" data-hint="Color de la app, km o millas, inicio de semana, unilaterales">
                     <h2>⚙️ General</h2>
                     <label for="weekStartSelect" class="settings-label">La semana empieza el</label>
                     <select id="weekStartSelect"></select>
@@ -326,7 +335,18 @@
                     <div id="accentChoices" class="accent-choices" role="radiogroup" aria-labelledby="accentLabel"></div>
                 </div>
 
-                <div class="section">
+                <div class="section" data-hint="Botones más grandes, alto contraste y colores para daltonismo">
+                    <h2>♿ Accesibilidad</h2>
+                    <div class="settings-label" id="uiSizeLabel">Tamaño de botones y campos</div>
+                    <div id="uiSizeChoices" class="size-choices" role="radiogroup" aria-labelledby="uiSizeLabel"></div>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Más grandes y separados, para tocarlos fácil con una mano o con dedos grandes.</div>
+                    <label class="toggle-row"><input type="checkbox" id="contrastToggle"> Alto contraste</label>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Texto oscuro sobre los botones de color y texto secundario más claro, para leer mejor al sol o con poca vista.</div>
+                    <label class="toggle-row"><input type="checkbox" id="colorVisionToggle"> Colores para daltonismo</label>
+                    <div style="font-size: 12px; color: var(--text-muted);">Cambia el verde y el rojo (hecho / borrar, subir / bajar) por azul y naranja, que se distinguen con cualquier tipo de daltonismo.</div>
+                </div>
+
+                <div class="section" data-hint="Tipo de aviso y volumen">
                     <h2>🔊 Sonido</h2>
                     <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Se usa para avisar cuando termina el descanso entre series y en los bloques de Tabata.</div>
 
@@ -344,7 +364,7 @@
                     <button type="button" onclick="testSound()">▶ Probar sonido</button>
                 </div>
 
-                <div class="section">
+                <div class="section" data-hint="Qué avisos se dicen, voz, velocidad y contador de reps">
                     <h2>🗣️ Voz y avisos</h2>
                     <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">La app te habla con la voz del celular (funciona sin internet). Cada aviso se activa o desactiva por separado. En iPhone, el interruptor de silencio puede apagar la voz.</div>
                     <div id="voiceSettingsBox">
@@ -374,14 +394,14 @@
                     </div>
                 </div>
 
-                <div class="section">
+                <div class="section" data-hint="Tu voz (o la de tu entrenador) para cada aviso">
                     <h2>🎙️ Mis grabaciones</h2>
                     <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Grabá tu voz (o la de quien quieras) para cada aviso: hasta 5 segundos, y el silencio del principio y del final se recorta solo. Lo que no grabes lo dice la voz del celular; los números siempre los dice la voz del celular. Las grabaciones quedan en este celular y se incluyen en el backup.</div>
                     <label class="toggle-row"><input type="checkbox" data-voice="useRecordings" onchange="onVoiceSettingChange(this)"><span>Usar mis grabaciones</span></label>
                     <div id="recordingsList"></div>
                 </div>
 
-                <div class="section">
+                <div class="section" data-hint="Tus playlists de Spotify y YouTube Music">
                     <h2>🎵 Música</h2>
                     <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Pegá el link de tu playlist (en la app de música: Compartir → Copiar link) y la abrís con un toque desde Entrenar. Sin link, se abre la app en su inicio. Pausar o pasar de tema se hace desde la app de música o desde los controles del celular: una web no puede manejar otra app.</div>
                     <label class="range-label" for="musicLink_spotify">Playlist de Spotify</label>
@@ -390,7 +410,7 @@
                     <input type="url" id="musicLink_ytmusic" inputmode="url" autocomplete="off" placeholder="https://music.youtube.com/playlist?list=..." onchange="saveMusicLink('ytmusic', this)">
                 </div>
 
-                <div class="section">
+                <div class="section" data-hint="Juntar un ejercicio que quedó con dos nombres">
                     <h2>🔗 Unificar Ejercicios Duplicados</h2>
                     <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Si dos nombres son el mismo ejercicio (ej. "Mariposa" y "Aperturas en mariposa"), elegilos acá para juntar sus estadísticas e historial. Sin tipear, para no fallar por una tilde o un espacio de más.</div>
                     <select id="unifySource"><option value="">Ejercicio a renombrar...</option></select>
@@ -398,13 +418,13 @@
                     <button onclick="unifyFromSelectors()">🔗 Unificar</button>
                 </div>
 
-                <div class="section" id="section-archived-routines" style="display:none;">
+                <div class="section" id="section-archived-routines" style="display:none;" data-hint="Rutinas archivadas: restaurar o borrar">
                     <h2>📥 Reservorio de Rutinas</h2>
                     <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Rutinas archivadas: no aparecen en el selector, pero sus ejercicios, entrenamientos guardados y progreso siguen intactos. Restauralas cuando las vuelvas a necesitar, o usá el reservorio para ir preparando rutinas futuras sin que molesten en la lista actual.</div>
                     <div id="archivedRoutinesList"></div>
                 </div>
 
-                <div class="section">
+                <div class="section" data-hint="Backup, restaurar y borrar todo">
                     <h2>💾 Datos</h2>
                     <button class="success" onclick="downloadData()">📥 Descargar backup</button>
                     <button onclick="triggerFileInput()">📤 Cargar backup</button>
@@ -600,6 +620,8 @@
     <script src="js/features/programs.js"></script>
     <script src="js/features/backup.js"></script>
     <script src="js/features/help.js"></script>
+    <script src="js/ui/collapsible.js"></script>
+    <script src="js/ui/accessibility.js"></script>
     <script src="js/ui/navigation.js"></script>
     <script src="js/app.js"></script>
 </body>

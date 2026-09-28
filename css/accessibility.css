@@ -1,0 +1,140 @@
+/* Navegación inferior, secciones plegables y opciones de accesibilidad. */
+
+/* ---- Barra de navegación inferior (celular): lo más usado, al alcance del pulgar ---- */
+.bottom-nav { display: none; }
+
+@media (max-width: 768px) {
+    :root { --bottom-nav-h: 60px; }
+    .bottom-nav {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1500;
+        display: flex;
+        height: calc(var(--bottom-nav-h) + env(safe-area-inset-bottom, 0px));
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        background: var(--bg-card);
+        border-top: 1px solid var(--border);
+        box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.18);
+    }
+    .bottom-nav-item {
+        flex: 1;
+        width: auto;
+        margin: 0;
+        padding: 6px 2px 4px;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        background: transparent;
+        color: var(--text-muted);
+        font-size: 11px;
+        font-weight: 600;
+        border-radius: 0;
+    }
+    .bottom-nav-item .nav-icon { font-size: 20px; line-height: 1; }
+    .bottom-nav-item:hover { background: transparent; box-shadow: none; transform: none; }
+    .bottom-nav-item.active { color: var(--brand); }
+    .bottom-nav-item.active .nav-icon { transform: scale(1.1); }
+    .app-main { padding-bottom: calc(var(--bottom-inset) + 16px); }
+    /* Con el teclado abierto la barra se esconde (no tapa el campo que se edita). */
+    body.keyboard-open { --bottom-nav-h: 0px; }
+    body.keyboard-open .bottom-nav { display: none; }
+}
+
+/* ---- Secciones plegables (Ajustes) ---- */
+.section.collapsible > h2 { margin: 0; padding: 0; border: 0; }
+.section.collapsible.open > h2 { margin-bottom: 12px; }
+.section-toggle {
+    width: 100%;
+    margin: 0;
+    padding: 4px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    background: transparent;
+    color: var(--text);
+    font: inherit;
+    text-align: left;
+    min-height: 48px;
+}
+.section-toggle:hover { background: transparent; box-shadow: none; transform: none; }
+.section-toggle-text { display: flex; flex-direction: column; min-width: 0; }
+.section-hint { font-family: var(--font-body); font-size: 12px; font-weight: 400; color: var(--text-muted); letter-spacing: 0; text-transform: none; }
+.section-chevron { font-size: 16px; color: var(--text-muted); flex-shrink: 0; }
+.section.collapsible:not(.open) { padding-top: 10px; padding-bottom: 10px; }
+
+/* ---- Ajustes → Accesibilidad ---- */
+.size-choices { display: flex; gap: 6px; margin-bottom: 6px; }
+.size-choice {
+    flex: 1; margin: 0; background: var(--bg-elevated); color: var(--text);
+    border: 2px solid transparent; font-weight: 600;
+}
+.size-choice.on { border-color: var(--brand); color: var(--brand); }
+.size-choice:hover { box-shadow: none; transform: none; }
+.size-choice[data-size="large"] { font-size: 16px; }
+.size-choice[data-size="xlarge"] { font-size: 18px; }
+.toggle-row { display: flex; align-items: center; gap: 10px; min-height: 44px; font-weight: 600; cursor: pointer; }
+.toggle-row input { width: 22px; height: 22px; margin: 0; }
+
+/* ---- Botones y campos más grandes ----
+   Se agrandan las zonas de toque y la letra, no el diseño: las columnas y los márgenes se
+   ajustan para que siga entrando en una pantalla de 360 px sin desplazamiento lateral. */
+html[data-size] button { min-height: 50px; font-size: 16px; }
+html[data-size] button.small { min-height: 46px; font-size: 15px; }
+html[data-size] select, html[data-size] input { font-size: 18px; padding: 13px 12px; }
+html[data-size] .sets-table { --set-cols: 24px 1fr 1fr 1fr 50px 48px 32px; }
+html[data-size] .sets-table.t-bw { --set-cols: 24px 1fr 1fr 50px 48px 32px; }
+html[data-size] .sets-table.t-time { --set-cols: 24px 1fr 1fr 76px 48px 32px; }
+html[data-size] .sets-table.t-min { --set-cols: 24px 1fr 84px 48px 32px; }
+html[data-size] .sets-table.t-km { --set-cols: 24px 1fr 1fr 1fr 58px 48px 32px; }
+html[data-size] .set-row input, html[data-size] .set-row select,
+html[data-size] .set-check, html[data-size] .set-note-btn, html[data-size] .set-num { min-height: 50px; font-size: 18px; padding-left: 0; padding-right: 0; }
+html[data-size] .set-row + .set-row { margin-top: 4px; }
+html[data-size] .set-stepper button { min-height: 48px; font-size: 16px; }
+html[data-size] .exercise-row-actions button { min-height: 46px; min-width: 46px; }
+html[data-size] .drag-handle { min-height: 50px; width: 34px; }
+html[data-size] .bottom-nav-item { font-size: 12px; }
+html[data-size] .bottom-nav-item .nav-icon { font-size: 24px; }
+html[data-size] .section-toggle { min-height: 56px; }
+html[data-size] .rest-timer-controls button { min-height: 50px; }
+@media (max-width: 768px) {
+    html[data-size] { --bottom-nav-h: 68px; }
+}
+html[data-size="xlarge"] body { font-size: 17px; }
+html[data-size="xlarge"] button { min-height: 56px; font-size: 17px; }
+html[data-size="xlarge"] .set-row input, html[data-size="xlarge"] .set-row select,
+html[data-size="xlarge"] .set-check, html[data-size="xlarge"] .set-note-btn, html[data-size="xlarge"] .set-num { min-height: 56px; font-size: 19px; }
+html[data-size="xlarge"] .set-stepper button { min-height: 54px; }
+html[data-size="xlarge"] .exercise-row-actions button { min-height: 52px; min-width: 52px; }
+@media (max-width: 768px) {
+    html[data-size="xlarge"] { --bottom-nav-h: 74px; }
+}
+
+/* Los chips del ejercicio (tipo, ↔, 🔗) crecen menos que los botones principales: son
+   secundarios y tienen que seguir entrando en una línea. */
+html[data-size] .superset-chip, html[data-size] .side-chip,
+html[data-size="xlarge"] .superset-chip, html[data-size="xlarge"] .side-chip { min-height: 40px; font-size: 14px; padding: 4px 12px; }
+html[data-size] select.type-chip { font-size: 14px; padding: 6px 8px; min-height: 40px; width: auto; }
+html[data-size] .collapse-btn, html[data-size="xlarge"] .collapse-btn { min-height: 44px; width: 44px; font-size: 16px; }
+html[data-size] .bottom-nav-item, html[data-size="xlarge"] .bottom-nav-item { min-height: 0; }
+
+/* ---- Alto contraste (Ajustes → Accesibilidad) ----
+   El texto blanco sobre los botones de color no llega al mínimo de la norma WCAG (4,5:1):
+   naranja 2,8, verde de "Guardar" 1,8. Con texto oscuro todos pasan (4,6 a 9,9). También se
+   aclara el texto tenue, que en tema oscuro quedaba en 3,4:1. Todo texto sobre un fondo de
+   color usa var(--on-color), así este modo solo cambia la variable. */
+html[data-contrast="high"] { --on-color: #14161a; --text-faint: #8e929b; }
+html[data-contrast="high"][data-theme="light"] { --text-faint: #6b6f78; }
+html[data-contrast="high"][data-accent="violeta"]:not([data-theme="light"]) { --brand: #a78bfa; --brand-rgb: 167, 139, 250; }
+html[data-contrast="high"][data-theme="light"][data-accent="violeta"] button:not(.success):not(.danger) { color: #fff; }
+/* Tema claro: el acento como COLOR DE TEXTO sobre blanco queda bajo (naranja 2,6:1); en alto
+   contraste se oscurece solo para los textos, sin tocar los fondos. */
+html[data-contrast="high"][data-theme="light"] .rep-count-btn,
+html[data-contrast="high"][data-theme="light"] .size-choice.on,
+html[data-contrast="high"][data-theme="light"] .bottom-nav-item.active,
+html[data-contrast="high"][data-theme="light"] select.type-chip { color: color-mix(in srgb, var(--brand) 62%, #000); }

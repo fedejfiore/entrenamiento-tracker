@@ -14,7 +14,7 @@
     border: 1px solid var(--border);
 }
 .superset-chip:hover, .side-chip:hover { box-shadow: none; transform: none; background: var(--bg-card); }
-.superset-chip.on { color: #fff; border-color: transparent; }
+.superset-chip.on { color: var(--on-color); border-color: transparent; }
 
 .exercise-row[data-superset] { --ss-color: #8b5cf6; border-left: 4px solid var(--ss-color); } /* color por defecto; cada letra lo pisa abajo */
 .exercise-row[data-superset] .superset-chip.on { background: var(--ss-color); }
@@ -134,9 +134,9 @@
 .settings-label { display: block; font-size: 13px; color: var(--text-muted); margin: 4px 0 4px; }
 
 /* ---- Unilaterales: chip ↔ y serie con un lado hecho (½) ---- */
-.side-chip.on { background: var(--brand); color: #fff; border-color: transparent; }
+.side-chip.on { background: var(--brand); color: var(--on-color); border-color: transparent; }
 .set-row.half { background: rgba(var(--brand-rgb), 0.10); }
-.set-row.half .set-check { background: rgba(var(--brand-rgb), 0.55); color: #fff; font-weight: 700; }
+.set-row.half .set-check { background: rgba(var(--brand-rgb), 0.55); color: var(--on-color); font-weight: 700; }
 
 /* ---- Bloque terminado: se contrae y muestra un resumen ---- */
 .exercise-name-line { display: flex; align-items: flex-start; gap: 6px; }
@@ -174,7 +174,7 @@
     border-radius: 3px; background: var(--bg-elevated); color: var(--text-muted);
 }
 .stack-plate.lifted { background: rgba(var(--brand-rgb), 0.35); color: var(--text); }
-.stack-plate.pinned { background: var(--brand); color: #fff; font-weight: 700; }
+.stack-plate.pinned { background: var(--brand); color: var(--on-color); font-weight: 700; }
 .stack-more { font-size: 12px; color: var(--text-faint); }
 .stepper-hint { font-size: 12px; color: var(--brand); font-weight: 600; white-space: nowrap; align-self: center; }
 .stepper-hint:empty { display: none; }

@@ -82,7 +82,7 @@
 .drag-handle.drag-armed,
 .drag-handle.drag-armed:hover {
     background: var(--brand);
-    color: #fff;
+    color: var(--on-color);
 }
 
 .exercise-row-actions {
@@ -270,8 +270,8 @@ select.type-chip {
 .set-note-btn:hover { background: var(--bg-elevated); box-shadow: none; transform: none; }
 .set-note-btn.has-note { color: var(--brand); }
 
-.set-row.done { background: rgba(57, 217, 138, 0.14); }
-.set-row.done .set-check { background: var(--success); color: #fff; }
+.set-row.done { background: color-mix(in srgb, var(--success) 14%, transparent); }
+.set-row.done .set-check { background: var(--success); color: var(--on-color); }
 .set-row.done input, .set-row.done select { background: transparent; border-color: transparent; }
 
 .set-row.shake { animation: setShake 0.3s; }

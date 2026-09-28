@@ -48,7 +48,7 @@ function runTabataPhase(seconds, phase) {
     widget.style.display = 'block';
     widget.classList.remove('rest-mode');
     document.body.classList.add('rest-timer-open');
-    widget.style.background = phase === 'work' ? '#27ae60' : '#e67e22';
+    widget.style.background = phase === 'work' ? 'var(--tabata-work)' : 'var(--tabata-rest)';
     phaseEl.style.display = 'block';
     phaseEl.textContent = phase === 'work' ? `🔥 ${tabataState.name.toUpperCase()} — TRABAJO` : '😮‍💨 DESCANSO';
     roundEl.style.display = 'block';

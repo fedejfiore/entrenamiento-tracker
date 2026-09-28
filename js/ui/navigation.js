@@ -40,7 +40,7 @@ function showScreen(screenId, fromClick) {
     document.querySelectorAll('[data-screen]').forEach(el => {
         el.classList.toggle('screen-active', el.dataset.screen === screenId);
     });
-    document.querySelectorAll('.drawer-nav-item').forEach(item => {
+    document.querySelectorAll('.drawer-nav-item, .bottom-nav-item[data-nav-target]').forEach(item => {
         item.classList.toggle('active', item.dataset.navTarget === screenId);
     });
 
@@ -102,3 +102,13 @@ function initTheme() {
     applyTheme(saved);
 }
 
+
+// Con el teclado abierto la barra de abajo estorba (tapa el campo que se edita): se oculta
+// mientras la ventana visible es mucho más baja que la pantalla.
+function initBottomNavKeyboardHide() {
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const update = () => document.body.classList.toggle('keyboard-open', vv.height < window.innerHeight * 0.75);
+    vv.addEventListener('resize', update);
+    update();
+}

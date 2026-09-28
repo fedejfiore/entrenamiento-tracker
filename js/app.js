@@ -62,6 +62,9 @@ class App {
         initSetStepperAutoHide();
         bindGeneralSettings();
         bindPrograms();
+        bindAccessibilitySettings();
+        initCollapsibleSections(document.querySelector('[data-screen="ajustes"]'));
+        initBottomNavKeyboardHide();
 
         // El audio solo puede sonar después de un toque del usuario.
         document.addEventListener('pointerdown', unlockAudio, { once: true, capture: true });

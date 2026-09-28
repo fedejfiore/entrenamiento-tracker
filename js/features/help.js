@@ -27,9 +27,10 @@ const HELP_SECTIONS = [
                 <li><b>Sin cuenta:</b> todo se guarda en este celular (o navegador). Nada se sube a internet.</li>
                 <li><b>Funciona sin internet</b> una vez que la abriste al menos una vez.</li>
                 <li><b>Instalala como app:</b> en Android, menú ⋮ del navegador → <i>Instalar app</i> o <i>Agregar a pantalla de inicio</i>. En iPhone (Safari), botón Compartir → <i>Agregar a inicio</i>.</li>
-                <li><b>Menú ☰</b> (arriba a la izquierda): Inicio, Entrenar, Tabata, Historial, Progreso, Medidas, Variantes y Ajustes.</li>
+                <li><b>Barra de abajo</b> (en el celular): Inicio, Entrenar, Historial y Progreso, al alcance del pulgar. <b>Más</b> (o el ☰ de arriba) abre el resto: Tabata, Medidas, Variantes y Ajustes. Mientras escribís, la barra se esconde para no tapar el teclado.</li>
                 <li><b>☀️ / 🌙</b> cambia entre tema claro y oscuro. <b>🔅</b> mantiene la pantalla encendida mientras entrenás.</li>
-                <li><b>Ajustes → General:</b> el color de la app (naranja, turquesa, azul, rosa fucsia, verde o violeta), km o millas, el día en que empieza tu semana y los segundos para cambiar de lado en los unilaterales.</li>
+                <li><b>Ajustes:</b> cada sección está cerrada y muestra en una línea qué tiene; tocá la que necesites para abrirla. En <b>General</b>: el color de la app, km o millas, el día en que empieza tu semana y los segundos para cambiar de lado en los unilaterales.</li>
+                <li><b>Ajustes → Accesibilidad:</b> botones y campos <b>grandes</b> o <b>muy grandes</b> (para usar con una mano o con dedos grandes) , <b>alto contraste</b> (texto oscuro sobre los botones de color, para leer mejor al sol) y <b>colores para daltonismo</b> (azul y naranja en vez de verde y rojo).</li>
             </ul>
             <p class="help-tip">💾 Como los datos viven en el celular, descargá un <b>backup</b> de vez en cuando (Ajustes → Datos). Es lo que te permite recuperar todo si cambiás de teléfono o borrás el navegador.</p>`
     },
@@ -283,6 +284,7 @@ const HELP_SECTIONS = [
 ];
 
 const HELP_FAQ = [
+    ['Los botones me quedan chicos o me cuesta distinguir los colores.', 'En Ajustes → Accesibilidad podés agrandar botones y campos (Grandes o Muy grandes) y activar los colores para daltonismo, que cambian el verde y el rojo por azul y naranja.'],
     ['¿Qué es la C que aparece al tocar el número de una serie?', 'Marca esa serie como de calentamiento. Se guarda, pero no cuenta para récords, volumen ni el mapa de músculos. Tocá la C de nuevo para que vuelva a ser una serie normal.'],
     ['¿Por qué algunos valores se ven en gris?', 'Son los de la última vez que hiciste ese ejercicio, como sugerencia. No se guardan hasta que tocás ✓ o escribís algo en esa serie.'],
     ['Se me escondieron las series de los ejercicios.', 'Pasaba en versiones anteriores al reordenar ejercicios. Ya está corregido; si alguna vez ves los bloques achicados, volvé a elegir la rutina en el selector y se ven normales.'],

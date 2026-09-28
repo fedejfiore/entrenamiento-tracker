@@ -29,6 +29,8 @@ node --test "tests/**/*.test.js"   # pruebas automáticas (Node 22 o más nuevo)
 - Decisiones de producto, plan gratis/Pro, cuentas, sin internet, programas, IA e idiomas: [docs/HOJA-DE-RUTA.md](docs/HOJA-DE-RUTA.md)
 - Gamificación (florcita, mascota o personaje, trofeos e insignias): [docs/GAMIFICACION.md](docs/GAMIFICACION.md)
 - Costos, ROI y escenarios del negocio: [docs/ANALISIS-FINANCIERO.md](docs/ANALISIS-FINANCIERO.md) (modelo en `tools/modelo-financiero.js`)
+- Usabilidad y accesibilidad: [docs/UX-UI.md](docs/UX-UI.md)
+- Prototipo del personaje y la florcita: `docs/prototipos/personaje.html` (abrir en el navegador)
 - Tutorial para el usuario: dentro de la app, Ajustes → Ayuda (contenido en `js/features/help.js`)
 
 Al agregar o renombrar un archivo JS o CSS: sumarlo también a `PRECACHE_URLS` en

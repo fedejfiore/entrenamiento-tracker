@@ -24,6 +24,14 @@
     --shadow-md: 0 6px 20px rgba(0,0,0,0.4);
     --font-heading: 'Oswald', 'Segoe UI', sans-serif;
     --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    /* Espacio que ocupa abajo lo que no es de la app (barra de Android / gestos del iPhone)
+       más la barra de navegación en el celular: lo usan el timer, el contador y los avisos. */
+    --on-color: #ffffff; /* texto sobre fondos de color; oscuro en alto contraste */
+    --bottom-nav-h: 0px;
+    --bottom-inset: calc(var(--bottom-nav-h) + env(safe-area-inset-bottom, 0px));
+    /* Colores de estado del Tabata */
+    --tabata-work: #27ae60;
+    --tabata-rest: #e67e22;
 }
 
 html[data-theme="light"] {
@@ -46,6 +54,25 @@ html[data-theme="light"] {
     --input-border: #d7d9de;
     --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
     --shadow-md: 0 6px 20px rgba(0,0,0,0.08);
+}
+
+/* Colores para daltonismo (Ajustes → Accesibilidad): verde / rojo pasan a azul / bermellón
+   (paleta Okabe-Ito), que se distinguen con protanopia, deuteranopia y tritanopia. */
+html[data-vision="cvd"] {
+    --success: #0a84ff;
+    --success-dark: #0066cc;
+    --danger: #e8590c;
+    --danger-dark: #c2410c;
+    --warning: #f5c518;
+    --tabata-work: #0a84ff;
+    --tabata-rest: #e8590c;
+}
+html[data-vision="cvd"][data-theme="light"] {
+    --success: #0066cc;
+    --success-dark: #004f9e;
+    --danger: #c2410c;
+    --danger-dark: #9a3412;
+    --warning: #b8860b;
 }
 
 /* Color de acento elegido en Ajustes → General (naranja es el de :root). */

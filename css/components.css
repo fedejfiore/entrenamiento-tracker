@@ -48,7 +48,7 @@ input[type="checkbox"] {
 /* TOAST */
 #toastContainer {
     position: fixed;
-    bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+    bottom: calc(20px + var(--bottom-inset));
     right: 20px;
     left: 20px;
     z-index: 3000;
@@ -61,7 +61,7 @@ input[type="checkbox"] {
 
 .toast {
     background: var(--success);
-    color: white;
+    color: var(--on-color);
     padding: 14px 20px;
     border-radius: var(--radius-sm);
     box-shadow: var(--shadow-md);
@@ -88,7 +88,7 @@ input[type="checkbox"] {
     #toastContainer {
         left: 12px;
         right: 12px;
-        bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+        bottom: calc(12px + var(--bottom-inset));
         align-items: stretch;
     }
 
@@ -169,7 +169,7 @@ input[type="checkbox"] {
 
 .stat-chip.brand {
     background: var(--brand);
-    color: white;
+    color: var(--on-color);
 }
 
 .stat-chip.pr {
