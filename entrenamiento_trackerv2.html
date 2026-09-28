@@ -377,23 +377,76 @@
             min-height: 48px;
         }
 
-        /* TARJETA DE EJERCICIO (reemplaza la tabla: sin scroll horizontal en el celular) */
+        /* BLOQUE DE EJERCICIO: una tarjeta por ejercicio con una fila por serie
+           (sin scroll horizontal en el celular). */
         .exercise-row {
             background: var(--bg-subtle);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 12px;
+            padding: 10px;
             margin-bottom: 10px;
             box-shadow: var(--shadow-sm);
+            position: relative;
         }
 
         .exercise-row-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            gap: 8px;
-            margin-bottom: 10px;
+            gap: 6px;
+            margin-bottom: 8px;
         }
+
+        .exercise-title {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .exercise-title strong {
+            display: block;
+            overflow-wrap: anywhere;
+        }
+
+        .exercise-meta {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 4px;
+            font-size: 12px;
+            color: var(--text-faint);
+        }
+
+        /* Manija de arrastre: 6 puntos, zona táctil de 44px de alto, sin scroll al tocarla */
+        .drag-handle {
+            width: 28px;
+            min-height: 44px;
+            flex-shrink: 0;
+            margin: -4px 0 0 -4px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            color: var(--text-faint);
+            border-radius: var(--radius-sm);
+            cursor: grab;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        .drag-handle svg { width: 12px; height: 20px; fill: currentColor; pointer-events: none; }
+
+        .drag-handle:hover, .drag-handle:focus-visible {
+            background: var(--bg-elevated);
+            color: var(--text);
+            transform: none;
+            box-shadow: none;
+        }
+
+        .drag-handle:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; }
 
         .exercise-row-actions {
             display: flex;
@@ -403,70 +456,243 @@
 
         .exercise-row-actions button {
             width: auto;
-            padding: 10px 13px;
-            font-size: 1em;
+            padding: 8px 10px;
+            font-size: 0.95em;
             margin: 0;
-            min-height: 40px;
-            min-width: 40px;
+            min-height: 38px;
+            min-width: 38px;
         }
 
-        .exercise-row-fields {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .field label {
-            display: block;
-            font-size: 11px;
-            color: var(--text-faint);
-            margin-bottom: 3px;
-            font-weight: 600;
-            text-transform: uppercase;
+        /* Selector de tipo (kg / reps / tiempo / km) con forma de chip */
+        select.type-chip {
+            width: auto;
+            margin: 0;
+            padding: 3px 8px;
+            font-size: 12px;
+            font-weight: 700;
             letter-spacing: 0.3px;
-        }
-
-        .field input {
-            margin-bottom: 0;
-            background: var(--bg-card);
-        }
-
-        .series-checkboxes {
-            margin-top: 8px;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 6px;
-            font-size: 0.9em;
-        }
-
-        .series-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 4px;
-        }
-
-        .series-checkboxes label {
-            display: flex;
-            align-items: center;
-            padding: 5px 6px;
-            border-radius: var(--radius-sm);
-            background: var(--bg-card);
+            border-radius: 999px;
+            border: 1px solid rgba(var(--brand-rgb), 0.45);
+            background: rgba(var(--brand-rgb), 0.12);
+            color: var(--brand);
             cursor: pointer;
         }
 
-        .series-checkboxes button.small {
-            padding: 7px 10px;
-            font-size: 1em;
-            min-width: 36px;
-            min-height: 36px;
-            flex-shrink: 0;
+        /* Tabla de series: las columnas se definen por tipo de ejercicio */
+        .sets-table { --set-cols: 22px 1fr 1fr 1fr 48px 40px 28px; }
+        .sets-table.t-bw { --set-cols: 22px 1fr 1fr 48px 40px 28px; }
+        .sets-table.t-time { --set-cols: 22px 1fr 1fr 76px 40px 28px; }
+        .sets-table.t-min { --set-cols: 22px 1fr 84px 40px 28px; }
+        .sets-table.t-km { --set-cols: 22px 1fr 1fr 1fr 62px 40px 28px; }
+
+        /* Columna calculada (km/h): no editable */
+        .set-calc {
+            text-align: center;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+        }
+        .set-calc.is-prev { color: var(--text-faint); font-weight: 500; }
+
+        .sets-head, .set-row {
+            display: grid;
+            grid-template-columns: var(--set-cols);
+            gap: 4px;
+            align-items: center;
         }
 
-        @media (min-width: 640px) {
-            .exercise-row-fields {
-                grid-template-columns: repeat(4, 1fr);
-            }
+        .sets-head {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: var(--text-faint);
+            padding: 0 2px 4px;
+            text-align: center;
+        }
+
+        .set-row {
+            padding: 3px 2px;
+            border-radius: var(--radius-sm);
+            transition: background 0.2s;
+        }
+
+        .set-row + .set-row { margin-top: 2px; }
+
+        .set-num {
+            width: 100%;
+            min-height: 40px;
+            margin: 0;
+            padding: 0;
+            background: transparent;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-align: center;
+            border-radius: var(--radius-sm);
+        }
+
+        .set-num:hover { background: var(--bg-elevated); color: var(--text); box-shadow: none; transform: none; }
+
+        /* Serie de calentamiento / aproximación: "C" ámbar y barra lateral */
+        .set-row.warmup { box-shadow: inset 3px 0 0 var(--warning); }
+        .set-row.warmup .set-num { color: var(--warning); }
+        .set-row.warmup input, .set-row.warmup select { font-style: italic; }
+
+        /* Barra de ajuste rápido (+/-) bajo la serie activa */
+        .set-stepper {
+            grid-column: 1 / -1;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 0 2px;
+        }
+
+        .set-stepper-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: var(--text-faint);
+            min-width: 44px;
+            text-align: center;
+        }
+
+        .set-stepper button {
+            flex: 1;
+            margin: 0;
+            padding: 6px 2px;
+            min-height: 38px;
+            font-size: 14px;
+            background: var(--bg-elevated);
+            color: var(--text);
+        }
+
+        .set-stepper button.up { color: var(--success); }
+        .set-stepper button.down { color: var(--danger); }
+        .set-stepper button:hover { background: var(--bg-card); box-shadow: none; transform: none; }
+
+        .set-row input, .set-row select {
+            margin: 0;
+            padding: 8px 2px;
+            min-height: 40px;
+            text-align: center;
+            background: var(--bg-card);
+            min-width: 0;
+        }
+
+        .set-row select {
+            padding: 8px 0;
+            -webkit-appearance: none;
+            appearance: none;
+            text-align-last: center;
+        }
+
+        .set-row input::placeholder { color: var(--text-faint); opacity: 0.8; }
+
+        .set-check, .set-note-btn {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            min-height: 40px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .set-check {
+            background: var(--bg-elevated);
+            color: var(--text-faint);
+            font-size: 18px;
+        }
+
+        .set-check:hover { background: var(--bg-elevated); color: var(--text); box-shadow: none; transform: none; }
+
+        .set-note-btn {
+            background: transparent;
+            color: var(--text-faint);
+            font-size: 15px;
+        }
+
+        .set-note-btn:hover { background: var(--bg-elevated); box-shadow: none; transform: none; }
+        .set-note-btn.has-note { color: var(--brand); }
+
+        .set-row.done { background: rgba(57, 217, 138, 0.14); }
+        .set-row.done .set-check { background: var(--success); color: #fff; }
+        .set-row.done input, .set-row.done select { background: transparent; border-color: transparent; }
+
+        .set-row.shake { animation: setShake 0.3s; }
+        @keyframes setShake {
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
+
+        .set-row .set-note {
+            grid-column: 2 / -1;
+            text-align: left;
+            padding: 8px 10px;
+            min-height: 36px;
+            font-size: 16px;
+        }
+
+        .sets-controls {
+            display: grid;
+            grid-template-columns: 48px 1fr;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .sets-controls button {
+            margin: 0;
+            min-height: 40px;
+            padding: 8px;
+            background: var(--bg-elevated);
+            color: var(--text);
+            font-size: 14px;
+        }
+
+        .sets-controls button:hover { background: var(--bg-card); box-shadow: none; transform: none; }
+        .sets-controls button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .exercise-row .exercise-note {
+            margin: 8px 0 0;
+            padding: 9px 10px;
+            background: var(--bg-card);
+            font-size: 16px;
+        }
+
+        .sets-legend {
+            font-size: 11px;
+            color: var(--text-faint);
+            margin-bottom: 10px;
+        }
+
+        /* Reordenando: los bloques se colapsan a su encabezado para arrastrar cómodo */
+        #exercisesContainer.is-reordering .exercise-row > :not(.exercise-row-header) { display: none; }
+        #exercisesContainer.is-reordering .exercise-row .exercise-row-header { margin-bottom: 0; }
+        #exercisesContainer.is-reordering .exercise-row { user-select: none; -webkit-user-select: none; }
+        #exercisesContainer.is-reordering .exercise-row:not(.reordering) { opacity: 0.85; }
+
+        .exercise-row.reordering {
+            z-index: 10;
+            border-color: var(--brand);
+            box-shadow: var(--shadow-md);
+            opacity: 1;
+        }
+
+        .exercise-row.reordering .drag-handle { cursor: grabbing; color: var(--brand); }
+
+        .quick-add-type-row {
+            display: flex;
+            gap: 6px;
+            margin-top: 6px;
+        }
+
+        .quick-add-type-row select, .quick-add-type-row button { margin-bottom: 0; }
+
+        @media (max-width: 768px) {
+            .section.exercises-section { padding: 8px 6px; }
         }
 
         /* CHECKBOXES */
@@ -692,6 +918,60 @@
             margin-top: 4px;
             opacity: 0.8;
         }
+
+        .rest-timer-inner {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .rest-timer-label {
+            display: none;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            opacity: 0.75;
+        }
+
+        .rest-timer-controls { display: none; gap: 6px; }
+
+        .rest-timer-widget.rest-mode { cursor: default; }
+        .rest-timer-widget.rest-mode .rest-timer-controls { display: flex; }
+        .rest-timer-widget.rest-mode .rest-timer-hint { display: none; }
+        .rest-timer-widget.rest-mode .rest-timer-label { display: block; }
+
+        .rest-timer-controls button {
+            width: auto;
+            margin: 0;
+            min-width: 54px;
+            min-height: 46px;
+            padding: 8px 10px;
+            font-family: var(--font-body);
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+        }
+
+        .rest-timer-controls button:hover { background: rgba(255, 255, 255, 0.2); box-shadow: none; transform: none; }
+        .rest-timer-controls button.skip { background: var(--brand); }
+
+        /* En el celular el descanso es una barra abajo, de lado a lado, con botones grandes */
+        @media (max-width: 768px) {
+            .rest-timer-widget.rest-mode {
+                left: 12px;
+                right: 12px;
+                bottom: 12px;
+                padding: 10px 12px;
+                font-size: 26px;
+            }
+            .rest-timer-widget.rest-mode .rest-timer-inner { justify-content: space-between; }
+            .rest-timer-widget.rest-mode .rest-timer-controls { flex: 1; justify-content: flex-end; }
+            .rest-timer-widget.rest-mode .rest-timer-controls button { flex: 1; max-width: 72px; }
+        }
+
+        /* Que la barra no tape el final de la página (ej. el botón Guardar) */
+        body.rest-timer-open .app-main { padding-bottom: 120px; }
 
         /* GRILLA DE MINI-GRÁFICOS POR EJERCICIO */
         .mini-chart-grid {
@@ -1063,7 +1343,7 @@
                     <a href="#" id="btnResetRoutineTimer" onclick="event.preventDefault(); resetRoutineTimer();" style="display:none; font-size: 12px; color: var(--danger);">↺ Reiniciar marcado de tiempo</a>
                 </div>
 
-                <div class="section">
+                <div class="section exercises-section">
                     <div id="exercisesContainer"></div>
                 </div>
 
@@ -1247,11 +1527,21 @@
         </main>
     </div>
 
-    <div id="restTimer" class="rest-timer-widget" onclick="onTimerWidgetClick()">
-        <div id="restTimerPhase" class="rest-timer-phase"></div>
-        ⏱️ <span id="restTimerValue">00:00</span>
-        <div id="restTimerRound" class="rest-timer-round"></div>
-        <div class="rest-timer-hint">Tocá para cancelar</div>
+    <div id="restTimer" class="rest-timer-widget" onclick="onTimerWidgetClick()" role="timer" aria-live="off">
+        <div class="rest-timer-inner">
+            <div class="rest-timer-main">
+                <div id="restTimerPhase" class="rest-timer-phase"></div>
+                <div class="rest-timer-label">Descanso</div>
+                ⏱️ <span id="restTimerValue">00:00</span>
+                <div id="restTimerRound" class="rest-timer-round"></div>
+                <div class="rest-timer-hint">Tocá para cancelar</div>
+            </div>
+            <div class="rest-timer-controls" onclick="event.stopPropagation()">
+                <button type="button" onclick="adjustRestTimer(-15)" aria-label="Restar 15 segundos">−15s</button>
+                <button type="button" onclick="adjustRestTimer(15)" aria-label="Sumar 15 segundos">+15s</button>
+                <button type="button" class="skip" onclick="cancelRestTimer()">Saltar</button>
+            </div>
+        </div>
     </div>
 
     <div id="toastContainer" aria-live="polite"></div>
@@ -1493,8 +1783,37 @@
                 startRoutineManually();
             }
         }
-        document.getElementById('exercisesContainer').addEventListener('input', () => { maybeAutoStartSessionTimer(); saveWorkoutDraft(); });
-        document.getElementById('exercisesContainer').addEventListener('change', () => { maybeAutoStartSessionTimer(); saveWorkoutDraft(); });
+        // Solo cuenta lo que se carga en las series: escribir en "agregar ejercicio" o
+        // cambiar el tipo de medición no es "empezar a entrenar".
+        function isSessionDataEvent(e) {
+            return !!e.target.closest?.('.set-row, .exercise-note');
+        }
+        const exercisesContainerEl = document.getElementById('exercisesContainer');
+        exercisesContainerEl.addEventListener('input', (e) => {
+            if (e.target.dataset?.f && e.target.closest?.('.set-row')) {
+                if (e.isTrusted) sanitizeSetInput(e.target);
+                updateSetCalc(e.target.closest('.set-row'));
+            }
+            if (e.target.classList?.contains('set-note')) {
+                e.target.closest('.set-row')?.querySelector('.set-note-btn')?.classList.toggle('has-note', !!e.target.value.trim());
+            }
+            if (isSessionDataEvent(e)) maybeAutoStartSessionTimer();
+            saveWorkoutDraft();
+        });
+        exercisesContainerEl.addEventListener('change', (e) => {
+            if (e.target.dataset?.f === 'time' && e.target.dataset.mode !== 'min' && e.target.value.trim()) e.target.value = formatTimeValue(e.target.value);
+            if (isSessionDataEvent(e)) maybeAutoStartSessionTimer();
+            saveWorkoutDraft();
+        });
+        // Nota de serie vacía: al salir del campo se vuelve a esconder.
+        exercisesContainerEl.addEventListener('focusout', (e) => {
+            if (e.target.classList?.contains('set-note') && !e.target.value.trim()) e.target.hidden = true;
+        });
+        exercisesContainerEl.addEventListener('focusin', (e) => {
+            if (e.target.closest?.('.set-row') && e.target.dataset?.f) showSetStepper(e.target);
+        });
+        exercisesContainerEl.addEventListener('pointerdown', (e) => onReorderHandlePointerDown(e));
+        exercisesContainerEl.addEventListener('keydown', (e) => onReorderHandleKeyDown(e));
 
         function finishRoutineManually() {
             if (!currentSessionStartTime) {
@@ -1519,29 +1838,25 @@
             const routine = document.getElementById('routine')?.value;
             if (!routine) { clearWorkoutDraft(); return; }
 
-            const rows = {};
-            document.querySelectorAll('#exercisesContainer .exercise-row').forEach(row => {
-                const match = row.id.match(/row_(\d+)/);
-                if (!match) return;
-                const idx = match[1];
-                const checkedSeries = [...document.querySelectorAll(`#seriesCheckboxes_${idx} input[type="checkbox"]:checked`)]
-                    .map(cb => cb.id.match(/series_\d+_(\d+)/)?.[1])
-                    .filter(Boolean);
-                rows[idx] = {
-                    reps: document.getElementById(`reps_${idx}`)?.value || '',
-                    weight: document.getElementById(`weight_${idx}`)?.value || '',
-                    pause: document.getElementById(`pause_${idx}`)?.value || '',
-                    note: document.getElementById(`note_${idx}`)?.value || '',
-                    checkedSeries
+            // Indexado por nombre de ejercicio (no por posición): así sobrevive a que se
+            // reordenen los bloques con drag & drop.
+            const exercises = {};
+            document.querySelectorAll('#exercisesContainer .exercise-row').forEach(block => {
+                const name = getBlockName(block);
+                if (!name) return;
+                exercises[name] = {
+                    sets: readBlockSets(block),
+                    note: block.querySelector('.exercise-note')?.value || ''
                 };
             });
 
             const draft = {
+                v: 2,
                 date: getLocalDateString(),
                 routine,
                 sessionNotes: document.getElementById('sessionNotes')?.value || '',
                 mood: selectedMood,
-                rows
+                exercises
             };
             try { localStorage.setItem('workoutDraft', JSON.stringify(draft)); } catch (e) {}
         }
@@ -1563,22 +1878,22 @@
             routineSelect.value = draft.routine;
             loadRoutineExercises();
 
-            Object.keys(draft.rows || {}).forEach(idx => {
-                const r = draft.rows[idx];
-                const repsEl = document.getElementById(`reps_${idx}`);
-                const weightEl = document.getElementById(`weight_${idx}`);
-                const pauseEl = document.getElementById(`pause_${idx}`);
-                const noteEl = document.getElementById(`note_${idx}`);
-                if (repsEl) repsEl.value = r.reps;
-                if (weightEl) weightEl.value = r.weight;
-                if (pauseEl) pauseEl.value = r.pause;
-                if (noteEl) noteEl.value = r.note;
-                updateSeriesCheckboxes(Number(idx));
-                (r.checkedSeries || []).forEach(s => {
-                    const cb = document.getElementById(`series_${idx}_${s}`);
-                    if (cb) cb.checked = true;
+            if (draft.v === 2) {
+                document.querySelectorAll('#exercisesContainer .exercise-row').forEach(block => {
+                    const saved = (draft.exercises || {})[getBlockName(block)];
+                    if (saved) applySetsToBlock(block, saved.sets, saved.note);
                 });
-            });
+            } else {
+                // Draft del formato viejo (strings "15-15-15" por posición): se convierte a series.
+                Object.keys(draft.rows || {}).forEach(idx => {
+                    const r = draft.rows[idx];
+                    const block = document.getElementById(`row_${idx}`);
+                    if (!block || !r) return;
+                    const sets = setsFromLegacy({ reps: r.reps, weight: r.weight, pause: r.pause }, block.dataset.type);
+                    (r.checkedSeries || []).forEach(s => { if (sets[s - 1]) sets[s - 1].done = true; });
+                    applySetsToBlock(block, sets, r.note);
+                });
+            }
 
             if (draft.sessionNotes) {
                 const sn = document.getElementById('sessionNotes');
@@ -1780,8 +2095,26 @@
                             maxWeight: 0,
                             maxReps: 0,
                             maxVolume: 0,
-                            allNotes: []
+                            allNotes: [],
+                            lastSets: []
                         };
+                    }
+
+                    // Series de la última vez (para sugerir valores en la próxima sesión).
+                    const lastSets = Array.isArray(ex.sets) && ex.sets.length > 0
+                        ? ex.sets
+                        : setsFromLegacy(ex, ex.type || getExerciseType(ex.name));
+                    if (lastSets.length > 0) exerciseStats[ex.name].lastSets = lastSets;
+
+                    // Récords de cardio / tiempo (distancia, ritmo, velocidad, duración).
+                    const exType = ex.type || getExerciseType(ex.name);
+                    if (isCardioType(exType)) {
+                        const c = cardioMetrics(lastSets);
+                        const st = exerciseStats[ex.name];
+                        st.maxKm = Math.max(st.maxKm || 0, c.totalKm);
+                        st.maxTotalSec = Math.max(st.maxTotalSec || 0, c.totalSec);
+                        st.maxSetSec = Math.max(st.maxSetSec || 0, c.maxSetSec);
+                        if (c.bestSpeed && (!st.bestSpeed || c.bestSpeed > st.bestSpeed)) st.bestSpeed = c.bestSpeed;
                     }
 
                     const weightStr = ex.weight || '';
@@ -1871,6 +2204,11 @@
                 const prev = previousStats[ex.name];
                 if (!prev) return;
 
+                if (isCardioType(ex.type)) {
+                    prs.push(...detectCardioPRs(ex, prev));
+                    return;
+                }
+
                 const weights = (ex.weight || '').split('-').map(x => parseFloat(x)).filter(x => !isNaN(x));
                 const reps = (ex.reps || '').split('-').map(x => parseInt(x)).filter(x => !isNaN(x));
                 const maxWeight = weights.length > 0 ? Math.max(...weights) : 0;
@@ -1958,54 +2296,954 @@
             return { thisWeek, lastWeek, lastWeekToDate };
         }
 
-        // Genera la fila de un ejercicio a partir de las últimas veces que se hizo.
-        // Se usa tanto al armar la tabla completa como al agregar un ejercicio suelto,
-        // así nunca hace falta reconstruir (y perder) las filas que ya tenían datos cargados.
+        // ========== TIPOS DE EJERCICIO ==========
+        // Cómo se mide cada ejercicio. Es global por nombre (no por rutina): "Plancha" se
+        // mide en tiempo en cualquier rutina donde aparezca. Cambiar el tipo no toca el
+        // historial ya guardado, solo qué columnas se cargan de acá en adelante.
+        // timeMode: 'clock' = m:ss para esfuerzos cortos (plancha: se tipea "45" → 0:45);
+        // 'min' = minutos para cosas largas (fútbol, bici: "60" o "32,5"). Sin esta
+        // distinción, tipear "60" en un partido quedaría en 0:60 en vez de 60 minutos.
+        // rest: si la serie tiene columna de descanso (y dispara el timer al tildarla).
+        // calc: columna calculada (km/h a partir de minutos y km).
+        const EXERCISE_TYPES = {
+            kg:   { label: 'Kg + reps', cols: ['reps', 'kg'], effort: 'rir', defaultSets: 3, rest: true },
+            bw:   { label: 'Solo reps', cols: ['reps'], effort: 'rir', defaultSets: 3, rest: true },
+            time: { label: 'Tiempo (m:ss)', cols: ['time'], effort: 'rpe', defaultSets: 1, rest: true, timeMode: 'clock' },
+            min:  { label: 'Minutos', cols: ['time'], effort: 'rpe', defaultSets: 1, rest: false, timeMode: 'min' },
+            km:   { label: 'Min + km', cols: ['time', 'km'], effort: 'rpe', defaultSets: 1, rest: false, timeMode: 'min', calc: 'speed' }
+        };
+
+        function isCardioType(type) {
+            return type === 'time' || type === 'min' || type === 'km';
+        }
+
+        // Todos los campos abren teclado numérico en el celular: "numeric" (solo dígitos)
+        // o "decimal" (dígitos + separador). Punto o coma da igual: la app los normaliza.
+        // El tiempo m:ss se tipea como dígitos y se formatea solo ("145" → "1:45"), así
+        // no hace falta buscar los dos puntos en el teclado.
+        const SET_FIELDS = {
+            reps: { head: 'Reps', inputmode: 'numeric', hint: '–' },
+            kg:   { head: 'Kg', inputmode: 'decimal', hint: '–' },
+            km:   { head: 'Km', inputmode: 'decimal', hint: '–' },
+            time: { head: 'Tiempo', inputmode: 'numeric', hint: 'm:ss' }
+        };
+
+        // RIR = reps que quedaban en reserva (0 = al fallo). Para cardio/tiempo no tiene
+        // sentido contar reps en reserva, así que se usa una escala de esfuerzo simple.
+        const EFFORT_SCALES = {
+            rir: { head: 'RIR', title: 'Reps en reserva (F = al fallo)', options: [['', '–'], ['0', 'F'], ['1', '1'], ['2', '2'], ['3', '3'], ['4', '4+']] },
+            rpe: { head: 'Esfuerzo', title: 'Qué tan exigente fue', options: [['', '–'], ['suave', 'Suave'], ['media', 'Media'], ['alta', 'Alta'], ['max', 'Máx']] }
+        };
+
+        // Botones de ajuste rápido que aparecen bajo la serie al tocar un campo, para
+        // subir/bajar sin escribir un número. Tiempo y descanso van en segundos.
+        const SET_STEPS = {
+            kg:   [-5, -2.5, 2.5, 5],
+            reps: [-1, 1],
+            km:   [-1, -0.5, 0.5, 1],
+            time: [-60, -15, 15, 60],
+            timeMin: [-5, -1, 1, 5],
+            rest: [-15, 15]
+        };
+
+        // El fútbol viejo guardaba la intensidad como texto en "reps".
+        const LEGACY_INTENSITY_TO_EFFORT = { baja: 'suave', media: 'media', alta: 'alta' };
+
+        const DEFAULT_REST_SECONDS = 90;
+        const WARMUP_LABEL = 'C';
+
+        const DRAG_DOTS_SVG = '<svg viewBox="0 0 12 20" aria-hidden="true"><circle cx="3" cy="4" r="1.6"/><circle cx="9" cy="4" r="1.6"/><circle cx="3" cy="10" r="1.6"/><circle cx="9" cy="10" r="1.6"/><circle cx="3" cy="16" r="1.6"/><circle cx="9" cy="16" r="1.6"/></svg>';
+
+        function loadExerciseTypes() {
+            try { return JSON.parse(localStorage.getItem('exerciseTypes') || '{}') || {}; } catch (e) { return {}; }
+        }
+        let exerciseTypes = loadExerciseTypes();
+
+        function saveExerciseType(name, type) {
+            if (!EXERCISE_TYPES[type]) return;
+            exerciseTypes[normalizeForCompare(name)] = type;
+            localStorage.setItem('exerciseTypes', JSON.stringify(exerciseTypes));
+        }
+
+        // Sugerencia automática para ejercicios que todavía no tienen un tipo elegido.
+        function inferExerciseType(name, routine) {
+            const n = normalizeForCompare(name || '');
+            if (/\bkm\b|\dkm|bici|correr|corrida|trote|running|caminata|cinta|spinning|natacion|nado/.test(n)) return 'km';
+            if (routine === 'FUT' || /futbol|partido|clase|yoga|pilates|estiramiento/.test(n)) return 'min';
+            if (/plancha|plank|tabata|soga|isometric/.test(n)) return 'time';
+            if (/flexiones|push-?ups?|burpee|dominadas(?! asistidas)/.test(n)) return 'bw';
+            return 'kg';
+        }
+
+        function getExerciseType(name, routine) {
+            const saved = exerciseTypes[normalizeForCompare(name || '')];
+            return EXERCISE_TYPES[saved] ? saved : inferExerciseType(name, routine);
+        }
+
+        function buildTypeOptionsHtml(selected) {
+            return Object.entries(EXERCISE_TYPES)
+                .map(([key, def]) => `<option value="${key}"${key === selected ? ' selected' : ''}>${def.label}</option>`)
+                .join('');
+        }
+
+        function escapeHtml(str) {
+            return String(str ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+        }
+
+        // ========== TIEMPO: "m:ss" / "h:mm:ss" ==========
+        // Un número suelto (formato viejo del fútbol, "90") se toma como minutos.
+        function parseTimeSeconds(str) {
+            const s = String(str || '').trim();
+            if (!s) return null;
+            if (!s.includes(':')) {
+                const min = parseFloat(s.replace(',', '.'));
+                return isNaN(min) ? null : Math.round(min * 60);
+            }
+            const parts = s.split(':').map(x => parseInt(x, 10) || 0);
+            return parts.reduce((acc, p) => acc * 60 + p, 0);
+        }
+
+        // "22,5", "22.5" → 22.5. Punto o coma, lo que traiga el teclado.
+        function parseDecimal(v) {
+            const n = parseFloat(String(v ?? '').trim().replace(',', '.'));
+            return isNaN(n) ? null : n;
+        }
+
+        // Normaliza para guardar: coma → punto, sin separador colgando ("22," → "22").
+        function normalizeDecimalString(v) {
+            const n = parseDecimal(v);
+            return n == null ? '' : String(n);
+        }
+
+        // Filtra lo que se tipea en un campo decimal: dígitos y UN separador (. o ,).
+        function sanitizeDecimalInput(v) {
+            const s = String(v || '').replace(/[^\d.,]/g, '');
+            const i = s.search(/[.,]/);
+            return i < 0 ? s : s.slice(0, i + 1) + s.slice(i + 1).replace(/[.,]/g, '');
+        }
+
+        // Limpia un campo de serie mientras se tipea (o se pega), según su tipo.
+        function sanitizeSetInput(el) {
+            const f = el.dataset.f;
+            let v = el.value;
+            if (f === 'reps') v = v.replace(/\D/g, '');
+            else if (f === 'rest') v = v.replace(/[^\d:]/g, '');
+            else if (f === 'kg' || f === 'km') v = sanitizeDecimalInput(v);
+            else if (f === 'time' && el.dataset.mode === 'min') v = v.includes(':') ? v.replace(/[^\d:]/g, '') : sanitizeDecimalInput(v);
+            else if (f === 'time') v = formatTimeDigits(v);
+            if (v !== el.value) el.value = v;
+        }
+
+        function formatSecondsClock(total) {
+            if (total == null || isNaN(total)) return '';
+            total = Math.max(0, Math.round(total));
+            const h = Math.floor(total / 3600);
+            const m = Math.floor((total % 3600) / 60);
+            const s = String(total % 60).padStart(2, '0');
+            return h > 0 ? `${h}:${String(m).padStart(2, '0')}:${s}` : `${m}:${s}`;
+        }
+
+        // Mientras se tipea: los dígitos entran por la derecha, como en un microondas.
+        // "4" → "0:04", "45" → "0:45", "145" → "1:45", "9000" → "90:00".
+        function formatTimeDigits(raw) {
+            const digits = String(raw || '').replace(/\D/g, '').replace(/^0+/, '').slice(0, 6);
+            if (!digits) return '';
+            const padded = digits.padStart(3, '0');
+            return `${parseInt(padded.slice(0, -2), 10)}:${padded.slice(-2)}`;
+        }
+
+        // Forma canónica para guardar: siempre "m:ss" (o "h:mm:ss").
+        function formatTimeValue(v) {
+            const sec = parseTimeSeconds(v);
+            return sec == null ? '' : formatSecondsClock(sec);
+        }
+
+        // Para leer: "60 min" si son minutos justos, si no "1:45" / "32:30".
+        function formatDurationHuman(sec) {
+            if (sec == null) return '';
+            if (sec >= 60 && sec % 60 === 0) return `${sec / 60} min`;
+            return formatSecondsClock(sec);
+        }
+
+        // Cómo se muestra un tiempo guardado dentro del campo, según el modo del tipo.
+        function timeInputValue(v, mode) {
+            const sec = parseTimeSeconds(v);
+            if (sec == null) return '';
+            return mode === 'min' ? String(Math.round(sec / 60 * 100) / 100).replace('.', ',') : formatSecondsClock(sec);
+        }
+
+        // km/h a partir de un tiempo y una distancia (null si falta alguno).
+        function computeSpeed(timeVal, kmVal) {
+            const sec = parseTimeSeconds(timeVal);
+            const km = parseDecimal(kmVal);
+            return sec > 0 && km > 0 ? km / (sec / 3600) : null;
+        }
+
+        function formatSpeed(kmh) {
+            return kmh ? `${formatNumber(Math.round(kmh * 10) / 10)} km/h` : '';
+        }
+
+        function formatNumber(n) {
+            return (Math.round(n * 100) / 100).toLocaleString('es-AR');
+        }
+
+        // Convierte el formato viejo ("15-15-15" en reps, "50-50" en peso, "90-90" en pausa)
+        // a una lista de series. Si hay menos pesos que reps, el último peso se repite.
+        function setsFromLegacy(ex, type) {
+            const split = str => String(str || '').split('-').map(x => x.trim()).filter(Boolean);
+            const reps = split(ex.reps);
+            const weights = split(ex.weight);
+            const pauses = split(ex.pause);
+            const pick = (arr, i) => arr.length === 0 ? '' : (arr[i] ?? arr[arr.length - 1]);
+
+            if (isCardioType(type)) {
+                // Cardio / fútbol viejo: "peso" guardaba minutos (o km) y "reps" la intensidad.
+                if (weights.length === 0) return [];
+                const effort = LEGACY_INTENSITY_TO_EFFORT[normalizeForCompare(ex.reps || '')] || '';
+                return weights.map((w, i) => type === 'km'
+                    ? { km: w, rest: pick(pauses, i), effort }
+                    : { time: formatTimeValue(w), rest: pick(pauses, i), effort });
+            }
+
+            const count = Math.max(reps.length, weights.length);
+            return Array.from({ length: count }, (_, i) => ({
+                reps: reps[i] || '',
+                kg: type === 'kg' ? pick(weights, i) : '',
+                rest: pick(pauses, i)
+            }));
+        }
+
+        function formatSetValue(set, type) {
+            const v = f => String(set?.[f] || '').trim();
+            const num = f => { const n = parseDecimal(v(f)); return n == null ? '' : formatNumber(n); };
+            const dur = formatDurationHuman(parseTimeSeconds(v('time')));
+            if (type === 'kg') return v('kg') ? `${v('reps') || '?'}×${num('kg')}kg` : v('reps');
+            if (type === 'bw') return v('reps') ? `${v('reps')} reps` : '';
+            if (type === 'time' || type === 'min') return dur;
+            if (type === 'km') {
+                // Bici / correr: duración · km · km/h
+                return [dur, v('km') ? `${num('km')}km` : '', formatSpeed(computeSpeed(v('time'), v('km')))].filter(Boolean).join(' · ');
+            }
+            return '';
+        }
+
+        // Resumen de las series efectivas; las de calentamiento solo se cuentan al final.
+        function formatSetsSummary(sets, type) {
+            const list = sets || [];
+            const work = list.filter(s => !s.warmup).map(s => formatSetValue(s, type)).filter(Boolean).join(' · ');
+            const warmups = list.filter(s => s.warmup).length;
+            if (!work) return '';
+            return warmups ? `${work} (+${warmups} calent.)` : work;
+        }
+
+        function formatEffort(effort, type) {
+            if (!effort) return '';
+            const scale = EFFORT_SCALES[(EXERCISE_TYPES[type] || EXERCISE_TYPES.kg).effort];
+            if (scale === EFFORT_SCALES.rir) return effort === '0' ? 'al fallo' : `RIR ${effort === '4' ? '4+' : effort}`;
+            const opt = scale.options.find(([v]) => v === effort);
+            return opt ? `esfuerzo ${opt[1].toLowerCase()}` : effort;
+        }
+
+        // Descanso: "90" = 90 segundos (acá sí, un número suelto son segundos).
+        function parseRestSeconds(str) {
+            const s = String(str || '').trim();
+            if (!s) return null;
+            if (s.includes(':')) return parseTimeSeconds(s);
+            const n = parseInt(s.replace(/\D/g, ''), 10);
+            return isNaN(n) ? null : n;
+        }
+
+        // ========== RÉCORDS DE CARDIO / TIEMPO ==========
+        // Por sesión: distancia total, tiempo total, serie más larga y mejor velocidad
+        // (de la mejor serie con km y tiempo). Las series de calentamiento no cuentan.
+        function cardioMetrics(sets) {
+            let totalKm = 0, totalSec = 0, maxSetSec = 0, bestSpeed = null;
+            (sets || []).filter(s => s && !s.warmup).forEach(s => {
+                const km = parseDecimal(s.km);
+                const sec = parseTimeSeconds(s.time);
+                if (km > 0) totalKm += km;
+                if (sec) {
+                    totalSec += sec;
+                    maxSetSec = Math.max(maxSetSec, sec);
+                }
+                const speed = computeSpeed(s.time, s.km);
+                if (speed && (bestSpeed == null || speed > bestSpeed)) bestSpeed = speed;
+            });
+            return { totalKm: Math.round(totalKm * 100) / 100, totalSec, maxSetSec, bestSpeed };
+        }
+
+        function detectCardioPRs(ex, prev) {
+            const prs = [];
+            const c = cardioMetrics(ex.sets);
+            if (ex.type === 'km') {
+                if (prev.maxKm > 0 && c.totalKm > prev.maxKm) {
+                    prs.push(`${ex.name}: distancia ${formatNumber(c.totalKm)}km (antes ${formatNumber(prev.maxKm)}km)`);
+                }
+                if (prev.bestSpeed && c.bestSpeed && Math.round(c.bestSpeed * 10) > Math.round(prev.bestSpeed * 10)) {
+                    prs.push(`${ex.name}: velocidad ${formatSpeed(c.bestSpeed)} (antes ${formatSpeed(prev.bestSpeed)})`);
+                }
+                if (prev.maxTotalSec > 0 && c.totalSec > prev.maxTotalSec) {
+                    prs.push(`${ex.name}: duración ${formatDurationHuman(c.totalSec)} (antes ${formatDurationHuman(prev.maxTotalSec)})`);
+                }
+            } else if (prev.maxSetSec > 0 && c.maxSetSec > prev.maxSetSec) {
+                prs.push(`${ex.name}: ${formatDurationHuman(c.maxSetSec)} (antes ${formatDurationHuman(prev.maxSetSec)})`);
+            }
+            return prs;
+        }
+
+        // Una fila = una serie. Los valores de la última sesión se muestran en gris
+        // (placeholder) y se guardan en data-prev: al tildar una serie vacía se completan
+        // solos, así repetir lo de la vez pasada es un solo toque.
+        function buildSetRowHtml(type, label, set = {}, prev = {}) {
+            const def = EXERCISE_TYPES[type] || EXERCISE_TYPES.kg;
+            const scale = EFFORT_SCALES[def.effort];
+            const n = set.warmup ? 'de calentamiento' : label;
+
+            const timeMode = def.timeMode || 'clock';
+            const metricInput = (field, hidden) => {
+                const f = SET_FIELDS[field];
+                const isTime = field === 'time';
+                const inputmode = isTime && timeMode === 'min' ? 'decimal' : f.inputmode;
+                const hint = isTime && timeMode === 'min' ? 'min' : f.hint;
+                const prevVal = isTime ? timeInputValue(prev.time, timeMode) : String(prev[field] || '');
+                const value = isTime ? timeInputValue(set.time, timeMode) : String(set[field] || '');
+                const pattern = inputmode === 'numeric' ? ' pattern="[0-9]*"' : '';
+                const head = isTime && timeMode === 'min' ? 'Minutos' : f.head;
+                return `<input type="text" inputmode="${inputmode}"${pattern} autocomplete="off" data-f="${field}"${isTime ? ` data-mode="${timeMode}"` : ''} data-prev="${escapeHtml(prevVal)}" placeholder="${escapeHtml(prevVal || hint)}" value="${escapeHtml(value)}" aria-label="${head}, serie ${n}"${hidden ? ' hidden' : ''}>`;
+            };
+            // Los campos de otros tipos quedan ocultos (no se pierden si se cambia el tipo).
+            const visibleInputs = def.cols.map(f => metricInput(f, false)).join('');
+            const hiddenInputs = Object.keys(SET_FIELDS).filter(f => !def.cols.includes(f)).map(f => metricInput(f, true)).join('');
+
+            const prevRest = String(prev.rest || '');
+            const effortOptions = scale.options
+                .map(([v, optLabel]) => `<option value="${v}"${(set.effort || '') === v ? ' selected' : ''}>${optLabel}</option>`)
+                .join('');
+
+            return `<div class="set-row${set.done ? ' done' : ''}${set.warmup ? ' warmup' : ''}">
+                    <button type="button" class="set-num" onclick="toggleWarmup(this)" aria-pressed="${set.warmup ? 'true' : 'false'}" title="Tocá para marcar/desmarcar como calentamiento" aria-label="Serie ${n}: marcar como calentamiento">${set.warmup ? WARMUP_LABEL : label}</button>
+                    ${visibleInputs}
+                    ${def.calc === 'speed' ? buildSpeedCellHtml(set, prev) : ''}
+                    <input type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" data-f="rest" data-prev="${escapeHtml(prevRest)}" placeholder="${escapeHtml(prevRest || String(DEFAULT_REST_SECONDS))}" value="${escapeHtml(set.rest || '')}" aria-label="Descanso en segundos, serie ${n}"${def.rest ? '' : ' hidden'}>
+                    <select data-f="effort" aria-label="${scale.title}, serie ${n}">${effortOptions}</select>
+                    <button type="button" class="set-check" aria-pressed="${set.done ? 'true' : 'false'}" aria-label="Serie ${n} hecha" onclick="toggleSetDone(this)">✓</button>
+                    <button type="button" class="set-note-btn${set.note ? ' has-note' : ''}" aria-label="Nota de la serie ${n}" title="Nota de la serie" onclick="toggleSetNote(this)">📝</button>
+                    ${hiddenInputs}
+                    <input type="text" class="set-note" data-f="note" autocomplete="off" placeholder="Nota de la serie (ej: se me fue la técnica)" value="${escapeHtml(set.note || '')}"${set.note ? '' : ' hidden'}>
+                </div>`;
+        }
+
+        // Km/h calculado de minutos + km. Si todavía no se cargó nada, se calcula con lo de
+        // la última vez y se ve en gris, igual que las sugerencias de los campos.
+        function buildSpeedCellHtml(set, prev) {
+            const own = computeSpeed(set.time, set.km);
+            const speed = own || computeSpeed(set.time || prev.time, set.km || prev.km);
+            return `<span class="set-calc${own ? '' : ' is-prev'}" data-calc="speed" aria-label="Velocidad en km/h">${speed ? formatNumber(Math.round(speed * 10) / 10) : '–'}</span>`;
+        }
+
+        function updateSetCalc(row) {
+            const cell = row?.querySelector('.set-calc');
+            if (!cell) return;
+            const val = f => row.querySelector(`[data-f="${f}"]`);
+            const t = val('time'), k = val('km');
+            const own = computeSpeed(t?.value, k?.value);
+            const speed = own || computeSpeed(t?.value || t?.dataset.prev, k?.value || k?.dataset.prev);
+            cell.textContent = speed ? formatNumber(Math.round(speed * 10) / 10) : '–';
+            cell.classList.toggle('is-prev', !own);
+        }
+
+        // Las de calentamiento se muestran como "C" y no consumen número: C, C, 1, 2, 3.
+        function setLabels(sets) {
+            let k = 0;
+            return sets.map(s => (s && s.warmup) ? WARMUP_LABEL : String(++k));
+        }
+
+        function buildSetsTableHtml(type, sets, prevSets) {
+            const def = EXERCISE_TYPES[type] || EXERCISE_TYPES.kg;
+            const scale = EFFORT_SCALES[def.effort];
+            const head = `<div class="sets-head" aria-hidden="true">
+                    <span>#</span>
+                    ${def.cols.map(f => `<span>${f === 'time' && def.timeMode === 'min' ? 'Min' : SET_FIELDS[f].head}</span>`).join('')}
+                    ${def.calc === 'speed' ? '<span title="Velocidad calculada">Km/h</span>' : ''}
+                    ${def.rest ? '<span title="Descanso en segundos">Desc.</span>' : ''}
+                    <span title="${scale.title}">${scale.head}</span>
+                    <span>✓</span>
+                    <span></span>
+                </div>`;
+            const lastPrev = prevSets[prevSets.length - 1] || {};
+            const labels = setLabels(sets);
+            const rows = sets.map((set, i) => buildSetRowHtml(type, labels[i], set || {}, prevSets[i] || lastPrev)).join('');
+            return head + rows;
+        }
+
+        const DEFAULT_MATCH_MINUTES = 60;
+
+        // Corrección única del historial: los partidos quedaron guardados con 90 minutos
+        // (el valor sugerido de antes) pero en realidad duran 60. Se pregunta una sola vez;
+        // si se acepta, solo cambian los partidos que tienen exactamente 90 minutos.
+        function offerFutbolDurationFix() {
+            if (localStorage.getItem('futbolDurationFixAsked')) return;
+            let workouts;
+            try { workouts = JSON.parse(localStorage.getItem('workouts') || '[]'); } catch (e) { return; }
+            if (!Array.isArray(workouts)) return;
+
+            const WRONG_SEC = 90 * 60;
+            const matches = [];
+            workouts.forEach(w => (w?.exercises || []).forEach(ex => {
+                if (!ex || !/futbol|partido/.test(normalizeForCompare(ex.name || ''))) return;
+                const inSets = Array.isArray(ex.sets) && ex.sets.some(s => parseTimeSeconds(s.time) === WRONG_SEC);
+                const inLegacy = !Array.isArray(ex.sets) && parseDecimal(ex.weight) === 90;
+                if (inSets || inLegacy) matches.push(ex);
+            }));
+            if (matches.length === 0) return;
+
+            localStorage.setItem('futbolDurationFixAsked', '1');
+            const ok = confirm(`⚽ Hay ${matches.length} partido${matches.length === 1 ? '' : 's'} de fútbol guardado${matches.length === 1 ? '' : 's'} con 90 minutos.\n\n¿Los corrijo a ${DEFAULT_MATCH_MINUTES} minutos? (Solo cambia la duración del partido, nada más.)`);
+            if (!ok) return;
+
+            const fixed = formatSecondsClock(DEFAULT_MATCH_MINUTES * 60);
+            matches.forEach(ex => {
+                if (Array.isArray(ex.sets)) {
+                    ex.sets.forEach(s => { if (parseTimeSeconds(s.time) === WRONG_SEC) s.time = fixed; });
+                } else {
+                    ex.weight = String(DEFAULT_MATCH_MINUTES);
+                }
+            });
+            localStorage.setItem('workouts', JSON.stringify(workouts));
+            calculateStats();
+            displayWorkoutHistory();
+            showToast(`✅ ${matches.length} partido${matches.length === 1 ? '' : 's'} corregido${matches.length === 1 ? '' : 's'} a ${DEFAULT_MATCH_MINUTES} min`);
+        }
+
+        // Lo que se sugiere en gris: la última sesión o, si nunca se hizo, un valor típico.
+        function getPrevSets(name, type) {
+            const last = (exerciseStats[name] || {}).lastSets || [];
+            if (last.length > 0) return last;
+            if (type === 'min' && /futbol|partido/.test(normalizeForCompare(name || ''))) {
+                return [{ time: formatSecondsClock(DEFAULT_MATCH_MINUTES * 60) }];
+            }
+            return [];
+        }
+
+        // Genera el bloque de un ejercicio a partir de las últimas veces que se hizo.
+        // Se usa tanto al armar la lista completa como al agregar un ejercicio suelto,
+        // así nunca hace falta reconstruir (y perder) los bloques que ya tenían datos cargados.
         function buildExerciseRowHtml(idx, ex, routine) {
-            const stats = exerciseStats[ex] || { lastReps: '', lastWeight: '', lastPause: '', lastNote: '', maxWeight: 0 };
-            const isFutbol = routine === 'FUT';
+            const stats = exerciseStats[ex] || {};
+            const type = getExerciseType(ex, routine);
+            const prevSets = getPrevSets(ex, type);
+            // Misma estructura que la última vez (incluidas las series de calentamiento).
+            const initialSets = prevSets.length > 0
+                ? prevSets.map(p => (p && p.warmup) ? { warmup: true } : {})
+                : Array.from({ length: EXERCISE_TYPES[type].defaultSets }, () => ({}));
+            const setCount = initialSets.length;
+            const safeName = escapeHtml(ex);
 
-            const repsArray = (stats.lastReps || '').split('-').filter(x => x.trim());
-            const seriesCount = repsArray.length > 0 ? repsArray.length : 4; // Default 4 si está vacío
-            const repsPlaceholder = isFutbol ? 'Alta / Media / Baja' : '15-15-15-15';
-            const weightPlaceholder = isFutbol ? '90' : '50-50-50';
-            const repsLabel = isFutbol ? 'Intensidad' : 'Series y reps';
-            const weightLabel = isFutbol ? 'Minutos jugados' : 'Peso';
-
-            return `<div class="exercise-row" id="row_${idx}">
+            return `<div class="exercise-row" id="row_${idx}" data-name="${safeName}" data-type="${type}">
                     <div class="exercise-row-header">
-                        <div>
+                        <button type="button" class="drag-handle" aria-label="Reordenar ${safeName}: arrastrá, o usá las flechas ↑ ↓" title="Arrastrá para reordenar">${DRAG_DOTS_SVG}</button>
+                        <div class="exercise-title">
                             <strong id="exname_${idx}" onclick="openExerciseDetailFromRow(${idx})" ondblclick="editExerciseName(${idx}, '${routine}')" style="cursor:pointer;">${ex}</strong>
-                            <small style="color:var(--text-faint); display:block;">Últ: ${stats.lastWeight || '-'} | Máx: ${stats.maxWeight || '-'}</small>
-                            ${stats.lastNote ? `<small style="color:var(--brand); font-style:italic; display:block;">💡 ${stats.lastNote}</small>` : ''}
+                            <div class="exercise-meta">
+                                <select class="type-chip" aria-label="Cómo se mide ${safeName}" onchange="changeExerciseType(this)">${buildTypeOptionsHtml(type)}</select>
+                                <span class="exercise-last">${buildLastSummaryText(stats, type)}</span>
+                            </div>
+                            ${stats.lastNote ? `<small style="color:var(--brand); font-style:italic; display:block; margin-top:3px;">💡 ${escapeHtml(stats.lastNote)}</small>` : ''}
                         </div>
                         <div class="exercise-row-actions">
-                            <button type="button" onclick="moveRow(${idx}, 'up')" title="Subir">⬆</button>
-                            <button type="button" onclick="moveRow(${idx}, 'down')" title="Bajar">⬇</button>
                             <button type="button" onclick="archiveExerciseFromRow(${idx}, '${routine}')" title="Archivar (guardar para después, sin perder el historial)">📥</button>
-                            <button type="button" class="danger" onclick="deleteRowQuick(${idx}, '${routine}')" title="Eliminar">✕</button>
+                            <button type="button" class="danger" onclick="deleteRowQuick(${idx}, '${routine}')" title="Quitar de la sesión de hoy">✕</button>
                         </div>
                     </div>
-                    <div class="exercise-row-fields">
-                        <div class="field">
-                            <label>${repsLabel}</label>
-                            <input type="text" inputmode="text" id="reps_${idx}" placeholder="${repsPlaceholder}" value="${stats.lastReps}" oninput="updateSeriesCheckboxes(${idx})">
-                            ${isFutbol ? '' : `<div id="seriesCheckboxes_${idx}" class="series-checkboxes">${buildSeriesCheckboxesHtml(idx, seriesCount)}</div>`}
-                        </div>
-                        <div class="field">
-                            <label>${weightLabel}</label>
-                            <input type="text" inputmode="text" id="weight_${idx}" placeholder="${weightPlaceholder}" value="${stats.lastWeight}">
-                        </div>
-                        <div class="field">
-                            <label>Pausa</label>
-                            <input type="text" inputmode="text" id="pause_${idx}" placeholder="90-90-90-90" value="${stats.lastPause}">
-                        </div>
-                        <div class="field">
-                            <label>Notas</label>
-                            <input type="text" id="note_${idx}" placeholder="Notas" value="${stats.lastNote}">
-                        </div>
+                    <div class="sets-table t-${type}">${buildSetsTableHtml(type, initialSets, prevSets)}</div>
+                    <div class="sets-controls">
+                        <button type="button" onclick="removeLastSet(this)" aria-label="Quitar la última serie" title="Quitar la última serie"${setCount <= 1 ? ' disabled' : ''}>−</button>
+                        <button type="button" onclick="addSet(this)">+ Agregar serie</button>
                     </div>
+                    <input type="text" class="exercise-note" id="note_${idx}" autocomplete="off" placeholder="Nota del ejercicio (opcional)">
                 </div>`;
+        }
+
+        function buildLastSummaryText(stats, type) {
+            const summary = formatSetsSummary(stats.lastSets, type);
+            let record = '';
+            if (type === 'kg' && stats.maxWeight) record = `Máx ${stats.maxWeight}kg`;
+            if (type === 'km') {
+                record = [
+                    stats.maxTotalSec ? formatDurationHuman(stats.maxTotalSec) : '',
+                    stats.maxKm ? `${formatNumber(stats.maxKm)}km` : '',
+                    formatSpeed(stats.bestSpeed)
+                ].filter(Boolean).join(' · ');
+            }
+            if ((type === 'time' || type === 'min') && stats.maxSetSec) record = `Máx ${formatDurationHuman(stats.maxSetSec)}`;
+            if (!summary) return 'Sin registros previos';
+            return `Últ: ${escapeHtml(summary)}${record ? `<br>🏆 ${escapeHtml(record)}` : ''}`;
+        }
+
+        // ========== SERIES DENTRO DE UN BLOQUE ==========
+        function getBlockName(block) {
+            return block?.querySelector('[id^="exname_"]')?.textContent.trim() || block?.dataset.name || '';
+        }
+
+        // Solo lo realmente escrito (los placeholders en gris no cuentan).
+        function readSetRow(row) {
+            const set = {};
+            row.querySelectorAll('[data-f]').forEach(el => {
+                const v = (el.value || '').trim();
+                if (v) set[el.dataset.f] = v;
+            });
+            if (row.classList.contains('done')) set.done = true;
+            if (row.classList.contains('warmup')) set.warmup = true;
+            return set;
+        }
+
+        // "Tiene datos": algo escrito o tildado (ser de calentamiento solo, no cuenta).
+        function setHasAnyData(set) {
+            return Object.keys(set).some(k => k !== 'warmup');
+        }
+
+        function readBlockSets(block) {
+            return [...block.querySelectorAll('.set-row')].map(readSetRow);
+        }
+
+        function setHasMetric(set, type) {
+            return (EXERCISE_TYPES[type] || EXERCISE_TYPES.kg).cols.some(f => set[f]);
+        }
+
+        function updateSetControls(block) {
+            const minus = block.querySelector('.sets-controls button');
+            if (minus) minus.disabled = block.querySelectorAll('.set-row').length <= 1;
+        }
+
+        function renumberSets(block) {
+            const rows = [...block.querySelectorAll('.set-row')];
+            const labels = setLabels(rows.map(r => ({ warmup: r.classList.contains('warmup') })));
+            rows.forEach((r, i) => { r.querySelector('.set-num').textContent = labels[i]; });
+        }
+
+        function renderBlockSets(block, type, sets) {
+            const prevSets = getPrevSets(getBlockName(block), type);
+            const table = block.querySelector('.sets-table');
+            if (!table) return;
+            table.className = `sets-table t-${type}`;
+            table.innerHTML = buildSetsTableHtml(type, sets.length > 0 ? sets : [{}], prevSets);
+            updateSetControls(block);
+        }
+
+        function applySetsToBlock(block, sets, note) {
+            if (Array.isArray(sets) && sets.length > 0) renderBlockSets(block, block.dataset.type, sets);
+            const noteEl = block.querySelector('.exercise-note');
+            if (noteEl && note) noteEl.value = note;
+        }
+
+        // Serie de calentamiento / aproximación: se registra igual, pero no cuenta para
+        // volumen, PRs, 1RM ni récords. Se marca tocando el número de la serie.
+        function toggleWarmup(btn) {
+            const row = btn.closest('.set-row');
+            const block = btn.closest('.exercise-row');
+            if (!row || !block) return;
+            const on = !row.classList.contains('warmup');
+            row.classList.toggle('warmup', on);
+            btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+            renumberSets(block);
+            saveWorkoutDraft();
+        }
+
+        function toggleSetDone(btn) {
+            const row = btn.closest('.set-row');
+            const block = btn.closest('.exercise-row');
+            if (!row || !block) return;
+
+            if (row.classList.contains('done')) {
+                row.classList.remove('done');
+                btn.setAttribute('aria-pressed', 'false');
+                saveWorkoutDraft();
+                return;
+            }
+
+            const type = block.dataset.type;
+            // Serie sin tocar: se completa con lo de la última vez (lo que se ve en gris).
+            (EXERCISE_TYPES[type] || EXERCISE_TYPES.kg).cols.forEach(f => {
+                const el = row.querySelector(`[data-f="${f}"]`);
+                if (el && !el.value.trim() && el.dataset.prev) el.value = el.dataset.prev;
+            });
+
+            if (!setHasMetric(readSetRow(row), type)) {
+                row.classList.remove('shake');
+                void row.offsetWidth; // reinicia la animación
+                row.classList.add('shake');
+                showToast('Cargá los valores de la serie antes de marcarla', 'error');
+                row.querySelector('input:not([hidden])')?.focus();
+                return;
+            }
+
+            const hasRest = !!(EXERCISE_TYPES[type] || EXERCISE_TYPES.kg).rest;
+            const restEl = row.querySelector('[data-f="rest"]');
+            const restSeconds = hasRest ? (parseRestSeconds(restEl?.value) ?? parseRestSeconds(restEl?.dataset.prev) ?? DEFAULT_REST_SECONDS) : 0;
+            if (hasRest && restEl && !restEl.value.trim()) restEl.value = String(restSeconds);
+            updateSetCalc(row);
+
+            row.classList.add('done');
+            btn.setAttribute('aria-pressed', 'true');
+            if (row.querySelector('.set-stepper')) hideSetStepper();
+            try { navigator.vibrate && navigator.vibrate(20); } catch (e) {}
+            maybeAutoStartSessionTimer();
+            saveWorkoutDraft();
+            if (restSeconds > 0) runRestTimer(restSeconds);
+        }
+
+        function toggleSetNote(btn) {
+            const input = btn.closest('.set-row')?.querySelector('.set-note');
+            if (!input) return;
+            // Si queda vacía, se vuelve a esconder sola al salir del campo (listener focusout).
+            input.hidden = false;
+            input.focus();
+        }
+
+        function addSet(btn) {
+            const block = btn.closest('.exercise-row');
+            const table = block?.querySelector('.sets-table');
+            if (!table) return;
+            const rows = table.querySelectorAll('.set-row');
+            const n = rows.length + 1;
+            const type = block.dataset.type;
+
+            // Sugerencia para la serie nueva: esa misma serie de la última sesión o, si
+            // la vez pasada hiciste menos series, lo que tiene la serie de arriba.
+            const prevSets = getPrevSets(getBlockName(block), type);
+            let prev = prevSets[n - 1];
+            if (!prev && rows.length > 0) {
+                prev = {};
+                rows[rows.length - 1].querySelectorAll('input[data-f]').forEach(el => {
+                    if (el.dataset.f === 'note') return;
+                    const v = el.value.trim() || el.dataset.prev || '';
+                    if (v) prev[el.dataset.f] = v;
+                });
+            }
+
+            table.insertAdjacentHTML('beforeend', buildSetRowHtml(type, String(n), {}, prev || {}));
+            renumberSets(block);
+            updateSetControls(block);
+            saveWorkoutDraft();
+        }
+
+        function removeLastSet(btn) {
+            const block = btn.closest('.exercise-row');
+            const rows = block?.querySelectorAll('.set-row') || [];
+            if (rows.length <= 1) return;
+
+            const last = rows[rows.length - 1];
+            const set = readSetRow(last);
+            if (setHasAnyData(set)) {
+                const summary = formatSetValue(set, block.dataset.type);
+                const what = set.done ? 'ya está completada' : 'tiene datos cargados';
+                const which = set.warmup ? 'de calentamiento' : last.querySelector('.set-num').textContent;
+                if (!confirm(`La serie ${which} de ${getBlockName(block)} ${what}${summary ? ` (${summary})` : ''}.\n\nSi la quitás se pierden esos datos. ¿Quitarla igual?`)) return;
+            }
+
+            last.remove();
+            updateSetControls(block);
+            saveWorkoutDraft();
+        }
+
+        function changeExerciseType(select) {
+            const block = select.closest('.exercise-row');
+            const newType = select.value;
+            if (!block || !EXERCISE_TYPES[newType]) return;
+            const name = getBlockName(block);
+
+            const sets = readBlockSets(block);
+            saveExerciseType(name, newType);
+            block.dataset.type = newType;
+            renderBlockSets(block, newType, sets);
+
+            const lastEl = block.querySelector('.exercise-last');
+            if (lastEl) lastEl.innerHTML = buildLastSummaryText(exerciseStats[name] || {}, newType);
+
+            saveWorkoutDraft();
+            showToast(`"${name}" ahora se mide en: ${EXERCISE_TYPES[newType].label}. El historial anterior no cambia.`);
+        }
+
+        // ========== AJUSTE RÁPIDO (+/-) ==========
+        // Al tocar un campo de la serie aparece debajo una barra con botones para
+        // subir/bajar (±2,5 / ±5 kg, ±1 rep, ±15 s...). Queda visible aunque se cierre el
+        // teclado, hasta que se toque otro campo o se marque la serie como hecha.
+        let setStepperEl = null;
+
+        function showSetStepper(input) {
+            const field = input.dataset.f;
+            const minMode = field === 'time' && input.dataset.mode === 'min';
+            const steps = minMode ? SET_STEPS.timeMin : SET_STEPS[field];
+            const row = input.closest('.set-row');
+            if (!steps || !row) { hideSetStepper(); return; }
+            if (setStepperEl && setStepperEl.parentNode === row && setStepperEl.dataset.field === field) return;
+
+            hideSetStepper();
+            const unit = field === 'kg' ? 'kg' : field === 'km' ? 'km' : minMode ? 'm' : (field === 'time' || field === 'rest') ? 's' : '';
+            const label = s => {
+                const sign = s > 0 ? '+' : '−';
+                const abs = Math.abs(s);
+                if (field === 'time' && !minMode && abs >= 60) return `${sign}${abs / 60}m`;
+                return `${sign}${abs.toLocaleString('es-AR')}${unit}`;
+            };
+            setStepperEl = document.createElement('div');
+            setStepperEl.className = 'set-stepper';
+            setStepperEl.dataset.field = field;
+            setStepperEl.innerHTML = `<span class="set-stepper-label">${field === 'rest' ? 'Desc.' : minMode ? 'Min' : SET_FIELDS[field].head}</span>`
+                + steps.map(s => `<button type="button" data-step="${s}" class="${s > 0 ? 'up' : 'down'}">${label(s)}</button>`).join('');
+            // pointerdown sin foco: tocar un botón no cierra ni abre el teclado.
+            setStepperEl.addEventListener('pointerdown', e => e.preventDefault());
+            setStepperEl.addEventListener('click', e => {
+                const b = e.target.closest('button[data-step]');
+                if (b) stepSetField(row, field, parseFloat(b.dataset.step));
+            });
+            // Justo después de los inputs visibles, antes de la nota de la serie.
+            const note = row.querySelector('.set-note');
+            row.insertBefore(setStepperEl, note);
+        }
+
+        function hideSetStepper() {
+            if (setStepperEl) { setStepperEl.remove(); setStepperEl = null; }
+        }
+
+        function stepSetField(row, field, delta) {
+            const el = row.querySelector(`[data-f="${field}"]`);
+            if (!el) return;
+            const current = el.value.trim() || el.dataset.prev || '';
+            let next;
+            if (field === 'time' && el.dataset.mode === 'min') {
+                next = timeInputValue(formatSecondsClock(Math.max(0, (parseTimeSeconds(current) || 0) + delta * 60)), 'min');
+            } else if (field === 'time') {
+                next = formatSecondsClock(Math.max(0, (parseTimeSeconds(current) || 0) + delta));
+            } else if (field === 'rest') {
+                next = String(Math.max(0, (parseRestSeconds(current) ?? DEFAULT_REST_SECONDS) + delta));
+            } else {
+                const base = parseDecimal(current) || 0;
+                const v = Math.max(0, Math.round((base + delta) * 100) / 100);
+                next = field === 'reps' ? String(Math.round(v)) : String(v).replace('.', ',');
+            }
+            el.value = next;
+            // Mismo camino que tipear: auto-guardado del borrador y arranque del reloj de sesión.
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+
+        // Normaliza una serie para guardarla: solo los campos del tipo, coma decimal -> punto.
+        function cleanSetForSave(set, type) {
+            const clean = {};
+            (EXERCISE_TYPES[type] || EXERCISE_TYPES.kg).cols.forEach(f => {
+                if (!set[f]) return;
+                const v = f === 'time' ? formatTimeValue(set[f]) : f === 'reps' ? set[f].replace(/\D/g, '') : normalizeDecimalString(set[f]);
+                if (v) clean[f] = v;
+            });
+            ['rest', 'effort', 'note'].forEach(f => { if (set[f]) clean[f] = set[f]; });
+            if (set.warmup) clean.warmup = true;
+            if (set.done) clean.done = true;
+            return clean;
+        }
+
+        // Además de `sets`, se guardan los strings viejos ("12-10-8") para ejercicios de
+        // fuerza: PRs, volumen, 1RM, gráficos y el historial anterior siguen leyendo eso.
+        // Las series de calentamiento quedan afuera, así no inflan volumen ni récords.
+        function legacyStringsFromSets(sets, type) {
+            const work = sets.filter(s => !s.warmup);
+            const pause = work.map(s => s.rest).filter(Boolean).join('-');
+            if (type !== 'kg' && type !== 'bw') return { reps: '', weight: '', pause };
+            const withReps = work.filter(s => s.reps);
+            const hasKg = type === 'kg' && withReps.some(s => s.kg);
+            return {
+                reps: withReps.map(s => s.reps).join('-'),
+                weight: hasKg ? withReps.map(s => s.kg || '0').join('-') : '',
+                pause
+            };
+        }
+
+        // ========== REORDENAR BLOQUES (drag & drop desde la manija ⠿) ==========
+        // Pointer Events: el mismo código sirve para mouse y touch. La manija tiene
+        // touch-action:none (arrastrar desde ahí no scrollea), pero deslizar el dedo sobre
+        // el resto del bloque scrollea normal. Mientras se arrastra, los bloques se colapsan
+        // a su encabezado para poder mover ejercicios largos sin recorrer media pantalla.
+        const REORDER_START_THRESHOLD_PX = 5;
+        let reorderState = null;
+
+        function exerciseBlockSiblings(block, dir) {
+            let el = dir < 0 ? block.previousElementSibling : block.nextElementSibling;
+            while (el && !el.classList.contains('exercise-row')) el = dir < 0 ? el.previousElementSibling : el.nextElementSibling;
+            return el;
+        }
+
+        function getExerciseOrder() {
+            return [...document.querySelectorAll('#exercisesContainer .exercise-row')].map(getBlockName).join('\n');
+        }
+
+        // Anima al vecino desde donde estaba hasta su lugar nuevo (FLIP).
+        function flipFrom(el, oldTop) {
+            const delta = oldTop - el.offsetTop;
+            if (!delta) return;
+            el.style.transition = 'none';
+            el.style.transform = `translateY(${delta}px)`;
+            void el.offsetHeight;
+            el.style.transition = 'transform 150ms ease';
+            el.style.transform = '';
+        }
+
+        function onReorderHandlePointerDown(e) {
+            const handle = e.target.closest('.drag-handle');
+            if (!handle || reorderState) return;
+            if (e.pointerType === 'mouse' && e.button !== 0) return;
+            const block = handle.closest('.exercise-row');
+            const container = document.getElementById('exercisesContainer');
+            if (!block || !container) return;
+
+            e.preventDefault();
+            try { handle.setPointerCapture(e.pointerId); } catch (err) {}
+
+            reorderState = {
+                block, handle, container,
+                pointerId: e.pointerId,
+                startClientY: e.clientY,
+                lastClientY: e.clientY,
+                grabOffset: e.clientY - block.getBoundingClientRect().top,
+                active: false,
+                raf: null
+            };
+            handle.addEventListener('pointermove', onReorderPointerMove);
+            handle.addEventListener('pointerup', onReorderPointerEnd);
+            handle.addEventListener('pointercancel', onReorderPointerEnd);
+        }
+
+        // Recién arranca al mover unos píxeles: un toque suelto en la manija no colapsa nada.
+        function beginReorder(clientY) {
+            const st = reorderState;
+            st.active = true;
+            st.orderBefore = getExerciseOrder();
+            st.container.classList.add('is-reordering');
+            st.block.classList.add('reordering');
+            try { navigator.vibrate && navigator.vibrate(15); } catch (err) {}
+
+            // Al colapsar, todo se corre: se scrollea para que el bloque siga bajo el dedo.
+            const rect = st.block.getBoundingClientRect();
+            const grab = Math.min(st.grabOffset, rect.height / 2);
+            window.scrollBy(0, rect.top - (clientY - grab));
+
+            st.startNaturalTop = st.block.offsetTop;
+            st.startPointerDocY = clientY + window.scrollY;
+            st.raf = requestAnimationFrame(reorderAutoScrollTick);
+        }
+
+        function updateReorder(clientY) {
+            const st = reorderState;
+            if (!st || !st.active) return;
+            st.lastClientY = clientY;
+            const block = st.block;
+            const desiredTop = st.startNaturalTop + (clientY + window.scrollY - st.startPointerDocY);
+
+            let prev = exerciseBlockSiblings(block, -1);
+            while (prev && desiredTop < prev.offsetTop + prev.offsetHeight / 2) {
+                const oldTop = prev.offsetTop;
+                block.parentNode.insertBefore(block, prev);
+                flipFrom(prev, oldTop);
+                prev = exerciseBlockSiblings(block, -1);
+            }
+            let next = exerciseBlockSiblings(block, 1);
+            while (next && desiredTop + block.offsetHeight > next.offsetTop + next.offsetHeight / 2) {
+                const oldTop = next.offsetTop;
+                block.parentNode.insertBefore(next, block);
+                flipFrom(next, oldTop);
+                next = exerciseBlockSiblings(block, 1);
+            }
+
+            block.style.transform = `translateY(${desiredTop - block.offsetTop}px)`;
+        }
+
+        function onReorderPointerMove(e) {
+            const st = reorderState;
+            if (!st || e.pointerId !== st.pointerId) return;
+            e.preventDefault();
+            if (!st.active) {
+                if (Math.abs(e.clientY - st.startClientY) < REORDER_START_THRESHOLD_PX) return;
+                beginReorder(e.clientY);
+            }
+            updateReorder(e.clientY);
+        }
+
+        function reorderAutoScrollTick() {
+            const st = reorderState;
+            if (!st || !st.active) return;
+            const y = st.lastClientY;
+            const vh = window.innerHeight;
+            let delta = 0;
+            if (y < DRAG_EDGE_SCROLL_ZONE_PX) {
+                delta = -Math.ceil((DRAG_EDGE_SCROLL_ZONE_PX - y) / DRAG_EDGE_SCROLL_ZONE_PX * DRAG_EDGE_SCROLL_MAX_SPEED);
+            } else if (y > vh - DRAG_EDGE_SCROLL_ZONE_PX) {
+                delta = Math.ceil((y - (vh - DRAG_EDGE_SCROLL_ZONE_PX)) / DRAG_EDGE_SCROLL_ZONE_PX * DRAG_EDGE_SCROLL_MAX_SPEED);
+            }
+            if (delta !== 0) {
+                const before = window.scrollY;
+                window.scrollBy(0, delta);
+                if (window.scrollY !== before) updateReorder(y);
+            }
+            st.raf = requestAnimationFrame(reorderAutoScrollTick);
+        }
+
+        function onReorderPointerEnd(e) {
+            const st = reorderState;
+            if (!st || e.pointerId !== st.pointerId) return;
+            const { block, handle, container, active, orderBefore } = st;
+            if (st.raf) cancelAnimationFrame(st.raf);
+            handle.removeEventListener('pointermove', onReorderPointerMove);
+            handle.removeEventListener('pointerup', onReorderPointerEnd);
+            handle.removeEventListener('pointercancel', onReorderPointerEnd);
+            reorderState = null;
+            if (!active) return;
+
+            container.querySelectorAll('.exercise-row').forEach(el => { el.style.transition = ''; el.style.transform = ''; });
+            block.classList.remove('reordering');
+            container.classList.remove('is-reordering');
+            // Al expandir todo de nuevo, que el bloque soltado quede a la vista.
+            block.scrollIntoView({ block: 'center' });
+
+            if (getExerciseOrder() !== orderBefore) {
+                persistExerciseOrder();
+                saveWorkoutDraft();
+            }
+        }
+
+        // Accesible con teclado: foco en la manija + flechas arriba/abajo.
+        function onReorderHandleKeyDown(e) {
+            const handle = e.target.closest('.drag-handle');
+            if (!handle || (e.key !== 'ArrowUp' && e.key !== 'ArrowDown')) return;
+            e.preventDefault();
+            const block = handle.closest('.exercise-row');
+            if (e.key === 'ArrowUp') {
+                const prev = exerciseBlockSiblings(block, -1);
+                if (!prev) return;
+                block.parentNode.insertBefore(block, prev);
+            } else {
+                const next = exerciseBlockSiblings(block, 1);
+                if (!next) return;
+                block.parentNode.insertBefore(next, block);
+            }
+            handle.focus();
+            persistExerciseOrder();
+            saveWorkoutDraft();
+        }
+
+        // El orden nuevo queda guardado en la rutina (la próxima vez aparece igual).
+        // Los ejercicios que no están en pantalla (archivados o quitados solo por hoy)
+        // conservan su lugar; los visibles se reacomodan en los lugares que ocupaban.
+        function persistExerciseOrder() {
+            const routine = document.getElementById('routine')?.value;
+            if (!routine) return;
+            loadCustomRoutines();
+            const list = [...(customRoutines[routine] || routines[routine] || [])];
+            const domNames = [...document.querySelectorAll('#exercisesContainer .exercise-row')].map(getBlockName);
+            const domSet = new Set(domNames.map(normalizeForCompare));
+            const slots = list.filter(n => domSet.has(normalizeForCompare(n))).length;
+            if (slots !== domNames.length) return;
+
+            let k = 0;
+            customRoutines[routine] = list.map(n => domSet.has(normalizeForCompare(n)) ? domNames[k++] : n);
+            saveCustomRoutines();
         }
 
         // Reservorio de ejercicios de la rutina actual: los archivados no se muestran en
@@ -2030,10 +3268,9 @@
             const exerciseName = nameEl ? nameEl.textContent : null;
             if (!exerciseName) return;
 
-            const reps = document.getElementById(`reps_${idx}`)?.value;
-            const weight = document.getElementById(`weight_${idx}`)?.value;
-            if (reps || weight) {
-                if (!confirm(`⚠️ ${exerciseName}\n\nTiene datos cargados en esta sesión (sin guardar). Si lo archivás ahora se pierden.\n\n¿Archivar de todas formas?`)) {
+            const dataLabel = describeBlockSessionData(document.getElementById(`row_${idx}`));
+            if (dataLabel) {
+                if (!confirm(`⚠️ ${exerciseName}\n\nTiene ${dataLabel} en esta sesión (sin guardar). Si lo archivás ahora se pierden.\n\n¿Archivar de todas formas?`)) {
                     return;
                 }
             }
@@ -2054,38 +3291,6 @@
 
             loadRoutineExercises();
             showToast(`✅ "${name}" restaurado a la rutina`);
-        }
-
-        function buildSeriesCheckboxesHtml(idx, seriesCount) {
-            let html = '';
-            for (let s = 1; s <= seriesCount; s++) {
-                html += `<div class="series-item"><label><input type="checkbox" id="series_${idx}_${s}" data-exercise="${idx}" onchange="if(this.checked) startRestTimer(${idx}, ${s - 1})"> S${s}</label><button type="button" class="small" onclick="startRestTimer(${idx}, ${s - 1})" title="Reiniciar pausa de esta serie">⏱️</button></div>`;
-            }
-            return html;
-        }
-
-        // Recalcula cuántas series (checks + botones de pausa) mostrar según lo que se
-        // va tipeando en "reps" ahora mismo, no según la última vez que se hizo el ejercicio.
-        function updateSeriesCheckboxes(idx) {
-            const container = document.getElementById(`seriesCheckboxes_${idx}`);
-            const repsInput = document.getElementById(`reps_${idx}`);
-            if (!container || !repsInput) return;
-
-            const repsArray = repsInput.value.split('-').filter(x => x.trim());
-            const seriesCount = repsArray.length > 0 ? repsArray.length : 4;
-
-            const previouslyChecked = {};
-            container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-                const m = cb.id.match(/series_\d+_(\d+)/);
-                if (m && cb.checked) previouslyChecked[m[1]] = true;
-            });
-
-            container.innerHTML = buildSeriesCheckboxesHtml(idx, seriesCount);
-
-            Object.keys(previouslyChecked).forEach(s => {
-                const cb = document.getElementById(`series_${idx}_${s}`);
-                if (cb) cb.checked = true;
-            });
         }
 
         function getLastRoutineNote(routine) {
@@ -2124,19 +3329,24 @@
             const archivedNames = archivedExercises[routine] || [];
             const archivedSet = new Set(archivedNames.map(normalizeForCompare));
 
-            let html = '';
+            let html = `<div class="sets-legend">Arrastrá desde los puntos ⠿ para reordenar · Tocá el número de serie para marcarla como calentamiento (C) · ✓ marca la serie y arranca el descanso · RIR: reps que te quedaban (F = al fallo)</div>`;
             exercises.forEach((ex, idx) => {
                 if (!ex) return;
                 if (archivedSet.has(normalizeForCompare(ex))) return;
                 html += buildExerciseRowHtml(idx, ex, routine);
             });
 
-            html += buildArchivedExercisesHtml(routine, archivedNames);
+            // Los ejercicios agregados en la sesión se insertan antes de este ancla, así
+            // quedan junto a los demás bloques (y se pueden reordenar con ellos).
+            html += `<div id="archivedExercisesAnchor">${buildArchivedExercisesHtml(routine, archivedNames)}</div>`;
 
-            html += `<div id="quickAddWrapper" style="margin-top: 10px; display: flex; gap: 5px;">
-                <input type="text" id="quickAddExercise" list="exerciseNamesList" placeholder="Nuevo ejercicio (o elegí uno existente)" style="flex: 1;">
+            html += `<div id="quickAddWrapper" style="margin-top: 10px;">
+                <input type="text" id="quickAddExercise" list="exerciseNamesList" placeholder="Nuevo ejercicio (o elegí uno existente)" oninput="onQuickAddNameInput('${routine}')" style="margin-bottom: 0;">
                 <datalist id="exerciseNamesList"></datalist>
-                <button onclick="quickAddExercise('${routine}')" style="flex: 0;">+ Agregar</button>
+                <div class="quick-add-type-row">
+                    <select id="quickAddType" aria-label="Cómo se mide el ejercicio nuevo" onchange="this.dataset.touched = '1'" style="flex: 1;">${buildTypeOptionsHtml('kg')}</select>
+                    <button onclick="quickAddExercise('${routine}')" style="flex: 0 0 auto; width: auto;">+ Agregar</button>
+                </div>
             </div>`;
             container.innerHTML = html;
             populateExerciseDatalist();
@@ -2388,9 +3598,17 @@
             if (!customRoutines[routine]) {
                 customRoutines[routine] = JSON.parse(JSON.stringify(routines[routine]));
             }
-            customRoutines[routine][idx] = trimmed;
+            // Por nombre y no por idx: el orden de la rutina puede haber cambiado con drag & drop.
+            const pos = customRoutines[routine].findIndex(n => normalizeForCompare(n) === normalizeForCompare(currentName));
+            if (pos < 0) return;
+            customRoutines[routine][pos] = trimmed;
             saveCustomRoutines();
+            // El tipo de medición acompaña al ejercicio renombrado.
+            const oldType = exerciseTypes[normalizeForCompare(currentName)];
+            if (oldType && !exerciseTypes[normalizeForCompare(trimmed)]) saveExerciseType(trimmed, oldType);
             elem.textContent = trimmed;
+            const block = elem.closest('.exercise-row');
+            if (block) block.dataset.name = trimmed;
             populateExerciseDatalist();
         }
 
@@ -2431,35 +3649,43 @@
             displayWorkoutHistory();
         }
 
-        function moveRow(idx, direction) {
-            const row = document.getElementById(`row_${idx}`);
-            if (!row) return;
-
-            // Solo intercambiar con otras tarjetas de ejercicio, nunca con el bloque
-            // de "agregar ejercicio" que queda al final del mismo contenedor.
-            if (direction === 'up') {
-                let prev = row.previousElementSibling;
-                while (prev && !prev.classList.contains('exercise-row')) prev = prev.previousElementSibling;
-                if (prev) row.parentNode.insertBefore(row, prev);
-            } else if (direction === 'down') {
-                let next = row.nextElementSibling;
-                while (next && !next.classList.contains('exercise-row')) next = next.nextElementSibling;
-                if (next) row.parentNode.insertBefore(next, row);
-            }
-        }
-
         function deleteRowQuick(idx, routine) {
             const exerciseName = document.getElementById(`exname_${idx}`)?.textContent || 'Ejercicio';
-            const reps = document.getElementById(`reps_${idx}`)?.value;
-            const weight = document.getElementById(`weight_${idx}`)?.value;
-            
-            if (reps || weight) {
-                if (!confirm(`⚠️ ${exerciseName}\n\nTiene datos cargados (${reps ? 'reps: ' + reps : ''}${reps && weight ? ', ' : ''}${weight ? 'peso: ' + weight : ''}).\n\nSi eliminas ahora sin guardar, perderás estos datos.\n\n¿Seguro que querés eliminar?`)) {
+            const block = document.getElementById(`row_${idx}`);
+            const dataLabel = describeBlockSessionData(block);
+
+            if (dataLabel) {
+                if (!confirm(`⚠️ ${exerciseName}\n\nTiene ${dataLabel}.\n\nSi lo quitás ahora sin guardar, perderás estos datos.\n\n¿Seguro que querés quitarlo?`)) {
                     return;
                 }
             }
-            
-            document.getElementById(`row_${idx}`).remove();
+
+            block?.remove();
+            saveWorkoutDraft();
+        }
+
+        // Texto para los avisos antes de perder datos de un bloque ("2 series completadas", etc.)
+        // o '' si el bloque no tiene nada cargado en esta sesión.
+        function describeBlockSessionData(block) {
+            if (!block) return '';
+            const sets = readBlockSets(block);
+            const done = sets.filter(s => s.done).length;
+            const withData = sets.filter(s => !s.done && setHasAnyData(s)).length;
+            const parts = [];
+            if (done) parts.push(`${done} serie${done === 1 ? '' : 's'} completada${done === 1 ? '' : 's'}`);
+            if (withData) parts.push(`${withData} serie${withData === 1 ? '' : 's'} con datos cargados`);
+            if (!parts.length && block.querySelector('.exercise-note')?.value.trim()) parts.push('una nota escrita');
+            return parts.join(' y ');
+        }
+
+        // Mientras se escribe el nombre, el selector de tipo sugiere cómo medirlo (el tipo
+        // ya guardado si el ejercicio existe, o uno deducido del nombre: "Plancha" → Tiempo,
+        // "Bici" → Km). Si el usuario lo cambió a mano, se respeta su elección.
+        function onQuickAddNameInput(routine) {
+            const select = document.getElementById('quickAddType');
+            const name = document.getElementById('quickAddExercise')?.value || '';
+            if (!select || select.dataset.touched) return;
+            select.value = name.trim() ? getExerciseType(name, routine) : 'kg';
         }
 
         function quickAddExercise(routine) {
@@ -2488,20 +3714,30 @@
             customRoutines[routine].push(name);
             saveCustomRoutines();
 
-            // Agregar solo la tarjeta nueva, sin reconstruir las demás: así no se pierde
-            // lo que ya estaba anotado en reps/peso/notas de esta sesión.
+            // Tipo de medición: el que se eligió a mano, o el sugerido si el ejercicio
+            // todavía no tenía uno (uno existente conserva el suyo si no se tocó el selector).
+            const typeSelect = document.getElementById('quickAddType');
+            if (typeSelect && (typeSelect.dataset.touched || !exerciseTypes[normalizeForCompare(name)])) {
+                saveExerciseType(name, typeSelect.value);
+            }
+
+            // Agregar solo el bloque nuevo, sin reconstruir los demás: así no se pierde
+            // lo que ya estaba anotado en las series de esta sesión.
             const quickAddWrapper = document.getElementById('quickAddWrapper');
             if (quickAddWrapper) {
                 calculateStats();
-                const idx = customRoutines[routine].length - 1;
-                quickAddWrapper.insertAdjacentHTML('beforebegin', buildExerciseRowHtml(idx, name, routine));
+                let idx = customRoutines[routine].length - 1;
+                while (document.getElementById(`row_${idx}`)) idx++;
+                const anchor = document.getElementById('archivedExercisesAnchor') || quickAddWrapper;
+                anchor.insertAdjacentHTML('beforebegin', buildExerciseRowHtml(idx, name, routine));
                 populateExerciseDatalist();
             } else {
                 loadRoutineExercises();
             }
 
             input.value = '';
-            showToast('✅ Ejercicio agregado a la tabla');
+            if (typeSelect) { delete typeSelect.dataset.touched; typeSelect.value = 'kg'; }
+            showToast('✅ Ejercicio agregado');
         }
 
         function saveWorkoutSession() {
@@ -2513,37 +3749,29 @@
                 return;
             }
 
-            // Leer todas las tarjetas de ejercicio (incluyendo las agregadas)
+            // Leer todos los bloques de ejercicio (en el orden en que están en pantalla).
+            // Solo cuentan las series hechas: tildadas o con valores escritos. Las
+            // sugerencias en gris (lo de la última vez) no se guardan por sí solas.
             const exercises = [];
-            const rows = document.querySelectorAll('#exercisesContainer .exercise-row');
+            document.querySelectorAll('#exercisesContainer .exercise-row').forEach(block => {
+                const name = getBlockName(block);
+                const type = EXERCISE_TYPES[block.dataset.type] ? block.dataset.type : 'kg';
+                const sets = readBlockSets(block)
+                    .filter(set => set.done || setHasMetric(set, type))
+                    .map(set => cleanSetForSave(set, type));
+                if (!name || sets.length === 0) return;
 
-            rows.forEach((row) => {
-                // Extraer índice del ID de la tarjeta (row_0, row_1, etc)
-                const rowId = row.id;
-                const match = rowId.match(/row_(\d+)/);
-                if (!match) return;
-
-                const idx = match[1];
-                const exerciseName = row.querySelector(`strong, [id^="exname_"]`);
-                const name = exerciseName ? exerciseName.textContent.trim() : '';
-                const reps = (document.getElementById(`reps_${idx}`)?.value || '').trim();
-                const weight = (document.getElementById(`weight_${idx}`)?.value || '').trim();
-                const pause = (document.getElementById(`pause_${idx}`)?.value || '').trim();
-                const note = (document.getElementById(`note_${idx}`)?.value || '').trim();
-
-                if (name && (reps || weight)) {
-                    exercises.push({
-                        name: name,
-                        reps: reps,
-                        weight: weight,
-                        pause: pause,
-                        note: note
-                    });
-                }
+                exercises.push({
+                    name,
+                    type,
+                    sets,
+                    ...legacyStringsFromSets(sets, type),
+                    note: (block.querySelector('.exercise-note')?.value || '').trim()
+                });
             });
 
             if (exercises.length === 0) {
-                showToast('Cargá al menos un ejercicio', 'error');
+                showToast('Marcá (✓) o cargá al menos una serie', 'error');
                 return;
             }
 
@@ -2820,12 +4048,27 @@
                         ${w.exercises.map(ex => `
                             <div style="margin-bottom: 10px; padding: 8px; background: var(--bg-elevated); border-radius: 3px; border-left: 2px solid var(--brand);">
                                 <strong>${ex?.name || 'Sin nombre'}</strong><br>
-                                <small>Reps: <strong>${ex?.reps || '-'}</strong> | Peso: <strong>${ex?.weight || '-'}</strong> | Pausa: <strong>${ex?.pause || '-'}</strong></small>
+                                ${Array.isArray(ex?.sets) && ex.sets.length > 0
+                                    ? renderHistorySets(ex)
+                                    : `<small>Reps: <strong>${ex?.reps || '-'}</strong> | Peso: <strong>${ex?.weight || '-'}</strong> | Pausa: <strong>${ex?.pause || '-'}</strong></small>`}
                                 ${ex?.note ? `<br><small style="color: var(--brand); font-style: italic;">💡 ${ex.note}</small>` : ''}
                             </div>
                         `).join('')}
                     </div>
                 </div>`;
+        }
+
+        // Una línea por serie: "S1: 12×50kg · RIR 2 · 90s — nota"
+        function renderHistorySets(ex) {
+            const type = EXERCISE_TYPES[ex.type] ? ex.type : 'kg';
+            const labels = setLabels(ex.sets);
+            return `<small>${ex.sets.map((set, i) => {
+                const extras = [formatEffort(set.effort, type), set.rest ? `${escapeHtml(set.rest)}s` : ''].filter(Boolean).join(' · ');
+                const label = set.warmup ? `<span style="color:var(--warning);">Calent.</span>` : `S${labels[i]}`;
+                return `${label}: <strong>${escapeHtml(formatSetValue(set, type) || '-')}</strong>`
+                    + (extras ? ` <span style="color:var(--text-muted);">· ${extras}</span>` : '')
+                    + (set.note ? ` <em style="color:var(--brand);">— ${escapeHtml(set.note)}</em>` : '');
+            }).join('<br>')}</small>`;
         }
 
         function renderTabataHistoryItem(w) {
@@ -3639,7 +4882,8 @@
                 timestamp: new Date().toISOString(),
                 workouts: JSON.parse(localStorage.getItem('workouts') || '[]'),
                 bodyMetrics: JSON.parse(localStorage.getItem('bodyMetrics') || '[]'),
-                customRoutines: JSON.parse(localStorage.getItem('customRoutines') || '{}')
+                customRoutines: JSON.parse(localStorage.getItem('customRoutines') || '{}'),
+                exerciseTypes: JSON.parse(localStorage.getItem('exerciseTypes') || '{}')
             };
 
             const json = JSON.stringify(backup, null, 2);
@@ -3746,6 +4990,7 @@
                     localStorage.setItem('workouts', JSON.stringify(backup.workouts));
                     localStorage.setItem('bodyMetrics', JSON.stringify(backup.bodyMetrics || []));
                     localStorage.setItem('customRoutines', JSON.stringify(backup.customRoutines || {}));
+                    if (backup.exerciseTypes) localStorage.setItem('exerciseTypes', JSON.stringify(backup.exerciseTypes));
                     localStorage.setItem('workoutSessions', JSON.stringify(backup.workoutSessions || []));
                     localStorage.setItem('version', backup.version || '2.0');
                     
@@ -4104,23 +5349,6 @@
         let restTimerInterval = null;
         let restTimerAudioCtx = null;
 
-        // pausa_${idx} guarda "90-90-60" (una duración por serie) o "90" (misma para todas)
-        function parsePauseSeconds(pauseStr, setIndex) {
-            const parts = (pauseStr || '')
-                .split('-')
-                .map(p => parseInt(p.replace(/\D/g, ''), 10))
-                .filter(n => !isNaN(n));
-            if (parts.length === 0) return 90;
-            if (setIndex != null && parts[setIndex] != null) return parts[setIndex];
-            return parts[parts.length - 1];
-        }
-
-        function startRestTimer(idx, setIndex) {
-            const pauseInput = document.getElementById(`pause_${idx}`);
-            const seconds = parsePauseSeconds(pauseInput ? pauseInput.value : '', setIndex);
-            runRestTimer(seconds);
-        }
-
         function runRestTimer(totalSeconds) {
             if (tabataInterval) { clearInterval(tabataInterval); tabataInterval = null; tabataState = null; }
             if (restTimerInterval) clearInterval(restTimerInterval);
@@ -4132,31 +5360,60 @@
             if (!widget || !valueEl) return;
 
             widget.style.background = '#333';
+            widget.classList.add('rest-mode');
+            document.body.classList.add('rest-timer-open');
             if (phaseEl) phaseEl.style.display = 'none';
             if (roundEl) roundEl.style.display = 'none';
 
-            let remaining = totalSeconds;
-            const render = (s) => {
-                const m = Math.floor(s / 60).toString().padStart(2, '0');
-                const sec = (s % 60).toString().padStart(2, '0');
-                valueEl.textContent = `${m}:${sec}`;
-            };
-
+            // Se cuenta contra una hora de fin (no restando 1 por tick): si el celular
+            // frena los intervalos con la pantalla apagada, el tiempo igual es exacto.
+            restTimerEndsAt = Date.now() + totalSeconds * 1000;
             widget.style.display = 'block';
-            render(remaining);
+            tickRestTimer();
+            restTimerInterval = setInterval(tickRestTimer, 250);
+        }
 
-            restTimerInterval = setInterval(() => {
-                remaining--;
-                if (remaining <= 0) {
-                    clearInterval(restTimerInterval);
-                    restTimerInterval = null;
-                    render(0);
-                    playRestTimerBeep();
-                    setTimeout(() => { widget.style.display = 'none'; }, 2000);
-                } else {
-                    render(remaining);
-                }
-            }, 1000);
+        let restTimerEndsAt = null;
+
+        function restTimerRemainingSeconds() {
+            return restTimerEndsAt == null ? 0 : Math.max(0, Math.ceil((restTimerEndsAt - Date.now()) / 1000));
+        }
+
+        function tickRestTimer() {
+            const valueEl = document.getElementById('restTimerValue');
+            const remaining = restTimerRemainingSeconds();
+            if (valueEl) {
+                const m = Math.floor(remaining / 60).toString().padStart(2, '0');
+                const sec = (remaining % 60).toString().padStart(2, '0');
+                valueEl.textContent = `${m}:${sec}`;
+            }
+            if (remaining > 0) return;
+
+            clearInterval(restTimerInterval);
+            restTimerInterval = null;
+            restTimerEndsAt = null;
+            playRestTimerBeep();
+            setTimeout(() => {
+                // Solo si en el medio no arrancó otro descanso (o un Tabata).
+                if (!restTimerInterval && !tabataState) hideTimerWidget();
+            }, 2000);
+        }
+
+        // ±15 s al descanso en curso. Bajar de cero lo termina (suena el aviso).
+        function adjustRestTimer(deltaSeconds) {
+            if (!restTimerInterval || restTimerEndsAt == null) return;
+            restTimerEndsAt += deltaSeconds * 1000;
+            if (restTimerEndsAt < Date.now()) restTimerEndsAt = Date.now();
+            tickRestTimer();
+        }
+
+        function hideTimerWidget() {
+            const widget = document.getElementById('restTimer');
+            if (widget) {
+                widget.style.display = 'none';
+                widget.classList.remove('rest-mode');
+            }
+            document.body.classList.remove('rest-timer-open');
         }
 
         // Corta cualquier timer activo (descanso de serie o Tabata) sin guardar nada.
@@ -4171,16 +5428,17 @@
                 tabataInterval = null;
             }
             tabataState = null;
-            const widget = document.getElementById('restTimer');
-            if (widget) widget.style.display = 'none';
+            restTimerEndsAt = null;
+            hideTimerWidget();
         }
 
-        // Lo que se ejecuta al tocar el widget flotante: si hay un Tabata en curso,
-        // lo corta y guarda el progreso parcial; si es un descanso simple, solo lo cancela.
+        // Lo que se ejecuta al tocar el widget flotante: si hay un Tabata en curso, lo
+        // corta y guarda el progreso parcial. En un descanso de serie no hace nada: ahí
+        // están los botones ±15s y Saltar (así un toque sin querer no lo cancela).
         function onTimerWidgetClick() {
             if (tabataState) {
                 cancelTabata();
-            } else {
+            } else if (!restTimerInterval) {
                 cancelRestTimer();
             }
         }
@@ -4230,6 +5488,8 @@
             };
 
             widget.style.display = 'block';
+            widget.classList.remove('rest-mode');
+            document.body.classList.add('rest-timer-open');
             widget.style.background = phase === 'work' ? '#27ae60' : '#e67e22';
             phaseEl.style.display = 'block';
             phaseEl.textContent = phase === 'work' ? `🔥 ${tabataState.name.toUpperCase()} — TRABAJO` : '😮‍💨 DESCANSO';
@@ -4273,8 +5533,7 @@
             const state = tabataState;
             tabataInterval = null;
             tabataState = null;
-            const widget = document.getElementById('restTimer');
-            if (widget) widget.style.display = 'none';
+            hideTimerWidget();
             addTabataBlockToSession(state, true);
         }
 
@@ -4705,6 +5964,8 @@
         updateSidebar();
         restoreSessionTimer();
         restoreWorkoutDraft();
+        // Después de que la pantalla ya cargó, para no frenar el arranque con un diálogo.
+        setTimeout(offerFutbolDurationFix, 800);
         restoreTabataSessionBlocks();
         renderVariantsCatalog();
         initScreens();

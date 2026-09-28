@@ -5,7 +5,7 @@
 //
 // Subí SW_VERSION cada vez que edites el HTML/CSS/JS de forma significativa,
 // para que los clientes descarten el caché viejo en vez de seguir sirviéndolo.
-const SW_VERSION = 'v1';
+const SW_VERSION = 'v4';
 const CACHE_NAME = 'entrenamiento-tracker-' + SW_VERSION;
 
 const PRECACHE_URLS = [
