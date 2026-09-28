@@ -33,6 +33,7 @@ const STORAGE_SCHEMA = {
     exerciseTimeUnits: { group: 'data', type: 'object', default: {}, description: 'Unidad de carga del tiempo por ejercicio (seg, mss, min, hmm).' },
     exerciseTempos: { group: 'data', type: 'object', default: {}, description: 'Cadencia del contador de reps por ejercicio (s/rep).' },
     exerciseGroupOverrides: { group: 'data', type: 'object', default: {}, description: 'Grupo muscular elegido a mano por ejercicio.' },
+    routineSupersets: { group: 'data', type: 'object', default: {}, description: 'Superseries por rutina: { rutina: { ejercicioNormalizado: "A" } }.' },
     trainingDaysPlanHistory: { group: 'data', type: 'array', default: [], description: 'Plan semanal: días, horarios y aviso previo, con la fecha (lunes) desde la que rige.' },
 
     // ---- Preferencias ----
@@ -42,6 +43,7 @@ const STORAGE_SCHEMA = {
     voiceSettings: { group: 'prefs', type: 'object', default: {}, description: 'Avisos por voz y contador de reps.' },
     musicLinks: { group: 'prefs', type: 'object', default: {}, description: 'Playlists de Spotify / YouTube Music.' },
     bodyChartScale: { group: 'prefs', type: 'object', default: {}, description: 'Escala manual del gráfico de medidas.' },
+    plateCalculator: { group: 'prefs', type: 'object', default: {}, description: 'Calculadora de discos: barra y discos disponibles.' },
     wakeLockEnabled: { group: 'prefs', format: 'text', type: 'string', default: null, description: 'Pantalla siempre encendida ("1"/"0").' },
 
     // ---- Estado temporal de la sesión en curso ----

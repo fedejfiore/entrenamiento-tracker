@@ -16,6 +16,7 @@ const APP_SCREENS = [
 // que su canvas ya esté visible, si no renderizan a tamaño cero).
 const SCREEN_ON_SHOW = {
     progreso: () => {
+        renderMuscleMap();
         populateProgresoRoutineFilter();
         renderProgressGrid();
     },

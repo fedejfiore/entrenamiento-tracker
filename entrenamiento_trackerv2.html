@@ -25,6 +25,7 @@
     <link rel="stylesheet" href="css/progress.css">
     <link rel="stylesheet" href="css/help.css">
     <link rel="stylesheet" href="css/plan.css">
+    <link rel="stylesheet" href="css/tools.css">
     <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
@@ -212,6 +213,19 @@
 
             <!-- PROGRESO -->
             <div data-screen="progreso">
+                <div class="section" id="muscleMapSection">
+                    <h2>🗺️ Músculos trabajados</h2>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Series efectivas por músculo (sin calentamiento), en promedio por semana. Entre 10 y 20 por semana es el rango habitual para ganar músculo. Tocá un músculo para ver sus ejercicios.</div>
+                    <select id="muscleMapPeriod" aria-label="Período del mapa de músculos">
+                        <option value="7">Últimos 7 días</option>
+                        <option value="30">Últimos 30 días</option>
+                        <option value="90">Últimos 3 meses</option>
+                    </select>
+                    <div id="muscleMap" class="muscle-map"></div>
+                    <div id="muscleMapLegend" class="muscle-legend"></div>
+                    <div id="muscleMapList" class="muscle-list"></div>
+                </div>
+
                 <div class="section">
                     <h2>📊 Análisis de Progresión</h2>
                     <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px; flex-wrap:wrap;">
@@ -432,6 +446,36 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="supersetModal" role="dialog" aria-modal="true" aria-labelledby="supersetTitle">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="supersetTitle">Superserie</h3>
+                <button type="button" class="small" style="width:auto;" data-superset-action="close" aria-label="Cerrar">✕</button>
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">Elegí con qué ejercicios se hace seguido. Se encadenan sin descanso y se descansa al terminar la vuelta. Con 3 o más es una triserie o un circuito.</p>
+            <div id="supersetList"></div>
+            <button type="button" class="success" data-superset-action="save" style="margin-top: 12px;">🔗 Guardar superserie</button>
+            <button type="button" class="danger" id="supersetRemove" data-superset-action="remove">Quitar de la superserie</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="plateModal" role="dialog" aria-modal="true" aria-labelledby="plateTitle">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="plateTitle">🧮 Calculadora de discos</h3>
+                <button type="button" class="small" style="width:auto;" data-plate-action="close" aria-label="Cerrar">✕</button>
+            </div>
+            <label class="range-label" for="plateTarget">Peso total (kg)</label>
+            <input type="text" id="plateTarget" inputmode="decimal" autocomplete="off">
+            <label class="range-label" for="plateBar">Barra</label>
+            <select id="plateBar"></select>
+            <div class="range-label">Discos que tenés (tocá para activar o desactivar)</div>
+            <div id="plateChoices" class="plate-choices"></div>
+            <div id="plateResult" class="plate-result"></div>
+            <button type="button" class="success" id="plateUse" data-plate-action="use">Usar este peso</button>
+        </div>
+    </div>
+
     <div id="toastContainer" aria-live="polite"></div>
 
     <div class="modal-overlay" id="exerciseDetailModal" onclick="if(event.target===this) closeExerciseDetail()">
@@ -471,6 +515,7 @@
     <script src="js/domain/sets.js"></script>
     <script src="js/domain/models.js"></script>
     <script src="js/domain/plan.js"></script>
+    <script src="js/domain/training-tools.js"></script>
     <script src="js/data/migrations.js"></script>
     <script src="js/data/repositories.js"></script>
     <script src="js/data/recording-repository.js"></script>
@@ -495,12 +540,15 @@
     <script src="js/features/training/reorder.js"></script>
     <script src="js/features/training/workout.js"></script>
     <script src="js/features/training/workout-screen.js"></script>
+    <script src="js/features/training/supersets.js"></script>
     <script src="js/features/exercises.js"></script>
     <script src="js/features/history.js"></script>
     <script src="js/features/progress.js"></script>
     <script src="js/features/body-metrics.js"></script>
     <script src="js/features/home.js"></script>
     <script src="js/features/plan-screen.js"></script>
+    <script src="js/features/muscle-map.js"></script>
+    <script src="js/features/plate-calculator.js"></script>
     <script src="js/features/backup.js"></script>
     <script src="js/features/help.js"></script>
     <script src="js/ui/navigation.js"></script>

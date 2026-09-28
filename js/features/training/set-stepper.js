@@ -27,12 +27,14 @@ function showSetStepper(input) {
     setStepperEl.dataset.field = field;
     setStepperEl.dataset.unit = timeUnit || '';
     setStepperEl.innerHTML = `<span class="set-stepper-label">${field === 'rest' ? 'Desc.' : field === 'time' ? 'Tiempo' : SET_FIELDS[field].head}</span>`
-        + steps.map(s => `<button type="button" data-step="${s}" class="${s > 0 ? 'up' : 'down'}">${label(s)}</button>`).join('');
+        + steps.map(s => `<button type="button" data-step="${s}" class="${s > 0 ? 'up' : 'down'}">${label(s)}</button>`).join('')
+        + (field === 'kg' ? '<button type="button" class="stepper-tool" data-tool="plates" title="Calculadora de discos" aria-label="Calculadora de discos">🧮</button>' : '');
     // pointerdown sin foco: tocar un botón no cierra ni abre el teclado.
     setStepperEl.addEventListener('pointerdown', e => e.preventDefault());
     setStepperEl.addEventListener('click', e => {
         const b = e.target.closest('button[data-step]');
         if (b) stepSetField(row, field, parseFloat(b.dataset.step));
+        if (e.target.closest('[data-tool="plates"]')) openPlateCalculator(row.querySelector('[data-f="kg"]'));
     });
     // Justo después de los inputs visibles, antes de la nota de la serie.
     const note = row.querySelector('.set-note');

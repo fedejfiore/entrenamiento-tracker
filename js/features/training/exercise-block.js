@@ -125,14 +125,16 @@ function buildExerciseRowHtml(idx, ex, routine) {
     const setCount = initialSets.length;
     const safeName = escapeHtml(ex);
     const timeUnit = getTimeUnit(ex, type);
+    const superset = getSupersetLetter(routine, ex);
 
-    return `<div class="exercise-row" id="row_${idx}" data-name="${safeName}" data-type="${type}" data-time-unit="${timeUnit}">
+    return `<div class="exercise-row" id="row_${idx}" data-name="${safeName}" data-type="${type}" data-time-unit="${timeUnit}"${superset ? ` data-superset="${superset}"` : ''}>
             <div class="exercise-row-header">
                 <button type="button" class="drag-handle" aria-label="Reordenar ${safeName}: mantené apretado y arrastrá, o usá las flechas ↑ ↓" title="Mantené apretado y arrastrá para reordenar">${DRAG_DOTS_SVG}</button>
                 <div class="exercise-title">
                     <strong id="exname_${idx}" data-action="open-detail" data-dblaction="rename-exercise" title="Tocá para ver el progreso · doble toque para renombrar" style="cursor:pointer;">${safeName}</strong>
                     <div class="exercise-meta">
                         <select class="type-chip" aria-label="Cómo se mide ${safeName}" data-change="change-type">${buildTypeOptionsHtml(type)}</select>
+                <button type="button" class="superset-chip${superset ? ' on' : ''}" data-action="superset" title="${superset ? `Superserie ${superset} (tocá para cambiarla)` : 'Armar una superserie con otro ejercicio'}">🔗${superset ? ' ' + superset : ''}</button>
                         <span class="exercise-last">${buildLastSummaryText(stats, type)}</span>
                     </div>
                     ${stats.lastNote ? `<small style="color:var(--brand); font-style:italic; display:block; margin-top:3px;">💡 ${escapeHtml(stats.lastNote)}</small>` : ''}
@@ -276,6 +278,7 @@ function toggleSetDone(btn) {
     try { navigator.vibrate && navigator.vibrate(20); } catch (e) {}
     maybeAutoStartSessionTimer();
     saveWorkoutDraft();
+    if (goToNextInSuperset(block, row)) return; // superserie: el descanso va al final de la vuelta
     if (restSeconds > 0) runRestTimer(restSeconds);
 }
 

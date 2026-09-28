@@ -36,7 +36,7 @@ function renderHistoryItem(w) {
                 ${w.notes ? `<div style="margin-bottom: 10px; padding: 8px; background: var(--bg-elevated); border-left: 3px solid var(--brand); border-radius: 3px;"><strong>📌 Notas de la sesión:</strong> ${w.notes}</div>` : ''}
                 ${w.exercises.map(ex => `
                     <div style="margin-bottom: 10px; padding: 8px; background: var(--bg-elevated); border-radius: 3px; border-left: 2px solid var(--brand);">
-                        <strong>${ex?.name || 'Sin nombre'}</strong><br>
+                        <strong>${ex?.name || 'Sin nombre'}</strong>${ex?.superset ? ` <span class="stat-chip">🔗 ${escapeHtml(ex.superset)}</span>` : ''}<br>
                         ${Array.isArray(ex?.sets) && ex.sets.length > 0
                             ? renderHistorySets(ex)
                             : `<small>Reps: <strong>${ex?.reps || '-'}</strong> | Peso: <strong>${ex?.weight || '-'}</strong> | Pausa: <strong>${ex?.pause || '-'}</strong></small>`}

@@ -3,6 +3,21 @@
 
 const HELP_SECTIONS = [
     {
+        id: 'ventajas', icon: '✨', title: 'Lo que tiene esta app',
+        html: `
+            <ul>
+                <li><b>Contador de reps con cadencia y voz:</b> te marca el ritmo de cada repetición, te da tiempo para prepararte y te alienta ("¡la mitad!", "¡última!"). Podés grabar tu propia voz para cada aviso.</li>
+                <li><b>Descanso y Tabata guiados por voz,</b> con aviso a los 10 segundos y ±15 s en el momento.</li>
+                <li><b>Rutinas y gráficos sin límite:</b> otras apps cobran por tener más de 3 o 4 rutinas o por ver tu progreso.</li>
+                <li><b>Mapa de músculos</b> con cuántas series por semana hace cada uno, comparado con el rango ideal.</li>
+                <li><b>Superseries y circuitos</b> que manejan solos el descanso, y <b>calculadora de discos</b>.</li>
+                <li><b>Cualquier tipo de ejercicio:</b> kg, solo reps, tiempo en la unidad que prefieras, duración o distancia con km/h calculado.</li>
+                <li><b>Récords más justos:</b> también cuenta como récord hacer lo mismo con menos descanso.</li>
+                <li><b>Plan semanal con recordatorios</b> en tu calendario.</li>
+                <li><b>Sin cuenta y sin internet:</b> tus datos quedan en tu teléfono, y el backup se lleva todo.</li>
+            </ul>`
+    },
+    {
         id: 'inicio-rapido', icon: '🚀', title: 'Primeros pasos',
         html: `
             <p>La app registra tus entrenamientos de gimnasio, cardio y Tabata, calcula tus récords y te muestra cómo venís progresando.</p>
@@ -90,6 +105,29 @@ const HELP_SECTIONS = [
             </ul>`
     },
     {
+        id: 'superseries', icon: '🔗', title: 'Superseries y circuitos',
+        html: `
+            <ol>
+                <li>Tocá <b>🔗</b> debajo del nombre de un ejercicio.</li>
+                <li>Elegí con cuáles se hace seguido (con 3 o más es una triserie o un circuito) y tocá <b>Guardar superserie</b>.</li>
+            </ol>
+            <ul>
+                <li>Cada superserie tiene una letra (A, B…) y un color en el borde del bloque.</li>
+                <li>Al tildar una serie, la app te lleva a la misma serie del ejercicio siguiente, <b>sin descanso</b>. El descanso arranca recién al terminar el último ejercicio de la vuelta.</li>
+                <li>Queda guardada en la rutina y se marca en el historial. Para deshacerla: 🔗 → <b>Quitar de la superserie</b>.</li>
+            </ul>`
+    },
+    {
+        id: 'discos', icon: '🧮', title: 'Calculadora de discos',
+        html: `
+            <p>Al tocar el peso de una serie, en la barra de botones rápidos aparece <b>🧮</b>. Te dice qué discos poner de cada lado de la barra para ese peso.</p>
+            <ul>
+                <li>Elegí la barra (olímpica de 20 kg, de 15, técnica, Z o sin barra) y tocá los discos que tenés en tu gimnasio. La app los recuerda.</li>
+                <li>Busca la combinación con menos discos, aunque falten algunos. Si el peso no se puede armar exacto, te muestra el más cercano por debajo y por encima.</li>
+                <li><b>Usar este peso</b> lo pasa a la serie.</li>
+            </ul>`
+    },
+    {
         id: 'rutinas', icon: '📚', title: 'Rutinas',
         html: `
             <ul>
@@ -160,6 +198,7 @@ const HELP_SECTIONS = [
         id: 'progreso', icon: '📈', title: 'Progreso y récords',
         html: `
             <ul>
+                <li><b>Músculos trabajados:</b> una figura de frente y de espalda, coloreada según las series por semana de cada músculo (sin calentamiento): gris sin trabajo, naranja poco o moderado, verde en el rango habitual para ganar músculo (10 a 20) y rojo si te pasás. Tocá un músculo para ver qué ejercicios lo trabajaron. Se puede mirar la última semana, el último mes o los últimos 3 meses.</li>
                 <li><b>Análisis de Progresión:</b> cada ejercicio comparado con la sesión anterior o con hace 1, 3, 6 o 12 meses (volumen, reps y peso máximo).</li>
                 <li><b>Progreso por Ejercicio:</b> un mini gráfico por ejercicio, agrupados por músculo y filtrables por rutina. Tocá uno para ver el gráfico completo: peso promedio, 1RM estimado, reps y volumen.</li>
                 <li><b>Cambiar de grupo muscular:</b> mantené apretada una tarjeta y arrastrala a otro grupo.</li>

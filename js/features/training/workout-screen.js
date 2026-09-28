@@ -37,7 +37,8 @@ class WorkoutScreen {
             'count-reps': el => startRepCounter(el),
             'restore-archived': el => restoreArchivedExercise(this.routine, el.dataset.exercise),
             'toggle-collapsible': el => toggleVariantGroup(el.dataset.target),
-            'quick-add': () => quickAddExercise(this.routine)
+            'quick-add': () => quickAddExercise(this.routine),
+            'superset': el => openSupersetModal(el.closest('.exercise-row'))
         };
     }
 

@@ -277,7 +277,8 @@ function saveWorkoutSession() {
             name,
             type,
             sets,
-            note: (block.querySelector('.exercise-note')?.value || '').trim()
+            note: (block.querySelector('.exercise-note')?.value || '').trim(),
+            superset: block.dataset.superset || null
         }).toJSON());
     });
 

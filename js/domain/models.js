@@ -48,11 +48,12 @@ class ExerciseLog {
      * @param sets   series ya normalizadas (cleanSetForSave)
      * @param note   nota del ejercicio
      */
-    constructor({ name, type = 'kg', sets = [], note = '' }) {
+    constructor({ name, type = 'kg', sets = [], note = '', superset = null }) {
         this.name = String(name || '').trim();
         this.type = EXERCISE_TYPES[type] ? type : 'kg';
         this.sets = sets.map(s => s instanceof SetEntry ? s : new SetEntry(s));
         this.note = note || '';
+        this.superset = superset || null; // letra de la superserie ("A", "B"…), si se hizo en una
     }
 
     /**
@@ -61,13 +62,16 @@ class ExerciseLog {
      */
     toJSON() {
         const sets = this.sets.map(s => s.toJSON());
-        return { name: this.name, type: this.type, sets, ...legacyStringsFromSets(sets, this.type), note: this.note };
+        const out = { name: this.name, type: this.type, sets, ...legacyStringsFromSets(sets, this.type), note: this.note };
+        if (this.superset) out.superset = this.superset;
+        return out;
     }
 
     static validate(ex, where) {
         assertValid(ex && typeof ex === 'object', `${where}: el ejercicio tiene que ser un objeto.`);
         assertValid(typeof ex.name === 'string' && ex.name.trim() !== '', `${where}: falta el nombre del ejercicio.`);
         if (ex.type !== undefined) assertValid(!!EXERCISE_TYPES[ex.type], `${where}: tipo de medición desconocido "${ex.type}".`);
+        if (ex.superset !== undefined) assertValid(/^[A-Z]$/.test(ex.superset), `${where}: superserie inválida "${ex.superset}".`);
         if (ex.sets !== undefined) {
             assertValid(Array.isArray(ex.sets), `${where}: "sets" tiene que ser una lista.`);
             ex.sets.forEach((s, i) => SetEntry.validate(s, `${where}, serie ${i + 1}`));
