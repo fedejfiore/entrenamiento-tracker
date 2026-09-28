@@ -24,6 +24,7 @@ node --test "tests/**/*.test.js"   # pruebas automáticas (Node 22 o más nuevo)
 - Estructura, reglas para hacer cambios y garantías sobre los datos: [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md)
 - Formato de los datos, backup y esquema SQL propuesto: [docs/MODELO-DE-DATOS.md](docs/MODELO-DE-DATOS.md)
 - Plan para pasar a app nativa (Android/iOS) manteniendo la web: [docs/MIGRACION-NATIVA.md](docs/MIGRACION-NATIVA.md)
+- Diseño del modo entrenador (panel para gestionar alumnos): [docs/MODO-ENTRENADOR.md](docs/MODO-ENTRENADOR.md)
 - Tutorial para el usuario: dentro de la app, Ajustes → Ayuda (contenido en `js/features/help.js`)
 
 Al agregar o renombrar un archivo JS o CSS: sumarlo también a `PRECACHE_URLS` en
