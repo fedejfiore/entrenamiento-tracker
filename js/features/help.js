@@ -304,7 +304,7 @@ const HELP_SECTIONS = [
                 <li><b>Backups:</b> si lo vas a mandar por mail o WhatsApp, <b>protegelo con contraseña</b> (Ajustes → Datos).</li>
                 <li><b>Fotos:</b> no salen de tu celular (solo van dentro del backup).</li>
                 <li><b>Rutinas por link:</b> importá solo las de personas de confianza. Igual, la app revisa el link, descarta lo que no corresponde y te pide confirmar antes de guardar.</li>
-                <li>La app se revisó en busca de fallas de seguridad y se corrigieron (detalle técnico en docs/SEGURIDAD.md).</li>
+                <li>La app se revisó en busca de fallas de seguridad y las que aparecieron se corrigieron.</li>
             </ul>`
     },
     {

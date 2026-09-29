@@ -13,3 +13,9 @@ ultimo tracker funcionando backup/
 *.jpg
 *.json
 !manifest.json
+
+# Documentación del negocio y del desarrollo, modelo financiero, prototipos e infraestructura:
+# privados. Quedan solo en la compu (OneDrive los respalda); al repositorio público va
+# únicamente lo necesario para que la app funcione.
+docs/
+tools/
