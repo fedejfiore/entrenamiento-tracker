@@ -104,7 +104,7 @@ async function shareRoutine(key) {
         name, type: getExerciseType(name, key), target: targets[normalizeForCompare(name)] || null
     }));
     const url = `${location.origin}${location.pathname}#rutina=${encodeRoutineShare({ label, exercises })}`;
-    const text = `Te paso mi rutina "${label}" (${exercises.length} ejercicios). Abrila con este link:`;
+    const text = `Te paso mi rutina "${label}" (${exercises.length} ejercicios). Abrila en ${APP_BRAND.name} con este link:`;
     try {
         if (navigator.share) { await navigator.share({ title: label, text, url }); return; }
     } catch (e) {

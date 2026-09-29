@@ -288,3 +288,5 @@ button[onclick="saveWorkoutSession()"],
 button[onclick="startTabata()"] {
     min-height: 48px;
 }
+
+.drawer-brand small { display: block; font-family: var(--font-body); font-size: 12px; font-weight: 500; letter-spacing: 0.5px; color: var(--text-muted); }

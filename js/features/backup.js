@@ -26,7 +26,7 @@ async function downloadData() {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `tracker_backup_${new Date().toISOString().split('T')[0]}${encrypt ? '_protegido' : ''}.json`;
+    a.download = `esoagon_backup_${new Date().toISOString().split('T')[0]}${encrypt ? '_protegido' : ''}.json`;
     a.click();
     window.URL.revokeObjectURL(url);
 

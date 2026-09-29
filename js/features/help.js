@@ -24,7 +24,7 @@ const HELP_SECTIONS = [
     {
         id: 'inicio-rapido', icon: '🚀', title: 'Primeros pasos',
         html: `
-            <p>La app registra tus entrenamientos de gimnasio, cardio y Tabata, calcula tus récords y te muestra cómo venís progresando.</p>
+            <p><b>Esō Agōn</b> (en griego, <i>la lucha interior</i>: el agón era la competencia de los Juegos Olímpicos antiguos) registra tus entrenamientos de gimnasio, cardio y Tabata, calcula tus récords y te muestra cómo venís progresando. Es un producto de Inquieto.</p>
             <ul>
                 <li><b>Sin cuenta:</b> todo se guarda en este celular (o navegador). Nada se sube a internet.</li>
                 <li><b>Funciona sin internet</b> una vez que la abriste al menos una vez.</li>

@@ -129,7 +129,7 @@ function buildPlanIcs(plan, { title = '🏋️ Entrenar', description = '', dura
     const lines = [
         'BEGIN:VCALENDAR',
         'VERSION:2.0',
-        'PRODID:-//Entreno//Plan semanal//ES',
+        'PRODID:-//Inquieto//Eso Agon//ES',
         'CALSCALE:GREGORIAN',
         'METHOD:PUBLISH'
     ];
