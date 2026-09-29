@@ -2,7 +2,9 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <!-- Sin viewport-fit=cover: con eso Chrome en Android dibuja la página debajo de los botones
+         del sistema al esconder su barra y la barra de navegación de abajo quedaba tapada. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src 'self'; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
     <meta name="referrer" content="no-referrer">
     <title>Esō Agōn by Inquieto</title>
@@ -652,26 +654,6 @@
         </div>
     </div>
 
-    <button type="button" id="finishFab" class="finish-fab success" hidden aria-label="Terminar la sesión">✅ Terminar</button>
-
-    <div class="modal-overlay" id="finishModal" role="dialog" aria-modal="true" aria-labelledby="finishTitle">
-        <div class="modal-content finish-content">
-            <h3 id="finishTitle">¿Terminar la sesión?</h3>
-            <p class="finish-summary" id="finishSummary"></p>
-            <div class="finish-label">¿Cómo te sentiste?</div>
-            <div class="finish-mood" id="finishMood">
-                <button type="button" class="emoji-btn" data-mood="1" aria-label="Mal">😢</button>
-                <button type="button" class="emoji-btn" data-mood="2" aria-label="Regular">😐</button>
-                <button type="button" class="emoji-btn" data-mood="3" aria-label="Bien">🙂</button>
-                <button type="button" class="emoji-btn" data-mood="4" aria-label="Muy bien">😊</button>
-                <button type="button" class="emoji-btn" data-mood="5" aria-label="Excelente">🔥</button>
-            </div>
-            <input type="text" id="finishNote" placeholder="Nota de la sesión (opcional)" autocomplete="off">
-            <button type="button" class="success" data-finish-action="save">✅ Guardar sesión</button>
-            <button type="button" class="finish-cancel" data-finish-action="cancel">Seguir entrenando</button>
-        </div>
-    </div>
-
     <div class="modal-overlay" id="photoModal" role="dialog" aria-modal="true" aria-label="Foto de progreso">
         <div class="modal-content photo-modal">
             <div class="modal-header">
@@ -760,7 +742,6 @@
     <script src="js/features/training/reorder.js"></script>
     <script src="js/features/training/workout.js"></script>
     <script src="js/features/training/workout-screen.js"></script>
-    <script src="js/features/training/finish-session.js"></script>
     <script src="js/features/training/train-mode.js"></script>
     <script src="js/features/training/supersets.js"></script>
     <script src="js/features/exercises.js"></script>

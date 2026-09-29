@@ -64,7 +64,6 @@ class App {
         bindPrograms();
         bindAccessibilitySettings();
         bindTrainMode();
-        bindFinishSession();
         bindProgression();
         bindLibrary();
         bindProfile();

@@ -11,7 +11,6 @@ function setTrainMode(mode) {
         t.setAttribute('aria-selected', on ? 'true' : 'false');
     });
     try { db.set('trainMode', m); } catch (e) {}
-    if (typeof updateFinishFab === 'function') updateFinishFab();
 }
 
 function currentTrainMode() {
