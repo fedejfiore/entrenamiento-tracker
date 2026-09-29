@@ -95,27 +95,42 @@ function toggleDrawer() {
     else openDrawer();
 }
 
-function applyTheme(theme) {
-    if (theme === 'light') {
-        document.documentElement.setAttribute('data-theme', 'light');
-    } else {
-        document.documentElement.removeAttribute('data-theme');
-    }
-    const btn = document.getElementById('themeToggleBtn');
-    if (btn) btn.textContent = theme === 'light' ? '🌙' : '☀️';
+// Tema: 'auto' sigue al celular (claro u oscuro según el sistema), o fijo 'dark' / 'light'.
+const systemLight = window.matchMedia ? window.matchMedia('(prefers-color-scheme: light)') : null;
+
+function resolveTheme(pref) {
+    if (pref === 'light' || pref === 'dark') return pref;
+    return systemLight && systemLight.matches ? 'light' : 'dark';
 }
 
+function applyTheme(pref) {
+    if (resolveTheme(pref) === 'light') document.documentElement.setAttribute('data-theme', 'light');
+    else document.documentElement.removeAttribute('data-theme');
+    if (typeof renderMuscleMap === 'function') { try { renderMuscleMap(); } catch (e) {} }
+}
+
+function currentThemePref() {
+    try { return db.get('theme') || 'auto'; } catch (e) { return 'auto'; }
+}
+
+function setThemePref(pref) {
+    try { db.set('theme', pref); } catch (e) {}
+    applyTheme(pref);
+}
+
+// Se mantiene para quien lo llame (atajos viejos): alterna entre claro y oscuro fijos.
 function toggleTheme() {
-    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-    const next = isLight ? 'dark' : 'light';
-    applyTheme(next);
-    try { db.set('theme', next); } catch (e) {}
+    setThemePref(document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
 }
 
 function initTheme() {
-    let saved = 'dark';
-    try { saved = db.get('theme') || 'dark'; } catch (e) {}
-    applyTheme(saved);
+    applyTheme(currentThemePref());
+    systemLight?.addEventListener?.('change', () => { if (currentThemePref() === 'auto') applyTheme('auto'); });
+    const sel = document.getElementById('themeSelect');
+    if (sel) {
+        sel.value = currentThemePref();
+        sel.addEventListener('change', () => setThemePref(sel.value));
+    }
 }
 
 

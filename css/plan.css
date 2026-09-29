@@ -42,19 +42,15 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    min-width: 58px;
+    min-width: 66px;
     font-weight: 600;
     cursor: pointer;
 }
 .plan-day-toggle input { margin: 0; accent-color: var(--brand); }
 
-.plan-time {
-    margin: 0;
-    padding: 6px 4px;
-    min-width: 0;
-    flex: 1;
-}
-.plan-time:disabled { opacity: 0.35; }
+.plan-time { display: flex; align-items: center; gap: 4px; flex: 1; min-width: 0; }
+.plan-time select { margin: 0; padding: 6px 4px; min-width: 0; flex: 1; text-align: center; }
+.plan-time select:disabled { opacity: 0.35; }
 
 .plan-gcal {
     display: block;

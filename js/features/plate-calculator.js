@@ -9,10 +9,16 @@ let plateExercise = '';       // ejercicio de esa serie (para recordar barra / p
 
 function loadPlatePrefs() {
     const saved = db.get('plateCalculator');
+    // Barra y discos se recuerdan por unidad (los de kg y los de lb son distintos).
+    const lb = weightUnit === 'lb';
+    const bars = lb ? BAR_OPTIONS_LB : BAR_OPTIONS;
+    const all = lb ? ALL_PLATES_LB : ALL_PLATES;
+    const savedBar = lb ? saved.barLb : saved.bar;
+    const savedPlates = lb ? saved.platesLb : saved.plates;
     return {
-        bar: BAR_OPTIONS.some(([v]) => v === saved.bar) ? saved.bar : 20,
+        bar: bars.some(([v]) => v === savedBar) ? savedBar : bars[0][0],
         // Solo discos conocidos (lo guardado puede venir de un backup).
-        plates: Array.isArray(saved.plates) && saved.plates.some(p => ALL_PLATES.includes(p)) ? saved.plates.filter(p => ALL_PLATES.includes(p)) : DEFAULT_PLATES,
+        plates: Array.isArray(savedPlates) && savedPlates.some(p => all.includes(p)) ? savedPlates.filter(p => all.includes(p)) : (lb ? DEFAULT_PLATES_LB : DEFAULT_PLATES),
         modes: saved.modes && typeof saved.modes === 'object' ? saved.modes : {},
         stacks: saved.stacks && typeof saved.stacks === 'object' ? saved.stacks : {}
     };
@@ -45,17 +51,19 @@ function openPlateCalculator(kgInput) {
     const prefs = loadPlatePrefs();
     const mode = plateExercise ? plateModeFor(plateExercise) : 'bar';
     const stack = stackFor(plateExercise);
+    // La máquina se guarda en kg; se muestra en la unidad elegida.
+    const shown = kg => String(Math.round(kgToDisplay(kg) * 10) / 10).replace('.', ',');
     document.getElementById('plateMode').value = mode;
-    document.getElementById('stackEmpty').value = String(stack.empty).replace('.', ',');
-    document.getElementById('stackFirst').value = String(stack.first).replace('.', ',');
-    document.getElementById('stackStep').value = String(stack.step).replace('.', ',');
+    document.getElementById('stackEmpty').value = shown(stack.empty);
+    document.getElementById('stackFirst').value = shown(stack.first);
+    document.getElementById('stackStep').value = shown(stack.step);
     document.getElementById('stackCount').value = String(stack.count);
     document.getElementById('plateForExercise').textContent = plateExercise ? `Para: ${plateExercise}` : '';
-    const start = parseDecimal(kgInput?.value) || parseDecimal(kgInput?.dataset.prev) || 60;
+    const start = parseDecimal(kgInput?.value) || parseDecimal(kgInput?.dataset.prev) || (weightUnit === 'lb' ? 135 : 60);
     document.getElementById('plateTarget').value = String(start).replace('.', ',');
-    document.getElementById('plateBar').innerHTML = BAR_OPTIONS
+    document.getElementById('plateBar').innerHTML = (weightUnit === 'lb' ? BAR_OPTIONS_LB : BAR_OPTIONS)
         .map(([v, label]) => `<option value="${v}"${v === prefs.bar ? ' selected' : ''}>${label}</option>`).join('');
-    document.getElementById('plateChoices').innerHTML = ALL_PLATES
+    document.getElementById('plateChoices').innerHTML = (weightUnit === 'lb' ? ALL_PLATES_LB : ALL_PLATES)
         .map(p => `<button type="button" class="plate-choice${prefs.plates.includes(p) ? ' on' : ''}" data-plate="${p}" aria-pressed="${prefs.plates.includes(p)}">${formatNumber(p)}</button>`).join('');
     document.getElementById('plateUse').hidden = !plateTargetInput;
     renderPlateResult();
@@ -91,13 +99,14 @@ function renderStackResult(target) {
     const stack = currentStackInputs();
     if (plateExercise) {
         const prefs = loadPlatePrefs();
-        savePlatePrefs({ stacks: { ...prefs.stacks, [normalizeForCompare(plateExercise)]: stack } });
+        const inKg = { empty: displayToKg(stack.empty), first: displayToKg(stack.first), step: displayToKg(stack.step), count: stack.count };
+        savePlatePrefs({ stacks: { ...prefs.stacks, [normalizeForCompare(plateExercise)]: inKg } });
     }
     const box = document.getElementById('plateResult');
     const useBtn = document.getElementById('plateUse');
     if (!target) { box.innerHTML = '<p class="plate-msg">Escribí el peso.</p>'; useBtn.disabled = true; return; }
     const r = calculateStack(target, stack);
-    const w = kg => `${formatNumber(kg)} kg`;
+    const w = v => `${formatNumber(Math.round(v * 10) / 10)} ${weightUnitDef().label}`;
     const warn = r.exact ? '' : `<p class="plate-warn">No hay una placa con ${w(target)} exacto. Lo más cercano: <b>placa ${r.below.pin} (${w(r.below.weight)})</b>${r.above ? ` o <b>placa ${r.above.pin} (${w(r.above.weight)})</b>` : ''}.</p>`;
     box.innerHTML = `${warn}
         <p class="plate-side-text">Clavija en la <b>${r.pin === 0 ? 'ninguna placa (solo el carro)' : 'placa ' + r.pin}</b></p>
@@ -105,7 +114,7 @@ function renderStackResult(target) {
         <p class="plate-total">≈ <b>${w(r.achieved)}</b> · sin placas ${w(stack.empty)}, 1ª placa ${w(stack.first)}, +${w(stack.step)} por placa. Son aproximados: cada máquina (y las poleas con roldanas) cambia.</p>`;
     useBtn.disabled = false;
     useBtn.dataset.weight = r.achieved;
-    useBtn.textContent = `Usar ${formatNumber(r.achieved)} kg en la serie`;
+    useBtn.textContent = `Usar ${w(r.achieved)} en la serie`;
 }
 
 function currentPlateInputs() {
@@ -118,7 +127,8 @@ function currentPlateInputs() {
 
 // Un disco más ancho cuanto más pesado, para que el dibujo se lea como una barra cargada.
 function plateVisualHtml(perSide) {
-    const plate = p => `<span class="plate" style="height:${Math.round(34 + p * 2.2)}px">${formatNumber(p)}</span>`;
+    // El alto del disco va por su peso real (en kg), así en libras no quedan gigantes.
+    const plate = p => `<span class="plate" style="height:${Math.round(34 + displayToKg(p) * 2.2)}px">${formatNumber(p)}</span>`;
     return `<div class="plate-visual" aria-hidden="true">
             <span class="plate-side">${[...perSide].reverse().map(plate).join('')}</span>
             <span class="plate-bar"></span>
@@ -133,7 +143,8 @@ function renderPlateResult() {
     document.getElementById('plateTitle').textContent = mode === 'stack' ? '🧮 Máquina de placas' : '🧮 Calculadora de discos';
     if (mode === 'stack') { renderStackResult(parseDecimal(document.getElementById('plateTarget').value)); return; }
     const { target, bar, plates } = currentPlateInputs();
-    savePlatePrefs({ bar, plates });
+    savePlatePrefs(weightUnit === 'lb' ? { barLb: bar, platesLb: plates } : { bar, plates });
+    const u = weightUnitDef().label;
     const box = document.getElementById('plateResult');
     const useBtn = document.getElementById('plateUse');
     if (!target) { box.innerHTML = '<p class="plate-msg">Escribí el peso total.</p>'; useBtn.disabled = true; return; }
@@ -143,17 +154,17 @@ function renderPlateResult() {
     useBtn.disabled = false;
     useBtn.dataset.weight = r.achieved;
     if (r.belowBar) {
-        box.innerHTML = `<p class="plate-msg">El peso es menor que la barra (${formatNumber(bar)} kg).</p>`;
+        box.innerHTML = `<p class="plate-msg">El peso es menor que la barra (${formatNumber(bar)} ${u}).</p>`;
         useBtn.disabled = true;
         return;
     }
-    const side = r.perSide.length ? r.perSide.map(formatNumber).join(' + ') + ' kg' : 'nada (solo la barra)';
-    const warn = r.exact ? '' : `<p class="plate-warn">No se puede exacto con estos discos. Lo más cercano: <b>${formatNumber(r.below)} kg</b>${r.above ? ` o <b>${formatNumber(r.above)} kg</b>` : ''}.</p>`;
+    const side = r.perSide.length ? r.perSide.map(formatNumber).join(' + ') + ' ' + u : 'nada (solo la barra)';
+    const warn = r.exact ? '' : `<p class="plate-warn">No se puede exacto con estos discos. Lo más cercano: <b>${formatNumber(r.below)} ${u}</b>${r.above ? ` o <b>${formatNumber(r.above)} ${u}</b>` : ''}.</p>`;
     box.innerHTML = `${warn}
         <p class="plate-side-text">De cada lado: <b>${side}</b></p>
         ${plateVisualHtml(r.perSide)}
-        <p class="plate-total">Total: <b>${formatNumber(r.achieved)} kg</b> (barra ${formatNumber(bar)} + ${formatNumber(r.achieved - bar)} en discos)</p>`;
-    useBtn.textContent = `Usar ${formatNumber(r.achieved)} kg en la serie`;
+        <p class="plate-total">Total: <b>${formatNumber(r.achieved)} ${u}</b> (barra ${formatNumber(bar)} + ${formatNumber(r.achieved - bar)} en discos)</p>`;
+    useBtn.textContent = `Usar ${formatNumber(r.achieved)} ${u} en la serie`;
 }
 
 function usePlateWeight() {

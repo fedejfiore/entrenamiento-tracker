@@ -21,8 +21,10 @@ function targetIncrement(name, target) {
 function programSuggestion(routineKey, name) {
     const target = getExerciseTarget(routineKey, name);
     if (!target) return null;
-    const last = (exerciseStats[name] || {}).lastSets || [];
-    return { target, ...suggestDoubleProgression(last, { ...target, inc: targetIncrement(name, target) }) };
+    // Se calcula en la unidad elegida (kg o lb) y el peso sugerido vuelve a kg para guardarse.
+    const last = ((exerciseStats[name] || {}).lastSets || []).map(s => (s && s.kg ? { ...s, kg: kgStringToDisplay(s.kg) } : s));
+    const res = suggestDoubleProgression(last, { ...target, inc: displayIncrement(targetIncrement(name, target)), unit: weightUnitDef().label });
+    return { target, ...res, kg: res.kg != null ? displayToKg(res.kg) : null };
 }
 
 /**
@@ -37,7 +39,7 @@ function programPrevSets(routineKey, name, prevSets) {
     const warmups = prevSets.filter(p => p && p.warmup);
     const work = s.reps.map((reps, i) => {
         const base = lastWork[i] || lastWork[lastWork.length - 1] || {};
-        const kg = s.kg != null ? String(s.kg).replace('.', ',') : (base.kg || '');
+        const kg = s.kg != null ? String(Math.round(s.kg * 1000) / 1000).replace('.', ',') : (base.kg || '');
         return { reps: String(reps), kg, rest: String(s.target.rest || base.rest || '') };
     });
     return [...warmups, ...work];

@@ -29,11 +29,12 @@ const HELP_SECTIONS = [
                 <li><b>Sin cuenta:</b> todo se guarda en este celular (o navegador). Nada se sube a internet.</li>
                 <li><b>Funciona sin internet</b> una vez que la abriste al menos una vez.</li>
                 <li><b>Instalala como app:</b> en Android, menú ⋮ del navegador → <i>Instalar app</i> o <i>Agregar a pantalla de inicio</i>. En iPhone (Safari), botón Compartir → <i>Agregar a inicio</i>.</li>
-                <li><b>Barra de abajo</b> (en el celular): Inicio, Entrenar, Historial y Progreso, al alcance del pulgar. <b>Más</b> (o el ☰ de arriba) abre el resto: Medidas, Biblioteca, Perfil y Ajustes. Mientras escribís, la barra se esconde para no tapar el teclado.</li>
+                <li><b>Barra de abajo</b> (en el celular): Inicio, Entrenar, Historial y Progreso, al alcance del pulgar. <b>Más</b> abre el resto (Medidas, Biblioteca, Perfil y Ajustes) en un menú que sale por la izquierda con las opciones abajo, al alcance del pulgar. Mientras escribís, la barra se esconde para no tapar el teclado. En la compu, el menú está en el ☰ de arriba.</li>
                 <li><b>Si recargás la página</b> (o se cierra la app), volvés a la misma pantalla, con las mismas secciones abiertas y a la misma altura.</li>
-                <li><b>☀️ / 🌙</b> cambia entre tema claro y oscuro. <b>🔅</b> mantiene la pantalla encendida mientras entrenás.</li>
-                <li><b>Ajustes:</b> cada sección está cerrada y muestra en una línea qué tiene; tocá la que necesites para abrirla. En <b>General</b>: el color de la app, km o millas, el día en que empieza tu semana y los segundos para cambiar de lado en los unilaterales. Los 6 colores tienen una versión para tema claro y otra para oscuro, y todos se leen bien (contraste de la norma WCAG AA).</li>
-                <li><b>Ajustes → Accesibilidad:</b> botones y campos <b>grandes</b> o <b>muy grandes</b> (para usar con una mano o con dedos grandes) , <b>alto contraste</b> (texto oscuro sobre los botones de color, para leer mejor al sol) y <b>colores para daltonismo</b> (azul y naranja en vez de verde y rojo).</li>
+                <li><b>🔅</b> (arriba) mantiene la pantalla encendida mientras entrenás. El <b>tema</b> (automático como el celular, oscuro o claro) está en Ajustes → General.</li>
+                <li><b>Secciones plegadas:</b> en todas las pantallas cada sección muestra en una línea qué tiene; tocá la que necesites. En Inicio quedan abiertas <b>Hoy</b> y el <b>Calendario</b>.</li>
+                <li><b>Ajustes:</b> cada sección está cerrada y muestra en una línea qué tiene; tocá la que necesites para abrirla. En <b>General</b>: el tema, el color de la app, las <b>unidades</b> (peso en kg o libras, distancia en km o millas), el día en que empieza tu semana y los segundos para cambiar de lado en los unilaterales. Los 6 colores tienen una versión para tema claro y otra para oscuro, y todos se leen bien (contraste de la norma WCAG AA).</li>
+                <li><b>Ajustes → Accesibilidad:</b> botones y campos <b>grandes</b> o <b>muy grandes</b> (para usar con una mano o con dedos grandes) , <b>alto contraste</b> (fondo negro o blanco puro, texto pleno y bordes marcados, para leer al sol) y <b>colores para daltonismo</b> (azul y naranja en vez de verde y rojo). Abajo hay una vista previa que cambia al tocar cada opción.</li>
             </ul>
             <p class="help-tip">💾 Como los datos viven en el celular, descargá un <b>backup</b> de vez en cuando (Ajustes → Datos). Es lo que te permite recuperar todo si cambiás de teléfono o borrás el navegador.</p>`
     },
@@ -86,7 +87,8 @@ const HELP_SECTIONS = [
                 <li><b>Solo reps:</b> peso corporal (flexiones, dominadas).</li>
                 <li><b>Tiempo:</b> esfuerzos por tiempo con descanso (plancha, isométricos).</li>
                 <li><b>Duración:</b> actividades largas sin descanso entre series (fútbol, clases).</li>
-                <li><b>Tiempo + km:</b> cardio con distancia (bici, correr). La velocidad se calcula sola. Si preferís <b>millas y mph</b>, cambialo en Ajustes → General: tu historial no cambia (se guarda en km y se convierte al mostrarlo).</li>
+                <li><b>Tiempo + km:</b> cardio con distancia (bici, correr). La velocidad se calcula sola.</li>
+                <li><b>Unidades:</b> peso en <b>kg o libras</b> y distancia en <b>km o millas</b> (Ajustes → General → Unidades). Tu historial no cambia: se guarda en kg y km y se convierte al mostrarlo. En libras, la barra rápida suma de a 5 y 10 lb y la calculadora usa barra de 45 lb y discos en libras.</li>
             </ul>
             <p>Al agregar un ejercicio nuevo, la app sugiere el tipo por el nombre ("Plancha" → Tiempo, "Bici" → Tiempo + km). El tipo vale para ese ejercicio en todas las rutinas. Cambiarlo no toca el historial ni borra lo que cargaste hoy.</p>
             <p>En cardio, en vez de RIR aparece <b>Esfuerzo</b> (Suave, Media, Alta, Máx).</p>`
@@ -201,6 +203,8 @@ const HELP_SECTIONS = [
                 <li><b>Sonido</b> (Ajustes): el aviso de fin de descanso y su volumen.</li>
                 <li><b>Voz y avisos:</b> la app habla con la voz del celular, sin internet. Cada aviso (descanso, contador, Tabata, récords) se activa por separado. También podés elegir la voz y su velocidad.</li>
                 <li><b>Estilo:</b> <b>Neutro</b>, <b>Tierno</b>, <b>Militar</b>, <b>Motivador</b> o <b>Calma</b>. Cambia las frases ("¡Cinco más, sin excusas!") y el tono de la voz.</li>
+                <li><b>Voz y tono:</b> elegí entre las voces del celular y ajustá el tono (más grave o más agudo). Para tener voces de hombre y de mujer, instalalas en el celular (Android: Ajustes → Sistema → Idioma → Salida de texto a voz; iPhone: Accesibilidad → Contenido leído → Voces).</li>
+                <li><b>Sonido propio:</b> en Mis grabaciones, 📁 en cualquier aviso sube un sonido o una voz. En la app instalable desde Google Play vas a poder elegir los sonidos del sistema.</li>
                 <li><b>Mis grabaciones:</b> para cada aviso podés <b>● grabar</b> tu voz (o la de tu entrenador, hasta 5 segundos) o <b>📁 subir un audio</b> (un sonido o una voz, hasta 1 MB). El silencio del principio y del final se recorta solo. Lo que no grabes lo dice la voz del celular con el estilo elegido; los números siempre los dice la voz del celular. Todo se incluye en el backup.</li>
             </ul>`
     },
@@ -257,7 +261,7 @@ const HELP_SECTIONS = [
         id: 'plan', icon: '🗓️', title: 'Plan semanal y recordatorios',
         html: `
             <ol>
-                <li>En <b>Inicio → Mi plan semanal</b>, tildá los días que entrenás y poné el horario de cada uno (puede ser distinto cada día).</li>
+                <li>En <b>Inicio → Mi plan semanal</b>, tildá los días que entrenás y elegí la hora y los minutos de cada uno (puede ser distinto cada día).</li>
                 <li>Elegí con cuánta anticipación querés el aviso y tocá <b>💾 Guardar plan</b>.</li>
                 <li>Agregalo a tu calendario: <b>📅 Google Calendar</b> (un botón por cada horario) o <b>📥 Agregar al calendario del celular</b> (iPhone y otros calendarios).</li>
             </ol>
@@ -289,7 +293,7 @@ const HELP_SECTIONS = [
         id: 'perfil', icon: '👤', title: 'Perfil, medallas y fotos',
         html: `
             <ul>
-                <li><b>Tu nombre y tu foto:</b> tocá el círculo para elegir la foto.</li>
+                <li><b>Tu nombre, tu foto y tu fecha de nacimiento</b> (la edad se calcula sola). Tocá el círculo para elegir la foto.</li>
                 <li><b>Tu actividad:</b> sesiones, días entrenados, horas, semanas seguidas, récords y kilos levantados, además de tu mejor racha y tu ejercicio más hecho.</li>
                 <li><b>Medallas:</b> 6 familias (constancia, semanas seguidas, kilos, récords, horas y cardio) con 6 niveles: bronce, plata, oro, platino, diamante y leyenda. Se ganan con tu historial real y muestran cuánto falta para el próximo nivel. <b>📤</b> arma una imagen de la medalla para compartir en tus redes.</li>
                 <li><b>Fotos de progreso:</b> <b>📷 Agregar foto de hoy</b>, o sumala al cargar tus medidas. Se guardan comprimidas en tu celular. Tocá una para verla grande o borrarla. Consejo: misma luz y misma pose cada 2 a 4 semanas.</li>
@@ -324,6 +328,7 @@ const HELP_SECTIONS = [
 const HELP_FAQ = [
     ['¿Cómo le paso una rutina a un alumno (o a un amigo)?', 'En Biblioteca → Rutinas, tocá 🔗 en la rutina y mandá el link por WhatsApp. Quien lo abre la agrega a su Biblioteca con un toque, con los objetivos de cada ejercicio. No hace falta cuenta.'],
     ['Olvidé la contraseña de un backup protegido.', 'No se puede recuperar: la contraseña no se guarda en ningún lado (así nadie más puede abrirlo). Si todavía tenés los datos en el celular, descargá un backup nuevo.'],
+    ['¿Dónde está el cambio de tema claro / oscuro?', 'En Ajustes → General → Tema: automático (sigue al celular), oscuro o claro. Arriba quedó solo el botón para mantener la pantalla encendida.'],
     ['¿Dónde quedó Tabata? ¿Y Variantes?', 'Tabata ahora es una pestaña dentro de Entrenar (⏱️ Tabata / Intervalos). Variantes está en Biblioteca → Ejercicios.'],
     ['Los botones me quedan chicos o me cuesta distinguir los colores.', 'En Ajustes → Accesibilidad podés agrandar botones y campos (Grandes o Muy grandes) y activar los colores para daltonismo, que cambian el verde y el rojo por azul y naranja.'],
     ['¿Qué es la C que aparece al tocar el número de una serie?', 'Marca esa serie como de calentamiento. Se guarda, pero no cuenta para récords, volumen ni el mapa de músculos. Tocá la C de nuevo para que vuelva a ser una serie normal.'],

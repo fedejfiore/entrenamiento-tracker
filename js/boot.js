@@ -4,8 +4,9 @@
 // Aplica el tema guardado ANTES de pintar, para que no haya flash del tema por defecto (oscuro)
 (function() {
     try {
-        var saved = localStorage.getItem('theme');
-        if (saved === 'light') document.documentElement.setAttribute('data-theme', 'light');
+        var saved = localStorage.getItem('theme') || 'auto';
+        var light = saved === 'light' || (saved === 'auto' && window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches);
+        if (light) document.documentElement.setAttribute('data-theme', 'light');
         var accent = localStorage.getItem('accentColor');
         if (accent && accent !== 'naranja') document.documentElement.setAttribute('data-accent', accent);
         var size = localStorage.getItem('uiSize');

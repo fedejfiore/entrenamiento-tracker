@@ -5,7 +5,7 @@ function formatSetValue(set, type) {
     const v = f => String(set?.[f] || '').trim();
     const num = f => { const n = parseDecimal(v(f)); return n == null ? '' : formatNumber(n); };
     const dur = formatDurationHuman(parseTimeSeconds(v('time')));
-    if (type === 'kg') return v('kg') ? `${v('reps') || '?'}×${num('kg')}kg` : v('reps');
+    if (type === 'kg') return v('kg') ? `${v('reps') || '?'}×${formatWeight(parseDecimal(v('kg')))}` : v('reps');
     if (type === 'bw') return v('reps') ? `${v('reps')} reps` : '';
     if (type === 'time' || type === 'min') return dur;
     if (type === 'km') {

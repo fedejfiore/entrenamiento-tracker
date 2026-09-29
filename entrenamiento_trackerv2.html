@@ -36,7 +36,6 @@
             <button type="button" class="topbar-hamburger" onclick="toggleDrawer()" aria-label="Abrir menú">☰</button>
             <div class="topbar-title" id="topbarTitle">Inicio</div>
             <button type="button" class="topbar-theme-toggle" id="wakeLockBtn" onclick="toggleWakeLock()" aria-label="Evitar que la pantalla se bloquee">🔅</button>
-            <button type="button" class="topbar-theme-toggle" id="themeToggleBtn" onclick="toggleTheme()" aria-label="Cambiar tema">☀️</button>
         </header>
 
         <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
@@ -57,7 +56,7 @@
             <!-- INICIO -->
             <div data-screen="inicio">
                 <div id="todayPlanBanner" class="plan-banner" hidden></div>
-                <div class="section">
+                <div class="section" data-hint="Fecha, último entreno, duración y rutina sugerida" data-open="1">
                     <h2>📅 Hoy</h2>
                     <div class="stat-box">
                         <div class="stat-label">Fecha</div>
@@ -77,7 +76,7 @@
                     </div>
                 </div>
 
-                <div class="section">
+                <div class="section" data-hint="Entrenamientos totales, desde cuándo y promedio semanal">
                     <h2>📊 Estadísticas</h2>
                     <div class="stat-box">
                         <div class="stat-label">Entrenamientos totales</div>
@@ -93,12 +92,12 @@
                     </div>
                 </div>
 
-                <div class="section" id="programsSection">
+                <div class="section" id="programsSection" data-hint="Tu programa en curso y qué día te toca">
                     <h2>📚 Programa</h2>
                     <div id="programStatus"></div>
                 </div>
 
-                <div class="section" id="planSection">
+                <div class="section" id="planSection" data-hint="Días, horarios y recordatorios">
                     <h2>🗓️ Mi plan semanal</h2>
                     <div class="plan-status" id="weekStatus"></div>
                     <div class="plan-next" id="planNext"></div>
@@ -112,7 +111,7 @@
                     <button type="button" data-plan-action="ics">📥 Agregar al calendario del celular (iPhone y otros)</button>
                 </div>
 
-                <div class="section">
+                <div class="section" data-hint="Los días que entrenaste, mes a mes" data-open="1">
                     <h2>📆 Calendario de Entrenamientos</h2>
                     <div class="calendar-nav">
                         <button type="button" class="small" style="width:auto;" onclick="changeCalendarMonth(-1)">◀</button>
@@ -122,7 +121,7 @@
                     <div id="trainingCalendar"></div>
                 </div>
 
-                <div class="section">
+                <div class="section" data-hint="Peso y reps promedio de tus últimas sesiones">
                     <h2>📈 Últimas Rutinas</h2>
                     <div style="font-size: 11px; color: var(--text-faint); margin-bottom: 8px;">Peso y reps promedio (de todas las series) en tus últimas sesiones de fuerza.</div>
                     <div id="recentRoutineAverages"></div>
@@ -275,7 +274,7 @@
 
             <!-- MEDIDAS CORPORALES -->
             <div data-screen="medidas">
-                <div class="section">
+                <div class="section" data-hint="Peso, grasa, músculo, cintura y foto" data-open="1">
                     <h2>📏 Cargar Medición</h2>
                     <input type="date" id="bodyDate">
                     <input type="number" step="0.1" id="bodyWeight" placeholder="Peso (kg)">
@@ -288,7 +287,7 @@
                     <button class="success" onclick="saveBodyMetrics()">➕ Agregar Medición</button>
                 </div>
 
-                <div class="section">
+                <div class="section" data-hint="Gráfico e historial de tus medidas">
                     <h2>📊 Evolución</h2>
                     <div style="font-size: 13px; margin-bottom: 12px;">
                         <label><input type="checkbox" id="metric_weight" checked onchange="updateBodyChart()"> Peso</label>
@@ -321,7 +320,7 @@
                     <button type="button" role="tab" class="mode-tab" data-lib-tab="ejercicios" aria-selected="false">💪 Ejercicios</button>
                 </div>
                 <div class="lib-tab" data-tab="rutinas">
-                    <div class="section" data-hint="Las que creaste o importaste" data-open="1">
+                    <div class="section" data-hint="Las que creaste o importaste">
                         <h2>🗂️ Tus rutinas</h2>
                         <div id="libMyRoutines"></div>
                     </div>
@@ -346,7 +345,7 @@
                     </div>
                 </div>
                 <div class="lib-tab" data-tab="ejercicios" hidden>
-                    <div class="section" data-hint="Todo lo que entrenaste, por músculo" data-open="1">
+                    <div class="section" data-hint="Todo lo que entrenaste, por músculo">
                         <h2>💪 Tus ejercicios</h2>
                         <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Tocá uno para ver sus gráficos y cambiar su grupo muscular.</div>
                         <div id="libMyExercises"></div>
@@ -372,13 +371,15 @@
                             <small id="profileSince"></small>
                         </div>
                     </div>
+                    <label for="profileBirth" class="settings-label">Fecha de nacimiento</label>
+                    <input type="date" id="profileBirth" autocomplete="bday">
                     <input type="file" id="profilePhotoInput" accept="image/*" hidden>
                 </div>
-                <div class="section" data-hint="Sesiones, horas, rachas y récords" data-open="1">
+                <div class="section" data-hint="Sesiones, horas, rachas y récords">
                     <h2>📈 Tu actividad</h2>
                     <div id="profileStats"></div>
                 </div>
-                <div class="section" data-hint="Constancia, récords, kilos, horas y cardio" data-open="1">
+                <div class="section" data-hint="Constancia, récords, kilos, horas y cardio">
                     <h2>🏅 Medallas</h2>
                     <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Se ganan con tu historial real. Tocá 📤 para compartir la medalla como imagen.</div>
                     <div id="profileMedals"></div>
@@ -413,10 +414,19 @@
                     <button type="button" id="openHelpBtn">📖 Cómo usar la app</button>
                 </div>
 
-                <div class="section" data-hint="Color de la app, km o millas, inicio de semana, unilaterales">
+                <div class="section" data-hint="Tema, color, unidades (kg / lb, km / mi), inicio de semana, unilaterales">
                     <h2>⚙️ General</h2>
+                    <label for="themeSelect" class="settings-label">Tema</label>
+                    <select id="themeSelect">
+                        <option value="auto">Automático (como el celular)</option>
+                        <option value="dark">Oscuro</option>
+                        <option value="light">Claro</option>
+                    </select>
                     <label for="weekStartSelect" class="settings-label">La semana empieza el</label>
                     <select id="weekStartSelect"></select>
+                    <div class="settings-subtitle">Unidades</div>
+                    <label for="weightUnitSelect" class="settings-label">Peso</label>
+                    <select id="weightUnitSelect"></select>
                     <label for="distanceUnitSelect" class="settings-label">Distancia en cardio</label>
                     <select id="distanceUnitSelect"></select>
                     <label for="sideSwitchSelect" class="settings-label">Cambio de lado en ejercicios unilaterales</label>
@@ -432,9 +442,11 @@
                     <div id="uiSizeChoices" class="size-choices" role="radiogroup" aria-labelledby="uiSizeLabel"></div>
                     <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Más grandes y separados, para tocarlos fácil con una mano o con dedos grandes.</div>
                     <label class="toggle-row"><input type="checkbox" id="contrastToggle"> Alto contraste</label>
-                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Texto oscuro sobre los botones de color y texto secundario más claro, para leer mejor al sol o con poca vista.</div>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Fondo negro puro (o blanco en tema claro), texto pleno, bordes marcados y foco bien visible. Para leer al sol o con poca vista.</div>
                     <label class="toggle-row"><input type="checkbox" id="colorVisionToggle"> Colores para daltonismo</label>
-                    <div style="font-size: 12px; color: var(--text-muted);">Cambia el verde y el rojo (hecho / borrar, subir / bajar) por azul y naranja, que se distinguen con cualquier tipo de daltonismo.</div>
+                    <div style="font-size: 12px; color: var(--text-muted);">Cambia el verde y el rojo (hecho / borrar, subir / bajar, trabajo / descanso) por azul y naranja, que se distinguen con cualquier tipo de daltonismo.</div>
+                    <div class="settings-label">Vista previa (cambia al tocar las opciones)</div>
+                    <div class="color-preview" aria-hidden="true"><span class="cp-done">✓ Hecho</span><span class="cp-half">½ Un lado</span><span class="cp-up">+2,5</span><span class="cp-down">−2,5</span><span class="cp-danger">✕ Borrar</span><span class="cp-work">Trabajo</span><span class="cp-rest">Descanso</span></div>
                 </div>
 
                 <div class="section" data-hint="Tipo de aviso y volumen">
@@ -448,6 +460,7 @@
                         <option value="chime">🎐 Campana (2 tonos)</option>
                         <option value="silent">🔇 Silencio</option>
                     </select>
+                    <div class="settings-hint">¿Querés otro sonido? En <b>Mis grabaciones</b>, tocá 📁 en «¡Vamos! A la próxima serie» y subí el que quieras (por ejemplo, un tono del celular). En la app instalable desde Google Play vas a poder elegir directamente los sonidos del sistema.</div>
 
                     <label style="display:block; font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Volumen: <span id="soundVolumeLabel">100%</span></label>
                     <input type="range" id="soundVolume" min="0" max="100" step="5" value="100" oninput="onSoundVolumeInput()" style="width:100%; margin-bottom:12px;">
@@ -481,6 +494,9 @@
                             <div class="settings-hint">Cambia las frases y el tono de la voz: neutro, tierno, militar, motivador o calma. Si grabaste o subiste un audio para un aviso (Mis grabaciones), suena ese.</div>
                             <div class="settings-subtitle">Voz</div>
                             <select id="voiceSelect" data-voice="voiceURI" onchange="onVoiceSettingChange(this)"></select>
+                            <div class="settings-hint">Las voces disponibles dependen del celular. En Android podés sumar voces de hombre y de mujer: Ajustes del celular → Sistema → Idioma → <i>Salida de texto a voz</i> → Motor de Google → Instalar datos de voz → Español. En iPhone: Ajustes → Accesibilidad → Contenido leído → Voces.</div>
+                            <label class="range-label">Tono de la voz: <strong id="voicePitchLabel"></strong></label>
+                            <input type="range" min="0.5" max="1.8" step="0.05" data-voice="pitch" oninput="onVoiceSettingChange(this)">
                             <label class="range-label">Velocidad de la voz: <strong id="voiceRateLabel"></strong></label>
                             <input type="range" min="0.8" max="1.4" step="0.05" data-voice="rate" oninput="onVoiceSettingChange(this)">
                             <button type="button" onclick="testVoice()">▶ Probar voz</button>
@@ -601,7 +617,7 @@
                 <option value="bar">Barra con discos</option>
                 <option value="stack">Máquina de placas / polea</option>
             </select>
-            <label class="range-label" for="plateTarget">Peso total (kg)</label>
+            <label class="range-label" for="plateTarget">Peso total</label>
             <input type="text" id="plateTarget" inputmode="decimal" autocomplete="off">
             <div id="plateBarFields">
                 <label class="range-label" for="plateBar">Barra</label>
@@ -610,9 +626,9 @@
                 <div id="plateChoices" class="plate-choices"></div>
             </div>
             <div id="plateStackFields" class="stack-fields" hidden>
-                <label>Sin placas (kg)<input type="text" id="stackEmpty" inputmode="decimal" autocomplete="off"></label>
-                <label>1ª placa (kg)<input type="text" id="stackFirst" inputmode="decimal" autocomplete="off"></label>
-                <label>Cada placa suma (kg)<input type="text" id="stackStep" inputmode="decimal" autocomplete="off"></label>
+                <label>Sin placas<input type="text" id="stackEmpty" inputmode="decimal" autocomplete="off"></label>
+                <label>1ª placa<input type="text" id="stackFirst" inputmode="decimal" autocomplete="off"></label>
+                <label>Cada placa suma<input type="text" id="stackStep" inputmode="decimal" autocomplete="off"></label>
                 <label>Cantidad de placas<input type="text" id="stackCount" inputmode="numeric" pattern="[0-9]*" autocomplete="off"></label>
             </div>
             <div id="plateResult" class="plate-result"></div>

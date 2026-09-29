@@ -25,6 +25,19 @@ const MIGRATIONS = [
                 tx.set('archivedRoutines', legacyArchived);
             }
         }
+    },
+    {
+        to: 3,
+        description: 'La rutina de fútbol (día de partido) deja de ser una rutina básica de la app: si el usuario la usa, pasa a sus propias rutinas con el mismo nombre, así su historial sigue igual.',
+        run(tx) {
+            const usesFootball = tx.get('workouts').some(w => w && w.routine === 'FUT');
+            const custom = tx.get('customRoutines');
+            if (!usesFootball || custom.FUT) return;
+            custom.FUT = ['Partido de fútbol'];
+            tx.set('customRoutines', custom);
+            const labels = tx.get('customRoutineLabels');
+            if (!labels.FUT) { labels.FUT = '⚽ Fútbol (día de partido)'; tx.set('customRoutineLabels', labels); }
+        }
     }
 ];
 

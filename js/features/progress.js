@@ -55,16 +55,16 @@ function changeExerciseDetailGroup(group) {
 // las líneas más chicas. Cada una se prende/apaga con su checkbox y arma su propio
 // eje sólo si está tildada, así el gráfico no queda con ejes vacíos de más.
 const EXERCISE_CHART_METRICS = [
-    { checkboxId: 'exmetric_weight', field: 'weight', label: 'Peso promedio (kg)', color: () => cssVar('--brand'), axis: 'kg' },
-    { checkboxId: 'exmetric_1rm', field: 'oneRM', label: '1RM estimado (kg)', color: () => cssVar('--danger'), axis: 'kg', dash: [5, 5] },
+    { checkboxId: 'exmetric_weight', field: 'weight', label: () => `Peso promedio (${weightUnitDef().label})`, color: () => cssVar('--brand'), axis: 'kg', weight: true },
+    { checkboxId: 'exmetric_1rm', field: 'oneRM', label: () => `1RM estimado (${weightUnitDef().label})`, weight: true, color: () => cssVar('--danger'), axis: 'kg', dash: [5, 5] },
     { checkboxId: 'exmetric_reps', field: 'totalReps', label: 'Reps totales', color: () => '#3498db', axis: 'reps' },
-    { checkboxId: 'exmetric_volume', field: 'volume', label: 'Volumen total (kg)', color: () => '#8b5cf6', axis: 'volume' }
+    { checkboxId: 'exmetric_volume', field: 'volume', label: () => `Volumen total (${weightUnitDef().label})`, color: () => '#8b5cf6', axis: 'volume', weight: true }
 ];
 
 const EXERCISE_CHART_AXIS_META = {
-    kg: { position: 'left', title: 'kg' },
-    reps: { position: 'right', title: 'reps' },
-    volume: { position: 'right', title: 'volumen (kg)' }
+    kg: { position: 'left', title: () => weightUnitDef().label },
+    reps: { position: 'right', title: () => 'reps' },
+    volume: { position: 'right', title: () => `volumen (${weightUnitDef().label})` }
 };
 
 function renderExerciseDetailChart() {
@@ -81,8 +81,8 @@ function renderExerciseDetailChart() {
         const color = def.color();
         axesUsed.add(def.axis);
         datasets.push({
-            label: def.label,
-            data: data.map(d => d[def.field] ?? null),
+            label: typeof def.label === 'function' ? def.label() : def.label,
+            data: data.map(d => (d[def.field] == null ? null : def.weight ? Math.round(kgToDisplay(d[def.field]) * 10) / 10 : d[def.field])),
             borderColor: color,
             backgroundColor: 'transparent',
             borderDash: def.dash || [],
@@ -102,7 +102,7 @@ function renderExerciseDetailChart() {
             position: meta.position,
             grid: { drawOnChartArea: axis === 'kg', color: cssVar('--border') },
             ticks: { color: cssVar('--text-muted') },
-            title: { display: true, text: meta.title, color: cssVar('--text-muted') }
+            title: { display: true, text: meta.title(), color: cssVar('--text-muted') }
         };
     });
 
@@ -187,7 +187,7 @@ function progressionRowHtml(exName, history, timeframe) {
     const baselineDateNote = timeframe === 'last' ? '' : ` <small class="progression-vs">(vs. ${escapeHtml(baseline.date)})</small>`;
     return `<button type="button" class="progression-row" data-exercise="${escapeHtml(exName)}">
             <span class="progression-name"><strong>${escapeHtml(exName)}</strong> ${arrow}${baselineDateNote}</span>
-            <small>Volumen: ${Math.round(baseline.volume).toLocaleString('es-AR')}kg → ${Math.round(last.volume).toLocaleString('es-AR')}kg (${sign(Math.round(volumePct))}%) · Reps: ${baseline.totalReps}→${last.totalReps} (${sign(repsDiff)}) · Peso máx: ${baseline.maxWeight}kg→${last.maxWeight}kg (${sign(weightDiff)}kg)</small>
+            <small>Volumen: ${formatWeightTotal(baseline.volume)} → ${formatWeightTotal(last.volume)} (${sign(Math.round(volumePct))}%) · Reps: ${baseline.totalReps}→${last.totalReps} (${sign(repsDiff)}) · Peso máx: ${formatWeight(baseline.maxWeight)}→${formatWeight(last.maxWeight)} (${sign(Math.round(kgToDisplay(weightDiff) * 10) / 10)}${weightUnitDef().label})</small>
             <span class="progression-open" aria-hidden="true">📊</span>
         </button>`;
 }
@@ -224,7 +224,7 @@ function generateProgressionAnalysis() {
         const rows = groups[g].sort((a, b) => a.localeCompare(b, 'es')).map(n => progressionRowHtml(n, history[n], timeframe)).join('');
         if (!g) return rows;
         const icon = grouping === 'muscle' ? ((MUSCLE_GROUPS[g] || {}).icon || '📌') + ' ' : '';
-        return `<details class="progression-group" open>
+        return `<details class="progression-group">
                 <summary>${icon}${escapeHtml(g)} <small>(${groups[g].length})</small></summary>
                 ${rows}
             </details>`;

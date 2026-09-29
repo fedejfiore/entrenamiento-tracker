@@ -28,14 +28,14 @@ function updateSidebar() {
         if (thisWeek === 0 && lastWeek === 0) {
             weeklyVolumeEl.textContent = '-';
         } else {
-            const kg = Math.round(thisWeek).toLocaleString('es-AR');
+            const kg = formatWeightTotal(thisWeek);
             if (lastWeekToDate > 0) {
                 const pctChange = Math.round(((thisWeek - lastWeekToDate) / lastWeekToDate) * 100);
                 const arrow = pctChange > 0 ? '📈' : pctChange < 0 ? '📉' : '➡️';
-                weeklyVolumeEl.textContent = `${kg}kg ${arrow} ${pctChange > 0 ? '+' : ''}${pctChange}%`;
+                weeklyVolumeEl.textContent = `${kg} ${arrow} ${pctChange > 0 ? '+' : ''}${pctChange}%`;
                 weeklyVolumeEl.title = 'Comparado con lo que llevabas la semana pasada a esta misma altura (no la semana completa)';
             } else {
-                weeklyVolumeEl.textContent = `${kg}kg`;
+                weeklyVolumeEl.textContent = kg;
             }
         }
     }
@@ -102,7 +102,7 @@ function renderRecentRoutineAverages(workouts) {
                 <small style="color:var(--text-faint);">${escapeHtml(s.date)}</small>
             </div>
             <div style="text-align:right; font-size:12px; color:var(--text-muted);">
-                ${s.avgWeight != null ? `Peso prom: <strong style="color:var(--text);">${s.avgWeight}kg</strong><br>` : ''}
+                ${s.avgWeight != null ? `Peso prom: <strong style="color:var(--text);">${escapeHtml(formatWeight(s.avgWeight))}</strong><br>` : ''}
                 ${s.avgReps != null ? `Reps prom: <strong style="color:var(--text);">${s.avgReps}</strong>` : ''}
             </div>
         </div>

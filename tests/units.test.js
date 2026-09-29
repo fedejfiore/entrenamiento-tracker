@@ -25,3 +25,21 @@ test('en millas se muestra convertido y se guarda en km', () => {
     assert.equal(app('kmStringToDisplay')(app('displayStringToKm')('3,1')), '3,1');
     set('km');
 });
+
+test('peso: en kg no cambia nada; en libras se muestra convertido y se guarda en kg', () => {
+    const setW = app('setWeightUnit');
+    setW('kg');
+    assert.equal(app('kgStringToDisplay')('22,5'), '22,5');
+    assert.equal(app('formatSetValue')({ reps: '10', kg: '50' }, 'kg'), '10×50kg');
+    setW('lb');
+    assert.equal(app('kgStringToDisplay')('100'), '220,5');
+    assert.equal(app('displayStringToKg')('225'), '102,058');
+    assert.equal(app('formatWeight')(20), '44,1lb');
+    assert.equal(app('formatWeightTotal')(1000), '2.205 lb');
+    assert.equal(app('formatSetValue')({ reps: '8', kg: '102,058' }, 'kg'), '8×225lb');
+    assert.equal(app('displayIncrement')(2.5), 5);
+    assert.equal(app('displayIncrement')(5), 10);
+    // Ida y vuelta: lo que se tipea en libras vuelve igual
+    assert.equal(app('kgStringToDisplay')(app('displayStringToKg')('135')), '135');
+    setW('kg');
+});

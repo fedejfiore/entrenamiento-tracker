@@ -19,7 +19,7 @@ function legacyStore() {
 test('v1 -> v2: cada sesión recibe uid y updatedAt, sin perder nada', () => {
     const { store, run, app } = legacyStore();
     const result = run();
-    assert.deepEqual(JSON.parse(JSON.stringify(result.ran)), [2]);
+    assert.deepEqual(JSON.parse(JSON.stringify(result.ran)), [2, 3]);
     assert.equal(store.get('schemaVersion'), String(app('SCHEMA_VERSION')));
 
     const workouts = JSON.parse(JSON.stringify(store.get('workouts')));
@@ -65,4 +65,21 @@ test('si la migración falla, los datos quedan exactamente como estaban', () => 
     assert.equal(adapter.get('workouts'), before);
     assert.equal(adapter.get('schemaVersion'), null);
     assert.equal(store.get('workouts').some(w => w.uid), false);
+});
+
+test('v2 -> v3: fútbol pasa a las rutinas del usuario solo si lo usa', () => {
+    const { store, run } = legacyStore();
+    run();
+    assert.deepEqual(JSON.parse(JSON.stringify(store.get('customRoutines').FUT)), ['Partido de fútbol']);
+    assert.equal(store.get('customRoutineLabels').FUT, '⚽ Fútbol (día de partido)');
+    assert.ok(store.get('customRoutines').A1, 'las demás rutinas quedan');
+
+    // Sin sesiones de fútbol: no se crea
+    const app = loadApp();
+    const adapter = app('new MemoryAdapter()');
+    adapter.set('workouts', JSON.stringify(legacy.workouts.filter(w => w.routine !== 'FUT')));
+    adapter.set('schemaVersion', '2');
+    const s2 = app('(a) => new Store(a, STORAGE_SCHEMA)')(adapter);
+    app('runMigrations')(s2);
+    assert.equal(s2.get('customRoutines').FUT, undefined);
 });

@@ -34,7 +34,8 @@ function loadAppSettings() {
     return {
         weekStart,
         sideSwitchSeconds: Number.isFinite(side) && side >= 0 && side <= 30 ? side : SIDE_SWITCH_DEFAULT,
-        distanceUnit: DISTANCE_UNITS[saved.distanceUnit] ? saved.distanceUnit : 'km'
+        distanceUnit: DISTANCE_UNITS[saved.distanceUnit] ? saved.distanceUnit : 'km',
+        weightUnit: WEIGHT_UNITS[saved.weightUnit] ? saved.weightUnit : 'kg'
     };
 }
 
@@ -60,11 +61,41 @@ function changeDistanceUnit(unit) {
     hideSetStepper();
 }
 
+// Cambiar kg / lb con series cargadas: se leen en la unidad vieja, se redibujan en la nueva y
+// se refrescan las pantallas que muestran pesos.
+function changeWeightUnit(unit) {
+    const blocks = [...document.querySelectorAll('#exercisesContainer .exercise-row')];
+    const sets = blocks.map(b => readBlockSets(b));
+    setWeightUnit(unit);
+    saveAppSettings({ weightUnit: unit });
+    blocks.forEach((b, i) => {
+        renderBlockSets(b, b.dataset.type, sets[i]);
+        const last = b.querySelector('.exercise-last');
+        if (last) last.innerHTML = buildLastSummaryText(exerciseStats[getBlockName(b)] || {}, b.dataset.type);
+    });
+    hideSetStepper();
+    updateWeightPlaceholders();
+    try { updateSidebar(); displayWorkoutHistory(); updateBodyChart(); } catch (e) {}
+}
+
+function updateWeightPlaceholders() {
+    const bw = document.getElementById('bodyWeight');
+    if (bw) bw.placeholder = `Peso (${weightUnitDef().label})`;
+}
+
 function bindGeneralSettings() {
     const week = document.getElementById('weekStartSelect');
     const side = document.getElementById('sideSwitchSelect');
     const st = loadAppSettings();
     setDistanceUnit(st.distanceUnit);
+    setWeightUnit(st.weightUnit);
+    const wsel = document.getElementById('weightUnitSelect');
+    if (wsel) {
+        wsel.innerHTML = Object.entries(WEIGHT_UNITS).map(([k, d]) => `<option value="${k}">${d.name}</option>`).join('');
+        wsel.value = st.weightUnit;
+        wsel.addEventListener('change', () => changeWeightUnit(wsel.value));
+    }
+    updateWeightPlaceholders();
     const dist = document.getElementById('distanceUnitSelect');
     if (dist) {
         dist.innerHTML = Object.entries(DISTANCE_UNITS).map(([k, d]) => `<option value="${k}">${d.name}</option>`).join('');

@@ -9,7 +9,8 @@ let profilePhotoUrls = [];
 function loadProfile() {
     const p = db.get('userProfile') || {};
     const clean = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
-    return { name: clean(p.name, 60), email: clean(p.email, 120), phone: clean(p.phone, 30) };
+    const birth = typeof p.birthDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(p.birthDate) ? p.birthDate : '';
+    return { name: clean(p.name, 60), email: clean(p.email, 120), phone: clean(p.phone, 30), birthDate: birth };
 }
 
 function saveProfile(patch) {
@@ -44,6 +45,15 @@ async function savePhoto(file, kind, date) {
     return id;
 }
 
+// Edad a partir de la fecha de nacimiento (se guarda la fecha, así la edad se actualiza sola).
+function ageFrom(birthDate, today = new Date()) {
+    if (!birthDate) return null;
+    const b = new Date(birthDate + 'T00:00:00');
+    let age = today.getFullYear() - b.getFullYear();
+    if (today.getMonth() < b.getMonth() || (today.getMonth() === b.getMonth() && today.getDate() < b.getDate())) age--;
+    return age >= 5 && age <= 110 ? age : null;
+}
+
 // ---------- Pantalla ----------
 
 async function renderProfile() {
@@ -52,12 +62,16 @@ async function renderProfile() {
     if (nameEl && document.activeElement !== nameEl) nameEl.value = profile.name;
     const emailEl = document.getElementById('profileEmail');
     if (emailEl && document.activeElement !== emailEl) emailEl.value = profile.email;
+    const birthEl = document.getElementById('profileBirth');
+    if (birthEl && document.activeElement !== birthEl) { birthEl.value = profile.birthDate; birthEl.max = getLocalDateString(); }
     const phoneEl = document.getElementById('profilePhone');
     if (phoneEl && document.activeElement !== phoneEl) phoneEl.value = profile.phone;
 
     const stats = computeUsageStats(repo.workouts.all(), loadAppSettings().weekStart);
     const since = document.getElementById('profileSince');
-    if (since) since.textContent = stats.firstDate ? `Entrenando desde el ${new Date(stats.firstDate + 'T00:00:00').toLocaleDateString('es-AR')}` : 'Todavía no guardaste sesiones';
+    const age = ageFrom(profile.birthDate);
+    const sinceText = stats.firstDate ? `Entrenando desde el ${new Date(stats.firstDate + 'T00:00:00').toLocaleDateString('es-AR')}` : 'Todavía no guardaste sesiones';
+    if (since) since.textContent = (age != null ? `${age} años · ` : '') + sinceText;
     renderProfileStats(stats);
     renderMedals(stats);
     await renderPhotos();
@@ -72,7 +86,7 @@ function renderProfileStats(s) {
         ['⏱️', formatNumber(s.hours), 'horas'],
         ['🔥', s.currentWeekStreak, s.currentWeekStreak === 1 ? 'semana seguida' : 'semanas seguidas'],
         ['🏆', s.records, 'récords'],
-        ['🏗️', s.totalVolume >= 1000 ? `${formatNumber(Math.round(s.totalVolume / 100) / 10)} t` : `${s.totalVolume} kg`, 'levantados']
+        ['🏗️', weightUnit === 'kg' && s.totalVolume >= 1000 ? `${formatNumber(Math.round(s.totalVolume / 100) / 10)} t` : formatWeightTotal(s.totalVolume), 'levantados']
     ];
     box.innerHTML = `<div class="profile-stats">${items.map(([i, v, l]) => `<div class="profile-stat"><span aria-hidden="true">${i}</span><b>${escapeHtml(String(v))}</b><small>${l}</small></div>`).join('')}</div>
         <p class="lib-note">${s.bestWeekStreak ? `Mejor racha: ${s.bestWeekStreak} ${s.bestWeekStreak === 1 ? 'semana seguida' : 'semanas seguidas'}. ` : ''}${s.avgMinutes ? `Sesión promedio: ${formatDurationHuman(s.avgMinutes * 60)}. ` : ''}${s.favoriteExercise ? `Tu ejercicio más hecho: ${escapeHtml(s.favoriteExercise)}.` : ''}</p>`;
@@ -84,7 +98,9 @@ function renderMedals(stats) {
     box.innerHTML = evaluateAchievements(stats).map(a => {
         const color = a.tier ? a.tier.color : 'var(--bg-elevated)';
         const fmt = n => formatNumber(n >= 10000 ? Math.round(n) : n);
-        const nextText = a.next ? `${fmt(a.value)} de ${fmt(a.next)} ${a.unit} para ${MEDAL_TIERS[a.level].name}` : '¡Nivel máximo!';
+        const isWeight = a.id === 'volume';
+        const qty = n => isWeight ? formatWeightTotal(n) : `${fmt(n)} ${a.unit}`;
+        const nextText = a.next ? `${isWeight ? formatWeightTotal(a.value).replace(/ \S+$/, '') : fmt(a.value)} de ${qty(a.next)} para ${MEDAL_TIERS[a.level].name}` : '¡Nivel máximo!';
         return `<div class="medal${a.tier ? '' : ' locked'}">
                 <div class="medal-disc" style="--medal:${color}" aria-hidden="true">${a.icon}</div>
                 <div class="medal-text">
@@ -156,7 +172,7 @@ function drawMedalImage(a, profileName) {
     g.font = 'bold 78px system-ui, sans-serif'; g.fillText(`${a.title}`, 540, 1000);
     g.fillStyle = a.tier.color; g.font = 'bold 64px system-ui, sans-serif'; g.fillText(`Medalla de ${a.tier.name}`, 540, 1085);
     g.fillStyle = '#c3c6cc'; g.font = '44px system-ui, sans-serif';
-    g.fillText(`${formatNumber(a.value)} ${a.unit}${profileName ? ` · ${profileName}` : ''}`, 540, 1160);
+    g.fillText(`${a.id === 'volume' ? formatWeightTotal(a.value) : `${formatNumber(a.value)} ${a.unit}`}${profileName ? ` · ${profileName}` : ''}`, 540, 1160);
     g.fillStyle = '#8e929b'; g.font = '36px system-ui, sans-serif'; g.fillText(appBrandLine(), 540, 1290);
     return c;
 }
@@ -167,7 +183,7 @@ async function shareMedal(id) {
     const canvas = drawMedalImage(a, loadProfile().name);
     const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
     const file = new File([blob], `medalla-${a.id}-${a.tier.name.toLowerCase()}.png`, { type: 'image/png' });
-    const text = `¡Gané la medalla de ${a.tier.name} en ${a.title}! (${formatNumber(a.value)} ${a.unit})`;
+    const text = `¡Gané la medalla de ${a.tier.name} en ${a.title}! (${a.id === 'volume' ? formatWeightTotal(a.value) : `${formatNumber(a.value)} ${a.unit}`})`;
     try {
         if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], text }); return; }
     } catch (e) {
@@ -189,6 +205,7 @@ function bindProfile() {
     bindText('profileName', 'name');
     bindText('profileEmail', 'email');
     bindText('profilePhone', 'phone');
+    bindText('profileBirth', 'birthDate');
     const pick = (inputId, handler) => document.getElementById(inputId)?.addEventListener('change', async e => {
         const file = e.target.files && e.target.files[0];
         e.target.value = '';

@@ -39,7 +39,6 @@
     .bottom-nav-item:hover { background: transparent; box-shadow: none; transform: none; }
     .bottom-nav-item.active { color: var(--brand); }
     .bottom-nav-item.active .nav-icon { transform: scale(1.1); }
-    .app-main { padding-bottom: calc(var(--bottom-inset) + 16px); }
     /* Con el teclado abierto la barra se esconde (no tapa el campo que se edita). */
     body.keyboard-open { --bottom-nav-h: 0px; }
     body.keyboard-open .bottom-nav { display: none; }
@@ -124,11 +123,35 @@ html[data-size] .collapse-btn, html[data-size="xlarge"] .collapse-btn { min-heig
 html[data-size] .bottom-nav-item, html[data-size="xlarge"] .bottom-nav-item { min-height: 0; }
 
 /* ---- Alto contraste (Ajustes → Accesibilidad) ----
-   Los colores de acento ya pasan WCAG AA en los dos temas (ver css/tokens.css). Este modo
-   refuerza lo que queda cerca del límite: texto tenue (3,4:1 → 5,4:1), bordes de campos y
-   el texto secundario, para leer al sol o con poca vista. */
-html[data-contrast="high"] { --text-faint: #a0a4ad; --text-muted: #c3c6cc; --input-border: #5a5f6b; --border: #3a3e48; }
-html[data-contrast="high"][data-theme="light"] { --text-faint: #4d5159; --text-muted: #3d4148; --input-border: #9a9ea6; --border: #c9ccd2; }
+   Los colores ya pasan WCAG AA por defecto. Este modo va más allá (nivel AAA en textos):
+   fondo negro puro (o blanco en tema claro), texto blanco (o negro), texto secundario casi
+   pleno, bordes marcados en tarjetas y campos, y foco grueso y visible. Para leer al sol o
+   con poca vista. */
+html[data-contrast="high"] {
+    --bg-page: #000000; --bg-card: #0a0a0a; --bg-subtle: #141414; --bg-elevated: #1f1f1f;
+    --text: #ffffff; --text-muted: #e6e6e6; --text-faint: #c2c2c2;
+    --border: #8a8a8a; --input-border: #b0b0b0;
+}
+html[data-contrast="high"][data-theme="light"] {
+    --bg-page: #ffffff; --bg-card: #ffffff; --bg-subtle: #f2f2f2; --bg-elevated: #e6e6e6;
+    --text: #000000; --text-muted: #1a1a1a; --text-faint: #333333;
+    --border: #4d4d4d; --input-border: #333333;
+}
+html[data-contrast="high"] .section { border: 1px solid var(--border); }
+html[data-contrast="high"] input, html[data-contrast="high"] select { border-width: 2px; }
+html[data-contrast="high"] :focus-visible { outline: 3px solid var(--text) !important; outline-offset: 2px; }
+html[data-contrast="high"] .bottom-nav { border-top: 2px solid var(--border); }
+
+/* Vista previa de colores (Ajustes → Accesibilidad) */
+.color-preview { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 4px; }
+.color-preview span { padding: 6px 10px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 700; }
+.cp-done { background: var(--success); color: var(--on-color); }
+.cp-half { background: var(--brand); color: var(--on-color); }
+.cp-up { background: var(--bg-elevated); color: var(--success); }
+.cp-down { background: var(--bg-elevated); color: var(--danger); }
+.cp-danger { background: var(--danger); color: var(--on-color); }
+.cp-work { background: var(--tabata-work); color: #fff; }
+.cp-rest { background: var(--tabata-rest); color: #fff; }
 
 /* ---- Botón fijo "Terminar" (Entrenar) ---- */
 .finish-fab {

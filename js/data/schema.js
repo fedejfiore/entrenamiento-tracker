@@ -11,7 +11,7 @@
 //
 // Es también el mapa para una base de datos real: ver docs/MODELO-DE-DATOS.md.
 
-const SCHEMA_VERSION = 2;
+const SCHEMA_VERSION = 3;
 
 const STORAGE_SCHEMA = {
     // ---- Datos del usuario ----
@@ -44,14 +44,14 @@ const STORAGE_SCHEMA = {
     uiSize: { group: 'prefs', format: 'text', type: 'string', default: null, description: 'Tamaño de botones y campos: normal, large o xlarge.' },
     contrast: { group: 'prefs', format: 'text', type: 'string', default: null, description: '"high" = alto contraste (texto oscuro sobre botones de color).' },
     colorVision: { group: 'prefs', format: 'text', type: 'string', default: null, description: '"cvd" = colores para daltonismo (azul / naranja en vez de verde / rojo).' },
-    theme: { group: 'prefs', format: 'text', type: 'string', default: null, description: 'Tema: "light" o "dark".' },
+    theme: { group: 'prefs', format: 'text', type: 'string', default: null, description: 'Tema: "auto" (como el celular), "light" o "dark".' },
     soundType: { group: 'prefs', format: 'text', type: 'string', default: null, description: 'Sonido de fin de descanso.' },
     soundVolume: { group: 'prefs', format: 'text', type: 'string', default: null, description: 'Volumen 0-100.' },
     voiceSettings: { group: 'prefs', type: 'object', default: {}, description: 'Avisos por voz y contador de reps.' },
     musicLinks: { group: 'prefs', type: 'object', default: {}, description: 'Playlists de Spotify / YouTube Music.' },
     bodyChartScale: { group: 'prefs', type: 'object', default: {}, description: 'Escala manual del gráfico de medidas.' },
     plateCalculator: { group: 'prefs', type: 'object', default: {}, description: 'Calculadora de discos: barra y discos disponibles.' },
-    userProfile: { group: 'data', type: 'object', default: {}, description: 'Perfil: nombre, email y teléfono (las fotos van en IndexedDB).' },
+    userProfile: { group: 'data', type: 'object', default: {}, description: 'Perfil: nombre, fecha de nacimiento, email y teléfono (las fotos van en IndexedDB).' },
     appSettings: { group: 'prefs', type: 'object', default: {}, description: 'Ajustes generales: día en que empieza la semana, segundos para cambiar de lado.' },
     wakeLockEnabled: { group: 'prefs', format: 'text', type: 'string', default: null, description: 'Pantalla siempre encendida ("1"/"0").' },
 

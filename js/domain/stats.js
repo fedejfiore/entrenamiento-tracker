@@ -142,7 +142,7 @@ function detectPRs(exercises, previousStats) {
         let hasPR = false;
 
         if (prev.maxWeight > 0 && maxWeight > prev.maxWeight) {
-            prs.push(`${ex.name}: ${maxWeight}kg (antes ${prev.maxWeight}kg)`);
+            prs.push(`${ex.name}: ${formatWeight(maxWeight)} (antes ${formatWeight(prev.maxWeight)})`);
             hasPR = true;
         }
         if (prev.maxReps > 0 && maxReps > prev.maxReps) {
@@ -150,7 +150,7 @@ function detectPRs(exercises, previousStats) {
             hasPR = true;
         }
         if (prev.maxVolume > 0 && volume > prev.maxVolume) {
-            prs.push(`${ex.name}: volumen total ${Math.round(volume).toLocaleString('es-AR')}kg (antes ${Math.round(prev.maxVolume).toLocaleString('es-AR')}kg)`);
+            prs.push(`${ex.name}: volumen total ${formatWeightTotal(volume)} (antes ${formatWeightTotal(prev.maxVolume)})`);
             hasPR = true;
         }
 
@@ -182,7 +182,7 @@ function detectPRs(exercises, previousStats) {
 
             if (weightDropped || repsDropped) {
                 const changes = [];
-                if (weightDropped) changes.push(`el peso (${lastMaxWeight}kg → ${maxWeight}kg)`);
+                if (weightDropped) changes.push(`el peso (${formatWeight(lastMaxWeight)} → ${formatWeight(maxWeight)})`);
                 if (repsDropped) changes.push(`las reps (${lastMaxReps} → ${maxReps})`);
                 notes.push(`${ex.name}: bajaste el descanso (${Math.round(avgPrevPause)}s → ${Math.round(avgPause)}s), pero también bajó ${changes.join(' y ')} — no está claro si mejoraste.`);
             }

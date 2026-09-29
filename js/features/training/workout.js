@@ -342,7 +342,7 @@ function saveWorkoutSession() {
 
     let msg = `✅ Sesión guardada — ${exercises.length} ejercicios`;
     if (duration) msg += `\n⏱ Duración: ${formatDuration(duration)}`;
-    if (volume > 0) msg += `\n🏋️ Volumen: ${Math.round(volume).toLocaleString('es-AR')} kg`;
+    if (volume > 0) msg += `\n🏋️ Volumen: ${formatWeightTotal(volume)}`;
     if (prs.length > 0) msg += `\n\n🏆 ¡Nuevo PR!\n` + prs.map(p => `• ${p}`).join('\n');
     if (progressNotes.length > 0) msg += `\n\n📝 Para tener en cuenta:\n` + progressNotes.map(n => `• ${n}`).join('\n');
     showToast(msg, prs.length > 0 ? 'pr' : 'success', (prs.length > 0 || progressNotes.length > 0) ? 5500 : 3200);

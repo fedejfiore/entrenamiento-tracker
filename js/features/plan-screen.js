@@ -57,6 +57,22 @@ function renderPlanSection() {
     renderTodayPlanBanner(plan);
 }
 
+// Hora y minutos con dos selectores (cada 5 minutos). El reloj nativo de Android abría un
+// diálogo que no entraba en pantallas chicas.
+function planTimeSelectsHtml(w, value, on) {
+    const [hh, mm] = String(value).split(':');
+    const pad = n => String(n).padStart(2, '0');
+    const minutes = Array.from({ length: 12 }, (_, i) => pad(i * 5));
+    if (!minutes.includes(mm)) minutes.push(mm);
+    const opts = (list, cur) => list.map(v => `<option value="${v}"${v === cur ? ' selected' : ''}>${v}</option>`).join('');
+    const dis = on ? '' : ' disabled';
+    return `<span class="plan-time" data-day="${w.n}">
+            <select class="plan-hh" aria-label="Hora del ${w.long}"${dis}>${opts(Array.from({ length: 24 }, (_, i) => pad(i)), hh)}</select>
+            <span aria-hidden="true">:</span>
+            <select class="plan-mm" aria-label="Minutos del ${w.long}"${dis}>${opts(minutes.sort(), mm)}</select>
+        </span>`;
+}
+
 function renderPlanEditor(plan) {
     const editor = document.getElementById('planEditor');
     if (!editor) return;
@@ -67,7 +83,7 @@ function renderPlanEditor(plan) {
                     <input type="checkbox" class="day-plan-checkbox" value="${w.n}"${on ? ' checked' : ''}>
                     <span>${w.short}</span>
                 </label>
-                <input type="time" class="plan-time" data-day="${w.n}" value="${plan.timeFor(w.n) || DEFAULT_PLAN_TIME}" aria-label="Horario del ${w.long}"${on ? '' : ' disabled'}>
+                ${planTimeSelectsHtml(w, plan.timeFor(w.n) || DEFAULT_PLAN_TIME, on)}
             </div>`;
     }).join('');
     const remind = document.getElementById('planRemind');
@@ -134,7 +150,7 @@ function maybeRemindTodayPlan() {
 function readPlanFromEditor() {
     const days = [...document.querySelectorAll('#planEditor .day-plan-checkbox:checked')].map(cb => parseInt(cb.value, 10));
     const times = {};
-    document.querySelectorAll('#planEditor .plan-time').forEach(inp => { times[inp.dataset.day] = inp.value; });
+    document.querySelectorAll('#planEditor .plan-time').forEach(el => { times[el.dataset.day] = `${el.querySelector('.plan-hh').value}:${el.querySelector('.plan-mm').value}`; });
     const remind = parseInt(document.getElementById('planRemind')?.value, 10);
     return new TrainingPlan({ days, times, remind });
 }
@@ -187,7 +203,7 @@ function bindPlanSection() {
         if (!e.target.classList.contains('day-plan-checkbox')) return;
         const row = e.target.closest('.plan-day');
         row.classList.toggle('on', e.target.checked);
-        row.querySelector('.plan-time').disabled = !e.target.checked;
+        row.querySelectorAll('.plan-time select').forEach(s => { s.disabled = !e.target.checked; });
     });
     const onAction = e => {
         const el = e.target.closest('[data-plan-action]');

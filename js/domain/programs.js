@@ -205,6 +205,7 @@ function programRoutineKey(programId, dayKey) {
 function suggestDoubleProgression(lastSets, target) {
     const { sets, repsMin, repsMax } = target;
     const inc = target.inc > 0 ? target.inc : 2.5;
+    const unit = target.unit || 'kg'; // unidad de los pesos que se reciben y se devuelven
     const bodyweight = target.type === 'bw';
     const fill = n => Array.from({ length: sets }, () => n);
     const work = (lastSets || [])
@@ -229,11 +230,11 @@ function suggestDoubleProgression(lastSets, target) {
             return { action: 'level', kg: null, reps: fill(repsMax), text: `Llegaste a ${repsMax} en todas: pasá a una variante más difícil, sumá lastre o una serie.` };
         }
         const next = Math.round((kg + inc) * 100) / 100;
-        return { action: 'weight', kg: next, reps: fill(repsMin), text: `¡Subí el peso! ${formatNumber(next)} kg (+${formatNumber(inc)}) y volvé a ${repsMin} reps.` };
+        return { action: 'weight', kg: next, reps: fill(repsMin), text: `¡Subí el peso! ${formatNumber(next)} ${unit} (+${formatNumber(inc)}) y volvé a ${repsMin} reps.` };
     }
     if (reps.every(r => r < repsMin)) {
-        return { action: 'repeat', kg, reps: fill(repsMin), text: `Mismo peso${kg ? ` (${formatNumber(kg)} kg)` : ''}: apuntá a ${repsMin} reps en cada serie.` };
+        return { action: 'repeat', kg, reps: fill(repsMin), text: `Mismo peso${kg ? ` (${formatNumber(kg)} ${unit})` : ''}: apuntá a ${repsMin} reps en cada serie.` };
     }
     const nextReps = reps.map(r => Math.min(repsMax, Math.max(repsMin, r + 1)));
-    return { action: 'reps', kg, reps: nextReps, text: `Mismo peso${kg ? ` (${formatNumber(kg)} kg)` : ''}, una rep más: ${nextReps.join('-')}. Al llegar a ${repsMax} en todas, subís.` };
+    return { action: 'reps', kg, reps: nextReps, text: `Mismo peso${kg ? ` (${formatNumber(kg)} ${unit})` : ''}, una rep más: ${nextReps.join('-')}. Al llegar a ${repsMax} en todas, subís.` };
 }

@@ -4,7 +4,8 @@
 function saveBodyMetrics() {
     const body = BodyMeasurement.create({
         date: document.getElementById('bodyDate').value,
-        weight: parseFloat(document.getElementById('bodyWeight').value),
+        // El peso se tipea en la unidad elegida (kg o lb) y se guarda en kg.
+        weight: displayToKg(parseFloat(document.getElementById('bodyWeight').value)),
         fat: parseFloat(document.getElementById('bodyFat').value),
         muscle: parseFloat(document.getElementById('bodyMuscle').value),
         water: parseFloat(document.getElementById('bodyWater').value),
@@ -64,7 +65,7 @@ function updateBodyChart() {
     };
 
     const metricDefs = [
-        { checkboxId: 'metric_weight', field: 'weight', label: 'Peso' },
+        { checkboxId: 'metric_weight', field: 'weight', label: `Peso (${weightUnitDef().label})`, weight: true },
         { checkboxId: 'metric_fat', field: 'fat', label: 'Grasa' },
         { checkboxId: 'metric_muscle', field: 'muscle', label: 'Músculo' },
         { checkboxId: 'metric_water', field: 'water', label: 'Agua' },
@@ -76,7 +77,7 @@ function updateBodyChart() {
         if (!checkbox || !checkbox.checked) return;
         datasets.push({
             label: def.label,
-            data: metrics.map(m => m?.[def.field] ?? null),
+            data: metrics.map(m => (m?.[def.field] == null ? null : def.weight ? Math.round(kgToDisplay(m[def.field]) * 10) / 10 : m[def.field])),
             borderColor: colors[def.field],
             backgroundColor: colors[def.field] + '20',
             tension: 0.3,

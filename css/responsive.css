@@ -2,9 +2,23 @@
 
 /* RESPONSIVE */
 @media (max-width: 768px) {
+    /* Abajo se reserva la barra de navegación + la del sistema + aire, para que el final de
+       cada pantalla no quede pegado ni tapado. */
     .app-main {
-        padding: 14px 12px 32px;
+        padding: 14px 12px calc(var(--bottom-inset) + 40px);
     }
+
+    /* Un solo menú: en el celular se usa la barra de abajo (Más); el ☰ de arriba sobra. */
+    .topbar-hamburger { display: none; }
+
+    /* Menú lateral pensado para una mano: sale por la izquierda con las opciones abajo,
+       al alcance del pulgar, y deja libre la barra de navegación. */
+    .drawer {
+        justify-content: flex-end;
+        padding-bottom: calc(var(--bottom-inset) + 12px);
+    }
+    .drawer-brand { margin-bottom: auto; }
+    .drawer-nav-item { padding-top: 14px; padding-bottom: 14px; }
 
     .section {
         padding: 14px;

@@ -43,13 +43,14 @@ function buildSetRowHtml(type, label, set = {}, prev = {}, unit = 'mss') {
         const tu = TIME_UNITS[unit] || TIME_UNITS.mss;
         const inputmode = isTime ? tu.inputmode : f.inputmode;
         const hint = isTime ? tu.hint : f.hint;
-        const shown = (s, f) => f === 'km' ? kmStringToDisplay(s[f]) : String(s[f] || '');
+        const shown = (s, f) => f === 'km' ? kmStringToDisplay(s[f]) : f === 'kg' ? kgStringToDisplay(s[f] || '') : String(s[f] || '');
         const prevVal = isTime ? timeInputValue(prev.time, unit) : shown(prev, field);
         const value = isTime ? timeInputValue(set.time, unit) : shown(set, field);
         const pattern = inputmode === 'numeric' ? ' pattern="[0-9]*"' : '';
-        const head = isTime ? `Tiempo en ${tu.label}` : field === 'km' ? `Distancia en ${distanceUnitDef().label}` : f.head;
+        const head = isTime ? `Tiempo en ${tu.label}` : field === 'km' ? `Distancia en ${distanceUnitDef().label}` : field === 'kg' ? `Peso en ${weightUnitDef().label}` : f.head;
         // Distancia: el valor exacto en km viaja aparte, así mostrarlo redondeado en millas no lo cambia.
-        const exactKm = field === 'km' && set.km ? ` data-km="${escapeHtml(String(set.km))}"` : '';
+        const exactKm = field === 'km' && set.km ? ` data-km="${escapeHtml(String(set.km))}"`
+            : field === 'kg' && set.kg ? ` data-kg="${escapeHtml(String(set.kg))}"` : '';
         return `<input type="text" inputmode="${inputmode}"${pattern} autocomplete="off" data-f="${field}"${isTime ? ` data-unit="${unit}"` : ''}${exactKm} data-prev="${escapeHtml(prevVal)}" placeholder="${escapeHtml(prevVal || hint)}" value="${escapeHtml(value)}" aria-label="${head}, serie ${n}"${hidden ? ' hidden' : ''}>`;
     };
     // Los campos de otros tipos quedan ocultos (no se pierden si se cambia el tipo).
@@ -101,7 +102,7 @@ function buildSetsTableHtml(type, sets, prevSets, unit = 'mss') {
             <span>#</span>
             ${def.cols.map(f => f === 'time'
                 ? `<button type="button" class="time-unit-btn" data-action="cycle-time-unit" title="Cambiar unidad: segundos, m:ss, minutos u h:mm" aria-label="Unidad de tiempo: ${TIME_UNITS[unit].label}. Tocá para cambiarla">${TIME_UNITS[unit].head} ⇄</button>`
-                : `<span>${f === 'km' ? distanceUnitDef().head : SET_FIELDS[f].head}</span>`).join('')}
+                : `<span>${f === 'km' ? distanceUnitDef().head : f === 'kg' ? weightUnitDef().head : SET_FIELDS[f].head}</span>`).join('')}
             ${def.calc === 'speed' ? `<span title="Velocidad calculada">${distanceUnitDef().speedHead}</span>` : ''}
             ${def.rest ? '<span title="Descanso en segundos">Desc s</span>' : ''}
             <span title="${scale.title}">${scale.head}</span>
@@ -174,7 +175,7 @@ function buildExerciseRowHtml(idx, ex, routine) {
 function buildLastSummaryText(stats, type) {
     const summary = formatSetsSummary(stats.lastSets, type);
     let record = '';
-    if (type === 'kg' && stats.maxWeight) record = `Máx ${stats.maxWeight}kg`;
+    if (type === 'kg' && stats.maxWeight) record = `Máx ${formatWeight(stats.maxWeight)}`;
     if (type === 'km') {
         record = [
             stats.maxTotalSec ? formatDurationHuman(stats.maxTotalSec) : '',
@@ -206,6 +207,11 @@ function readSetRow(row) {
         if (el.dataset.f === 'km') {
             // Si no se tocó lo que se mostró, vale el km exacto (sin el redondeo de pantalla).
             set.km = el.dataset.km && kmStringToDisplay(el.dataset.km) === v ? el.dataset.km : displayStringToKm(v);
+            return;
+        }
+        if (el.dataset.f === 'kg') {
+            // Si no se tocó lo que se mostró, vale el kg exacto (sin el redondeo de las libras).
+            set.kg = el.dataset.kg && kgStringToDisplay(el.dataset.kg) === v ? el.dataset.kg : displayStringToKg(v);
             return;
         }
         set[el.dataset.f] = v;
@@ -437,7 +443,7 @@ function addSet(btn) {
             const v = el.value.trim() || el.dataset.prev || '';
             if (!v) return;
             prev[el.dataset.f] = el.dataset.f === 'time' ? formatSecondsClock(parseTimeInput(v, el.dataset.unit))
-                : el.dataset.f === 'km' ? displayStringToKm(v) : v;
+                : el.dataset.f === 'km' ? displayStringToKm(v) : el.dataset.f === 'kg' ? displayStringToKg(v) : v;
         });
     }
 

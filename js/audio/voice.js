@@ -17,6 +17,7 @@ const VOICE_DEFAULTS = {
     rate: 1.05,          // velocidad de la voz
     voiceURI: '',        // voz elegida ('' = la primera en español)
     style: 'neutro',     // estilo de las frases y el tono (js/audio/voice-styles.js)
+    pitch: 1,            // tono propio (más grave < 1 < más agudo); se combina con el del estilo
     useRecordings: true  // si hay una grabación propia para un aviso, suena esa
 };
 
@@ -69,7 +70,7 @@ function speak(text, key, opts = {}) {
         // El estilo elegido (tierno, militar…) ajusta tono y velocidad de la voz.
         const style = typeof currentVoiceStyle === 'function' ? currentVoiceStyle() : { pitch: 1, rate: 1 };
         u.rate = Math.min(2, st.rate * style.rate);
-        u.pitch = style.pitch;
+        u.pitch = Math.min(2, Math.max(0, style.pitch * (Number(st.pitch) || 1)));
         u.volume = Math.max(0.1, loadSoundSettings().volume / 100);
         speechSynthesis.speak(u);
     } catch (e) {
@@ -108,7 +109,7 @@ function initVoiceSettingsUI() {
 function onVoiceSettingChange(el) {
     const key = el.dataset.voice;
     let value = el.type === 'checkbox' ? el.checked : el.value;
-    if (['prepSeconds', 'tempo', 'rate'].includes(key)) value = parseFloat(value);
+    if (['prepSeconds', 'tempo', 'rate', 'pitch'].includes(key)) value = parseFloat(value);
     const st = saveVoiceSettings({ [key]: value });
     updateVoiceLabels(st);
 }
@@ -116,6 +117,8 @@ function onVoiceSettingChange(el) {
 function updateVoiceLabels(st) {
     const set = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
     set('voiceRateLabel', `${formatNumber(st.rate)}×`);
+    const p = Number(st.pitch) || 1;
+    set('voicePitchLabel', p < 0.9 ? 'más grave' : p > 1.1 ? 'más agudo' : 'normal');
     set('voiceTempoLabel', `${formatNumber(st.tempo)} s por rep`);
     set('voicePrepLabel', `${st.prepSeconds} s`);
     const opts = document.getElementById('voiceOptions');

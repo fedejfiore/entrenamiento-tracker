@@ -12,7 +12,7 @@ function renderHistoryItem(w) {
     const uid = `session_${String(w.id).replace(/[^A-Za-z0-9_-]/g, '')}`;
     const durationChip = formatDuration(w.duration) ? `<span class="stat-chip">⏱ ${formatDuration(w.duration)}</span>` : '';
     const sessionVolume = w.volume != null ? w.volume : calculateSessionVolume(w.exercises);
-    const volumeChip = sessionVolume > 0 ? `<span class="stat-chip">🏋️ ${Math.round(sessionVolume).toLocaleString('es-AR')}kg</span>` : '';
+    const volumeChip = sessionVolume > 0 ? `<span class="stat-chip">🏋️ ${formatWeightTotal(sessionVolume)}</span>` : '';
     const prBadge = (w.prs && w.prs.length > 0) ? `<span class="stat-chip pr">🏆 PR</span>` : '';
     const notesBadge = (w.progressNotes && w.progressNotes.length > 0) ? `<span class="stat-chip" title="Hay señales mixtas para revisar">📝</span>` : '';
     const routineLabel = w.routine ? (customRoutineLabels[w.routine] || ROUTINE_LABELS[w.routine] || `Rutina ${w.routine}`) : '';
@@ -173,7 +173,7 @@ function renderWorkoutSummary(sessions) {
 
     const chips = [`<span class="stat-chip">📅 ${sessions.length} sesión${sessions.length === 1 ? '' : 'es'}</span>`];
     if (avgDuration != null) chips.push(`<span class="stat-chip">⏱ Duración prom.: ${formatDuration(avgDuration)}</span>`);
-    if (avgVolume != null) chips.push(`<span class="stat-chip">🏋️ Volumen prom.: ${avgVolume.toLocaleString('es-AR')}kg</span>`);
+    if (avgVolume != null) chips.push(`<span class="stat-chip">🏋️ Volumen prom.: ${formatWeightTotal(avgVolume)}</span>`);
 
     el.innerHTML = `<div style="display:flex; gap:8px; flex-wrap:wrap;">${chips.join('')}</div>`;
 }

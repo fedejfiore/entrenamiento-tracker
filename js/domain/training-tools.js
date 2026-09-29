@@ -12,6 +12,17 @@ const BAR_OPTIONS = [
 ];
 const ALL_PLATES = [25, 20, 15, 10, 5, 2.5, 2, 1.25, 1, 0.5];
 const DEFAULT_PLATES = [25, 20, 15, 10, 5, 2.5, 1.25];
+
+// En libras (gimnasios de Estados Unidos): barra de 45 lb y discos de 45, 35, 25, 10, 5 y 2,5.
+const BAR_OPTIONS_LB = [
+    [45, 'Barra olímpica · 45 lb'],
+    [35, 'Barra olímpica corta · 35 lb'],
+    [25, 'Barra técnica · 25 lb'],
+    [20, 'Barra Z (EZ) · 20 lb'],
+    [0, 'Sin barra (máquina o solo discos)']
+];
+const ALL_PLATES_LB = [55, 45, 35, 25, 10, 5, 2.5, 1.25];
+const DEFAULT_PLATES_LB = [45, 35, 25, 10, 5, 2.5];
 const PLATE_UNIT = 0.05; // kg: todo se calcula en enteros de 50 g para evitar errores de coma
 
 /**

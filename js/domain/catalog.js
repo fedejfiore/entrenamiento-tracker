@@ -23,8 +23,7 @@ const routines = {
     B1: ['Sentadilla búlgara', 'Extensión de cuádriceps', 'Curl femoral unilateral'],
     C1: ['Vuelos laterales unilaterales con polea baja', 'Face pull', 'Jalones de tríceps con polea alta'],
     C2: ['Aperturas en mariposa', 'Curl martillo', 'Extensión de tríceps tras nuca'],
-    D1: ['Puente de glúteos / hip thrust', 'Gemelos', 'Crunch en polea + plancha'],
-    FUT: ['Partido de fútbol']
+    D1: ['Puente de glúteos / hip thrust', 'Gemelos', 'Crunch en polea + plancha']
 };
 
 const ROUTINE_LABELS = {
@@ -38,6 +37,8 @@ const ROUTINE_LABELS = {
     C1: 'Rutina C1 - Micro hombro ancho + tríceps',
     C2: 'Rutina C2 - Micro pecho accesorio + brazos',
     D1: 'Rutina D1 - Micro Lower 2 (glúteos + gemelos + core)',
+    // Ya no es una rutina básica (migración 3: pasa a las rutinas del usuario); el nombre
+    // queda para mostrar bien las sesiones viejas en el historial.
     FUT: '⚽ Fútbol (día de partido)'
 };
 
