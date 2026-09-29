@@ -64,7 +64,7 @@ function muscleMapData() {
     const period = MUSCLE_MAP_PERIODS[select?.value] ? select.value : 'last7';
     const range = muscleMapRange(period, new Date(), loadAppSettings().weekStart);
     const byGroup = muscleSetsByGroup(repo.workouts.all(), range.from, range.to, getMuscleGroup);
-    const weekly = sets => Math.round(sets / range.weeks * 10) / 10;
+    const weekly = sets => Math.round(sets / range.weeks * 2) / 2; // de a media serie (las indirectas valen 0,5)
     return { byGroup, weekly, range };
 }
 
@@ -110,7 +110,7 @@ function renderMuscleMapList(byGroup, weekly, range) {
     if (!list) return;
     const groups = [...MAPPED_GROUPS, ...Object.keys(byGroup).filter(g => !MAPPED_GROUPS.includes(g))];
     const rows = groups
-        .map(g => ({ g, sets: byGroup[g]?.sets || 0, exercises: byGroup[g]?.exercises || {} }))
+        .map(g => ({ g, sets: byGroup[g]?.sets || 0, direct: byGroup[g]?.direct || 0, indirect: byGroup[g]?.indirect || 0, exercises: byGroup[g]?.exercises || {} }))
         .filter(r => r.sets > 0 || MAPPED_GROUPS.includes(r.g))
         .sort((a, b) => b.sets - a.sets);
     const visible = muscleMapSelected ? rows.filter(r => r.g === muscleMapSelected) : rows;
@@ -122,7 +122,7 @@ function renderMuscleMapList(byGroup, weekly, range) {
         return `<div class="muscle-row" data-group="${escapeHtml(r.g)}">
                 <svg class="muscle-dot" viewBox="0 0 14 14" aria-hidden="true"><rect class="muscle lvl-${level}" width="14" height="14" rx="7"/></svg>
                 <div class="muscle-row-text">
-                    <strong>${escapeHtml(r.g)}</strong>${offMap} · ${formatNumber(w)} series${range.weeks > 1 ? '/semana' : ''}${muscleRangeNote(w, range) ? ` · <span class="muscle-note">${muscleRangeNote(w, range)}</span>` : ''}
+                    <strong>${escapeHtml(r.g)}</strong>${offMap} · ${formatNumber(w)} series${range.weeks > 1 ? '/semana' : ''}${r.indirect ? ` <span class="muscle-note">(${formatNumber(weekly(r.direct))} directas + ${formatNumber(weekly(r.indirect))} indirectas)</span>` : ''}${muscleRangeNote(w, range) ? ` · <span class="muscle-note">${muscleRangeNote(w, range)}</span>` : ''}
                     ${detail ? `<small>${detail}</small>` : '<small>Sin series en este período</small>'}
                 </div>
             </div>`;

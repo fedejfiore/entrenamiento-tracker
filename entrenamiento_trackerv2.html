@@ -233,7 +233,7 @@
             <div data-screen="progreso">
                 <div class="section" id="muscleMapSection" data-hint="Series por músculo y si estás en el rango ideal">
                     <h2>🗺️ Músculos trabajados</h2>
-                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Series efectivas por músculo (sin calentamiento). Entre 10 y 20 por semana es el rango habitual para ganar músculo: cuanto más intenso el color, más trabajado. Tocá un músculo para ver sus ejercicios. El día en que empieza la semana se elige en Ajustes.</div>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Series efectivas por músculo (sin calentamiento). Las directas cuentan 1 y las indirectas media serie (el tríceps en un press de pecho, el bíceps en un remo), como en la evidencia científica. Entre 10 y 20 por semana es el rango habitual para ganar músculo: cuanto más intenso el color, más trabajado. Tocá un músculo para ver sus ejercicios. El día en que empieza la semana se elige en Ajustes.</div>
                     <select id="muscleMapPeriod" aria-label="Período del mapa de músculos">
                         <option value="last7">Últimos 7 días</option>
                         <option value="week">Esta semana (en curso)</option>
@@ -494,7 +494,9 @@
                             <div class="settings-hint">Cambia las frases y el tono de la voz: neutro, tierno, militar, motivador o calma. Si grabaste o subiste un audio para un aviso (Mis grabaciones), suena ese.</div>
                             <div class="settings-subtitle">Voz</div>
                             <select id="voiceSelect" data-voice="voiceURI" onchange="onVoiceSettingChange(this)"></select>
-                            <div class="settings-hint">Las voces disponibles dependen del celular. En Android podés sumar voces de hombre y de mujer: Ajustes del celular → Sistema → Idioma → <i>Salida de texto a voz</i> → Motor de Google → Instalar datos de voz → Español. En iPhone: Ajustes → Accesibilidad → Contenido leído → Voces.</div>
+                            <div class="settings-hint">Las voces (de hombre o de mujer, y con distintos tonos) dependen de las que tenga instaladas tu celular. Una app web no puede abrir esos ajustes; la app de Google Play sí lo va a hacer.</div>
+                            <button type="button" class="small lib-secondary" onclick="showVoiceInstallHelp()">🔧 ¿Cómo cambio o agrego voces?</button>
+                            <div id="voiceInstallHelp" class="voice-help" hidden></div>
                             <label class="range-label">Tono de la voz: <strong id="voicePitchLabel"></strong></label>
                             <input type="range" min="0.5" max="1.8" step="0.05" data-voice="pitch" oninput="onVoiceSettingChange(this)">
                             <label class="range-label">Velocidad de la voz: <strong id="voiceRateLabel"></strong></label>

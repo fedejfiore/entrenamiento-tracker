@@ -140,3 +140,20 @@ test('unilateral sugerido por el nombre', () => {
     assert.equal(inferUnilateral('Press unilateral en máquina'), true);
     assert.equal(inferUnilateral('Sentadilla'), false);
 });
+
+test('conteo fraccionado: las series indirectas valen media serie', () => {
+    const groups = { 'press de pecho': 'Pecho', 'remo sentado': 'Espalda', 'jalones de triceps': 'Tríceps', 'sentadilla bulgara': 'Piernas' };
+    const groupOf = n => groups[n.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')] || 'Otro';
+    const ex = (name, n) => ({ name, sets: Array.from({ length: n }, () => ({ reps: '10', kg: '20', done: true })) });
+    const r = plain(muscleSetsByGroup([{ date: '2026-09-22', exercises: [ex('Press de pecho', 4), ex('Remo sentado', 4), ex('Jalones de tríceps', 3), ex('Sentadilla búlgara', 4)] }], '2026-09-21', '2026-09-27', groupOf));
+    assert.equal(r.Pecho.sets, 4);
+    assert.equal(r['Tríceps'].direct, 3);
+    assert.equal(r['Tríceps'].indirect, 2, 'press de pecho: 4 × 0,5');
+    assert.equal(r['Tríceps'].sets, 5);
+    assert.equal(r.Hombros.sets, 2);
+    assert.equal(r['Bíceps'].sets, 2, 'remo: 4 × 0,5');
+    assert.equal(r['Glúteos'].sets, 2, 'búlgara: 4 × 0,5');
+    assert.equal(r.Piernas.sets, 4);
+    const secondary = app('secondaryMusclesFor');
+    assert.deepEqual(plain(secondary('Remo al mentón', 'Hombros')), {}, 'remo al mentón no es un remo de espalda');
+});

@@ -140,3 +140,18 @@ function testVoice() {
     speak(styledCueText(['repFive', 'repLast'], '¡Dale! Quedan cinco. ¡Última!'));
 }
 
+
+// Pasos para instalar o cambiar voces según el sistema. Una web no puede abrir los ajustes
+// del sistema (en la app nativa, este botón va a abrirlos directamente).
+function showVoiceInstallHelp() {
+    const box = document.getElementById('voiceInstallHelp');
+    if (!box) return;
+    const ua = navigator.userAgent;
+    const steps = /Android/i.test(ua)
+        ? ['Abrí <b>Ajustes</b> del celular.', 'Entrá a <b>Sistema → Idiomas y entrada</b> (en algunos: <b>Administración general → Idioma</b>).', 'Tocá <b>Salida de texto a voz</b>.', 'Elegí <b>Motor de Google</b> y tocá ⚙️ → <b>Instalar datos de voz</b> → <b>Español</b>.', 'Ahí elegís entre varias voces (de hombre y de mujer). Volvé a la app: aparecen en la lista <b>Voz</b>.']
+        : /iPhone|iPad|iPod/i.test(ua)
+            ? ['Abrí <b>Ajustes</b>.', 'Entrá a <b>Accesibilidad → Contenido leído → Voces</b>.', 'Elegí <b>Español</b> y descargá las voces que quieras (hay de hombre y de mujer, y "mejoradas").', 'Volvé a la app: aparecen en la lista <b>Voz</b>.']
+            : ['En la compu, las voces vienen del sistema operativo.', '<b>Windows:</b> Configuración → Hora e idioma → Voz → Agregar voces.', '<b>Mac:</b> Configuración del Sistema → Accesibilidad → Contenido leído → Voz del sistema.', 'Reiniciá el navegador y aparecen en la lista <b>Voz</b>.'];
+    box.innerHTML = '<ol>' + steps.map(s => '<li>' + s + '</li>').join('') + '</ol>';
+    box.hidden = !box.hidden;
+}

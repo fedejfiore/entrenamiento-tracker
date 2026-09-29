@@ -82,13 +82,39 @@ function effectiveSetCount(ex) {
     return reps || parseWeightList(ex.weight, ex.reps).length;
 }
 
-/**
- * Series por grupo muscular entre dos fechas (AAAA-MM-DD, inclusive).
- * @param groupOf nombre de ejercicio → grupo muscular (getMuscleGroup en la app)
- * @returns { [grupo]: { sets, exercises: { [nombre]: series } } }
- */
-function muscleSetsByGroup(workouts, fromStr, toStr, groupOf) {
+// Músculos que trabajan de forma INDIRECTA en cada tipo de ejercicio (por ejemplo, el
+// tríceps en un press de pecho). Siguiendo a Pelland et al. (Sports Medicine, 2025: 67
+// estudios), cada serie indirecta cuenta como media serie ("conteo fraccionado"), que es lo
+// que mejor predice el crecimiento muscular. Reglas por nombre (sin tildes, en minúscula).
+const SECONDARY_MUSCLE_RULES = [
+    { re: /press (de )?(pecho|banca|inclinado|declinado|plano)|press cerrado|flexiones|push-?ups?|fondos(?! en banco)/, adds: { 'Tríceps': 0.5, 'Hombros': 0.5 } },
+    { re: /press (de )?hombros?|press militar|press arnold/, adds: { 'Tríceps': 0.5 } },
+    { re: /jalon (al pecho|con agarre)|dominadas|\bremo\b(?! al menton)/, adds: { 'Bíceps': 0.5 } },
+    { re: /face pull/, adds: { 'Espalda': 0.5 } },
+    { re: /sentadilla|prensa|zancada|bulgar|step ?ups?|subida al cajon/, adds: { 'Glúteos': 0.5 } },
+    { re: /peso muerto|buenos dias/, adds: { 'Glúteos': 0.5 } }
+];
+
+/** Músculos secundarios de un ejercicio: { grupo: fracción } (sin el grupo principal). */
+function secondaryMusclesFor(name, primaryGroup) {
+    const n = normalizeForCompare(name || '');
     const out = {};
+    SECONDARY_MUSCLE_RULES.forEach(r => {
+        if (!r.re.test(n)) return;
+        Object.entries(r.adds).forEach(([g, f]) => { if (g !== primaryGroup) out[g] = Math.max(out[g] || 0, f); });
+    });
+    return out;
+}
+
+/**
+ * Series por grupo muscular entre dos fechas (AAAA-MM-DD, inclusive), con conteo
+ * fraccionado: las series directas valen 1 y las indirectas 0,5.
+ * @param groupOf nombre de ejercicio → grupo muscular (getMuscleGroup en la app)
+ * @returns { [grupo]: { sets, direct, indirect, exercises: { [nombre]: series } } }
+ */
+function muscleSetsByGroup(workouts, fromStr, toStr, groupOf, secondaryOf = secondaryMusclesFor) {
+    const out = {};
+    const entry = g => (out[g] ||= { sets: 0, direct: 0, indirect: 0, exercises: {} });
     (workouts || []).forEach(w => {
         if (!w || w.deletedAt || w.type === 'tabata' || !Array.isArray(w.exercises)) return;
         if (w.date < fromStr || w.date > toStr) return;
@@ -97,9 +123,15 @@ function muscleSetsByGroup(workouts, fromStr, toStr, groupOf) {
             const n = effectiveSetCount(ex);
             if (!n) return;
             const group = groupOf(ex.name);
-            const g = (out[group] ||= { sets: 0, exercises: {} });
+            const g = entry(group);
             g.sets += n;
+            g.direct += n;
             g.exercises[ex.name] = (g.exercises[ex.name] || 0) + n;
+            Object.entries(secondaryOf(ex.name, group) || {}).forEach(([sg, f]) => {
+                const s = entry(sg);
+                s.sets += n * f;
+                s.indirect += n * f;
+            });
         });
     });
     return out;

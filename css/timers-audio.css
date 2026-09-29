@@ -218,3 +218,6 @@ body.rep-counter-open .app-main { padding-bottom: calc(340px + var(--bottom-inse
 
 /* Que la barra no tape el final de la página (ej. el botón Guardar) */
 body.rest-timer-open .app-main { padding-bottom: calc(120px + var(--bottom-inset)); }
+
+.voice-help { font-size: 13px; color: var(--text-muted); background: var(--bg-elevated); border-radius: var(--radius-sm); padding: 8px 10px 8px 26px; margin: 6px 0 10px; }
+.voice-help li { margin-bottom: 4px; }
