@@ -228,7 +228,7 @@
 }
 
 /* INPUTS & BUTTONS */
-select, input {
+select, input, textarea {
     width: 100%;
     padding: 11px 12px;
     margin-bottom: 12px;
@@ -240,7 +240,7 @@ select, input {
     color: var(--text);
 }
 
-select:focus, input:focus {
+select:focus, input:focus, textarea:focus {
     outline: none;
     border-color: var(--brand);
     box-shadow: 0 0 0 3px rgba(var(--brand-rgb), 0.15);
