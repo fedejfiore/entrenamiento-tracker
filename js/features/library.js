@@ -119,9 +119,19 @@ async function shareRoutine(key) {
 }
 
 function routineShareCodeFrom(text) {
-    const m = String(text || '').match(/#rutina=([A-Za-z0-9_-]+)/) || String(text || '').match(/^([A-Za-z0-9_-]{8,})$/);
-    return m ? m[1] : null;
+    return routineShareCodesFrom(text)[0] || null;
 }
+
+/** Todos los códigos de un texto: se pueden pegar varios links juntos (uno por rutina). */
+function routineShareCodesFrom(text) {
+    const s = String(text || '');
+    const links = [...s.matchAll(/#rutina=([A-Za-z0-9_-]+)/g)].map(m => m[1]);
+    if (links.length) return links;
+    const bare = s.trim().match(/^([A-Za-z0-9_-]{8,})$/);
+    return bare ? [bare[1]] : [];
+}
+
+let importRoutineSeq = 0;
 
 function importRoutineFromCode(code) {
     let shared;
@@ -133,7 +143,8 @@ function importRoutineFromCode(code) {
     }
     const names = shared.exercises.map(e => `• ${e.name}${e.target ? ` (${e.target.sets}×${e.target.repsMin}${e.target.repsMax !== e.target.repsMin ? '–' + e.target.repsMax : ''})` : ''}`).join('\n');
     if (!confirm(`¿Agregar la rutina "${shared.label}" a tu Biblioteca?\n\n${names}\n\nSe crea como una rutina tuya: la podés modificar cuando quieras.`)) return false;
-    const key = 'R' + Date.now().toString(36).toUpperCase();
+    // Contador además de la hora: al importar varias de una vez caen en el mismo milisegundo.
+    const key = 'R' + Date.now().toString(36).toUpperCase() + (importRoutineSeq++).toString(36).toUpperCase();
     const targets = {};
     shared.exercises.forEach(e => { if (e.target) targets[normalizeForCompare(e.name)] = e.target; });
     try {
@@ -191,11 +202,15 @@ function bindLibrary() {
         if (btn.dataset.lib === 'restore') { restoreRoutine(key); }
         if (btn.dataset.lib === 'import') {
             const input = document.getElementById('importRoutineLink');
-            const code = routineShareCodeFrom(input?.value);
-            if (!code) { showToast('Pegá el link completo que te pasaron', 'error'); return; }
-            if (importRoutineFromCode(code) && input) input.value = '';
+            const codes = routineShareCodesFrom(input?.value);
+            if (!codes.length) { showToast('Pegá el link completo que te pasaron', 'error'); return; }
+            const added = codes.filter(code => importRoutineFromCode(code)).length;
+            if (added && input) input.value = '';
+            if (codes.length > 1) showToast(`✅ ${added} de ${codes.length} rutinas agregadas`, 'success', 3000);
         }
     });
     setLibraryTab('rutinas');
     checkRoutineLinkOnStart();
+    // Con la app ya abierta, tocar un link de rutina solo cambia el #: también se ofrece importarla.
+    window.addEventListener('hashchange', checkRoutineLinkOnStart);
 }
