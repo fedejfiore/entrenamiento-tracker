@@ -134,6 +134,7 @@
                     <button type="button" role="tab" class="mode-tab" data-train-mode="rutina" aria-selected="true">🏋️ Rutina</button>
                     <button type="button" role="tab" class="mode-tab" data-train-mode="tabata" aria-selected="false">⏱️ Tabata / Intervalos</button>
                 </div>
+                <button type="button" class="wake-lock-btn" data-wake-lock onclick="toggleWakeLock()">🔅 Mantener la pantalla encendida</button>
                 <div class="train-mode" data-mode="rutina">
                     <div class="section">
                         <h2>Selecciona Rutina</h2>
@@ -414,7 +415,7 @@
                     <button type="button" id="openHelpBtn">📖 Cómo usar la app</button>
                 </div>
 
-                <div class="section" data-hint="Tema, color, unidades (kg / lb, km / mi), inicio de semana, unilaterales">
+                <div class="section" data-hint="Tema, pantalla encendida, color, unidades (kg / lb, km / mi), inicio de semana, unilaterales">
                     <h2>⚙️ General</h2>
                     <label for="themeSelect" class="settings-label">Tema</label>
                     <select id="themeSelect">
@@ -422,6 +423,8 @@
                         <option value="dark">Oscuro</option>
                         <option value="light">Claro</option>
                     </select>
+                    <label class="settings-label">Pantalla</label>
+                    <button type="button" class="wake-lock-btn" data-wake-lock onclick="toggleWakeLock()">🔅 Mantener la pantalla encendida</button>
                     <label for="weekStartSelect" class="settings-label">La semana empieza el</label>
                     <select id="weekStartSelect"></select>
                     <div class="settings-subtitle">Unidades</div>

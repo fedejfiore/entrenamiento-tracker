@@ -49,6 +49,24 @@
     color: var(--on-color);
 }
 
+/* Pantalla encendida dentro de Entrenar y Ajustes (en el celular no hay barra superior). */
+.wake-lock-btn {
+    width: 100%;
+    margin: 0 0 12px;
+    background: var(--bg-subtle);
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+.wake-lock-btn.active {
+    background: var(--brand);
+    color: var(--on-color);
+    border-color: var(--brand);
+}
+/* En la compu el botón sigue arriba; el de Entrenar sobra. */
+@media (min-width: 769px) {
+    [data-screen="entrenar"] > .wake-lock-btn { display: none; }
+}
+
 .topbar-title {
     font-family: var(--font-heading);
     font-size: 20px;

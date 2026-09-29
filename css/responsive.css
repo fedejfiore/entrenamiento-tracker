@@ -8,8 +8,11 @@
         padding: 14px 12px calc(var(--bottom-inset) + 40px);
     }
 
-    /* Un solo menú: en el celular se usa la barra de abajo (Más); el ☰ de arriba sobra. */
-    .topbar-hamburger { display: none; }
+    /* Una sola barra: en el celular se navega con la de abajo (la sección activa queda
+       resaltada), así que la de arriba se oculta y el contenido gana espacio. El botón de
+       pantalla encendida pasa a Entrenar y Ajustes. Se deja el aire de la barra de estado. */
+    .topbar { display: none; }
+    .app-main { padding-top: calc(14px + env(safe-area-inset-top, 0px)); }
 
     /* Menú lateral pensado para una mano: sale por la izquierda con las opciones abajo,
        al alcance del pulgar, y deja libre la barra de navegación. */

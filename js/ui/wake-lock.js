@@ -71,13 +71,22 @@ function releaseWakeLockNow() {
 }
 
 function updateWakeLockBtn() {
-    const btn = document.getElementById('wakeLockBtn');
-    if (!btn) return;
-    btn.textContent = wakeLockEnabled ? '🔆' : '🔅';
-    btn.classList.toggle('active', wakeLockEnabled);
-    btn.title = wakeLockEnabled
+    const title = wakeLockEnabled
         ? (wakeLockMode === 'video' ? 'Pantalla siempre encendida (modo compatibilidad)' : 'Pantalla siempre encendida (activo)')
         : 'Evitar que la pantalla se bloquee';
+    // Botón de la barra superior (compu) y los de Entrenar y Ajustes (celular, sin barra superior).
+    const top = document.getElementById('wakeLockBtn');
+    if (top) {
+        top.textContent = wakeLockEnabled ? '🔆' : '🔅';
+        top.classList.toggle('active', wakeLockEnabled);
+        top.title = title;
+    }
+    document.querySelectorAll('[data-wake-lock]').forEach(b => {
+        b.textContent = wakeLockEnabled ? '🔆 Pantalla encendida: activada' : '🔅 Mantener la pantalla encendida';
+        b.classList.toggle('active', wakeLockEnabled);
+        b.setAttribute('aria-pressed', String(wakeLockEnabled));
+        b.title = title;
+    });
 }
 
 async function toggleWakeLock() {
