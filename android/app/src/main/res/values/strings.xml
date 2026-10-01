@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Esō Agōn</string>
+    <string name="title_activity_main">Esō Agōn</string>
+    <string name="package_name">com.inquieto.esoagon</string>
+    <string name="custom_url_scheme">com.inquieto.esoagon</string>
+</resources>

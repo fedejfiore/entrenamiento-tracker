@@ -1,0 +1,50 @@
+# App de Android: en cada cambio en main, GitHub arma la app con Capacitor y deja el instalador
+# (APK) en la versión "android-ultima" del repositorio, con un link fijo para descargarlo desde
+# el celular. Es una versión de prueba (firmada con la clave de desarrollo): se instala a mano,
+# sin Google Play. Para publicar en la tienda hace falta la cuenta de desarrollador y otra firma.
+name: App Android
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: Instalar dependencias
+        run: npm install --no-audit --no-fund
+      - name: Armar los archivos de la app
+        run: node scripts/build-www.js
+      - name: Copiar a Android
+        run: npx cap sync android
+      - name: Compilar el APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+      - name: Renombrar
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk esoagon.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: esoagon-android
+          path: esoagon.apk
+      - name: Publicar en la versión "android-ultima"
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view android-ultima >/dev/null 2>&1 || gh release create android-ultima --prerelease --title "App Android (versión de prueba)" --notes "Instalador de prueba de la app para Android. Se actualiza solo con cada cambio. Para instalarlo: descargá esoagon.apk desde el celular, abrilo y permití instalar apps de esta fuente."
+          gh release upload android-ultima esoagon.apk --clobber
