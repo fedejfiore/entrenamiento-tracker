@@ -30,9 +30,7 @@ function openExerciseDetail(exName) {
     // Grupo muscular: se cambia desde acá (antes era arrastrando tarjetas en otra sección).
     const group = document.getElementById('exerciseDetailGroup');
     if (group) {
-        const current = getMuscleGroup(exName);
-        const groups = [...Object.keys(MUSCLE_GROUPS), 'Otro'];
-        group.innerHTML = groups.map(g => `<option value="${escapeHtml(g)}"${g === current ? ' selected' : ''}>${escapeHtml(((MUSCLE_GROUPS[g] || {}).icon || '📌') + ' ' + g)}</option>`).join('');
+        group.innerHTML = muscleGroupOptionsHtml(getMuscleGroup(exName));
     }
     const empty = document.getElementById('exerciseDetailEmpty');
     if (empty) empty.hidden = data.length > 0;

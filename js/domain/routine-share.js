@@ -29,7 +29,7 @@ function cleanShareText(value, max) {
         .replace(/\s+/g, ' ').trim().slice(0, max);
 }
 
-/** Rutina → código para el link. exercises: [{ name, type?, target? }] */
+/** Rutina → código para el link. exercises: [{ name, type?, target?, group? }] */
 function encodeRoutineShare({ label, exercises }) {
     const payload = {
         v: ROUTINE_SHARE_VERSION,
@@ -37,6 +37,9 @@ function encodeRoutineShare({ label, exercises }) {
         e: exercises.slice(0, ROUTINE_SHARE_LIMITS.maxExercises).map(ex => {
             const out = { n: cleanShareText(ex.name, ROUTINE_SHARE_LIMITS.maxName) };
             if (ex.type && EXERCISE_TYPES[ex.type]) out.t = ex.type;
+            // Grupo muscular: así el ejercicio suma en el mapa de quien lo recibe, aunque no
+            // esté en su catálogo. Los links viejos no lo traen y siguen funcionando.
+            if (ex.group && ex.group !== 'Otro' && MUSCLE_GROUPS[ex.group]) out.m = ex.group;
             if (ex.target) {
                 const { sets, repsMin, repsMax, rest } = ex.target;
                 out.g = [sets, repsMin, repsMax, rest];
@@ -49,7 +52,7 @@ function encodeRoutineShare({ label, exercises }) {
 
 /**
  * Código del link → rutina validada, o lanza ValidationError con un mensaje para el usuario.
- * Devuelve { label, exercises: [{ name, type, target }] }.
+ * Devuelve { label, exercises: [{ name, type, target, group }] }.
  */
 function decodeRoutineShare(code) {
     const fail = msg => { throw new ValidationError(msg); };
@@ -78,7 +81,9 @@ function decodeRoutineShare(code) {
                 target = { sets, repsMin, repsMax, rest: ok(rest, 0, 900) ? rest : 90, inc: 2.5 };
             }
         }
-        exercises.push({ name, type, target });
+        let group = typeof ex.m === 'string' && MUSCLE_GROUPS[ex.m] ? ex.m : null;
+        if (ex.m === LEGACY_LEG_GROUP) group = splitLegacyLegGroup(name);
+        exercises.push({ name, type, target, group });
     });
     if (exercises.length === 0) fail('La rutina compartida no tiene ejercicios válidos.');
     return { label, exercises };

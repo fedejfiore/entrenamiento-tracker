@@ -35,7 +35,7 @@ const BODY_FRONT = `
     <rect data-group="Core" x="42" y="58" width="16" height="38" rx="5"/>
     <ellipse data-group="Core" cx="34" cy="78" rx="4" ry="13"/><ellipse data-group="Core" cx="66" cy="78" rx="4" ry="13"/>
     <ellipse data-group="Bíceps" cx="20" cy="58" rx="5" ry="12"/><ellipse data-group="Bíceps" cx="80" cy="58" rx="5" ry="12"/>
-    <ellipse data-group="Piernas" cx="40" cy="138" rx="9" ry="25"/><ellipse data-group="Piernas" cx="60" cy="138" rx="9" ry="25"/>`;
+    <ellipse data-group="Cuádriceps" cx="40" cy="138" rx="9" ry="25"/><ellipse data-group="Cuádriceps" cx="60" cy="138" rx="9" ry="25"/>`;
 
 const BODY_BACK = `
     <ellipse data-group="Espalda" cx="50" cy="35" rx="13" ry="7"/>
@@ -44,10 +44,11 @@ const BODY_BACK = `
     <rect data-group="Espalda" x="44" y="78" width="12" height="18" rx="4"/>
     <ellipse data-group="Tríceps" cx="20" cy="58" rx="5" ry="12"/><ellipse data-group="Tríceps" cx="80" cy="58" rx="5" ry="12"/>
     <ellipse data-group="Glúteos" cx="41" cy="108" rx="10" ry="9"/><ellipse data-group="Glúteos" cx="59" cy="108" rx="10" ry="9"/>
-    <ellipse data-group="Piernas" cx="40" cy="142" rx="8" ry="22"/><ellipse data-group="Piernas" cx="60" cy="142" rx="8" ry="22"/>
+    <ellipse data-group="Isquios" cx="40" cy="142" rx="8" ry="22"/><ellipse data-group="Isquios" cx="60" cy="142" rx="8" ry="22"/>
     <ellipse data-group="Gemelos" cx="40" cy="184" rx="7" ry="16"/><ellipse data-group="Gemelos" cx="60" cy="184" rx="7" ry="16"/>`;
 
-const MAPPED_GROUPS = ['Pecho', 'Espalda', 'Hombros', 'Bíceps', 'Tríceps', 'Piernas', 'Glúteos', 'Gemelos', 'Core'];
+// Cuádriceps se ve de frente e isquios de espaldas (la cara posterior del muslo).
+const MAPPED_GROUPS = ['Pecho', 'Espalda', 'Hombros', 'Bíceps', 'Tríceps', 'Cuádriceps', 'Isquios', 'Glúteos', 'Gemelos', 'Core'];
 
 function muscleFigureSvg(regions, caption) {
     return `<figure class="muscle-figure">

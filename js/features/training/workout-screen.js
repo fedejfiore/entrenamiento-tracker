@@ -53,7 +53,8 @@ class WorkoutScreen {
     get changeActions() {
         return {
             'change-type': el => changeExerciseType(el),
-            'quick-add-type': el => { el.dataset.touched = '1'; }
+            'quick-add-type': el => { el.dataset.touched = '1'; },
+            'quick-add-group': el => { el.dataset.touched = '1'; }
         };
     }
 

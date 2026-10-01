@@ -60,7 +60,14 @@ class ExercisePreferences {
     // ---- Grupo muscular (la elección manual pisa a la taxonomía automática) ----
     muscleGroup(name) {
         const key = ExercisePreferences.key(name);
-        return this.groupOverrides[key] || EXERCISE_TO_MUSCLE_GROUP[key] || 'Otro';
+        const manual = this.groupOverrides[key];
+        if (manual === LEGACY_LEG_GROUP) return splitLegacyLegGroup(name);
+        return manual || catalogMuscleGroup(name) || 'Otro';
+    }
+
+    /** true si el grupo lo eligió la persona (y no sale del catálogo o del nombre). */
+    hasManualGroup(name) {
+        return !!this.groupOverrides[ExercisePreferences.key(name)];
     }
 
     setMuscleGroup(name, group) {

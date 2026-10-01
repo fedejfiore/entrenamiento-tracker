@@ -17,8 +17,21 @@ test('ida y vuelta: nombre, tipos y objetivos (con tildes y ñ)', () => {
     assert.match(code, /^[A-Za-z0-9_-]+$/);
     const r = plain(decode(code));
     assert.equal(r.label, 'Pierna de Ñandú');
-    assert.deepEqual(r.exercises[0], { name: 'Sentadilla búlgara', type: 'kg', target: { sets: 3, repsMin: 8, repsMax: 12, rest: 90, inc: 2.5 } });
-    assert.deepEqual(r.exercises[1], { name: 'Plancha', type: 'time', target: null });
+    assert.deepEqual(r.exercises[0], { name: 'Sentadilla búlgara', type: 'kg', target: { sets: 3, repsMin: 8, repsMax: 12, rest: 90, inc: 2.5 }, group: null });
+    assert.deepEqual(r.exercises[1], { name: 'Plancha', type: 'time', target: null, group: null });
+});
+
+test('el link lleva el grupo muscular; grupos inválidos se ignoran y "Piernas" se separa', () => {
+    const code = encode({ label: 'R', exercises: [
+        { name: 'Pullover en polea alta', group: 'Espalda' },
+        { name: 'Mi ejercicio raro', group: 'Otro' },
+        { name: 'Movimiento X', group: 'Inventado' }
+    ] });
+    const r = plain(decode(code));
+    assert.deepEqual(r.exercises.map(e => e.group), ['Espalda', null, null]);
+    // Un link armado por una versión anterior, con "Piernas"
+    const old = toB64(JSON.stringify({ v: 1, n: 'Vieja', e: [{ n: 'Curl femoral de pie', m: 'Piernas' }, { n: 'Sentadilla rara', m: 'Piernas' }] }));
+    assert.deepEqual(plain(decode(old)).exercises.map(e => e.group), ['Isquios', 'Cuádriceps']);
 });
 
 test('links dañados o manipulados se rechazan con un mensaje claro', () => {

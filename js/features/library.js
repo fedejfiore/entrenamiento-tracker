@@ -101,7 +101,7 @@ async function shareRoutine(key) {
     const label = routineLabelOf(key);
     const targets = repo.routines.targets(key);
     const exercises = routineExercisesOf(key).map(name => ({
-        name, type: getExerciseType(name, key), target: targets[normalizeForCompare(name)] || null
+        name, type: getExerciseType(name, key), target: targets[normalizeForCompare(name)] || null, group: getMuscleGroup(name)
     }));
     const url = `${location.origin}${location.pathname}#rutina=${encodeRoutineShare({ label, exercises })}`;
     const text = `Te paso mi rutina "${label}" (${exercises.length} ejercicios). Abrila en ${APP_BRAND.name} con este link:`;
@@ -150,6 +150,10 @@ function importRoutineFromCode(code) {
     try {
         repo.routines.importRoutine(key, shared.label, shared.exercises.map(e => e.name), targets);
         shared.exercises.forEach(e => { if (e.type && !exercisePrefs.hasType(e.name)) saveExerciseType(e.name, e.type); });
+        // El grupo que trae el link se usa si quien la recibe no eligió otro a mano.
+        shared.exercises.forEach(e => {
+            if (e.group && !exercisePrefs.hasManualGroup(e.name) && e.group !== catalogMuscleGroup(e.name)) saveGroupOverride(e.name, e.group);
+        });
     } catch (e) {
         showToast('No se pudo guardar la rutina: ' + e.message, 'error');
         return false;

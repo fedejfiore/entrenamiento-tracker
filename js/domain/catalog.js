@@ -139,7 +139,10 @@ const MUSCLE_GROUPS = {
     'Hombros': { icon: '🔺', exercises: ['Press de hombros', 'Press militar con mancuernas', 'Press Arnold', 'Elevaciones laterales', 'Elevaciones laterales en polea', 'Elevaciones frontales', 'Vuelos laterales unilaterales con polea baja', 'Elevación de barra al mentón', 'Remo al mentón con mancuernas'] },
     'Bíceps': { icon: '💪', exercises: ['Curl de bíceps', 'Curl martillo', 'Curl en polea baja', 'Curl concentrado', 'Curl con barra desde polea baja', 'Curl en banco Scott', 'Curl con barra scott bicep'] },
     'Tríceps': { icon: '🦾', exercises: ['Extensión de tríceps', 'Tríceps en polea', 'Press francés', 'Fondos en banco', 'Extensión en polea con cuerda', 'Patada de tríceps con mancuerna', 'Jalones de tríceps con polea alta', 'Extensión de tríceps tras nuca'] },
-    'Piernas': { icon: '🦵', exercises: ['Sentadilla goblet', 'Sentadilla con barra', 'Sentadilla', 'Sentadilla búlgara', 'Sentadilla búlgarra', 'Prensa de piernas', 'Extensión de piernas', 'Extensión de cuádriceps', 'Zancadas', 'Step ups (subida al cajón)', 'Curl de piernas', 'Curl femoral unilateral', 'Curl femoral de pie', 'Peso muerto rumano', 'Peso muerto convencional', 'Buenos días (good morning)'] },
+    // Piernas se separa en frente (cuádriceps) y atrás (isquiotibiales): una rutina solo de
+    // extensiones no trabaja los isquios, y la figura lo tiene que mostrar.
+    'Cuádriceps': { icon: '🦵', exercises: ['Sentadilla goblet', 'Sentadilla con barra', 'Sentadilla', 'Sentadilla búlgara', 'Sentadilla búlgarra', 'Prensa de piernas', 'Extensión de piernas', 'Extensión de cuádriceps', 'Zancadas', 'Step ups (subida al cajón)'] },
+    'Isquios': { icon: '🦿', exercises: ['Curl de piernas', 'Curl femoral unilateral', 'Curl femoral de pie', 'Peso muerto rumano', 'Peso muerto convencional', 'Buenos días (good morning)'] },
     'Glúteos': { icon: '🍑', exercises: ['Puente de glúteos', 'Puente de glúteos / hip thrust', 'Hip thrust'] },
     'Gemelos': { icon: '🦶', exercises: ['Gemelos de pie', 'Gemelos', 'Gemelos sentado', 'Elevación de talones en prensa'] },
     'Core': { icon: '🧱', exercises: ['Crunch en polea', 'Crunch en polea + plancha', 'Abdominales', 'Abdominales en banco declinado', 'Plancha (plank)', 'Elevación de piernas colgado', 'abdo elevacion de piernas', 'abdominal crunch 90grados', 'crunch cruzados'] },
@@ -152,4 +155,43 @@ const EXERCISE_TO_MUSCLE_GROUP = {};
 Object.entries(MUSCLE_GROUPS).forEach(([group, def]) => {
     def.exercises.forEach(name => { EXERCISE_TO_MUSCLE_GROUP[normalizeForCompare(name)] = group; });
 });
+
+// Grupo probable de un ejercicio que no está en el catálogo, por palabras del nombre (en
+// español y en inglés, para lo importado de otras apps). El orden importa: lo más específico
+// primero ("curl femoral" es isquios antes que "curl" sea bíceps; "remo ergómetro" es cardio
+// antes que "remo" sea espalda; "jalón al pecho" es espalda antes que "pecho"). Si nada coincide, null: la persona lo elige.
+const MUSCLE_GROUP_GUESSES = [
+    ['Cardio / Otro', /\b(correr|carrera|running|run|bici|bicicleta|bike|cycling|spinning|cinta|treadmill|eliptic[oa]|elliptical|ergometro|rowing machine|saltar (la )?soga|salto(s)? de soga|jump rope|futbol|partido|caminata|caminar|natacion|swim(ming)?|cardio|hiit|burpees?)\b/],
+    ['Tríceps', /tricep|press frances|skull ?crusher|push ?down|extension (en polea|tras nuca|sobre la cabeza)|overhead extension|fondos en banco|bench dips?/],
+    ['Isquios', /curl (femoral|de piernas|nordico)|leg curl|hamstring|isquio|femoral|peso muerto|deadlift|\brdl\b|buenos dias|good ?morning|nordic/],
+    ['Gemelos', /gemelo|pantorrilla|\bcalf\b|calves|talones/],
+    ['Glúteos', /hip thrust|glute|gluteo|puente|kickback|patada (de|con) gluteo|abduc/],
+    ['Core', /crunch|abdominal|\babdo|plancha|plank|sit ?ups?|elevacion(es)? de piernas|leg raises?|rueda abdominal|ab wheel|russian twist|oblicuo|\bcore\b|hollow|dead ?bug|pallof|rodillas al pecho/],
+    ['Hombros', /press (de )?hombros?|press militar|overhead press|shoulder press|\bohp\b|arnold|elevaci(on|ones) (lateral|laterales|frontal|frontales)|lateral raise|front raise|rear delt|vuelos|deltoid|al menton|upright row|hombro/],
+    ['Espalda', /jalon|pull ?down|dominada|pull ?ups?|chin ?ups?|\bremo\b|\brows?\b|pullover|face pull|espalda|\blats?\b|hiperextension|back extension|encogimiento|shrugs?/],
+    ['Pecho', /press (de )?(pecho|banca)|bench press|press (inclinado|declinado|plano)|incline press|decline press|chest|pecho|apertura|\bfly(e)?s?\b|mariposa|pec ?deck|crossover|cruces|flexiones|push ?ups?|press cerrado|dips?\b|fondos/],
+    ['Cuádriceps', /sentadilla|squat|prensa|leg press|extension de (cuadriceps|piernas)|leg extension|zancada|lunge|bulgar|step ?ups?|subida al cajon|hack|sissy|cuadriceps|quad/],
+    ['Bíceps', /curl|bicep/]
+];
+
+function guessMuscleGroup(name) {
+    const n = normalizeForCompare(name || '');
+    if (!n) return null;
+    const hit = MUSCLE_GROUP_GUESSES.find(([, re]) => re.test(n));
+    return hit ? hit[0] : null;
+}
+
+/** Grupo de un ejercicio: catálogo primero; si no está, el probable por el nombre. */
+function catalogMuscleGroup(name) {
+    return EXERCISE_TO_MUSCLE_GROUP[normalizeForCompare(name || '')] || guessMuscleGroup(name);
+}
+
+// "Piernas" ya no existe como grupo: lo que se había elegido a mano así pasa a cuádriceps o
+// isquios según el ejercicio (gemelos o glúteos si el nombre lo dice).
+const LEGACY_LEG_GROUP = 'Piernas';
+
+function splitLegacyLegGroup(name) {
+    const g = catalogMuscleGroup(name);
+    return ['Cuádriceps', 'Isquios', 'Gemelos', 'Glúteos'].includes(g) ? g : 'Cuádriceps';
+}
 

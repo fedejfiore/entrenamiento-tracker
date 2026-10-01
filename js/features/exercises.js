@@ -1,6 +1,13 @@
 // Catálogo de variantes y unificación de ejercicios duplicados.
 // Script clásico (no módulo): comparte el ámbito global con el resto de la app.
 
+/** Opciones de grupo muscular para un <select> (con un "Elegí…" si no hay ninguno elegido). */
+function muscleGroupOptionsHtml(selected, placeholder) {
+    const groups = [...Object.keys(MUSCLE_GROUPS), 'Otro'];
+    const first = placeholder ? `<option value=""${selected ? '' : ' selected'}>${escapeHtml(placeholder)}</option>` : '';
+    return first + groups.map(g => `<option value="${escapeHtml(g)}"${g === selected ? ' selected' : ''}>${escapeHtml(((MUSCLE_GROUPS[g] || {}).icon || '📌') + ' ' + g)}</option>`).join('');
+}
+
 // Catálogo de Variantes, agrupado por músculo (independiente de la rutina elegida).
 function renderVariantsCatalog() {
     const container = document.getElementById('variantsContainer');

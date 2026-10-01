@@ -90,6 +90,7 @@ function loadRoutineExercises() {
         <datalist id="exerciseNamesList"></datalist>
         <div class="quick-add-type-row">
             <select id="quickAddType" aria-label="Cómo se mide el ejercicio nuevo" data-change="quick-add-type" style="flex: 1;">${buildTypeOptionsHtml('kg')}</select>
+            <select id="quickAddGroup" aria-label="Grupo muscular del ejercicio" data-change="quick-add-group" style="flex: 1;">${muscleGroupOptionsHtml('', 'Músculo…')}</select>
             <button data-action="quick-add" style="flex: 0 0 auto; width: auto;">+ Agregar</button>
         </div>
     </div>`;
@@ -196,8 +197,13 @@ function deleteRowQuick(idx, routine) {
 function onQuickAddNameInput(routine) {
     const select = document.getElementById('quickAddType');
     const name = document.getElementById('quickAddExercise')?.value || '';
-    if (!select || select.dataset.touched) return;
-    select.value = name.trim() ? getExerciseType(name, routine) : 'kg';
+    if (select && !select.dataset.touched) select.value = name.trim() ? getExerciseType(name, routine) : 'kg';
+    // Grupo muscular: el que ya tiene el ejercicio, o el probable por el nombre.
+    const group = document.getElementById('quickAddGroup');
+    if (group && !group.dataset.touched) {
+        const known = name.trim() ? getMuscleGroup(name) : '';
+        group.value = known && known !== 'Otro' ? known : '';
+    }
 }
 
 function quickAddExercise(routine) {
@@ -206,6 +212,14 @@ function quickAddExercise(routine) {
 
     if (!rawName.trim()) {
         showToast('Escribí el nombre del ejercicio', 'error');
+        return;
+    }
+
+    // Sin grupo muscular el ejercicio no sumaría en el mapa de músculos: se pide antes.
+    const groupSelect = document.getElementById('quickAddGroup');
+    if (groupSelect && !groupSelect.value) {
+        showToast('Elegí el músculo que trabaja (o "Otro")', 'error');
+        groupSelect.focus();
         return;
     }
 
@@ -232,6 +246,14 @@ function quickAddExercise(routine) {
     if (typeSelect && (typeSelect.dataset.touched || !exercisePrefs.hasType(name))) {
         saveExerciseType(name, typeSelect.value);
     }
+    // El grupo se guarda si se eligió a mano o si el catálogo no lo conoce (si lo adivinó
+    // por el nombre, queda fijo aunque las reglas cambien).
+    const chosen = groupSelect?.value;
+    const inCatalog = !!EXERCISE_TO_MUSCLE_GROUP[normalizeForCompare(name)];
+    const keepManual = exercisePrefs.hasManualGroup(name) && !groupSelect?.dataset.touched;
+    if (chosen && !keepManual && (!inCatalog || chosen !== getMuscleGroup(name))) {
+        saveGroupOverride(name, chosen);
+    }
 
     // Agregar solo el bloque nuevo, sin reconstruir los demás: así no se pierde
     // lo que ya estaba anotado en las series de esta sesión.
@@ -249,6 +271,7 @@ function quickAddExercise(routine) {
 
     input.value = '';
     if (typeSelect) { delete typeSelect.dataset.touched; typeSelect.value = 'kg'; }
+    if (groupSelect) { delete groupSelect.dataset.touched; groupSelect.value = ''; }
     showToast('✅ Ejercicio agregado');
 }
 
