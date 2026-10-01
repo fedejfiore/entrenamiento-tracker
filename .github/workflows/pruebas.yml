@@ -1,0 +1,25 @@
+# Pruebas automáticas en cada cambio: la lógica (node --test) y la app en un navegador real
+# (Playwright, con la política de seguridad estricta). Si algo falla, GitHub lo marca en rojo.
+name: Pruebas
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Instalar dependencias
+        run: npm install --no-audit --no-fund
+      - name: Pruebas de la lógica
+        run: npm test
+      - name: Instalar el navegador
+        run: npx playwright install --with-deps chromium
+      - name: Prueba en el navegador
+        run: npm run test:e2e
