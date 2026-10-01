@@ -366,3 +366,9 @@ body.rep-counter-off .rep-count-btn { display: none; }
 .finish-prompt-mood .emoji-btn { flex: 1; }
 .finish-prompt .success { min-height: 50px; font-size: 16px; }
 .finish-prompt-keep { background: var(--bg-elevated); color: var(--text); }
+
+/* Deslizar una serie: → la tilda, ← la destilda. El scroll vertical sigue funcionando. */
+.set-row { touch-action: pan-y; transition: transform 0.15s ease, background-color 0.15s ease; border-radius: 6px; }
+.set-row.swiping { transition: none; }
+.set-row.swipe-done { background-color: color-mix(in srgb, var(--success) 30%, transparent); }
+.set-row.swipe-undo { background-color: color-mix(in srgb, var(--danger) 25%, transparent); }

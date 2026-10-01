@@ -114,6 +114,8 @@ class WorkoutScreen {
 
         // Reordenar: mantener apretados los puntos y arrastrar (o flechas con teclado).
         c.addEventListener('pointerdown', e => reorderController.onPointerDown(e));
+        // Deslizar una serie para tildarla (o destildarla).
+        bindSetSwipe(c);
         c.addEventListener('keydown', e => reorderController.onKeyDown(e));
         // En Android, mantener apretado abre el menú contextual y corta el gesto.
         c.addEventListener('contextmenu', e => { if (e.target.closest?.('.drag-handle')) e.preventDefault(); });

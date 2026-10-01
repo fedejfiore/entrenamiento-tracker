@@ -125,16 +125,16 @@ function displayWorkoutHistory() {
 
     const mode = document.getElementById('historyViewMode')?.value || 'recent';
     let visible = sessions;
-    let emptyMsg = '🗒️ Todavía no guardaste ninguna sesión. Elegí una rutina arriba y cargá tu primer entreno.';
+    let emptyMsg = emptyStateHtml('🗒️ Todavía no guardaste ninguna sesión. Empezá tu primer entrenamiento o traé tu historial de otra app.', ['train', 'import']);
 
     if (mode === 'month') {
         const month = document.getElementById('historyMonthFilter')?.value;
         visible = month ? sessions.filter(w => w.date.slice(0, 7) === month) : [];
-        if (sessions.length > 0) emptyMsg = 'No hay sesiones en ese mes.';
+        if (sessions.length > 0) emptyMsg = emptyStateHtml('No hay sesiones en ese mes.');
     } else if (mode === 'year') {
         const year = document.getElementById('historyYearFilter')?.value;
         visible = year ? sessions.filter(w => w.date.slice(0, 4) === year) : [];
-        if (sessions.length > 0) emptyMsg = 'No hay sesiones en ese año.';
+        if (sessions.length > 0) emptyMsg = emptyStateHtml('No hay sesiones en ese año.');
     } else {
         visible = sessions.slice(0, HISTORY_RECENT_COUNT);
     }
@@ -146,7 +146,7 @@ function displayWorkoutHistory() {
     const html = visible.map(renderHistoryItem).join('');
     const container = document.getElementById('workoutHistory');
     if (container) {
-        container.innerHTML = html || `<p style="color:var(--text-faint);">${emptyMsg}</p>`;
+        container.innerHTML = html || emptyMsg;
     }
     generateProgressionAnalysis();
 }
@@ -214,17 +214,19 @@ function deleteWorkout(workoutId) {
     if (!w) return;
     const routineName = customRoutineLabels[w.routine] || ROUTINE_LABELS[w.routine] || w.routine || 'entrenamiento';
     const what = w.type === 'tabata' ? 'la sesión de Tabata' : `la sesión de ${routineName}`;
-    if (!confirm(`¿Borrar ${what} del ${w.date}?\n\nDeja de aparecer en el historial y en las estadísticas.`)) return;
     try {
         repo.workouts.remove(workoutId);
     } catch (err) {
         showToast(`❌ No se pudo borrar. ${err.message}`, 'error', 6000);
         return;
     }
-    displayWorkoutHistory();
-    calculateStats();
-    updateSidebar();
-    showToast('🗑 Sesión borrada');
+    const refresh = () => { displayWorkoutHistory(); calculateStats(); updateSidebar(); };
+    refresh();
+    // Sin "¿Seguro?": el borrado es lógico, así que se puede deshacer al toque.
+    showUndoToast(`🗑 Borraste ${what} del ${w.date}`, () => {
+        repo.workouts.restore(workoutId);
+        refresh();
+    });
 }
 
 // Acciones del historial por delegación (el HTML generado no lleva código).

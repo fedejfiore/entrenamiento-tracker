@@ -144,3 +144,31 @@ function initBottomNavKeyboardHide() {
     vv.addEventListener('resize', update);
     update();
 }
+
+// ---------- Estados vacíos con acción ----------
+// Cuando una lista está vacía no alcanza con decirlo: se ofrece el paso siguiente.
+
+const EMPTY_STATE_ACTIONS = {
+    train: { label: '▶ Empezar a entrenar', run: () => (typeof startTodayRoutine === 'function' ? startTodayRoutine() : showScreen('entrenar', true)) },
+    import: { label: '📥 Traer historial de otra app', run: () => goToSection('ajustes', 'importHistorySection') },
+    'create-routine': { label: '➕ Crear una rutina', run: () => { showScreen('entrenar', true); setTimeout(() => document.getElementById('newRoutineName')?.focus(), 100); } },
+    programs: { label: '📚 Ver programas', run: () => openProgramsModal() }
+};
+
+function emptyStateHtml(text, actions = []) {
+    const buttons = actions.filter(a => EMPTY_STATE_ACTIONS[a])
+        .map(a => `<button type="button" class="small" data-empty-go="${a}">${EMPTY_STATE_ACTIONS[a].label}</button>`).join('');
+    return `<div class="empty-state"><p>${text}</p>${buttons ? `<div class="empty-state-actions">${buttons}</div>` : ''}</div>`;
+}
+
+/** Va a una pantalla y abre una sección plegable puntual. */
+function goToSection(screenId, sectionId) {
+    showScreen(screenId, true);
+    const section = document.getElementById(sectionId);
+    if (section && typeof setSectionOpen === 'function') setSectionOpen(section, true, true);
+}
+
+document.addEventListener('click', e => {
+    const el = e.target.closest?.('[data-empty-go]');
+    if (el) EMPTY_STATE_ACTIONS[el.dataset.emptyGo]?.run();
+});

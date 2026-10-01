@@ -44,7 +44,9 @@ function renderLibrary() {
     const base = Object.keys(routines).filter(k => !customRoutines[k] && visible(k));
     const set = (id, html, empty) => { const el = document.getElementById(id); if (el) el.innerHTML = html || `<p class="lib-empty">${empty}</p>`; };
 
-    set('libMyRoutines', own.map(k => libRoutineItemHtml(k)).join(''), 'Todavía no creaste rutinas. Creá una en Entrenar ("Nombre de rutina nueva") o importá una que te pasaron.');
+    const ownHtml = own.map(k => libRoutineItemHtml(k)).join('');
+    const myBox = document.getElementById('libMyRoutines');
+    if (myBox) myBox.innerHTML = ownHtml || emptyStateHtml('Todavía no creaste rutinas. Creá una, elegí un programa armado o importá una que te pasaron (abajo).', ['create-routine', 'programs']);
     const active = repo.routines.activeProgram();
     const programIntro = `<p class="lib-note">Programas armados con progresión automática (primero reps, después peso).${active ? ` En curso: <b>${escapeHtml(findProgram(active.id)?.name || '')}</b>.` : ''}</p>
         <button type="button" data-program-action="browse">📚 Ver todos los programas</button>`;
@@ -61,7 +63,7 @@ function renderLibraryExercises() {
     const byGroup = {};
     Object.keys(exerciseStats).forEach(name => { (byGroup[getMuscleGroup(name)] ||= []).push(name); });
     const order = [...Object.keys(MUSCLE_GROUPS), 'Otro'].filter(g => byGroup[g]);
-    if (!order.length) { box.innerHTML = '<p class="lib-empty">Cuando guardes sesiones, acá vas a ver cada ejercicio que hiciste, agrupado por músculo.</p>'; return; }
+    if (!order.length) { box.innerHTML = emptyStateHtml('Cuando guardes sesiones, acá vas a ver cada ejercicio que hiciste, agrupado por músculo.', ['train', 'import']); return; }
     box.innerHTML = order.map(g => `<details class="progression-group">
             <summary>${(MUSCLE_GROUPS[g] || {}).icon || '📌'} ${escapeHtml(g)} <small>(${byGroup[g].length})</small></summary>
             ${byGroup[g].sort((a, b) => a.localeCompare(b, 'es')).map(n => {
@@ -87,12 +89,16 @@ function trainRoutine(key) {
 
 function archiveRoutineFromLibrary(key) {
     const label = routineLabelOf(key);
-    if (!confirm(`¿Archivar "${label}"?\n\nNo se borra nada: deja de aparecer en el selector y la podés restaurar desde "Archivadas".`)) return;
     archivedRoutines.add(key);
     saveArchivedRoutines();
     populateRoutineOptions();
     renderLibrary();
-    showToast(`📥 "${label}" archivada`);
+    showUndoToast(`📥 "${label}" archivada`, () => {
+        archivedRoutines.delete(key);
+        saveArchivedRoutines();
+        populateRoutineOptions();
+        renderLibrary();
+    });
 }
 
 // ---------- Compartir e importar por link ----------

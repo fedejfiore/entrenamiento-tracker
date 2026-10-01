@@ -138,17 +138,19 @@ function archiveCurrentRoutine() {
     if (!routine) return;
 
     const label = customRoutineLabels[routine] || ROUTINE_LABELS[routine] || routine;
-    if (!confirm(`¿Archivar la rutina "${label}"?\n\nSe deja de ofrecer en el selector, pero no se borra nada: ejercicios, entrenamientos guardados y progreso por músculo quedan intactos. Podés volver a activarla cuando quieras desde el Reservorio en Ajustes.`)) {
-        return;
-    }
-
     archivedRoutines.add(routine);
     saveArchivedRoutines();
 
     document.getElementById('routine').value = '';
     populateRoutineOptions();
     loadRoutineExercises();
-    showToast(`📥 Rutina "${label}" archivada`);
+    showUndoToast(`📥 Rutina "${label}" archivada`, () => {
+        archivedRoutines.delete(routine);
+        saveArchivedRoutines();
+        populateRoutineOptions();
+        document.getElementById('routine').value = routine;
+        loadRoutineExercises();
+    });
 }
 
 function renderArchivedRoutinesList() {

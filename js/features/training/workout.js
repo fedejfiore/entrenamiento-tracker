@@ -179,16 +179,19 @@ function editExerciseName(idx, routine) {
 function deleteRowQuick(idx, routine) {
     const exerciseName = document.getElementById(`exname_${idx}`)?.textContent || 'Ejercicio';
     const block = document.getElementById(`row_${idx}`);
+    if (!block) return;
     const dataLabel = describeBlockSessionData(block);
-
-    if (dataLabel) {
-        if (!confirm(`⚠️ ${exerciseName}\n\nTiene ${dataLabel}.\n\nSi lo quitás ahora sin guardar, perderás estos datos.\n\n¿Seguro que querés quitarlo?`)) {
-            return;
-        }
-    }
-
-    block?.remove();
+    const parent = block.parentNode;
+    const next = block.nextSibling;
+    block.remove();
     saveWorkoutDraft();
+    // Sin "¿Seguro?": si tenía series cargadas, se puede volver atrás unos segundos.
+    if (dataLabel) {
+        showUndoToast(`${exerciseName} quitado de la sesión`, () => {
+            parent.insertBefore(block, next && next.parentNode === parent ? next : null);
+            saveWorkoutDraft();
+        });
+    }
 }
 
 // Mientras se escribe el nombre, el selector de tipo sugiere cómo medirlo (el tipo

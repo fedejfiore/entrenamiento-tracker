@@ -206,7 +206,7 @@ function generateProgressionAnalysis() {
         names = names.filter(n => inLatest.has(n));
     }
     if (names.length === 0) {
-        box.innerHTML = '<p class="progression-empty">Todavía no hay datos suficientes: cada ejercicio necesita al menos dos sesiones para compararlo.</p>';
+        box.innerHTML = emptyStateHtml('Todavía no hay datos suficientes: cada ejercicio necesita al menos dos sesiones para compararlo.', repo.workouts.all().length ? ['train'] : ['train', 'import']);
         return;
     }
 

@@ -59,7 +59,8 @@ const HELP_SECTIONS = [
                 <li><b>Desc s:</b> descanso en segundos después de esa serie. Al tocar ✓ arranca el timer con ese tiempo (90 s si está vacío).</li>
                 <li><b>RIR:</b> repeticiones que te quedaban en reserva. <b>F</b> = llegaste al fallo; 1, 2, 3, 4+ = cuántas más podrías haber hecho.</li>
                 <li><b>📝</b> agrega una nota a esa serie (ej. "se me fue la técnica").</li>
-                <li><b>+ Agregar serie</b> suma una abajo; <b>−</b> quita la última. Si estaba completada o tenía datos, te pregunta antes.</li>
+                <li><b>+ Agregar serie</b> suma una abajo; <b>−</b> quita la última. Si tenía datos, aparece <b>Deshacer</b> unos segundos por si fue sin querer (lo mismo al quitar un ejercicio, borrar una sesión o archivar una rutina).</li>
+                <li><b>Deslizar:</b> pasá el dedo por una serie hacia la derecha para tildarla, o hacia la izquierda para destildarla.</li>
                 <li><b>Calentamiento (la C):</b> tocá el número de la serie y pasa a <b>C</b>: es una serie de calentamiento o aproximación. Se guarda, pero no cuenta para volumen, récords ni el mapa de músculos. Tocá la C para volver a serie normal.</li>
                 <li><b>Nota del ejercicio:</b> abajo de las series. La nota de la última vez aparece con 💡.</li>
                 <li><b>Ejercicio terminado:</b> cuando todas sus series tienen ✓, el bloque se contrae y muestra un resumen. Tocá <b>▸</b> al lado del nombre para volver a abrirlo (y <b>▾</b> para contraerlo cuando quieras).</li>

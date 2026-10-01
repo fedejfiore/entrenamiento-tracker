@@ -89,7 +89,7 @@ function renderRecentRoutineAverages(workouts) {
 
     const allSummaries = getRecentRoutineSummaries(workouts, RECENT_ROUTINES_EXPANDED_COUNT);
     if (allSummaries.length === 0) {
-        container.innerHTML = '<small style="color:var(--text-faint);">Todavía no hay sesiones de fuerza guardadas.</small>';
+        container.innerHTML = emptyStateHtml('Todavía no hay sesiones de fuerza guardadas: acá vas a ver el peso y las reps promedio de las últimas.', ['train']);
         return;
     }
 

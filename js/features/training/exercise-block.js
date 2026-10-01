@@ -462,17 +462,20 @@ function removeLastSet(btn) {
     if (rows.length <= 1) return;
 
     const last = rows[rows.length - 1];
-    const set = readSetRow(last);
-    if (setHasAnyData(set)) {
-        const summary = formatSetValue(set, block.dataset.type);
-        const what = set.done ? 'ya está completada' : 'tiene datos cargados';
-        const which = set.warmup ? 'de calentamiento' : last.querySelector('.set-num').textContent;
-        if (!confirm(`La serie ${which} de ${getBlockName(block)} ${what}${summary ? ` (${summary})` : ''}.\n\nSi la quitás se pierden esos datos. ¿Quitarla igual?`)) return;
-    }
-
+    const hadData = setHasAnyData(readSetRow(last));
+    const parent = last.parentNode;
+    const next = last.nextSibling;
     last.remove();
     updateSetControls(block);
     saveWorkoutDraft();
+    // Sin "¿Seguro?": si tenía datos, se puede volver atrás unos segundos (vuelve tal cual).
+    if (hadData) {
+        showUndoToast(`Serie quitada de ${getBlockName(block)}`, () => {
+            parent.insertBefore(last, next && next.parentNode === parent ? next : null);
+            updateSetControls(block);
+            saveWorkoutDraft();
+        });
+    }
 }
 
 function changeExerciseType(select) {
