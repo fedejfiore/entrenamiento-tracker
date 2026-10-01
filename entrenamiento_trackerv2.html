@@ -639,6 +639,20 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="sessionSummary" role="dialog" aria-modal="true" aria-labelledby="summaryTitle">
+        <div class="modal-content session-summary">
+            <h3 id="summaryTitle">🏁 ¡Sesión guardada!</h3>
+            <p class="summary-subtitle" id="summarySubtitle"></p>
+            <div class="summary-stats" id="summaryStats"></div>
+            <div class="summary-block" id="summaryRecords" hidden></div>
+            <div class="summary-block" id="summaryNotes" hidden></div>
+            <p class="summary-week" id="summaryWeek" hidden></p>
+            <!-- Lugar del anuncio del plan gratis: solo en la app nativa (AdMob). Ver docs/PUBLICIDAD.md. -->
+            <div class="summary-ad" data-ad-slot hidden></div>
+            <button type="button" class="success" data-summary="close">Listo</button>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="finishPrompt" role="dialog" aria-modal="true" aria-labelledby="finishPromptTitle">
         <div class="modal-content finish-prompt">
             <h3 id="finishPromptTitle">🏁 ¡Terminaste todas las series!</h3>
@@ -835,6 +849,7 @@
     <script src="js/features/training/workout.js"></script>
     <script src="js/features/training/workout-screen.js"></script>
     <script src="js/features/training/finish-prompt.js"></script>
+    <script src="js/features/training/session-summary.js"></script>
     <script src="js/features/training/set-swipe.js"></script>
     <script src="js/features/training/train-mode.js"></script>
     <script src="js/features/training/supersets.js"></script>

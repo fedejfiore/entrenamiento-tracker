@@ -1721,3 +1721,19 @@ Object.assign(I18N_DICTIONARIES.pt.html, {
  "Si cambiás el peso, las reps o el descanso y las series siguientes tienen otro valor, en la misma barra aparece <b>⇊ Usar … en las series …</b>: lo copia a las que todavía no hiciste (las tildadas no se tocan). Si fue sin querer, tocá <b>Deshacer</b>.": "Se você mudar o peso, as reps ou o descanso e as séries seguintes tiverem outro valor, na mesma barra aparece <b>⇊ Usar … nas séries …</b>: copia para as que você ainda não fez (as marcadas não são tocadas). Se foi sem querer, toque em <b>Desfazer</b>."
 });
 I18N_DICTIONARIES.pt.patterns.push(["{a:tr}, {b}","{a}, {b}"]);
+
+// ---- Resumen al guardar la sesión ----
+Object.assign(I18N_DICTIONARIES.pt.text, {
+ "¡Sesión guardada!": "Sessão salva!",
+ "Récords de hoy": "Recordes de hoje",
+ "Para tener en cuenta": "Para levar em conta",
+ "¡Semana cumplida! Tu flor creció.": "Semana cumprida! Sua flor cresceu.",
+ "serie": "série",
+ "series": "séries",
+ "ejercicio": "exercício",
+ "ejercicios": "exercícios",
+ "volumen": "volume",
+ "duración": "duração"
+});
+I18N_DICTIONARIES.pt.patterns.push(["{n:num} de {m:num} entrenamientos esta semana: falta 1 para cumplirla.","{n} de {m} treinos nesta semana: falta 1 para cumpri-la."], ["{n:num} de {m:num} entrenamientos esta semana: faltan {k:num} para cumplirla.","{n} de {m} treinos nesta semana: faltam {k} para cumpri-la."]);
+Object.assign(I18N_DICTIONARIES.pt.html, {"Al guardar aparece un <b>resumen</b>: series, volumen y duración, los récords del día (con 📤 para compartir cada uno) y cuánto te falta para cumplir la semana.":"Ao salvar aparece um <b>resumo</b>: séries, volume e duração, os recordes do dia (com 📤 para compartilhar cada um) e quanto falta para cumprir a semana."});

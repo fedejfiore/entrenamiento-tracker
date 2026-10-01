@@ -58,6 +58,7 @@ class App {
         bindFeedback();
         bindGarden();
         bindFinishPrompt();
+        bindSessionSummary();
         bindImportHistory();
         bindShareSheet();
         bindPlanSection();

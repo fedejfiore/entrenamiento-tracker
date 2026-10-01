@@ -366,14 +366,8 @@ function saveWorkoutSession() {
     stopSessionTimer();
     clearWorkoutDraft();
 
-    let msg = `✅ Sesión guardada — ${exercises.length} ejercicios`;
-    if (duration) msg += `\n⏱ Duración: ${formatDuration(duration)}`;
-    if (volume > 0) msg += `\n🏋️ Volumen: ${formatWeightTotal(volume)}`;
-    if (prs.length > 0) msg += `\n\n🏆 ¡Nuevo PR!\n` + prs.map(p => `• ${p}`).join('\n');
-    if (progressNotes.length > 0) msg += `\n\n📝 Para tener en cuenta:\n` + progressNotes.map(n => `• ${n}`).join('\n');
-    const record = prs.length ? recentRecords([{ date, prs }], 1)[0] : null;
-    if (record) showActionToast(msg, 'pr', 8000, '📤 Compartir', () => openShareSheet(trophyShareSpec(record)));
-    else showToast(msg, prs.length > 0 ? 'pr' : 'success', (prs.length > 0 || progressNotes.length > 0) ? 5500 : 3200);
+    // Resumen de la sesión (series, récords para compartir, la semana del plan).
+    openSessionSummary({ routine, date, exercises, duration, volume, prs, progressNotes });
     if (prs.length > 0) speakCue(['record'], prs.length === 1 ? '¡Nuevo récord!' : `¡${prs.length} récords nuevos!`, 'records');
     document.getElementById('sessionNotes').value = '';
     document.getElementById('routine').value = '';
