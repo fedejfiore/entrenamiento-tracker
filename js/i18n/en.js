@@ -896,3 +896,30 @@ Object.assign(I18N_DICTIONARIES.en.text, {
 });
 I18N_DICTIONARIES.en.patterns.push(["{n:num} de {m:num} entrenamientos esta semana: falta 1 para cumplirla.","{n} of {m} workouts this week: 1 more to complete it."], ["{n:num} de {m:num} entrenamientos esta semana: faltan {k:num} para cumplirla.","{n} of {m} workouts this week: {k} more to complete it."]);
 Object.assign(I18N_DICTIONARIES.en.html, {"Al guardar aparece un <b>resumen</b>: series, volumen y duración, los récords del día (con 📤 para compartir cada uno) y cuánto te falta para cumplir la semana.":"When you save, a <b>summary</b> appears: sets, volume and duration, the day's records (with 📤 to share each one) and how much is left to complete the week."});
+
+// ---- Primer uso guiado ----
+Object.assign(I18N_DICTIONARIES.en.text, {
+ "← Atrás": "← Back",
+ "Siguiente →": "Next →",
+ "Primer uso": "First use",
+ "Registrá tus entrenamientos, seguí tu progreso y hacé crecer tu flor cada semana. Te preparo la app en cuatro pasos.": "Log your workouts, follow your progress and grow your flower every week. I will set up the app in four steps.",
+ "Idioma / Language / Idioma": "Idioma / Language / Idioma",
+ "¿En qué unidades entrenás?": "Which units do you train in?",
+ "Se puede cambiar cuando quieras en Ajustes → General. Tu historial no cambia.": "You can change it anytime in Settings → General. Your history does not change.",
+ "Kilómetros (km)": "Kilometers (km)",
+ "Millas (mi)": "Miles (mi)",
+ "¿Qué días entrenás?": "Which days do you train?",
+ "Con tu plan, la app te dice qué toca cada día y tu flor crece con cada semana cumplida.": "With your plan, the app tells you what is next each day and your flower grows with every completed week.",
+ "¿A qué hora, más o menos?": "At about what time?",
+ "¿Cómo querés empezar?": "How do you want to start?",
+ "Elegí una opción (después podés cambiar o sumar todas las rutinas que quieras).": "Choose an option (later you can change or add as many routines as you want).",
+ "Un programa armado": "A ready-made program",
+ "Con progresión automática: la app te dice qué peso y cuántas reps hacer.": "With automatic progression: the app tells you what weight and how many reps to do.",
+ "Una rutina básica": "A basic routine",
+ "Torso y pierna, lista para entrenar hoy.": "Upper body and legs, ready to train today.",
+ "Armar la mía": "Build my own",
+ "Le ponés nombre y le sumás tus ejercicios.": "Give it a name and add your exercises.",
+ "Traer mi historial": "Bring my history",
+ "De Hevy, Strong o Fitbod (archivo CSV).": "From Hevy, Strong or Fitbod (CSV file)."
+});
+I18N_DICTIONARIES.en.patterns.push(["¡Bienvenido a {x:name}!","Welcome to {x}!"]);

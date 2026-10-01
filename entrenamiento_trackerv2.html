@@ -639,6 +639,20 @@
         </div>
     </div>
 
+    <div class="modal-overlay onboarding" id="onboarding" role="dialog" aria-modal="true" aria-label="Primer uso">
+        <div class="modal-content onboarding-content">
+            <div class="ob-top">
+                <div class="ob-dots" id="onboardingDots" aria-hidden="true"></div>
+                <button type="button" class="small ob-skip" data-ob-action="skip">Saltar</button>
+            </div>
+            <div id="onboardingBody"></div>
+            <div class="ob-nav">
+                <button type="button" class="ob-back" data-ob-action="back">← Atrás</button>
+                <button type="button" class="success ob-next" data-ob-action="next">Siguiente →</button>
+            </div>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="sessionSummary" role="dialog" aria-modal="true" aria-labelledby="summaryTitle">
         <div class="modal-content session-summary">
             <h3 id="summaryTitle">🏁 ¡Sesión guardada!</h3>
@@ -869,6 +883,7 @@
     <script src="js/features/profile.js"></script>
     <script src="js/features/backup.js"></script>
     <script src="js/features/import-history.js"></script>
+    <script src="js/features/onboarding.js"></script>
     <script src="js/features/help.js"></script>
     <script src="js/features/feedback.js"></script>
     <script src="js/ui/collapsible.js"></script>

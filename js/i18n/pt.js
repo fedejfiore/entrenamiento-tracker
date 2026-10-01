@@ -1737,3 +1737,30 @@ Object.assign(I18N_DICTIONARIES.pt.text, {
 });
 I18N_DICTIONARIES.pt.patterns.push(["{n:num} de {m:num} entrenamientos esta semana: falta 1 para cumplirla.","{n} de {m} treinos nesta semana: falta 1 para cumpri-la."], ["{n:num} de {m:num} entrenamientos esta semana: faltan {k:num} para cumplirla.","{n} de {m} treinos nesta semana: faltam {k} para cumpri-la."]);
 Object.assign(I18N_DICTIONARIES.pt.html, {"Al guardar aparece un <b>resumen</b>: series, volumen y duración, los récords del día (con 📤 para compartir cada uno) y cuánto te falta para cumplir la semana.":"Ao salvar aparece um <b>resumo</b>: séries, volume e duração, os recordes do dia (com 📤 para compartilhar cada um) e quanto falta para cumprir a semana."});
+
+// ---- Primer uso guiado ----
+Object.assign(I18N_DICTIONARIES.pt.text, {
+ "← Atrás": "← Voltar",
+ "Siguiente →": "Próximo →",
+ "Primer uso": "Primeiro uso",
+ "Registrá tus entrenamientos, seguí tu progreso y hacé crecer tu flor cada semana. Te preparo la app en cuatro pasos.": "Registre seus treinos, acompanhe seu progresso e faça sua flor crescer a cada semana. Eu preparo o app em quatro passos.",
+ "Idioma / Language / Idioma": "Idioma / Language / Idioma",
+ "¿En qué unidades entrenás?": "Em que unidades você treina?",
+ "Se puede cambiar cuando quieras en Ajustes → General. Tu historial no cambia.": "Dá para mudar quando quiser em Ajustes → Geral. Seu histórico não muda.",
+ "Kilómetros (km)": "Quilômetros (km)",
+ "Millas (mi)": "Milhas (mi)",
+ "¿Qué días entrenás?": "Em quais dias você treina?",
+ "Con tu plan, la app te dice qué toca cada día y tu flor crece con cada semana cumplida.": "Com o seu plano, o app diz o que toca a cada dia e sua flor cresce a cada semana cumprida.",
+ "¿A qué hora, más o menos?": "Mais ou menos a que horas?",
+ "¿Cómo querés empezar?": "Como você quer começar?",
+ "Elegí una opción (después podés cambiar o sumar todas las rutinas que quieras).": "Escolha uma opção (depois você pode mudar ou adicionar quantas rotinas quiser).",
+ "Un programa armado": "Um programa pronto",
+ "Con progresión automática: la app te dice qué peso y cuántas reps hacer.": "Com progressão automática: o app diz que peso e quantas reps fazer.",
+ "Una rutina básica": "Uma rotina básica",
+ "Torso y pierna, lista para entrenar hoy.": "Tronco e pernas, pronta para treinar hoje.",
+ "Armar la mía": "Montar a minha",
+ "Le ponés nombre y le sumás tus ejercicios.": "Dê um nome e adicione seus exercícios.",
+ "Traer mi historial": "Trazer meu histórico",
+ "De Hevy, Strong o Fitbod (archivo CSV).": "Do Hevy, Strong ou Fitbod (arquivo CSV)."
+});
+I18N_DICTIONARIES.pt.patterns.push(["¡Bienvenido a {x:name}!","Bem-vindo ao {x}!"]);

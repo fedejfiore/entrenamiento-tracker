@@ -272,3 +272,30 @@ input[type="checkbox"] {
 .share-formats button.active { background: var(--brand); color: var(--on-color); }
 .share-preview { display: block; width: 100%; max-height: 52vh; object-fit: contain; border-radius: var(--radius-sm); margin-bottom: 12px; background: #0b0d12; }
 .share-download { background: var(--bg-elevated); color: var(--text); }
+
+/* ---- Primer uso guiado ---- */
+.onboarding { z-index: 2600; }
+.onboarding-content { max-width: 440px; display: flex; flex-direction: column; min-height: min(560px, 85vh); }
+.ob-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.ob-dots { display: flex; gap: 6px; }
+.ob-dots span { width: 8px; height: 8px; border-radius: 50%; background: var(--border); }
+.ob-dots span.on { background: var(--brand); width: 20px; border-radius: 4px; }
+.ob-skip { width: auto; margin: 0; background: transparent; color: var(--text-muted); }
+#onboardingBody { flex: 1; }
+#onboardingBody h3 { font-family: var(--font-heading); font-size: 22px; margin-bottom: 6px; }
+#onboardingBody p { color: var(--text-muted); font-size: 14px; margin-bottom: 12px; }
+.ob-hero { font-size: 56px; text-align: center; margin: 8px 0; }
+.ob-choices { display: flex; gap: 8px; margin-bottom: 14px; }
+.ob-choice { flex: 1; margin: 0; background: var(--bg-subtle); color: var(--text); border: 2px solid var(--border); min-height: 48px; }
+.ob-choice.on { border-color: var(--brand); background: rgba(var(--brand-rgb), 0.15); }
+.ob-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 14px; }
+.ob-day { margin: 0; padding: 12px 0; min-height: 48px; background: var(--bg-subtle); color: var(--text); border: 2px solid var(--border); font-size: 13px; }
+.ob-day.on { border-color: var(--brand); background: var(--brand); color: var(--on-color); }
+.ob-starts { display: flex; flex-direction: column; gap: 8px; }
+.ob-start { margin: 0; text-align: left; background: var(--bg-subtle); color: var(--text); border: 1px solid var(--border); padding: 12px; }
+.ob-start b { display: block; font-size: 15px; }
+.ob-start small { display: block; color: var(--text-muted); font-size: 12px; margin-top: 2px; font-weight: 400; }
+.ob-nav { display: flex; gap: 8px; margin-top: 14px; }
+.ob-nav button { flex: 1; margin: 0; min-height: 48px; }
+.ob-back { background: var(--bg-elevated); color: var(--text); }
+.ob-nav button[hidden] { display: none; }

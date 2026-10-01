@@ -61,8 +61,7 @@ function changeDistanceUnit(unit) {
     hideSetStepper();
 }
 
-// Cambiar kg / lb con series cargadas: se leen en la unidad vieja, se redibujan en la nueva y
-// se refrescan las pantallas que muestran pesos.
+// Idioma: se guarda y se recarga la app (ver setAppLanguage en js/core/i18n.js).
 function bindLanguageSelect() {
     const sel = document.getElementById('languageSelect');
     if (!sel) return;
@@ -72,6 +71,8 @@ function bindLanguageSelect() {
     sel.addEventListener('change', () => setAppLanguage(sel.value));
 }
 
+// Cambiar kg / lb con series cargadas: se leen en la unidad vieja, se redibujan en la nueva y
+// se refrescan las pantallas que muestran pesos.
 function changeWeightUnit(unit) {
     const blocks = [...document.querySelectorAll('#exercisesContainer .exercise-row')];
     const sets = blocks.map(b => readBlockSets(b));

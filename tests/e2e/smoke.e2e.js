@@ -46,6 +46,7 @@ async function newPage(browser, seed) {
         sessionStorage.setItem('seeded', '1');
         localStorage.clear();
         localStorage.setItem('schemaVersion', '3');
+        localStorage.setItem('onboardingDone', '1'); // la guía de primer uso tiene su propia prueba
         Object.entries(data || {}).forEach(([k, v]) => localStorage.setItem(k, typeof v === 'string' ? v : JSON.stringify(v)));
         window.confirm = () => true;
     }, seed);

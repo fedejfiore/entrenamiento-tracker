@@ -59,6 +59,7 @@ class App {
         bindGarden();
         bindFinishPrompt();
         bindSessionSummary();
+        bindOnboarding();
         bindImportHistory();
         bindShareSheet();
         bindPlanSection();
@@ -129,6 +130,7 @@ class App {
         initScreens();
         maybeRemindTodayPlan();
         initI18n(); // en otro idioma: traduce todo lo dibujado y queda atento a los cambios
+        maybeStartOnboarding(); // la primera vez: idioma, unidades, días y cómo empezar
     }
 
     /**
