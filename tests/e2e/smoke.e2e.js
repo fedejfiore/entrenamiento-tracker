@@ -151,6 +151,16 @@ server.listen(0, '127.0.0.1', async () => {
             check('en inglés, todas las pantallas abren sin errores', errors.length === 0, errors.join(' | '));
             await page.close();
         }
+        // 6. En portugués
+        {
+            const { page, errors } = await newPage(browser, { language: 'pt' });
+            await page.waitForFunction(() => document.documentElement.lang === 'pt' && !document.documentElement.classList.contains('i18n-pending'));
+            await visitAll(page);
+            const nav = await page.evaluate(() => [...document.querySelectorAll('.bottom-nav-item span:last-child')].map(s => s.textContent).join(','));
+            check('em português, a barra de navegação está traduzida', nav === 'Início,Treinar,Histórico,Progresso,Mais', nav);
+            check('em português, todas as telas abrem sem erros', errors.length === 0, errors.join(' | '));
+            await page.close();
+        }
     } catch (err) {
         check('la prueba terminó', false, err.stack);
     } finally {

@@ -59,3 +59,29 @@ test('emojis y símbolos adelante, puntuación al final: se traduce el centro', 
     assert.equal(t3.tr('▶ Press de pecho'), '▶ Press de pecho', 'lo que no está queda igual');
     assert.equal(t3.tr('2 semanas'), '2 semanas', 'un número adelante no se separa');
 });
+
+test('partes variables con tipo: un patrón no se pega a cualquier oración', () => {
+    const t4 = new Translator({
+        text: { 'Oro': 'Gold', 'viernes': 'Friday', 'Pecho': 'Chest', 'sesiones': 'sessions' },
+        patterns: [
+            ['{a:num} de {b:num} para {tier:tr}', '{a} of {b} for {tier}'],
+            ['{a:num} de {b:num} {u:tr} para {tier:tr}', '{a} of {b} {u} for {tier}'],
+            ['el {d:tr} a las {t:num}', '{d} at {t}'],
+            ['{g:tr}: {n:num} series', '{g}: {n} sets'],
+            ['Compartir {x:name}', 'Share {x}'],
+            ['{n:num} semanas', '{n} weeks']
+        ]
+    });
+    assert.equal(t4.tr('12 de 50 sesiones para Oro'), '12 of 50 sessions for Gold');
+    assert.equal(t4.tr('1.000 de 5.000 kg para Oro'), '1.000 of 5.000 kg for Gold');
+    assert.equal(t4.tr('12 de 50 cosas para Oro'), '12 de 50 cosas para Oro', 'la unidad tiene que traducirse');
+    assert.equal(t4.tr('12 de 50 para Oro'), '12 of 50 for Gold');
+    assert.equal(t4.tr('Al abrir la app, arriba de Inicio ves si hoy toca entrenar para empezar'), 'Al abrir la app, arriba de Inicio ves si hoy toca entrenar para empezar');
+    assert.equal(t4.tr('el viernes a las 18:00'), 'Friday at 18:00');
+    assert.equal(t4.tr('el día a las 18:00'), 'el día a las 18:00', 'si el día no se traduce, no aplica');
+    assert.equal(t4.tr('Pecho: 4 series'), 'Chest: 4 sets');
+    assert.equal(t4.tr('Compartir Rutina A - Superior'), 'Share Rutina A - Superior');
+    assert.equal(t4.tr('Compartir rutinas: tocá el link.'), 'Compartir rutinas: tocá el link.', 'una oración no es un nombre');
+    assert.equal(t4.tr('Faltan 3 semanas'), 'Faltan 3 semanas');
+    assert.equal(t4.tr('3 semanas'), '3 weeks');
+});

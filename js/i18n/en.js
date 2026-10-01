@@ -520,72 +520,73 @@ I18N_DICTIONARIES.en = {
 
     patterns: [
         ['{a} · {b}', '{a} · {b}'],
-        ['{n} de {m} entrenamientos esta semana', '{n} of {m} workouts this week'],
-        ['{n} de {m} esta semana', '{n} of {m} this week'],
-        ['{n} de {m} esta semana ✓', '{n} of {m} this week ✓'],
-        ['{a} de {b} para {tier}', '{a} of {b} for {tier}'],
-        ['{n} ejercicios', '{n} exercises'], ['1 ejercicio', '1 exercise'],
-        ['{n} series', '{n} sets'], ['1 serie', '1 set'],
-        ['{n} sesiones', '{n} sessions'], ['1 sesión', '1 session'],
-        ['{g}: {n} series', '{g}: {n} sets'],
-        ['{g}: {n} series/semana', '{g}: {n} sets/week'],
-        ['{n} series/semana', '{n} sets/week'],
-        ['({d} directas + {i} indirectas)', '({d} direct + {i} indirect)'],
+        ['{n:num} de {m:num} entrenamientos esta semana', '{n} of {m} workouts this week'],
+        ['{n:num} de {m:num} esta semana', '{n} of {m} this week'],
+        ['{n:num} de {m:num} esta semana ✓', '{n} of {m} this week ✓'],
+        ['{a:num} de {b:num} para {tier:tr}', '{a} of {b} for {tier}'],
+        ['{a:num} de {b:num} {u:tr} para {tier:tr}', '{a} of {b} {u} for {tier}'],
+        ['{n:num} ejercicios', '{n} exercises'], ['1 ejercicio', '1 exercise'],
+        ['{n:num} series', '{n} sets'], ['1 serie', '1 set'],
+        ['{n:num} sesiones', '{n} sessions'], ['1 sesión', '1 session'],
+        ['{g:tr}: {n:num} series', '{g}: {n} sets'],
+        ['{g:tr}: {n:num} series/semana', '{g}: {n} sets/week'],
+        ['{n:num} series/semana', '{n} sets/week'],
+        ['({d:num} directas + {i:num} indirectas)', '({d} direct + {i} indirect)'],
         ['última vez {d}', 'last time {d}'],
-        ['La última vez: hace {n} días', 'Last time: {n} days ago'], ['La última vez: hace 1 día', 'Last time: 1 day ago'],
-        ['faltan {n} para el rango', '{n} to reach the range'],
-        ['Del {a} al {b}', 'From {a} to {b}'],
-        ['semana en curso, quedan {n} días', 'week in progress, {n} days left'], ['semana en curso, queda 1 día', 'week in progress, 1 day left'], ['semana en curso, último día', 'week in progress, last day'],
-        ['promedio de {n} semanas', 'average of {n} weeks'],
+        ['La última vez: hace {n:num} días', 'Last time: {n} days ago'], ['La última vez: hace 1 día', 'Last time: 1 day ago'],
+        ['faltan {n:num} para el rango', '{n} to reach the range'],
+        ['Del {a:num} al {b:num}', 'From {a} to {b}'],
+        ['semana en curso, quedan {n:num} días', 'week in progress, {n} days left'], ['semana en curso, queda 1 día', 'week in progress, 1 day left'], ['semana en curso, último día', 'week in progress, last day'],
+        ['promedio de {n:num} semanas', 'average of {n} weeks'],
         ['Entrenando desde el {d}', 'Training since {d}'],
         ['Mejor racha: {n} semanas seguidas. Sesión promedio: {m} min. Tu ejercicio más hecho: {ex}.', 'Best streak: {n} weeks in a row. Average session: {m} min. Your most done exercise: {ex}.'],
         ['Próximo entrenamiento: {x}.', 'Next workout: {x}.'],
         ['Próximo: {x}.', 'Next: {x}.'],
-        ['el {d} a las {t}', '{d} at {t}'], ['hoy a las {t}', 'today at {t}'],
+        ['el {d:tr} a las {t:num}', '{d} at {t}'], ['hoy a las {t:num}', 'today at {t}'],
         ['Sesión en curso · {r} · {n} min', 'Session in progress · {r} · {n} min'],
-        ['Hoy toca entrenar · {t}', 'Time to train today · {t}'],
+        ['Hoy toca entrenar · {t:num}', 'Time to train today · {t}'],
         ['Hoy ya entrenaste. ¡Bien! Próximo: {x}.', 'You already trained today. Nice! Next: {x}.'],
         ['Hoy es día de descanso. Próximo: {x}.', 'Today is a rest day. Next: {x}.'],
-        ['Hoy toca entrenar ({t})', 'Time to train today ({t})'],
+        ['Hoy toca entrenar ({t:num})', 'Time to train today ({t})'],
         ['Últ: {x}', 'Last: {x}'], ['Máx {x}', 'Best {x}'],
-        ['Ver {n} más', 'Show {n} more'],
+        ['Ver {n:num} más', 'Show {n} more'],
         ['Cada entrenamiento la riega. {x}.', 'Every workout waters it. {x}.'],
         ['¡Semana cumplida! Ya la regaste. {x}.', 'Week done! You watered it. {x}.'],
         ['Se marchitó un poco: cumplí esta semana y se recupera. {x}.', 'It wilted a little: complete this week and it recovers. {x}.'],
-        ['Falta 1 semana para {x}', '1 week until {x}'], ['Faltan {n} semanas para {x}', '{n} weeks until {x}'],
-        ['{n} semanas libres', '{n} free weeks'], ['1 semana libre', '1 free week'],
-        ['{n} semanas cumplidas', '{n} weeks completed'], ['1 semana cumplida', '1 week completed'],
-        ['{s} · {n} frutos', '{s} · {n} fruits'], ['{s} · 1 fruto', '{s} · 1 fruit'],
-        ['Llevás {w} semanas en {x}. Probá con {y} aunque hagas menos reps.', "{w} weeks at {x}. Try {y} even if you do fewer reps."],
-        ['Llevás {w} semanas en {x}. Apuntá a {n} reps con el mismo peso antes de subir.', '{w} weeks at {x}. Aim for {n} reps at the same weight before going up.'],
-        ['Llevás {w} semanas en {x}. Apuntá a {n} reps antes de subir.', '{w} weeks at {x}. Aim for {n} reps before going up.'],
-        ['Llevás {w} semanas en {n} reps. Pasá a una variante más difícil o sumá peso (lastre).', '{w} weeks at {n} reps. Move to a harder variation or add weight.'],
+        ['Falta 1 semana para {x:tr}', '1 week until {x}'], ['Faltan {n:num} semanas para {x:tr}', '{n} weeks until {x}'],
+        ['{n:num} semanas libres', '{n} free weeks'], ['1 semana libre', '1 free week'],
+        ['{n:num} semanas cumplidas', '{n} weeks completed'], ['1 semana cumplida', '1 week completed'],
+        ['{s} · {n:num} frutos', '{s} · {n} fruits'], ['{s} · 1 fruto', '{s} · 1 fruit'],
+        ['Llevás {w:num} semanas en {x}. Probá con {y} aunque hagas menos reps.', "{w} weeks at {x}. Try {y} even if you do fewer reps."],
+        ['Llevás {w:num} semanas en {x}. Apuntá a {n:num} reps con el mismo peso antes de subir.', '{w} weeks at {x}. Aim for {n} reps at the same weight before going up.'],
+        ['Llevás {w:num} semanas en {x}. Apuntá a {n:num} reps antes de subir.', '{w} weeks at {x}. Aim for {n} reps before going up.'],
+        ['Llevás {w:num} semanas en {n:num} reps. Pasá a una variante más difícil o sumá peso (lastre).', '{w} weeks at {n} reps. Move to a harder variation or add weight.'],
         ['{x} Si sigue igual, probá una variante ({v}) o una semana más liviana (descarga).', '{x} If nothing changes, try a variation ({v}) or a lighter week (deload).'],
         ['{x} Si sigue igual, probá una variante o una semana más liviana (descarga).', '{x} If nothing changes, try a variation or a lighter week (deload).'],
         ['{ex}: {v} (antes {b})', '{ex}: {v} (was {b})'],
         ['{ex}: volumen total {v} (antes {b})', '{ex}: total volume {v} (was {b})'],
         ['{ex}: {n} reps (antes {b})', '{ex}: {n} reps (was {b})'],
         ['Peso máximo: {v}', 'Max weight: {v}'], ['Más reps: {v}', 'Most reps: {v}'], ['Volumen total: {v}', 'Total volume: {v}'],
-        ['Próxima: {tier} a {v}', 'Next: {tier} at {v}'],
-        ['Compartir medalla {x}', 'Share medal {x}'], ['Compartir el récord de {x}', 'Share the record of {x}'],
-        ['Compartir {x}', 'Share {x}'], ['Entrenar {x}', 'Train {x}'], ['Archivar {x}', 'Archive {x}'],
-        ['Contraer {x}', 'Collapse {x}'], ['Cómo se mide {x}', 'How {x} is measured'],
+        ['Próxima: {tier:tr} a {v}', 'Next: {tier} at {v}'],
+        ['Compartir medalla {x:name}', 'Share medal {x}'], ['Compartir el récord de {x:name}', 'Share the record of {x}'],
+        ['Compartir {x:name}', 'Share {x}'], ['Entrenar {x:name}', 'Train {x}'], ['Archivar {x:name}', 'Archive {x}'],
+        ['Contraer {x:name}', 'Collapse {x}'], ['Cómo se mide {x:name}', 'How {x} is measured'],
         ['Reordenar {x}: mantené apretado y arrastrá, o usá las flechas ↑ ↓', 'Reorder {x}: press and hold and drag, or use the ↑ ↓ arrows'],
         ['Borrar la sesión del {d}', 'Delete the session of {d}'],
         ['Borrar grabación de «{x}»', 'Delete recording of "{x}"'], ['Escuchar «{x}»', 'Listen to "{x}"'], ['Subir un audio para «{x}»', 'Upload audio for "{x}"'],
         ['Voz del celular: «{x}»', 'Phone voice: "{x}"'], ['«{x}»', '"{x}"'],
         ['«{x}» al guardar la sesión', '"{x}" when saving the session'],
-        ['Hora del {d}', 'Hour for {d}'], ['Minutos del {d}', 'Minutes for {d}'], ['Rutina del {d}', 'Routine for {d}'],
-        ['Reps, serie {n}', 'Reps, set {n}'], ['Peso en kg, serie {n}', 'Weight in kg, set {n}'], ['Peso en lb, serie {n}', 'Weight in lb, set {n}'],
-        ['Descanso en segundos, serie {n}', 'Rest in seconds, set {n}'], ['Distancia en km, serie {n}', 'Distance in km, set {n}'],
-        ['Tiempo en minutos:segundos, serie {n}', 'Time in minutes:seconds, set {n}'], ['Nota de la serie {n}', 'Note for set {n}'],
-        ['Reps en reserva (F = al fallo), serie {n}', 'Reps in reserve (F = to failure), set {n}'],
-        ['Serie {n} hecha', 'Set {n} done'], ['Serie {n}: marcar como calentamiento', 'Set {n}: mark as warm-up'],
-        ['{lvl} · {n} días por semana ({d}) · {w} semanas', '{lvl} · {n} days per week ({d}) · {w} weeks'],
+        ['Hora del {d:tr}', 'Hour for {d}'], ['Minutos del {d:tr}', 'Minutes for {d}'], ['Rutina del {d:tr}', 'Routine for {d}'],
+        ['Reps, serie {n:num}', 'Reps, set {n}'], ['Peso en kg, serie {n:num}', 'Weight in kg, set {n}'], ['Peso en lb, serie {n:num}', 'Weight in lb, set {n}'],
+        ['Descanso en segundos, serie {n:num}', 'Rest in seconds, set {n}'], ['Distancia en km, serie {n:num}', 'Distance in km, set {n}'],
+        ['Tiempo en minutos:segundos, serie {n:num}', 'Time in minutes:seconds, set {n}'], ['Nota de la serie {n:num}', 'Note for set {n}'],
+        ['Reps en reserva (F = al fallo), serie {n:num}', 'Reps in reserve (F = to failure), set {n}'],
+        ['Serie {n:num} hecha', 'Set {n} done'], ['Serie {n:num}: marcar como calentamiento', 'Set {n}: mark as warm-up'],
+        ['{lvl:tr} · {n:num} días por semana ({d}) · {w:num} semanas', '{lvl} · {n} days per week ({d}) · {w} weeks'],
         ['Principiante', 'Beginner'], ['Intermedio', 'Intermediate'], ['Todos', 'Everyone'],
         ['Desde el {d} · semana {a} de {b} · {n} sesiones', 'Since {d} · week {a} of {b} · {n} sessions'],
-        ['Entrenar {x}', 'Train {x}'],
-        ['{n} semanas', '{n} weeks'], ['{n} días', '{n} days'], ['{n} min', '{n} min'],
+        ['Entrenar {x:name}', 'Train {x}'],
+        ['{n:num} semanas', '{n} weeks'], ['{n:num} días', '{n} days'], ['{n:num} min', '{n} min'],
         ['⏱ {x}', '⏱ {x}']
     ]
 };
@@ -708,12 +709,12 @@ Object.assign(I18N_DICTIONARIES.en.text, {
     '±0,5 y ±1': '±0.5 and ±1', 'Esfuerzo': 'Effort', 'Suave': 'Easy', 'Media': 'Medium', 'Alta': 'Hard', 'Máx': 'Max'
 });
 I18N_DICTIONARIES.en.patterns.push(
-    ['Día {x}', 'Day {x}'],
-    ['{n} s por rep', '{n} s per rep'],
-    ['{n} / semana', '{n} / week'],
+    ['Día {x:name}', 'Day {x}'],
+    ['{n:num} s por rep', '{n} s per rep'],
+    ['{n:num} / semana', '{n} / week'],
     ['Duración prom.: {x}', 'Avg. length: {x}'], ['Volumen prom.: {x}', 'Avg. volume: {x}'],
-    ['{n} sesiónes', '{n} sessions'],
-    ['+{n} más', '+{n} more']
+    ['{n:num} sesiónes', '{n} sessions'],
+    ['+{n:num} más', '+{n} more']
 );
 
 // ---- Tercera parte: voz (todos los estilos), avisos, ventanas del sistema y títulos de secciones ----
@@ -802,7 +803,7 @@ Object.assign(I18N_DICTIONARIES.en.text, {
     'Nuevo nombre para la rutina:': 'New name for the routine:'
 });
 I18N_DICTIONARIES.en.patterns.push(
-    ['¡{n} récords nuevos!', '{n} new records!'],
+    ['¡{n:num} récords nuevos!', '{n} new records!'],
     ['antes {x}', 'was {x}'],
     ['¡Gané la medalla de {t} en {x}! ({v})', 'I earned the {t} medal in {x}! ({v})'],
     ['¡Nuevo récord en {x}: {v}!', 'New record in {x}: {v}!'],
@@ -815,7 +816,7 @@ I18N_DICTIONARIES.en.patterns.push(
     ['{n}: tiempo en {u}', '{n}: time in {u}'],
     ['"{n}" restaurado a la rutina', '"{n}" restored to the routine'],
     ['"{n}" agregada a tus rutinas', '"{n}" added to your routines'],
-    ['{a} de {b} rutinas agregadas', '{a} of {b} routines added'],
+    ['{a:num} de {b:num} rutinas agregadas', '{a} of {b} routines added'],
     ['Rutina "{n}" restaurada', 'Routine "{n}" restored'],
     ['Rutina "{n}" creada. Agregá tu primer ejercicio con "+ Agregar" abajo.', 'Routine "{n}" created. Add your first exercise with "+ Add" below.'],
     ['Rutina renombrada a "{n}"', 'Routine renamed to "{n}"'],
@@ -837,8 +838,8 @@ I18N_DICTIONARIES.en.patterns.push(
     ['Borraste {x} del {d}', 'You deleted {x} of {d}'], ['la sesión de {r}', 'the {r} session'], ['la sesión de Tabata', 'the Tabata session'],
     ['"{n}" archivada', '"{n}" archived'], ['Rutina "{n}" archivada', 'Routine "{n}" archived'],
     ['{n} → {g}', '{n} → {g}'],
-    ['{n} sesiones importadas de {s}', '{n} sessions imported from {s}'], ['1 sesión importada de {s}', '1 session imported from {s}'],
-    ['Sesión guardada — {n} ejercicios', 'Session saved — {n} exercises'], ['Duración: {d}', 'Length: {d}'], ['Volumen: {v}', 'Volume: {v}'],
+    ['{n:num} sesiones importadas de {s:name}', '{n} sessions imported from {s}'], ['1 sesión importada de {s}', '1 session imported from {s}'],
+    ['Sesión guardada — {n:num} ejercicios', 'Session saved — {n} exercises'], ['Duración: {d}', 'Length: {d}'], ['Volumen: {v}', 'Volume: {v}'],
     ['"{a}" y "{b}" van a quedar unificados como un solo ejercicio.', '"{a}" and "{b}" will be merged into a single exercise.'],
     ['Esto renombra "{a}" a "{b}" en TODAS las rutinas donde aparece y en todo el historial de sesiones ya guardadas, para que las estadísticas se junten.',
         'This renames "{a}" to "{b}" in ALL the routines where it appears and in the whole history of saved sessions, so the stats are combined.'],
@@ -851,3 +852,31 @@ I18N_DICTIONARIES.en.patterns.push(
     ['¿Usar también los días del programa en tu plan semanal ({d})?', "Also use the program's days in your weekly plan ({d})?"],
     ['Tiene {d} en esta sesión (sin guardar). Si lo archivás ahora se pierden.', 'It has {d} in this session (unsaved). If you archive it now, they are lost.']
 );
+
+// ---- Usar el mismo valor en las series siguientes ----
+I18N_DICTIONARIES.en.patterns.push(
+    ['Usar {v} en las series {a:num} a {b:num}', 'Use {v} in sets {a} to {b}'],
+    ['Usar {v} en la serie {n:num}', 'Use {v} in set {n}'],
+    ['Usar {v} en las series {l}', 'Use {v} in sets {l}'],
+    ['{v} en {n:num} series más', '{v} in {n} more sets'],
+    ['{v} en 1 serie más', '{v} in 1 more set'],
+    ['{n:num} s de descanso', '{n} s rest']
+);
+
+// ---- Textos que faltaban (octubre de 2026) ----
+Object.assign(I18N_DICTIONARIES.en.text, {
+ "Al abrir la app, arriba de Inicio ves si hoy toca entrenar (con la rutina sugerida para empezar de un toque), si ya entrenaste o si es día de descanso.": "When you open the app, at the top of Home you see whether it is a training day (with the suggested routine to start in one tap), whether you already trained or whether it is a rest day.",
+ "Al tocar un campo de una serie aparece debajo una barra para subir o bajar sin escribir:": "When you tap a field of a set, a bar appears below to go up or down without typing:",
+ "Cada ejercicio tiene un rango de reps. Con el mismo peso vas sumando reps; cuando llegás al tope en todas las series, la app te sugiere subir el peso y volver al mínimo. Los valores sugeridos aparecen en gris: tildá ✓ para usarlos.": "Each exercise has a rep range. With the same weight you keep adding reps; when you reach the top in every set, the app suggests raising the weight and going back to the minimum. Suggested values appear in gray: tick ✓ to use them.",
+ "Cambia las frases y el tono de la voz: neutro, tierno, militar, motivador o calma. Si grabaste o subiste un audio para un aviso (Mis grabaciones), suena ese.": "It changes the phrases and the tone of the voice: neutral, gentle, drill sergeant, motivating or calm. If you recorded or uploaded an audio for an alert (My recordings), that one plays.",
+ "Cuatro sesiones: dos de torso y dos de pierna. Cada músculo se entrena dos veces por semana, dentro del rango ideal de series.": "Four sessions: two upper body and two legs. Each muscle is trained twice a week, within the ideal set range.",
+ "El peso máximo que podrías levantar una sola vez, calculado a partir de tus series (fórmula de Epley). Sirve para comparar tu fuerza aunque cambies peso y reps.": "The maximum weight you could lift once, calculated from your sets (Epley formula). It lets you compare your strength even if you change weight and reps.",
+ "Grabá tu voz (o la de quien quieras) para cada aviso: hasta 5 segundos, y el silencio del principio y del final se recorta solo. Lo que no grabes lo dice la voz del celular; los números siempre los dice la voz del celular. Las grabaciones quedan en este celular y se incluyen en el backup.": "Record your voice (or anyone's) for each alert: up to 5 seconds, and the silence at the start and end is trimmed automatically. Whatever you do not record is said by the phone voice; numbers are always said by the phone voice. Recordings stay on this phone and are included in the backup.",
+ "Marca esa serie como de calentamiento. Se guarda, pero no cuenta para récords, volumen ni el mapa de músculos. Tocá la C de nuevo para que vuelva a ser una serie normal.": "It marks that set as a warm-up. It is saved, but it does not count for records, volume or the muscle map. Tap the C again to turn it back into a normal set.",
+ "Se me escondieron las series de los ejercicios.": "The sets of my exercises got hidden.",
+ "Una app web no puede sonar de forma confiable con la pantalla bloqueada. Tocá 🔅 Mantener la pantalla encendida (al principio de Entrenar) para que no se apague mientras entrenás.": "A web app cannot ring reliably with the screen locked. Tap 🔅 Keep the screen on (at the top of Train) so it does not turn off while you train."
+});
+Object.assign(I18N_DICTIONARIES.en.html, {
+ "Si cambiás el peso, las reps o el descanso y las series siguientes tienen otro valor, en la misma barra aparece <b>⇊ Usar … en las series …</b>: lo copia a las que todavía no hiciste (las tildadas no se tocan). Si fue sin querer, tocá <b>Deshacer</b>.": "If you change the weight, reps or rest and the following sets have a different value, <b>⇊ Use … in sets …</b> appears in the same bar: it copies it to the ones you have not done yet (ticked ones are not touched). If it was a mistake, tap <b>Undo</b>."
+});
+I18N_DICTIONARIES.en.patterns.push(["{a:tr}, {b}","{a}, {b}"]);

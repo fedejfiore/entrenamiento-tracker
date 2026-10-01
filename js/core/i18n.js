@@ -42,15 +42,25 @@ class Translator {
         this.text = new Map(Object.entries(dict?.text || {}));
         this.html = new Map(Object.entries(dict?.html || {}));
         // {nombre} → grupo de captura; lo demás, literal. Los más largos primero (más específicos).
+        // Con tipo, la parte variable tiene que ser de esa clase (si no, el patrón no aplica y
+        // no "se pega" a cualquier oración que tenga las mismas palabras de unión):
+        //   {n:num}   un número, hora o fecha, con unidad opcional (12, 82,5kg, 18:00, 25/9)
+        //   {x:name}  un nombre (sin puntuación de oración)
+        //   {d:tr}    algo que también está en el diccionario (un día, un nivel, un músculo)
         this.patterns = (dict?.patterns || [])
             .map(([from, to]) => {
                 const names = [];
-                const re = from.split(/(\{\w+\})/).map(part => {
-                    const m = part.match(/^\{(\w+)\}$/);
-                    if (m) { names.push(m[1]); return '(.+?)'; }
-                    return part.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const types = [];
+                const re = from.split(/(\{\w+(?::\w+)?\})/).map(part => {
+                    const m = part.match(/^\{(\w+)(?::(\w+))?\}$/);
+                    if (!m) return part.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    names.push(m[1]);
+                    types.push(m[2] || null);
+                    if (m[2] === 'num') return '(\\d[\\d.,/:]*(?:\\s?(?:kg|lb|km|mi|min|s|h|%|reps?|km/h|mph))?)';
+                    if (m[2] === 'name') return '([^.:;!?¿¡]{1,80}?)';
+                    return '(.+?)';
                 }).join('');
-                return { re: new RegExp(`^${re}$`, 's'), names, to, len: from.length };
+                return { re: new RegExp(`^${re}$`, 's'), names, types, to, len: from.length };
             })
             .sort((a, b) => b.len - a.len);
     }
@@ -66,7 +76,13 @@ class Translator {
             const m = key.match(p.re);
             if (!m) continue;
             const values = {};
-            p.names.forEach((n, i) => { values[n] = this.lookup(m[i + 1], depth + 1) ?? m[i + 1]; });
+            let ok = true;
+            p.names.forEach((n, i) => {
+                const translated = this.lookup(m[i + 1], depth + 1);
+                if (p.types[i] === 'tr' && translated == null) ok = false;
+                values[n] = translated ?? m[i + 1];
+            });
+            if (!ok) continue;
             return p.to.replace(/\{(\w+)\}/g, (all, n) => (n in values ? values[n] : all));
         }
         // Emojis y símbolos adelante ("📤 Compartir", "▶ Entrenar") o puntuación al final
