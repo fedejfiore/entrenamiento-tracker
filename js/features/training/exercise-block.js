@@ -155,6 +155,7 @@ function buildExerciseRowHtml(idx, ex, routine) {
                         <span class="exercise-last">${buildLastSummaryText(stats, type)}</span>
                     </div>
                     ${programTargetLineHtml(routine, ex)}
+                    ${stallHintHtml(routine, ex, type)}
                     ${stats.lastNote ? `<small style="color:var(--brand); font-style:italic; display:block; margin-top:3px;">💡 ${escapeHtml(stats.lastNote)}</small>` : ''}
                 </div>
                 <div class="exercise-row-actions">

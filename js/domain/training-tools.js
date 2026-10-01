@@ -230,3 +230,56 @@ function nextInSuperset(orderedNames, letterOf, currentName) {
     const i = members.indexOf(currentName);
     return i >= 0 && i < members.length - 1 ? members[i + 1] : null;
 }
+
+// ---------- Estancamiento ----------
+// Si un ejercicio lleva varias semanas sin mejorar (ni más peso ni más reps con ese peso),
+// se sugiere qué cambiar. No es "sumar por sumar": se mira la mejor serie de cada sesión.
+
+const STALL_RULES = { minWeeks: 3, minSessions: 3, variantWeeks: 6, defaultRepsMax: 12, bodyweightRepsMax: 20 };
+
+/** Mejor serie de una sesión: más peso y, con ese peso, más reps (las de calentamiento no cuentan). */
+function topSetOf(sets, type) {
+    const work = (sets || [])
+        .filter(s => s && !s.warmup)
+        .map(s => ({ reps: parseInt(s.reps, 10) || 0, kg: parseDecimal(s.kg) || 0 }))
+        .filter(s => s.reps > 0);
+    if (!work.length) return null;
+    const kg = type === 'bw' ? 0 : Math.max(...work.map(s => s.kg));
+    const atTop = type === 'bw' ? work : work.filter(s => s.kg === kg);
+    return { kg, reps: Math.max(...atTop.map(s => s.reps)), totalReps: atTop.reduce((a, s) => a + s.reps, 0) };
+}
+
+function topSetBetter(a, b) {
+    if (a.kg !== b.kg) return a.kg > b.kg;
+    return a.reps > b.reps || a.totalReps > b.totalReps;
+}
+
+/**
+ * ¿Está estancado? sessions: [{ date: 'AAAA-MM-DD', sets }] de un ejercicio, en cualquier orden.
+ * @param opts { type: 'kg'|'bw', today: Date, repsMax }
+ * @returns null si no hay estancamiento, o { weeks, sessions, kg, reps, action: 'weight'|'reps'|'harder', variant: bool }
+ */
+function detectStall(sessions, { type = 'kg', today = new Date(), repsMax } = {}) {
+    if (type !== 'kg' && type !== 'bw') return null;
+    const list = (sessions || [])
+        .map(s => ({ date: s.date, top: topSetOf(s.sets, type) }))
+        .filter(s => s.date && s.top)
+        .sort((a, b) => a.date.localeCompare(b.date));
+    if (list.length < STALL_RULES.minSessions + 1) return null;
+    // Última vez que mejoró. Si bajó el peso más de un 10 % (descarga, otra máquina, un dato
+    // raro), la comparación arranca de nuevo desde ahí: volver a subir también es progreso.
+    let best = list[0].top;
+    let bestIndex = 0;
+    list.forEach((s, i) => {
+        if (i === 0) return;
+        const reset = type === 'bw' ? s.top.reps < best.reps * 0.7 : s.top.kg < best.kg * 0.9;
+        if (reset || topSetBetter(s.top, best)) { best = s.top; bestIndex = i; }
+    });
+    const since = list.length - 1 - bestIndex;
+    const days = Math.floor((today - new Date(list[bestIndex].date + 'T00:00:00')) / 86400000);
+    const weeks = Math.floor(days / 7);
+    if (since < STALL_RULES.minSessions || weeks < STALL_RULES.minWeeks) return null;
+    const top = type === 'bw' ? STALL_RULES.bodyweightRepsMax : (repsMax || STALL_RULES.defaultRepsMax);
+    const action = type === 'bw' ? (best.reps >= top ? 'harder' : 'reps') : (best.reps >= top ? 'weight' : 'reps');
+    return { weeks, sessions: since, kg: best.kg, reps: best.reps, action, variant: weeks >= STALL_RULES.variantWeeks };
+}

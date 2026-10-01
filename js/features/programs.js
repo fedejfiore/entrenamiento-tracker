@@ -53,6 +53,47 @@ function programTargetLineHtml(routineKey, name) {
     return `<small class="program-target program-${s.action}">🎯 ${sets} × ${range} · ${escapeHtml(s.text)}</small>`;
 }
 
+// ---- Estancamiento (con o sin programa) ----
+
+/** Sesiones anteriores de un ejercicio, medidas igual que ahora: [{ date, sets }]. */
+function exerciseSessionsFor(name, type) {
+    const key = normalizeForCompare(name);
+    const out = [];
+    repo.workouts.all().forEach(w => {
+        if (!w || w.deletedAt || !Array.isArray(w.exercises)) return;
+        w.exercises.forEach(e => {
+            if (!e || normalizeForCompare(e.name || '') !== key || (e.type || type) !== type) return;
+            // Las sesiones viejas guardan textos ("12-10-8"): se pasan a series.
+            const sets = Array.isArray(e.sets) && e.sets.length ? e.sets : setsFromLegacy(e, type);
+            if (sets.length) out.push({ date: w.date, sets });
+        });
+    });
+    return out;
+}
+
+/** Aviso en Entrenar cuando un ejercicio lleva semanas sin mejorar, con qué cambiar. */
+function stallHintHtml(routineKey, name, type) {
+    const target = getExerciseTarget(routineKey, name);
+    const stall = detectStall(exerciseSessionsFor(name, type), { type, today: new Date(), repsMax: target?.repsMax });
+    if (!stall) return '';
+    const weeks = `${stall.weeks} semanas`;
+    let text;
+    if (stall.action === 'harder') {
+        text = `Llevás ${weeks} en ${stall.reps} reps. Pasá a una variante más difícil o sumá peso (lastre).`;
+    } else if (stall.action === 'weight') {
+        const next = kgToDisplay(stall.kg) + displayIncrement(targetIncrement(name, { inc: 2.5 }));
+        text = `Llevás ${weeks} en ${formatWeight(stall.kg, ' ')} × ${stall.reps}. Probá con ${formatNumber(Math.round(next * 100) / 100)} ${weightUnitDef().label} aunque hagas menos reps.`;
+    } else {
+        const what = type === 'bw' ? `${stall.reps} reps` : `${formatWeight(stall.kg, ' ')} × ${stall.reps}`;
+        text = `Llevás ${weeks} en ${what}. Apuntá a ${stall.reps + 1} reps${type === 'bw' ? '' : ' con el mismo peso'} antes de subir.`;
+    }
+    if (stall.variant) {
+        const variants = (EXERCISE_VARIANTS[name] || []).slice(0, 2);
+        text += ` Si sigue igual, probá ${variants.length ? `una variante (${variants.join(' o ')})` : 'una variante'} o una semana más liviana (descarga).`;
+    }
+    return `<small class="stall-hint">📈 ${escapeHtml(text)}</small>`;
+}
+
 // ---- Programa en curso ----
 
 function programDayKeys(program) {

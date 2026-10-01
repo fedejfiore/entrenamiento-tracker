@@ -157,3 +157,41 @@ test('conteo fraccionado: las series indirectas valen media serie', () => {
     const secondary = app('secondaryMusclesFor');
     assert.deepEqual(plain(secondary('Remo al mentón', 'Hombros')), {}, 'remo al mentón no es un remo de espalda');
 });
+
+test('estancamiento: 3 semanas y 3 sesiones sin más peso ni más reps', () => {
+    const detect = app('detectStall');
+    const today = new Date(2026, 8, 30);
+    const s = (date, kg, reps, n = 3) => ({ date, sets: Array.from({ length: n }, () => ({ kg: String(kg), reps: String(reps) })) });
+    // Mejoró el 1/9 (40×12) y después repitió lo mismo 3 veces: estancado, sugiere subir peso.
+    const flat = [s('2026-08-20', 37.5, 12), s('2026-09-01', 40, 12), s('2026-09-08', 40, 12), s('2026-09-15', 40, 11), s('2026-09-22', 40, 12)];
+    const r = JSON.parse(JSON.stringify(detect(flat, { today })));
+    assert.deepEqual([r.action, r.kg, r.reps, r.weeks, r.sessions, r.variant], ['weight', 40, 12, 4, 3, false]);
+    // Con un objetivo de 15 reps, todavía tocan reps
+    assert.equal(detect(flat, { today, repsMax: 15 }).action, 'reps');
+    // Si en la última sesión hizo una rep más, no está estancado
+    assert.equal(detect([...flat, s('2026-09-29', 40, 13, 1)], { today }), null);
+    // Más peso también es mejora
+    assert.equal(detect([...flat, s('2026-09-29', 42.5, 8)], { today }), null);
+    // Pocas semanas o pocas sesiones: todavía no
+    assert.equal(detect(flat.slice(0, 4), { today: new Date(2026, 8, 16) }), null);
+    // Un dato aislado más pesado no deja "estancado" a quien progresa con menos peso
+    const outlier = [s('2026-08-01', 15, 12), s('2026-08-08', 25, 12, 2), s('2026-08-23', 15, 15), s('2026-09-04', 15, 15, 4), s('2026-09-12', 18, 15), s('2026-09-22', 18, 17), s('2026-09-27', 20, 15)];
+    assert.equal(detect(outlier, { today }), null);
+    // ...pero si después de bajar repite lo mismo 3 semanas, sí
+    assert.equal(detect([s('2026-08-01', 25, 12), s('2026-08-20', 15, 15), s('2026-08-27', 15, 15), s('2026-09-03', 15, 15), s('2026-09-10', 15, 14)], { today }).kg, 15);
+    // 6 semanas o más: sugiere también una variante
+    assert.equal(detect([...flat, s('2026-10-10', 40, 12)], { today: new Date(2026, 9, 14) }).variant, true);
+});
+
+test('estancamiento: no cuentan calentamientos; con peso corporal se miran las reps', () => {
+    const detect = app('detectStall');
+    const today = new Date(2026, 8, 30);
+    const bw = (date, reps) => ({ date, sets: [{ reps: String(reps) }, { reps: String(reps - 2) }] });
+    const r = detect([bw('2026-08-25', 20), bw('2026-09-01', 20), bw('2026-09-10', 19), bw('2026-09-20', 20)], { type: 'bw', today });
+    assert.equal(r.action, 'harder');
+    // Un calentamiento con más peso no cuenta como mejora
+    const s = (date, kg, reps, warm) => ({ date, sets: [{ kg: '20', reps: '10' }, ...(warm ? [{ kg: String(kg), reps: String(reps), warmup: true }] : [])] });
+    assert.ok(detect([s('2026-08-25'), s('2026-09-01', 50, 5, true), s('2026-09-10'), s('2026-09-20')], { today }));
+    // Tiempo o distancia: no aplica
+    assert.equal(detect([s('2026-08-25'), s('2026-09-01'), s('2026-09-10'), s('2026-09-20')], { type: 'time', today }), null);
+});

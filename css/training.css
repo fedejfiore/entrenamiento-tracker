@@ -353,3 +353,6 @@ body.rep-counter-off .rep-count-btn { display: none; }
 @media (max-width: 768px) {
     .section.exercises-section { padding: 8px 6px; }
 }
+
+/* Aviso de estancamiento: varias semanas sin más peso ni más reps. */
+.stall-hint { display: block; margin-top: 3px; font-size: 12px; color: var(--text); background: rgba(var(--brand-rgb), 0.12); border-left: 3px solid var(--brand); border-radius: 4px; padding: 4px 6px; }
