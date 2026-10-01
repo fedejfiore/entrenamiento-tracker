@@ -73,6 +73,15 @@ function planTimeSelectsHtml(w, value, on) {
         </span>`;
 }
 
+// Qué rutina toca ese día (opcional): "Automática" deja que la app la elija.
+function planRoutineSelectHtml(w, plan, on) {
+    const current = plan.routineFor(w.n) || '';
+    const options = [...document.querySelectorAll('#routine option')].filter(o => o.value)
+        .map(o => `<option value="${escapeHtml(o.value)}"${o.value === current ? ' selected' : ''}>${escapeHtml(o.textContent)}</option>`).join('');
+    return `<select class="plan-routine" data-day="${w.n}" aria-label="Rutina del ${w.long}"${on ? '' : ' disabled'}>
+            <option value="">Rutina: automática</option>${options}</select>`;
+}
+
 function renderPlanEditor(plan) {
     const editor = document.getElementById('planEditor');
     if (!editor) return;
@@ -84,6 +93,7 @@ function renderPlanEditor(plan) {
                     <span>${w.short}</span>
                 </label>
                 ${planTimeSelectsHtml(w, plan.timeFor(w.n) || DEFAULT_PLAN_TIME, on)}
+                ${planRoutineSelectHtml(w, plan, on)}
             </div>`;
     }).join('');
     const remind = document.getElementById('planRemind');
@@ -121,9 +131,13 @@ function renderPlanCalendar(plan) {
 
 let todayCardChoice = null; // rutina elegida a mano en la tarjeta (solo por hoy)
 
-function todayRoutineKey() {
+function todayRoutineKey(weekday = new Date().getDay()) {
     const keys = [...document.querySelectorAll('#routine option')].map(o => o.value).filter(Boolean);
     if (todayCardChoice && keys.includes(todayCardChoice)) return todayCardChoice;
+    const planned = getCurrentPlan().routineFor(weekday);
+    if (planned && keys.includes(planned)) return planned;
+    const byName = keys.filter(k => routineLabelMatchesWeekday(routineLabelOf(k), weekday));
+    if (byName.length === 1) return byName[0];
     const active = repo.routines.activeProgram();
     const program = active && findProgram(active.id);
     if (program) {
@@ -178,7 +192,8 @@ function renderTodayCard(plan) {
             <button type="button" class="success today-go" data-today="continue">▶ Seguir entrenando</button>`;
         return;
     }
-    const key = todayRoutineKey();
+    const nextDay = (state === 'rest' || state === 'done') ? plan.nextSession(state === 'done' ? (() => { const t = new Date(); t.setHours(24, 0, 0, 0); return t; })() : new Date()) : null;
+    const key = todayRoutineKey(nextDay ? nextDay.weekday : weekday);
     if (!key) {
         card.innerHTML = `<div class="today-head">${head}</div><small>Creá tu primera rutina en Entrenar o elegí un programa.</small>`;
         return;
@@ -198,7 +213,7 @@ function renderTodayCard(plan) {
 }
 
 function startTodayRoutine() {
-    const key = todayRoutineKey();
+    const key = document.querySelector('#todayPlanBanner .today-pick')?.value || todayRoutineKey();
     if (!key) return;
     showScreen('entrenar', true);
     const sel = document.getElementById('routine');
@@ -228,7 +243,9 @@ function readPlanFromEditor() {
     const times = {};
     document.querySelectorAll('#planEditor .plan-time').forEach(el => { times[el.dataset.day] = `${el.querySelector('.plan-hh').value}:${el.querySelector('.plan-mm').value}`; });
     const remind = parseInt(document.getElementById('planRemind')?.value, 10);
-    return new TrainingPlan({ days, times, remind });
+    const routines = {};
+    document.querySelectorAll('#planEditor .plan-routine').forEach(el => { if (el.value) routines[el.dataset.day] = el.value; });
+    return new TrainingPlan({ days, times, remind, routines });
 }
 
 function savePlanFromEditor() {
@@ -279,7 +296,7 @@ function bindPlanSection() {
         if (!e.target.classList.contains('day-plan-checkbox')) return;
         const row = e.target.closest('.plan-day');
         row.classList.toggle('on', e.target.checked);
-        row.querySelectorAll('.plan-time select').forEach(s => { s.disabled = !e.target.checked; });
+        row.querySelectorAll('.plan-time select, .plan-routine').forEach(s => { s.disabled = !e.target.checked; });
     });
     const onAction = e => {
         const el = e.target.closest('[data-plan-action]');

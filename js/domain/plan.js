@@ -25,12 +25,18 @@ const REMIND_OPTIONS = [[0, 'A la hora'], [15, '15 min antes'], [30, '30 min ant
 const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
 
 class TrainingPlan {
-    constructor({ days = [], times = {}, remind = DEFAULT_REMIND_MINUTES } = {}) {
+    constructor({ days = [], times = {}, remind = DEFAULT_REMIND_MINUTES, routines = {} } = {}) {
         this.days = [...new Set(days.map(Number).filter(d => d >= 0 && d <= 6))].sort((a, b) => a - b);
         this.times = {};
         this.days.forEach(d => { this.times[d] = TIME_RE.test(times[d] || '') ? times[d] : DEFAULT_PLAN_TIME; });
         this.remind = Number.isFinite(Number(remind)) ? Math.max(0, Number(remind)) : DEFAULT_REMIND_MINUTES;
+        // Rutina elegida para cada día (opcional): solo de los días del plan.
+        this.routines = {};
+        this.days.forEach(d => { if (typeof routines?.[d] === 'string' && routines[d]) this.routines[d] = routines[d]; });
     }
+
+    /** Rutina elegida para ese día de la semana, o null si la decide la app. */
+    routineFor(weekday) { return this.routines[weekday] || null; }
 
     get isEmpty() { return this.days.length === 0; }
 
@@ -42,7 +48,11 @@ class TrainingPlan {
         return new TrainingPlan(applicable.length ? applicable[applicable.length - 1] : {});
     }
 
-    toJSON() { return { days: this.days, times: this.times, remind: this.remind }; }
+    toJSON() {
+        const out = { days: this.days, times: this.times, remind: this.remind };
+        if (Object.keys(this.routines).length) out.routines = this.routines;
+        return out;
+    }
 
     sameAs(other) { return JSON.stringify(this.toJSON()) === JSON.stringify(other.toJSON()); }
 
@@ -74,6 +84,19 @@ class TrainingPlan {
         }
         return null;
     }
+}
+
+/**
+ * ¿El nombre de la rutina dice el día? "Torso C (jue)", "Pierna sábado", "Lunes - pecho".
+ * Sirve para proponerla ese día cuando el plan no tiene una rutina asignada.
+ */
+function routineLabelMatchesWeekday(label, weekday) {
+    const w = WEEKDAYS.find(x => x.n === weekday);
+    if (!w || !label) return false;
+    const n = normalizeForCompare(label);
+    const short = normalizeForCompare(w.short);
+    const long = normalizeForCompare(w.long);
+    return new RegExp(`(^|[^a-z])(${short}|${long})([^a-z]|$)`).test(n);
 }
 
 // ---------- Calendario ----------

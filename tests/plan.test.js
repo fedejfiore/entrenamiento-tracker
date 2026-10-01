@@ -65,3 +65,27 @@ test('Google Calendar: un link por horario con la repetición semanal', () => {
     assert.equal(url.searchParams.get('recur'), 'RRULE:FREQ=WEEKLY;BYDAY=MO,WE');
     assert.equal(url.searchParams.get('dates'), '20260928T190000/20260928T200000');
 });
+
+test('rutina por día: solo de los días del plan, y se guarda solo si hay alguna', () => {
+    const P = app('TrainingPlan');
+    const p = new P({ days: [4, 0], times: { 4: '18:00' }, routines: { 4: 'R1', 2: 'R9', 0: '' } });
+    assert.equal(p.routineFor(4), 'R1');
+    assert.equal(p.routineFor(2), null);
+    assert.equal(p.routineFor(0), null);
+    assert.deepEqual(JSON.parse(JSON.stringify(p.toJSON().routines)), { 4: 'R1' });
+    // Un plan sin rutinas guarda igual que antes (los planes viejos no "cambian")
+    assert.equal('routines' in new P({ days: [1] }).toJSON(), false);
+    assert.ok(new P({ days: [1] }).sameAs(new P({ days: [1], routines: {} })));
+});
+
+test('el nombre de la rutina dice el día', () => {
+    const m = app('routineLabelMatchesWeekday');
+    assert.equal(m('Torso C (jue)', 4), true);
+    assert.equal(m('Torso C (Jue)', 4), true);
+    assert.equal(m('Pierna sábado', 6), true);
+    assert.equal(m('Pierna + hombro (sáb)', 6), true);
+    assert.equal(m('Torso A (dom)', 4), false);
+    assert.equal(m('Lunes - pecho', 1), true);
+    assert.equal(m('Marcha y trote', 2), false, '"mar" dentro de otra palabra no cuenta');
+    assert.equal(m('Rutina A', 4), false);
+});

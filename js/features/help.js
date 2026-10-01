@@ -265,6 +265,7 @@ const HELP_SECTIONS = [
         html: `
             <ol>
                 <li>En <b>Inicio → Mi plan semanal</b>, tildá los días que entrenás y elegí la hora y los minutos de cada uno (puede ser distinto cada día).</li>
+                <li>En cada día podés elegir <b>qué rutina toca</b>. Si lo dejás en "automática", la tarjeta de Inicio propone la rutina que tenga ese día en el nombre (por ejemplo "Torso C (jue)"), la del programa en curso o la que hace más que no hacés.</li>
                 <li>Elegí con cuánta anticipación querés el aviso y tocá <b>💾 Guardar plan</b>.</li>
                 <li>Agregalo a tu calendario: <b>📅 Google Calendar</b> (un botón por cada horario) o <b>📥 Agregar al calendario del celular</b> (iPhone y otros calendarios).</li>
             </ol>

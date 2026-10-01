@@ -101,3 +101,6 @@
 .today-card .today-go { flex: 1 1 60%; width: auto; margin: 0; min-height: 48px; font-size: 16px; }
 .today-pick { flex: 1 1 40%; min-width: 0; margin: 0; }
 .today-card .today-secondary { background: var(--bg-elevated); color: var(--text); border: 1px solid var(--border); }
+.plan-day { flex-wrap: wrap; }
+.plan-routine { flex: 1 1 100%; margin: 4px 0 0; font-size: 13px; padding: 6px 8px; }
+@media (min-width: 560px) { .plan-routine { flex: 1 1 160px; margin: 0; } }
