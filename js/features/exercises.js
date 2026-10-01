@@ -19,13 +19,13 @@ function renderVariantsCatalog() {
     groupOrder.forEach(group => {
         const icon = MUSCLE_GROUPS[group].icon;
         const gid = `mg_${normalizeForCompare(group).replace(/[^a-z0-9]+/g, '_')}`;
-        html += `<div class="collapsible" onclick="toggleVariantGroup('${gid}')">▶ ${icon} ${escapeHtml(group)}</div>
+        html += `<div class="collapsible" ${fnAttrs('toggleVariantGroup', gid)}>▶ ${icon} ${escapeHtml(group)}</div>
         <div class="collapsible-content" id="${gid}">`;
 
         byGroup[group].forEach((ex, idx) => {
             const variants = EXERCISE_VARIANTS[ex] || [];
             const uid = `${gid}_ex_${idx}`;
-            html += `<div class="collapsible" style="margin-left:12px;" onclick="event.stopPropagation(); toggleVariantGroup('${uid}')">▶ ${escapeHtml(ex)}</div>
+            html += `<div class="collapsible" style="margin-left:12px;" ${fnAttrs('toggleVariantGroup', uid)}>▶ ${escapeHtml(ex)}</div>
             <div class="collapsible-content" id="${uid}" style="margin-left:12px;">`;
             if (variants.length === 0) {
                 html += `<a href="${escapeHtml(youtubeSearchUrl(ex + ' alternativas'))}" target="_blank" rel="noopener noreferrer">🔍 Buscar alternativas a "${escapeHtml(ex)}"</a>`;

@@ -5,7 +5,7 @@
     <!-- Sin viewport-fit=cover: con eso Chrome en Android dibuja la página debajo de los botones
          del sistema al esconder su barra y la barra de navegación de abajo quedaba tapada. -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src 'self'; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src 'self'; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
     <meta name="referrer" content="no-referrer">
     <title>Esō Agōn by Inquieto</title>
     <link rel="manifest" href="manifest.json">
@@ -35,23 +35,23 @@
 <body>
     <div class="app-shell">
         <header class="topbar">
-            <button type="button" class="topbar-hamburger" onclick="toggleDrawer()" aria-label="Abrir menú">☰</button>
+            <button type="button" class="topbar-hamburger" data-fn-click="toggleDrawer" aria-label="Abrir menú">☰</button>
             <div class="topbar-title" id="topbarTitle">Inicio</div>
-            <button type="button" class="topbar-theme-toggle" id="wakeLockBtn" onclick="toggleWakeLock()" aria-label="Evitar que la pantalla se bloquee">🔅</button>
+            <button type="button" class="topbar-theme-toggle" id="wakeLockBtn" data-fn-click="toggleWakeLock" aria-label="Evitar que la pantalla se bloquee">🔅</button>
         </header>
 
-        <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+        <div class="drawer-overlay" id="drawerOverlay" data-fn-click="closeDrawer"></div>
         <nav class="drawer" id="drawer">
             <div class="drawer-brand">Esō Agōn<small>by Inquieto</small></div>
             <div id="drawerNav"></div>
         </nav>
 
         <nav class="bottom-nav" id="bottomNav" aria-label="Secciones principales">
-            <button type="button" class="bottom-nav-item" data-nav-target="inicio" onclick="showScreen('inicio', true)"><span class="nav-icon" aria-hidden="true">🏠</span><span>Inicio</span></button>
-            <button type="button" class="bottom-nav-item" data-nav-target="entrenar" onclick="showScreen('entrenar', true)"><span class="nav-icon" aria-hidden="true">🏋️</span><span>Entrenar</span></button>
-            <button type="button" class="bottom-nav-item" data-nav-target="historial" onclick="showScreen('historial', true)"><span class="nav-icon" aria-hidden="true">📋</span><span>Historial</span></button>
-            <button type="button" class="bottom-nav-item" data-nav-target="progreso" onclick="showScreen('progreso', true)"><span class="nav-icon" aria-hidden="true">📊</span><span>Progreso</span></button>
-            <button type="button" class="bottom-nav-item" data-nav-more onclick="toggleDrawer()" aria-label="Más secciones"><span class="nav-icon" aria-hidden="true">☰</span><span>Más</span></button>
+            <button type="button" class="bottom-nav-item" data-nav-target="inicio" data-fn-click="showScreen" data-fn-args='["inicio",true]'><span class="nav-icon" aria-hidden="true">🏠</span><span>Inicio</span></button>
+            <button type="button" class="bottom-nav-item" data-nav-target="entrenar" data-fn-click="showScreen" data-fn-args='["entrenar",true]'><span class="nav-icon" aria-hidden="true">🏋️</span><span>Entrenar</span></button>
+            <button type="button" class="bottom-nav-item" data-nav-target="historial" data-fn-click="showScreen" data-fn-args='["historial",true]'><span class="nav-icon" aria-hidden="true">📋</span><span>Historial</span></button>
+            <button type="button" class="bottom-nav-item" data-nav-target="progreso" data-fn-click="showScreen" data-fn-args='["progreso",true]'><span class="nav-icon" aria-hidden="true">📊</span><span>Progreso</span></button>
+            <button type="button" class="bottom-nav-item" data-nav-more data-fn-click="toggleDrawer" aria-label="Más secciones"><span class="nav-icon" aria-hidden="true">☰</span><span>Más</span></button>
         </nav>
 
         <main class="app-main">
@@ -72,7 +72,7 @@
                         <div class="stat-label">Duración sesión actual</div>
                         <div class="stat-value" id="currentSessionDuration">-</div>
                     </div>
-                    <div class="stat-box" style="cursor:pointer;" onclick="startSuggestedRoutine()" title="Tocar para empezar esta rutina">
+                    <div class="stat-box" style="cursor:pointer;" data-fn-click="startSuggestedRoutine" title="Tocar para empezar esta rutina">
                         <div class="stat-label">🎯 Rutina sugerida (la que hace más que no hacés)</div>
                         <div class="stat-value" id="suggestedRoutine" style="font-size: 15px;">-</div>
                     </div>
@@ -116,9 +116,9 @@
                 <div class="section" data-hint="Los días que entrenaste, mes a mes" data-open="1">
                     <h2>📆 Calendario de Entrenamientos</h2>
                     <div class="calendar-nav">
-                        <button type="button" class="small" style="width:auto;" onclick="changeCalendarMonth(-1)">◀</button>
+                        <button type="button" class="small" style="width:auto;" data-fn-click="changeCalendarMonth" data-fn-args='[-1]'>◀</button>
                         <span class="calendar-month-label" id="calendarMonthLabel"></span>
-                        <button type="button" class="small" style="width:auto;" onclick="changeCalendarMonth(1)">▶</button>
+                        <button type="button" class="small" style="width:auto;" data-fn-click="changeCalendarMonth" data-fn-args='[1]'>▶</button>
                     </div>
                     <div id="trainingCalendar"></div>
                 </div>
@@ -136,11 +136,11 @@
                     <button type="button" role="tab" class="mode-tab" data-train-mode="rutina" aria-selected="true">🏋️ Rutina</button>
                     <button type="button" role="tab" class="mode-tab" data-train-mode="tabata" aria-selected="false">⏱️ Tabata / Intervalos</button>
                 </div>
-                <button type="button" class="wake-lock-btn" data-wake-lock onclick="toggleWakeLock()">🔅 Mantener la pantalla encendida</button>
+                <button type="button" class="wake-lock-btn" data-wake-lock data-fn-click="toggleWakeLock">🔅 Mantener la pantalla encendida</button>
                 <div class="train-mode" data-mode="rutina">
                     <div class="section">
                         <h2>Selecciona Rutina</h2>
-                        <select id="routine" onchange="loadRoutineExercises(); saveWorkoutDraft();">
+                        <select id="routine" data-fn-change="loadRoutineExercises saveWorkoutDraft">
                             <option value="">Elige una rutina...</option>
                             <option value="A">Rutina A - Superior</option>
                             <option value="B">Rutina B - Inferior</option>
@@ -149,22 +149,22 @@
                         </select>
                         <div style="display: flex; gap: 10px; margin-bottom: 8px;">
                             <input type="text" id="newRoutineName" placeholder="Nombre de rutina nueva (ej: Fútbol, Yoga, Boxeo)" style="flex: 1; margin-bottom: 0;">
-                            <button onclick="createNewRoutine()" style="width: auto; flex: 0 0 auto; margin-bottom: 0;">➕ Crear</button>
+                            <button data-fn-click="createNewRoutine" style="width: auto; flex: 0 0 auto; margin-bottom: 0;">➕ Crear</button>
                         </div>
                         <div style="display: flex; gap: 10px; margin-bottom: 8px;">
-                            <button class="small" id="btnRenameRoutine" onclick="renameRoutine()" style="display:none; width: auto;">✏️ Renombrar</button>
-                            <button class="danger small" id="btnDeleteRoutine" onclick="archiveCurrentRoutine()" style="display:none; width: auto;">📥 Archivar esta rutina</button>
+                            <button class="small" id="btnRenameRoutine" data-fn-click="renameRoutine" style="display:none; width: auto;">✏️ Renombrar</button>
+                            <button class="danger small" id="btnDeleteRoutine" data-fn-click="archiveCurrentRoutine" style="display:none; width: auto;">📥 Archivar esta rutina</button>
                         </div>
                         <div style="display: flex; gap: 10px; margin-bottom: 8px;">
-                            <button id="btnStartRoutine" class="success" onclick="startRoutineManually()">▶ Iniciar Rutina</button>
-                            <button id="btnFinishRoutine" class="danger" onclick="finishRoutineManually()" style="display:none;">⏹ Finalizar Rutina</button>
+                            <button id="btnStartRoutine" class="success" data-fn-click="startRoutineManually">▶ Iniciar Rutina</button>
+                            <button id="btnFinishRoutine" class="danger" data-fn-click="finishRoutineManually" style="display:none;">⏹ Finalizar Rutina</button>
                         </div>
                         <div id="routineTimeStatus" style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;"></div>
-                        <a href="#" id="btnResetRoutineTimer" onclick="event.preventDefault(); resetRoutineTimer();" style="display:none; font-size: 12px; color: var(--danger);">↺ Reiniciar marcado de tiempo</a>
+                        <a href="#" id="btnResetRoutineTimer" data-fn-click="resetRoutineTimer" data-fn-prevent style="display:none; font-size: 12px; color: var(--danger);">↺ Reiniciar marcado de tiempo</a>
                         <div class="music-row">
                             <span class="music-row-label">🎵 Música</span>
-                            <button type="button" class="small" onclick="openMusic('spotify')">Spotify</button>
-                            <button type="button" class="small" onclick="openMusic('ytmusic')">YouTube Music</button>
+                            <button type="button" class="small" data-fn-click="openMusic" data-fn-args='["spotify"]'>Spotify</button>
+                            <button type="button" class="small" data-fn-click="openMusic" data-fn-args='["ytmusic"]'>YouTube Music</button>
                         </div>
                     </div>
 
@@ -184,8 +184,8 @@
                         </div>
                         <label for="workoutDate" style="display:block; font-size:12px; color:var(--text-muted); margin-bottom:4px;">Fecha de la sesión</label>
                         <input type="date" id="workoutDate">
-                        <input type="text" id="sessionNotes" placeholder="Notas de la sesión (opcional)" oninput="saveWorkoutDraft()">
-                        <button class="success" onclick="saveWorkoutSession()" style="font-size: 16px; padding: 14px;">✅ GUARDAR SESIÓN</button>
+                        <input type="text" id="sessionNotes" placeholder="Notas de la sesión (opcional)" data-fn-input="saveWorkoutDraft">
+                        <button class="success" data-fn-click="saveWorkoutSession" style="font-size: 16px; padding: 14px;">✅ GUARDAR SESIÓN</button>
                     </div>
                 </div>
                 <div class="train-mode" data-mode="tabata" hidden>
@@ -207,9 +207,9 @@
                                 <input type="number" id="tabataRounds" value="8" min="1">
                             </div>
                         </div>
-                        <button class="success" onclick="startTabata()" style="font-size: 16px; padding: 14px;">▶ Iniciar Bloque</button>
+                        <button class="success" data-fn-click="startTabata" style="font-size: 16px; padding: 14px;">▶ Iniciar Bloque</button>
                         <div id="tabataSessionBlocks" style="margin-top: 10px;"></div>
-                        <button class="danger" id="btnFinishTabataSession" onclick="finishTabataSession()" style="display:none; font-size: 16px; padding: 14px;">⏹ Finalizar Sesión Tabata</button>
+                        <button class="danger" id="btnFinishTabataSession" data-fn-click="finishTabataSession" style="display:none; font-size: 16px; padding: 14px;">⏹ Finalizar Sesión Tabata</button>
                     </div>
                 </div>
             </div>
@@ -220,13 +220,13 @@
                     <h2>📋 Historial</h2>
                     <div id="workoutSummary" style="margin-bottom: 10px;"></div>
                     <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:12px;">
-                        <select id="historyViewMode" onchange="onHistoryViewModeChange()" style="width:auto;">
+                        <select id="historyViewMode" data-fn-change="onHistoryViewModeChange" style="width:auto;">
                             <option value="recent">🕐 Últimas sesiones</option>
                             <option value="month">📅 Por mes</option>
                             <option value="year">🗓️ Por año</option>
                         </select>
-                        <select id="historyMonthFilter" style="width:auto; display:none;" onchange="displayWorkoutHistory()"></select>
-                        <select id="historyYearFilter" style="width:auto; display:none;" onchange="displayWorkoutHistory()"></select>
+                        <select id="historyMonthFilter" style="width:auto; display:none;" data-fn-change="displayWorkoutHistory"></select>
+                        <select id="historyYearFilter" style="width:auto; display:none;" data-fn-change="displayWorkoutHistory"></select>
                     </div>
                     <div id="workoutHistory"></div>
                 </div>
@@ -263,7 +263,7 @@
                     </div>
                     <div class="progression-controls">
                         <label for="progressionTimeframe">Comparar contra:</label>
-                        <select id="progressionTimeframe" onchange="generateProgressionAnalysis()">
+                        <select id="progressionTimeframe" data-fn-change="generateProgressionAnalysis">
                             <option value="last">Sesión anterior</option>
                             <option value="1">Hace 1 mes</option>
                             <option value="3">Hace 3 meses</option>
@@ -287,26 +287,26 @@
                     <input type="number" step="0.1" id="bodyWaist" placeholder="Cintura (cm)">
                     <label for="bodyPhoto" class="settings-label">📷 Foto de progreso (opcional)</label>
                     <input type="file" id="bodyPhoto" accept="image/*">
-                    <button class="success" onclick="saveBodyMetrics()">➕ Agregar Medición</button>
+                    <button class="success" data-fn-click="saveBodyMetrics">➕ Agregar Medición</button>
                 </div>
 
                 <div class="section" data-hint="Gráfico e historial de tus medidas">
                     <h2>📊 Evolución</h2>
                     <div style="font-size: 13px; margin-bottom: 12px;">
-                        <label><input type="checkbox" id="metric_weight" checked onchange="updateBodyChart()"> Peso</label>
-                        <label><input type="checkbox" id="metric_fat" checked onchange="updateBodyChart()"> Grasa</label>
-                        <label><input type="checkbox" id="metric_muscle" checked onchange="updateBodyChart()"> Músculo</label>
-                        <label><input type="checkbox" id="metric_water" onchange="updateBodyChart()"> Agua</label>
-                        <label><input type="checkbox" id="metric_waist" onchange="updateBodyChart()"> Cintura</label>
+                        <label><input type="checkbox" id="metric_weight" checked data-fn-change="updateBodyChart"> Peso</label>
+                        <label><input type="checkbox" id="metric_fat" checked data-fn-change="updateBodyChart"> Grasa</label>
+                        <label><input type="checkbox" id="metric_muscle" checked data-fn-change="updateBodyChart"> Músculo</label>
+                        <label><input type="checkbox" id="metric_water" data-fn-change="updateBodyChart"> Agua</label>
+                        <label><input type="checkbox" id="metric_waist" data-fn-change="updateBodyChart"> Cintura</label>
                     </div>
                     <div style="display: flex; gap: 10px; align-items: flex-end;">
                         <div style="flex: 1;">
                             <label style="display:block; font-size:11px; color:var(--text-muted); margin-bottom:2px;">Escala Y mín. (vacío = auto)</label>
-                            <input type="number" id="bodyChartYMin" placeholder="Auto" onchange="updateBodyChart()">
+                            <input type="number" id="bodyChartYMin" placeholder="Auto" data-fn-change="updateBodyChart">
                         </div>
                         <div style="flex: 1;">
                             <label style="display:block; font-size:11px; color:var(--text-muted); margin-bottom:2px;">Escala Y máx. (vacío = auto)</label>
-                            <input type="number" id="bodyChartYMax" placeholder="Auto" onchange="updateBodyChart()">
+                            <input type="number" id="bodyChartYMax" placeholder="Auto" data-fn-change="updateBodyChart">
                         </div>
                     </div>
                     <div class="chart-large">
@@ -426,7 +426,7 @@
                         <option value="light">Claro</option>
                     </select>
                     <label class="settings-label">Pantalla</label>
-                    <button type="button" class="wake-lock-btn" data-wake-lock onclick="toggleWakeLock()">🔅 Mantener la pantalla encendida</button>
+                    <button type="button" class="wake-lock-btn" data-wake-lock data-fn-click="toggleWakeLock">🔅 Mantener la pantalla encendida</button>
                     <label for="weekStartSelect" class="settings-label">La semana empieza el</label>
                     <select id="weekStartSelect"></select>
                     <div class="settings-subtitle">Unidades</div>
@@ -459,7 +459,7 @@
                     <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Se usa para avisar cuando termina el descanso entre series y en los bloques de Tabata.</div>
 
                     <label style="display:block; font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Tipo de sonido</label>
-                    <select id="soundType" onchange="saveSoundSettings()">
+                    <select id="soundType" data-fn-change="saveSoundSettings">
                         <option value="classic">🔔 Clásico (3 beeps)</option>
                         <option value="sharp">📯 Fuerte / agudo</option>
                         <option value="chime">🎐 Campana (2 tonos)</option>
@@ -468,45 +468,45 @@
                     <div class="settings-hint">¿Querés otro sonido? En <b>Mis grabaciones</b>, tocá 📁 en «¡Vamos! A la próxima serie» y subí el que quieras (por ejemplo, un tono del celular). En la app instalable desde Google Play vas a poder elegir directamente los sonidos del sistema.</div>
 
                     <label style="display:block; font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:6px;">Volumen: <span id="soundVolumeLabel">100%</span></label>
-                    <input type="range" id="soundVolume" min="0" max="100" step="5" value="100" oninput="onSoundVolumeInput()" style="width:100%; margin-bottom:12px;">
+                    <input type="range" id="soundVolume" min="0" max="100" step="5" value="100" data-fn-input="onSoundVolumeInput" style="width:100%; margin-bottom:12px;">
 
-                    <button type="button" onclick="testSound()">▶ Probar sonido</button>
+                    <button type="button" data-fn-click="testSound">▶ Probar sonido</button>
                 </div>
 
                 <div class="section" data-hint="Qué avisos se dicen, voz, velocidad y contador de reps">
                     <h2>🗣️ Voz y avisos</h2>
                     <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">La app te habla con la voz del celular (funciona sin internet). Cada aviso se activa o desactiva por separado. En iPhone, el interruptor de silencio puede apagar la voz.</div>
                     <div id="voiceSettingsBox">
-                        <label class="toggle-row"><input type="checkbox" data-voice="enabled" onchange="onVoiceSettingChange(this)"><span><strong>Voz activada</strong></span></label>
+                        <label class="toggle-row"><input type="checkbox" data-voice="enabled" data-fn-change="onVoiceSettingChange" data-fn-args='["$this"]'><span><strong>Voz activada</strong></span></label>
                         <div id="voiceOptions">
                             <div class="settings-subtitle">Descanso entre series</div>
-                        <label class="toggle-row"><input type="checkbox" data-voice="restWarn" onchange="onVoiceSettingChange(this)"><span>Avisar cuando quedan 10 segundos</span></label>
-                        <label class="toggle-row"><input type="checkbox" data-voice="restEnd" onchange="onVoiceSettingChange(this)"><span>Avisar el final («¡Vamos! A la próxima serie»)</span></label>
+                        <label class="toggle-row"><input type="checkbox" data-voice="restWarn" data-fn-change="onVoiceSettingChange" data-fn-args='["$this"]'><span>Avisar cuando quedan 10 segundos</span></label>
+                        <label class="toggle-row"><input type="checkbox" data-voice="restEnd" data-fn-change="onVoiceSettingChange" data-fn-args='["$this"]'><span>Avisar el final («¡Vamos! A la próxima serie»)</span></label>
                             <div class="settings-subtitle">Contador de reps</div>
-                        <label class="toggle-row"><input type="checkbox" data-voice="repCounter" onchange="onVoiceSettingChange(this)"><span>Botón «▶ Contar reps» en cada ejercicio</span></label>
-                        <label class="toggle-row"><input type="checkbox" data-voice="countAloud" onchange="onVoiceSettingChange(this)"><span>Decir el número de cada rep</span></label>
-                        <label class="toggle-row"><input type="checkbox" data-voice="encourage" onchange="onVoiceSettingChange(this)"><span>Ánimo: «la mitad», «quedan cinco», «quedan dos», «¡última!»</span></label>
+                        <label class="toggle-row"><input type="checkbox" data-voice="repCounter" data-fn-change="onVoiceSettingChange" data-fn-args='["$this"]'><span>Botón «▶ Contar reps» en cada ejercicio</span></label>
+                        <label class="toggle-row"><input type="checkbox" data-voice="countAloud" data-fn-change="onVoiceSettingChange" data-fn-args='["$this"]'><span>Decir el número de cada rep</span></label>
+                        <label class="toggle-row"><input type="checkbox" data-voice="encourage" data-fn-change="onVoiceSettingChange" data-fn-args='["$this"]'><span>Ánimo: «la mitad», «quedan cinco», «quedan dos», «¡última!»</span></label>
                             <label class="range-label">Tiempo para prepararte antes de arrancar: <strong id="voicePrepLabel"></strong></label>
-                            <input type="range" min="3" max="15" step="1" data-voice="prepSeconds" oninput="onVoiceSettingChange(this)">
+                            <input type="range" min="3" max="15" step="1" data-voice="prepSeconds" data-fn-input="onVoiceSettingChange" data-fn-args='["$this"]'>
                             <label class="range-label">Cadencia inicial: <strong id="voiceTempoLabel"></strong></label>
-                            <input type="range" min="1" max="8" step="0.5" data-voice="tempo" oninput="onVoiceSettingChange(this)">
+                            <input type="range" min="1" max="8" step="0.5" data-voice="tempo" data-fn-input="onVoiceSettingChange" data-fn-args='["$this"]'>
                             <div class="settings-hint">Mientras contás podés hacerla más lenta o más rápida; queda guardada para ese ejercicio.</div>
                             <div class="settings-subtitle">Otros</div>
-                        <label class="toggle-row"><input type="checkbox" data-voice="tabata" onchange="onVoiceSettingChange(this)"><span>Tabata: trabajo, descanso, última ronda y 3-2-1</span></label>
-                        <label class="toggle-row"><input type="checkbox" data-voice="records" onchange="onVoiceSettingChange(this)"><span>«¡Nuevo récord!» al guardar la sesión</span></label>
+                        <label class="toggle-row"><input type="checkbox" data-voice="tabata" data-fn-change="onVoiceSettingChange" data-fn-args='["$this"]'><span>Tabata: trabajo, descanso, última ronda y 3-2-1</span></label>
+                        <label class="toggle-row"><input type="checkbox" data-voice="records" data-fn-change="onVoiceSettingChange" data-fn-args='["$this"]'><span>«¡Nuevo récord!» al guardar la sesión</span></label>
                             <div class="settings-subtitle">Estilo</div>
-                            <select id="voiceStyleSelect" data-voice="style" onchange="onVoiceSettingChange(this); renderRecordingsUI();"></select>
+                            <select id="voiceStyleSelect" data-voice="style" data-fn-change="onVoiceSettingChange renderRecordingsUI" data-fn-args='["$this"]'></select>
                             <div class="settings-hint">Cambia las frases y el tono de la voz: neutro, tierno, militar, motivador o calma. Si grabaste o subiste un audio para un aviso (Mis grabaciones), suena ese.</div>
                             <div class="settings-subtitle">Voz</div>
-                            <select id="voiceSelect" data-voice="voiceURI" onchange="onVoiceSettingChange(this)"></select>
+                            <select id="voiceSelect" data-voice="voiceURI" data-fn-change="onVoiceSettingChange" data-fn-args='["$this"]'></select>
                             <div class="settings-hint">Las voces (de hombre o de mujer, y con distintos tonos) dependen de las que tenga instaladas tu celular. Una app web no puede abrir esos ajustes; la app de Google Play sí lo va a hacer.</div>
-                            <button type="button" class="small lib-secondary" onclick="showVoiceInstallHelp()">🔧 ¿Cómo cambio o agrego voces?</button>
+                            <button type="button" class="small lib-secondary" data-fn-click="showVoiceInstallHelp">🔧 ¿Cómo cambio o agrego voces?</button>
                             <div id="voiceInstallHelp" class="voice-help" hidden></div>
                             <label class="range-label">Tono de la voz: <strong id="voicePitchLabel"></strong></label>
-                            <input type="range" min="0.5" max="1.8" step="0.05" data-voice="pitch" oninput="onVoiceSettingChange(this)">
+                            <input type="range" min="0.5" max="1.8" step="0.05" data-voice="pitch" data-fn-input="onVoiceSettingChange" data-fn-args='["$this"]'>
                             <label class="range-label">Velocidad de la voz: <strong id="voiceRateLabel"></strong></label>
-                            <input type="range" min="0.8" max="1.4" step="0.05" data-voice="rate" oninput="onVoiceSettingChange(this)">
-                            <button type="button" onclick="testVoice()">▶ Probar voz</button>
+                            <input type="range" min="0.8" max="1.4" step="0.05" data-voice="rate" data-fn-input="onVoiceSettingChange" data-fn-args='["$this"]'>
+                            <button type="button" data-fn-click="testVoice">▶ Probar voz</button>
                         </div>
                     </div>
                 </div>
@@ -514,7 +514,7 @@
                 <div class="section" data-hint="Tu voz (o la de tu entrenador) para cada aviso">
                     <h2>🎙️ Mis grabaciones</h2>
                     <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Grabá tu voz (o la de quien quieras) para cada aviso: hasta 5 segundos, y el silencio del principio y del final se recorta solo. Lo que no grabes lo dice la voz del celular; los números siempre los dice la voz del celular. Las grabaciones quedan en este celular y se incluyen en el backup.</div>
-                    <label class="toggle-row"><input type="checkbox" data-voice="useRecordings" onchange="onVoiceSettingChange(this)"><span>Usar mis grabaciones</span></label>
+                    <label class="toggle-row"><input type="checkbox" data-voice="useRecordings" data-fn-change="onVoiceSettingChange" data-fn-args='["$this"]'><span>Usar mis grabaciones</span></label>
                     <div id="recordingsList"></div>
                 </div>
 
@@ -522,9 +522,9 @@
                     <h2>🎵 Música</h2>
                     <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Pegá el link de tu playlist (en la app de música: Compartir → Copiar link) y la abrís con un toque desde Entrenar. Sin link, se abre la app en su inicio. Pausar o pasar de tema se hace desde la app de música o desde los controles del celular: una web no puede manejar otra app.</div>
                     <label class="range-label" for="musicLink_spotify">Playlist de Spotify</label>
-                    <input type="url" id="musicLink_spotify" inputmode="url" autocomplete="off" placeholder="https://open.spotify.com/playlist/..." onchange="saveMusicLink('spotify', this)">
+                    <input type="url" id="musicLink_spotify" inputmode="url" autocomplete="off" placeholder="https://open.spotify.com/playlist/..." data-fn-change="saveMusicLink" data-fn-args='["spotify","$this"]'>
                     <label class="range-label" for="musicLink_ytmusic">Playlist de YouTube Music</label>
-                    <input type="url" id="musicLink_ytmusic" inputmode="url" autocomplete="off" placeholder="https://music.youtube.com/playlist?list=..." onchange="saveMusicLink('ytmusic', this)">
+                    <input type="url" id="musicLink_ytmusic" inputmode="url" autocomplete="off" placeholder="https://music.youtube.com/playlist?list=..." data-fn-change="saveMusicLink" data-fn-args='["ytmusic","$this"]'>
                 </div>
 
                 <div class="section" data-hint="Juntar un ejercicio que quedó con dos nombres">
@@ -532,23 +532,23 @@
                     <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Si dos nombres son el mismo ejercicio (ej. "Mariposa" y "Aperturas en mariposa"), elegilos acá para juntar sus estadísticas e historial. Sin tipear, para no fallar por una tilde o un espacio de más.</div>
                     <select id="unifySource"><option value="">Ejercicio a renombrar...</option></select>
                     <select id="unifyTarget"><option value="">Unificar con...</option></select>
-                    <button onclick="unifyFromSelectors()">🔗 Unificar</button>
+                    <button data-fn-click="unifyFromSelectors">🔗 Unificar</button>
                 </div>
 
                 <div class="section" data-hint="Backup, restaurar y borrar todo">
                     <h2>💾 Datos</h2>
                     <label class="toggle-row"><input type="checkbox" id="backupEncrypt"> Proteger el backup con contraseña</label>
                     <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Recomendado si el backup tiene fotos o medidas, o si lo vas a mandar por mail o WhatsApp. Si te olvidás la contraseña, el backup no se puede abrir.</div>
-                    <button class="success" onclick="downloadData()">📥 Descargar backup</button>
-                    <button onclick="triggerFileInput()">📤 Cargar backup</button>
+                    <button class="success" data-fn-click="downloadData">📥 Descargar backup</button>
+                    <button data-fn-click="triggerFileInput">📤 Cargar backup</button>
                     <input type="file" id="fileInput" accept=".json,application/json" style="display:none;">
-                    <button class="danger" onclick="resetAllData()">🗑️ Resetear todo</button>
+                    <button class="danger" data-fn-click="resetAllData">🗑️ Resetear todo</button>
                 </div>
             </div>
         </main>
     </div>
 
-    <div id="restTimer" class="rest-timer-widget" onclick="onTimerWidgetClick()" role="timer" aria-live="off">
+    <div id="restTimer" class="rest-timer-widget" data-fn-click="onTimerWidgetClick" role="timer" aria-live="off">
         <div class="rest-timer-inner">
             <div class="rest-timer-main">
                 <div id="restTimerPhase" class="rest-timer-phase"></div>
@@ -557,10 +557,10 @@
                 <div id="restTimerRound" class="rest-timer-round"></div>
                 <div class="rest-timer-hint">Tocá para cancelar</div>
             </div>
-            <div class="rest-timer-controls" onclick="event.stopPropagation()">
-                <button type="button" onclick="adjustRestTimer(-15)" aria-label="Restar 15 segundos">−15s</button>
-                <button type="button" onclick="adjustRestTimer(15)" aria-label="Sumar 15 segundos">+15s</button>
-                <button type="button" class="skip" onclick="cancelRestTimer()">Saltar</button>
+            <div class="rest-timer-controls" data-fn-stop>
+                <button type="button" data-fn-click="adjustRestTimer" data-fn-args='[-15]' aria-label="Restar 15 segundos">−15s</button>
+                <button type="button" data-fn-click="adjustRestTimer" data-fn-args='[15]' aria-label="Sumar 15 segundos">+15s</button>
+                <button type="button" class="skip" data-fn-click="cancelRestTimer">Saltar</button>
             </div>
         </div>
     </div>
@@ -568,7 +568,7 @@
     <div id="repCounter" class="rep-counter" hidden role="dialog" aria-label="Contador de reps">
         <div class="rep-counter-head">
             <span id="repCounterTitle"></span>
-            <button type="button" class="rep-counter-close" onclick="stopRepCounter()" aria-label="Detener el contador">✕</button>
+            <button type="button" class="rep-counter-close" data-fn-click="stopRepCounter" aria-label="Detener el contador">✕</button>
         </div>
         <div class="rep-counter-body">
             <div class="rep-counter-phase" id="repCounterPhase"></div>
@@ -577,14 +577,14 @@
         </div>
         <div class="rep-counter-bar"><div id="repCounterProgress"></div></div>
         <div class="rep-counter-controls">
-            <button type="button" onclick="adjustRepTempo(0.5)">🐢 Más lento</button>
+            <button type="button" data-fn-click="adjustRepTempo" data-fn-args='[0.5]'>🐢 Más lento</button>
             <span id="repCounterTempo" class="rep-counter-tempo"></span>
-            <button type="button" onclick="adjustRepTempo(-0.5)">🐇 Más rápido</button>
+            <button type="button" data-fn-click="adjustRepTempo" data-fn-args='[-0.5]'>🐇 Más rápido</button>
         </div>
         <div class="rep-counter-controls">
-            <button type="button" onclick="adjustRepTarget(-1)">−1 rep</button>
-            <button type="button" id="repCounterPauseBtn" onclick="toggleRepCounterPause()">⏸ Pausa</button>
-            <button type="button" onclick="adjustRepTarget(1)">+1 rep</button>
+            <button type="button" data-fn-click="adjustRepTarget" data-fn-args='[-1]'>−1 rep</button>
+            <button type="button" id="repCounterPauseBtn" data-fn-click="toggleRepCounterPause">⏸ Pausa</button>
+            <button type="button" data-fn-click="adjustRepTarget" data-fn-args='[1]'>+1 rep</button>
         </div>
     </div>
 
@@ -678,20 +678,20 @@
 
     <div id="toastContainer" aria-live="polite"></div>
 
-    <div class="modal-overlay" id="exerciseDetailModal" onclick="if(event.target===this) closeExerciseDetail()">
+    <div class="modal-overlay" id="exerciseDetailModal" data-fn-click="closeExerciseDetail" data-fn-self>
         <div class="modal-content">
             <div class="modal-header">
                 <h3 id="exerciseDetailTitle"></h3>
-                <button type="button" class="small" style="width:auto;" onclick="closeExerciseDetail()">✕</button>
+                <button type="button" class="small" style="width:auto;" data-fn-click="closeExerciseDetail">✕</button>
             </div>
             <label class="detail-group-label" for="exerciseDetailGroup">Grupo muscular</label>
             <select id="exerciseDetailGroup"></select>
             <p id="exerciseDetailEmpty" class="progression-empty" hidden>Todavía no hay sesiones con peso de este ejercicio para graficar.</p>
             <div class="checkbox-group" style="margin-bottom: 10px;">
-                <label><input type="checkbox" id="exmetric_weight" checked onchange="renderExerciseDetailChart()"> Peso promedio</label>
-                <label><input type="checkbox" id="exmetric_1rm" checked onchange="renderExerciseDetailChart()"> 1RM estimado</label>
-                <label><input type="checkbox" id="exmetric_reps" onchange="renderExerciseDetailChart()"> Reps totales</label>
-                <label><input type="checkbox" id="exmetric_volume" onchange="renderExerciseDetailChart()"> Volumen total</label>
+                <label><input type="checkbox" id="exmetric_weight" checked data-fn-change="renderExerciseDetailChart"> Peso promedio</label>
+                <label><input type="checkbox" id="exmetric_1rm" checked data-fn-change="renderExerciseDetailChart"> 1RM estimado</label>
+                <label><input type="checkbox" id="exmetric_reps" data-fn-change="renderExerciseDetailChart"> Reps totales</label>
+                <label><input type="checkbox" id="exmetric_volume" data-fn-change="renderExerciseDetailChart"> Volumen total</label>
             </div>
             <div class="chart-large">
                 <canvas id="exerciseDetailChart"></canvas>
@@ -702,6 +702,7 @@
     </div>
 
     <script src="js/core/utils.js"></script>
+    <script src="js/ui/actions.js"></script>
     <script src="js/core/brand.js"></script>
     <script src="js/core/time.js"></script>
     <script src="js/core/units.js"></script>

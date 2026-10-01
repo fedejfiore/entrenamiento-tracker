@@ -110,8 +110,8 @@ function renderRecentRoutineAverages(workouts) {
 
     if (allSummaries.length > RECENT_ROUTINES_COLLAPSED_COUNT) {
         html += recentRoutinesExpanded
-            ? `<button type="button" class="small" style="width:100%; margin-top:4px;" onclick="toggleRecentRoutinesExpanded()">▲ Ver menos</button>`
-            : `<button type="button" class="small" style="width:100%; margin-top:4px;" onclick="toggleRecentRoutinesExpanded()">▼ Ver ${allSummaries.length - RECENT_ROUTINES_COLLAPSED_COUNT} más</button>`;
+            ? `<button type="button" class="small" style="width:100%; margin-top:4px;" ${fnAttrs('toggleRecentRoutinesExpanded')}>▲ Ver menos</button>`
+            : `<button type="button" class="small" style="width:100%; margin-top:4px;" ${fnAttrs('toggleRecentRoutinesExpanded')}>▼ Ver ${allSummaries.length - RECENT_ROUTINES_COLLAPSED_COUNT} más</button>`;
     }
 
     container.innerHTML = html;

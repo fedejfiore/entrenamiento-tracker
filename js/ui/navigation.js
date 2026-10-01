@@ -28,7 +28,7 @@ function renderDrawerNav() {
     const container = document.getElementById('drawerNav');
     if (!container) return;
     container.innerHTML = APP_SCREENS.map(s =>
-        `<div class="drawer-nav-item" data-nav-target="${s.id}" onclick="showScreen('${s.id}', true)">
+        `<div class="drawer-nav-item" data-nav-target="${s.id}" ${fnAttrs('showScreen', s.id, true)}>
             <span class="nav-icon">${s.icon}</span><span>${s.label}</span>
         </div>`
     ).join('');

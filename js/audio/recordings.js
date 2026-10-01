@@ -262,10 +262,10 @@ function renderRecordingsUI() {
                     <div class="rec-status">${status}</div>
                 </div>
                 <div class="rec-actions">
-                    <button type="button" class="rec-btn rec-record" onclick="toggleRecording('${cue.id}')">${recording ? '■ Listo' : meta ? '● Regrabar' : '● Grabar'}</button>
-                    <button type="button" class="rec-btn" onclick="uploadCueAudio('${cue.id}')" aria-label="Subir un audio para «${escapeHtml(cue.text)}»" title="Subir audio">📁</button>
-                    <button type="button" class="rec-btn" onclick="previewCue('${cue.id}')" aria-label="Escuchar «${escapeHtml(cue.text)}»" title="Escuchar">▶</button>
-                    <button type="button" class="rec-btn" onclick="removeRecording('${cue.id}')" aria-label="Borrar grabación de «${escapeHtml(cue.text)}»" title="Borrar"${meta ? '' : ' disabled'}>🗑</button>
+                    <button type="button" class="rec-btn rec-record" ${fnAttrs('toggleRecording', cue.id)}>${recording ? '■ Listo' : meta ? '● Regrabar' : '● Grabar'}</button>
+                    <button type="button" class="rec-btn" ${fnAttrs('uploadCueAudio', cue.id)} aria-label="Subir un audio para «${escapeHtml(cue.text)}»" title="Subir audio">📁</button>
+                    <button type="button" class="rec-btn" ${fnAttrs('previewCue', cue.id)} aria-label="Escuchar «${escapeHtml(cue.text)}»" title="Escuchar">▶</button>
+                    <button type="button" class="rec-btn" ${fnAttrs('removeRecording', cue.id)} aria-label="Borrar grabación de «${escapeHtml(cue.text)}»" title="Borrar"${meta ? '' : ' disabled'}>🗑</button>
                 </div>
             </div>`;
     });
