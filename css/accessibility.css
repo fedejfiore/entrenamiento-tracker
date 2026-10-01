@@ -202,3 +202,9 @@ html[data-contrast="high"] .bottom-nav { border-top: 2px solid var(--border); }
 .photo-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .photo-thumb span { position: absolute; left: 0; right: 0; bottom: 0; font-size: 11px; padding: 3px; background: rgba(0,0,0,0.55); color: #fff; }
 .photo-modal img { width: 100%; max-height: 65vh; object-fit: contain; border-radius: var(--radius-sm); margin-bottom: 10px; }
+
+/* "Reducir movimiento" del sistema: sin animaciones ni transiciones (la flor, festejos,
+   contador, menús). El cambio se ve igual, solo que sin movimiento. */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}

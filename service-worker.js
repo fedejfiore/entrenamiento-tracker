@@ -4,7 +4,7 @@
 //
 // Subí SW_VERSION cada vez que edites el HTML/CSS/JS de forma significativa,
 // para que los clientes descarten el caché viejo en vez de seguir sirviéndolo.
-const SW_VERSION = 'v28';
+const SW_VERSION = 'v29';
 const CACHE_NAME = 'entrenamiento-tracker-' + SW_VERSION;
 
 // Todo lo que la app necesita para abrir sin conexión. Tiene que coincidir con los
@@ -45,6 +45,7 @@ const PRECACHE_URLS = [
     './js/domain/sets.js',
     './js/domain/models.js',
     './js/domain/plan.js',
+    './js/domain/garden.js',
     './js/domain/training-tools.js',
     './js/domain/programs.js',
     './js/domain/routine-share.js',
@@ -84,6 +85,7 @@ const PRECACHE_URLS = [
     './js/features/body-metrics.js',
     './js/features/home.js',
     './js/features/plan-screen.js',
+    './js/features/garden.js',
     './js/features/muscle-map.js',
     './js/features/plate-calculator.js',
     './js/features/general-settings.js',

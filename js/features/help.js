@@ -271,6 +271,7 @@ const HELP_SECTIONS = [
                 <li>Los avisos los da el <b>calendario del celular</b>, así llegan aunque la app esté cerrada.</li>
                 <li>Al abrir la app, arriba de Inicio ves si hoy toca entrenar (con la rutina sugerida para empezar de un toque), si ya entrenaste o si es día de descanso.</li>
                 <li>El estado de la semana te dice si vas al día con tu plan.</li>
+                <li><b>🌱 Tu flor</b> (Inicio → Hoy): crece con cada semana en que entrenás tantos días como dice tu plan. Semilla → brote (1 semana) → capullo (3) → flor (6) → flor con frutos (10), y un fruto más cada 4 semanas. Cada entrenamiento es una gota 💧. Si una semana no llegás, se usa sola una <b>semana libre</b> (empezás con 2 y se suma 1 por mes, hasta 3); sin semanas libres se marchita un poco, pero nunca vuelve atrás y se recupera con la próxima semana cumplida.</li>
                 <li>Cambiar el plan rige desde esta semana: las semanas anteriores se siguen evaluando con el plan que tenían. Si cambiás días u horarios, borrá los eventos viejos del calendario y volvé a agregarlos.</li>
             </ul>`
     },

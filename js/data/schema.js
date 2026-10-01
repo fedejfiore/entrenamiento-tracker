@@ -44,6 +44,7 @@ const STORAGE_SCHEMA = {
     uiSize: { group: 'prefs', format: 'text', type: 'string', default: null, description: 'Tamaño de botones y campos: normal, large o xlarge.' },
     contrast: { group: 'prefs', format: 'text', type: 'string', default: null, description: '"high" = alto contraste (texto oscuro sobre botones de color).' },
     colorVision: { group: 'prefs', format: 'text', type: 'string', default: null, description: '"cvd" = colores para daltonismo (azul / naranja en vez de verde / rojo).' },
+    gardenSeen: { group: 'prefs', type: 'object', default: {}, description: 'Última etapa de la flor que se vio (para festejar una sola vez cuando crece). La flor en sí se calcula del historial.' },
     feedbackContact: { group: 'prefs', type: 'object', default: {}, description: 'Nombre y mail o WhatsApp que la persona dejó al enviar un error o sugerencia (para no volver a escribirlos).' },
     theme: { group: 'prefs', format: 'text', type: 'string', default: null, description: 'Tema: "auto" (como el celular), "light" o "dark".' },
     soundType: { group: 'prefs', format: 'text', type: 'string', default: null, description: 'Sonido de fin de descanso.' },

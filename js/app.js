@@ -56,6 +56,7 @@ class App {
         bindHistoryList();
         bindHelp();
         bindFeedback();
+        bindGarden();
         bindPlanSection();
         bindSupersetModal();
         bindPlateCalculator();
