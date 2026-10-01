@@ -13,6 +13,10 @@
         if (size === 'large' || size === 'xlarge') document.documentElement.setAttribute('data-size', size);
         if (localStorage.getItem('colorVision') === 'cvd') document.documentElement.setAttribute('data-vision', 'cvd');
         if (localStorage.getItem('contrast') === 'high') document.documentElement.setAttribute('data-contrast', 'high');
+        // Otro idioma: se oculta hasta traducir (js/core/i18n.js la vuelve a mostrar).
+        var lang = localStorage.getItem('language') || 'auto';
+        var nav = (navigator.language || '').toLowerCase();
+        if (lang === 'en' || lang === 'pt' || (lang === 'auto' && nav && nav.indexOf('es') !== 0)) document.documentElement.classList.add('i18n-pending');
     } catch (e) {}
 })();
 // Registra el service worker sólo si el navegador lo soporta (requiere

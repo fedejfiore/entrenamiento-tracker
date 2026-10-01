@@ -39,7 +39,7 @@ class App {
     bindEvents() {
         document.getElementById('workoutDate').value = getLocalDateString();
         document.getElementById('bodyDate').valueAsDate = new Date();
-        document.getElementById('todayDate').textContent = new Date().toLocaleDateString('es-AR');
+        document.getElementById('todayDate').textContent = new Date().toLocaleDateString(appLocale());
 
         document.querySelectorAll('.emoji-btn').forEach(btn => {
             btn.addEventListener('click', function () {
@@ -66,6 +66,7 @@ class App {
         bindMuscleMap();
         initSetStepperAutoHide();
         bindGeneralSettings();
+        bindLanguageSelect();
         bindPrograms();
         bindAccessibilitySettings();
         bindTrainMode();
@@ -126,6 +127,7 @@ class App {
         renderVariantsCatalog();
         initScreens();
         maybeRemindTodayPlan();
+        initI18n(); // en otro idioma: traduce todo lo dibujado y queda atento a los cambios
     }
 
     /**

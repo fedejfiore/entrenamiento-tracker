@@ -5,6 +5,8 @@
    - Claro: tono profundo con texto blanco encima.
    Así el mismo color sirve de fondo de botón y de color de texto sobre la tarjeta, y
    ninguna combinación de color + tema queda por debajo del mínimo. */
+html.i18n-pending body { visibility: hidden; }
+
 :root {
     --brand: #ff6b35;
     --brand-rgb: 255, 107, 53;

@@ -144,7 +144,7 @@ function buildExerciseRowHtml(idx, ex, routine) {
                 <button type="button" class="drag-handle" aria-label="Reordenar ${safeName}: mantené apretado y arrastrá, o usá las flechas ↑ ↓" title="Mantené apretado y arrastrá para reordenar">${DRAG_DOTS_SVG}</button>
                 <div class="exercise-title">
                     <div class="exercise-name-line">
-                        <strong id="exname_${idx}" data-action="open-detail" data-dblaction="rename-exercise" title="Tocá para ver el progreso · doble toque para renombrar" style="cursor:pointer;">${safeName}</strong>
+                        <strong id="exname_${idx}" translate="no" data-action="open-detail" data-dblaction="rename-exercise" title="Tocá para ver el progreso · doble toque para renombrar" style="cursor:pointer;">${safeName}</strong>
                         <button type="button" class="collapse-btn" data-action="toggle-collapse" aria-expanded="true" aria-label="Contraer ${safeName}" title="Contraer / expandir">▾</button>
                     </div>
                     <div class="exercise-done-summary" hidden></div>

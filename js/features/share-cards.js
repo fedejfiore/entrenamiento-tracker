@@ -182,7 +182,7 @@ function drawTrophyCup(g, cx, cy, s, color) {
     g.fillStyle = '#2a2016';
     g.font = `700 ${Math.round(s * 0.11)}px ${SHARE_FONT_HEAD}`;
     g.textAlign = 'center'; g.textBaseline = 'middle';
-    g.fillText('RÉCORD', cx, cy + s * 0.975);
+    g.fillText(tr('RÉCORD'), cx, cy + s * 0.975);
 }
 
 function drawStars(g, cx, y, filled, total, size, color) {
@@ -243,7 +243,7 @@ function drawShareFooter(g, W, H, name, date) {
     g.fillText(APP_BRAND.name.toUpperCase(), W / 2, y + 46);
     g.font = `400 26px ${SHARE_FONT_BODY}`;
     g.fillStyle = '#8e929b';
-    g.fillText(`${APP_BRAND.by} · ${APP_BRAND.meaning}`, W / 2, y + 86);
+    g.fillText(`${APP_BRAND.by} · ${tr(APP_BRAND.meaning)}`, W / 2, y + 86);
 }
 
 // ---------- Tarjetas ----------
@@ -265,26 +265,26 @@ function drawShareCard(spec, formatId = 'story') {
     const r = story ? 260 : 200;
 
     if (spec.kind === 'medal') {
-        fitText(g, 'MEDALLA', W / 2, story ? 200 : 120, W * 0.8, 40, 500, SHARE_FONT_HEAD, hexAlpha(color, 0.9));
+        fitText(g, tr('MEDALLA'), W / 2, story ? 200 : 120, W * 0.8, 40, 500, SHARE_FONT_HEAD, hexAlpha(color, 0.9));
         drawMedalDisc(g, W / 2, heroY + (story ? 40 : 30), r, color, spec.icon);
         let y = heroY + r + (story ? 200 : 150);
-        fitText(g, spec.title.toUpperCase(), W / 2, y, W * 0.86, story ? 110 : 92, 700, SHARE_FONT_HEAD, '#ffffff');
+        fitText(g, tr(spec.title).toUpperCase(), W / 2, y, W * 0.86, story ? 110 : 92, 700, SHARE_FONT_HEAD, '#ffffff');
         y += story ? 95 : 78;
-        fitText(g, spec.tierName.toUpperCase(), W / 2, y, W * 0.8, story ? 76 : 62, 700, SHARE_FONT_HEAD, color);
+        fitText(g, tr(spec.tierName).toUpperCase(), W / 2, y, W * 0.8, story ? 76 : 62, 700, SHARE_FONT_HEAD, color);
         y += story ? 70 : 56;
         drawStars(g, W / 2, y, spec.level, spec.levels, story ? 46 : 38, color);
         y += story ? 120 : 90;
-        fitText(g, spec.valueText, W / 2, y, W * 0.86, story ? 84 : 66, 700, SHARE_FONT_BODY, '#ffffff');
-        if (spec.nextText && story) fitText(g, spec.nextText, W / 2, y + 70, W * 0.86, 36, 400, SHARE_FONT_BODY, '#9aa0aa');
+        fitText(g, tr(spec.valueText), W / 2, y, W * 0.86, story ? 84 : 66, 700, SHARE_FONT_BODY, '#ffffff');
+        if (spec.nextText && story) fitText(g, tr(spec.nextText), W / 2, y + 70, W * 0.86, 36, 400, SHARE_FONT_BODY, '#9aa0aa');
     } else {
-        fitText(g, 'RÉCORD PERSONAL', W / 2, story ? 200 : 120, W * 0.8, 40, 500, SHARE_FONT_HEAD, hexAlpha(color, 0.9));
+        fitText(g, tr('RÉCORD PERSONAL'), W / 2, story ? 200 : 120, W * 0.8, 40, 500, SHARE_FONT_HEAD, hexAlpha(color, 0.9));
         drawTrophyCup(g, W / 2, heroY, r * 0.95, color);
         let y = heroY + r + (story ? 200 : 150);
         y += fitTwoLines(g, spec.exercise.toUpperCase(), W / 2, y, W * 0.86, story ? 92 : 74, 700, SHARE_FONT_HEAD, '#ffffff');
         y += story ? 165 : 125;
         fitText(g, spec.valueText, W / 2, y, W * 0.86, story ? 150 : 116, 700, SHARE_FONT_HEAD, color);
         y += story ? 85 : 66;
-        const sub = [spec.beforeText && `antes ${spec.beforeText}`, spec.deltaText].filter(Boolean).join(' · ');
+        const sub = [spec.beforeText && tr(`antes ${spec.beforeText}`), spec.deltaText].filter(Boolean).join(' · ');
         if (sub) fitText(g, sub, W / 2, y, W * 0.86, story ? 46 : 38, 400, SHARE_FONT_BODY, '#c3c6cc');
     }
     drawShareFooter(g, W, H, spec.name, spec.date);
@@ -323,7 +323,7 @@ async function shareSheetSend(download) {
     if (!download) {
         try {
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                await navigator.share({ files: [file], text: shareSheetSpec.shareText || '' });
+                await navigator.share({ files: [file], text: tr(shareSheetSpec.shareText || '') });
                 return;
             }
         } catch (e) {

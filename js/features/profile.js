@@ -70,7 +70,7 @@ async function renderProfile() {
     const stats = computeUsageStats(repo.workouts.all(), loadAppSettings().weekStart);
     const since = document.getElementById('profileSince');
     const age = ageFrom(profile.birthDate);
-    const sinceText = stats.firstDate ? `Entrenando desde el ${new Date(stats.firstDate + 'T00:00:00').toLocaleDateString('es-AR')}` : 'Todavía no guardaste sesiones';
+    const sinceText = stats.firstDate ? `Entrenando desde el ${new Date(stats.firstDate + 'T00:00:00').toLocaleDateString(appLocale())}` : 'Todavía no guardaste sesiones';
     if (since) since.textContent = (age != null ? `${age} años · ` : '') + sinceText;
     renderProfileStats(stats);
     renderMedals(stats);
@@ -135,7 +135,7 @@ async function renderPhotos() {
     if (!grid) return;
     const progress = photos.filter(p => p.kind === 'progress').sort((a, b) => (b.date || '').localeCompare(a.date || ''));
     grid.innerHTML = progress.length
-        ? progress.map(p => `<button type="button" class="photo-thumb" data-photo="${escapeHtml(p.id)}" aria-label="Foto del ${escapeHtml(p.date || '')}"><img src="${urlOf(p)}" alt=""><span>${new Date((p.date || getLocalDateString()) + 'T00:00:00').toLocaleDateString('es-AR')}</span></button>`).join('')
+        ? progress.map(p => `<button type="button" class="photo-thumb" data-photo="${escapeHtml(p.id)}" aria-label="Foto del ${escapeHtml(p.date || '')}"><img src="${urlOf(p)}" alt=""><span>${new Date((p.date || getLocalDateString()) + 'T00:00:00').toLocaleDateString(appLocale())}</span></button>`).join('')
         : '<p class="lib-empty">Sacate una foto cada 2 a 4 semanas (misma luz y misma pose) para ver tu cambio. También podés sumar una foto al cargar tus medidas.</p>';
 }
 
@@ -146,7 +146,7 @@ async function openPhoto(id) {
     const url = URL.createObjectURL(new Blob([rec.data], { type: rec.mime }));
     profilePhotoUrls.push(url);
     document.getElementById('photoModalImg').src = url;
-    document.getElementById('photoModalDate').textContent = new Date((rec.date || getLocalDateString()) + 'T00:00:00').toLocaleDateString('es-AR');
+    document.getElementById('photoModalDate').textContent = new Date((rec.date || getLocalDateString()) + 'T00:00:00').toLocaleDateString(appLocale());
     modal.dataset.photo = id;
     modal.classList.add('open');
 }
@@ -154,7 +154,7 @@ async function openPhoto(id) {
 // ---------- Medallas y trofeos para compartir (ver js/features/share-cards.js) ----------
 
 function shareDateText(dateStr) {
-    return new Date((dateStr || getLocalDateString()) + 'T00:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' });
+    return new Date((dateStr || getLocalDateString()) + 'T00:00:00').toLocaleDateString(appLocale(), { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
 function medalShareSpec(a) {
@@ -196,7 +196,7 @@ function renderTrophies() {
         ? profileTrophies.map((r, i) => `<div class="trophy-row">
                 <span class="trophy-cup" aria-hidden="true">🏆</span>
                 <div class="trophy-text"><strong>${escapeHtml(r.exercise)}</strong>
-                    <small>${escapeHtml(r.label)}: ${escapeHtml(recordValueText(r))}${r.deltaText ? ` (${escapeHtml(r.deltaText)})` : ''} · ${new Date(r.date + 'T00:00:00').toLocaleDateString('es-AR')}</small></div>
+                    <small>${escapeHtml(r.label)}: ${escapeHtml(recordValueText(r))}${r.deltaText ? ` (${escapeHtml(r.deltaText)})` : ''} · ${new Date(r.date + 'T00:00:00').toLocaleDateString(appLocale())}</small></div>
                 <button type="button" class="small lib-secondary" data-share-trophy="${i}" aria-label="Compartir el récord de ${escapeHtml(r.exercise)}">📤</button>
             </div>`).join('')
         : emptyStateHtml('Cada récord personal (más peso, más reps, más distancia) se convierte en un trofeo para compartir.', ['train']);

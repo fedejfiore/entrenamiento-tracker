@@ -89,7 +89,7 @@ function renderMuscleMap() {
     }
     const info = document.getElementById('muscleMapRangeInfo');
     if (info) {
-        const d = str => new Date(str + 'T00:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'numeric' });
+        const d = str => new Date(str + 'T00:00:00').toLocaleDateString(appLocale(), { day: 'numeric', month: 'numeric' });
         info.textContent = `Del ${d(range.from)} al ${d(range.to)}` + (range.inProgress
             ? ` · semana en curso, ${range.daysLeft === 0 ? 'último día' : range.daysLeft === 1 ? 'queda 1 día' : `quedan ${range.daysLeft} días`}`
             : range.weeks > 1 ? ` · promedio de ${range.weeks} semanas` : '');

@@ -63,6 +63,15 @@ function changeDistanceUnit(unit) {
 
 // Cambiar kg / lb con series cargadas: se leen en la unidad vieja, se redibujan en la nueva y
 // se refrescan las pantallas que muestran pesos.
+function bindLanguageSelect() {
+    const sel = document.getElementById('languageSelect');
+    if (!sel) return;
+    let saved = 'auto';
+    try { saved = localStorage.getItem('language') || 'auto'; } catch (e) {}
+    sel.value = APP_LANGUAGES[saved] || saved === 'auto' ? saved : 'auto';
+    sel.addEventListener('change', () => setAppLanguage(sel.value));
+}
+
 function changeWeightUnit(unit) {
     const blocks = [...document.querySelectorAll('#exercisesContainer .exercise-row')];
     const sets = blocks.map(b => readBlockSets(b));

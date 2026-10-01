@@ -39,7 +39,7 @@ function sanitizeDecimalInput(v) {
 }
 
 function formatNumber(n) {
-    return (Math.round(n * 100) / 100).toLocaleString('es-AR');
+    return (Math.round(n * 100) / 100).toLocaleString((typeof appLocale === 'function' ? appLocale() : 'es-AR'));
 }
 
 function youtubeSearchUrl(query) {

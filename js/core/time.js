@@ -12,7 +12,7 @@ function formatDuration(value) {
 }
 
 function formatTimeHM(ts) {
-    return new Date(ts).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+    return new Date(ts).toLocaleTimeString((typeof appLocale === 'function' ? appLocale() : 'es-AR'), { hour: '2-digit', minute: '2-digit' });
 }
 
 // Se guarda siempre igual ("m:ss" o "h:mm:ss"); lo que cambia es cómo se CARGA,

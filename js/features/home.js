@@ -142,7 +142,7 @@ function renderMonthCalendar() {
     const month = base.getMonth();
 
     if (labelEl) {
-        const label = base.toLocaleDateString('es-AR', { month: 'long', year: 'numeric' });
+        const label = base.toLocaleDateString(appLocale(), { month: 'long', year: 'numeric' });
         labelEl.textContent = label.charAt(0).toUpperCase() + label.slice(1);
     }
 

@@ -122,7 +122,7 @@ function renderProgramsSection() {
         return;
     }
     const { day, key, sessions } = nextProgramDay(program);
-    const since = new Date(active.startedAt + 'T00:00:00').toLocaleDateString('es-AR');
+    const since = new Date(active.startedAt + 'T00:00:00').toLocaleDateString(appLocale());
     const week = Math.floor((Date.now() - new Date(active.startedAt + 'T00:00:00').getTime()) / (7 * 86400000)) + 1;
     box.innerHTML = `<div class="program-active">
             <strong>${escapeHtml(program.name)}</strong>

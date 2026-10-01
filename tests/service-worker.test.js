@@ -26,6 +26,7 @@ test('cada archivo JS del repo está incluido en la página', () => {
     const walk = dir => fs.readdirSync(dir, { withFileTypes: true })
         .flatMap(e => e.isDirectory() ? walk(path.join(dir, e.name)) : [path.join(dir, e.name)]);
     const jsFiles = walk(path.join(ROOT, 'js')).map(f => './' + path.relative(ROOT, f).split(path.sep).join('/'));
-    const notLoaded = jsFiles.filter(f => !pageAssets.includes(f));
+    // Los diccionarios de idiomas no van en la página: se cargan solo si el idioma no es español.
+    const notLoaded = jsFiles.filter(f => !pageAssets.includes(f) && !f.startsWith('./js/i18n/'));
     assert.deepEqual(notLoaded, []);
 });

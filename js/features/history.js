@@ -102,7 +102,7 @@ function populateHistoryFilters(sessions) {
 
     const prevMonth = monthSel.value;
     monthSel.innerHTML = months.map(m => {
-        const label = new Date(m + '-01T00:00:00').toLocaleDateString('es-AR', { month: 'long', year: 'numeric' });
+        const label = new Date(m + '-01T00:00:00').toLocaleDateString(appLocale(), { month: 'long', year: 'numeric' });
         return `<option value="${escapeHtml(m)}">${escapeHtml(label)}</option>`;
     }).join('');
     if (months.includes(prevMonth)) monthSel.value = prevMonth;

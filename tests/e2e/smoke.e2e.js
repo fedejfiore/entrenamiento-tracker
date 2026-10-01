@@ -46,7 +46,7 @@ async function newPage(browser, seed) {
         sessionStorage.setItem('seeded', '1');
         localStorage.clear();
         localStorage.setItem('schemaVersion', '3');
-        Object.entries(data || {}).forEach(([k, v]) => localStorage.setItem(k, JSON.stringify(v)));
+        Object.entries(data || {}).forEach(([k, v]) => localStorage.setItem(k, typeof v === 'string' ? v : JSON.stringify(v)));
         window.confirm = () => true;
     }, seed);
     await page.goto(`http://127.0.0.1:${server.address().port}/`);
@@ -137,6 +137,18 @@ server.listen(0, '127.0.0.1', async () => {
             check('importa el historial de Hevy', res.imported === 2, `sesiones: ${res.imported}`);
             check('el formulario de errores valida los campos', res.fbErrors === 4, `avisos: ${res.fbErrors}`);
             check('importar y formulario sin errores', errors.length === 0, errors.join(' | '));
+            await page.close();
+        }
+        // 5. En inglés: todas las pantallas sin errores y los textos principales traducidos
+        {
+            const { page, errors } = await newPage(browser, { language: 'en' });
+            await page.waitForFunction(() => document.documentElement.lang === 'en' && !document.documentElement.classList.contains('i18n-pending'));
+            await visitAll(page);
+            const res = await page.evaluate(() => ({
+                nav: [...document.querySelectorAll('.bottom-nav-item span:last-child')].map(s => s.textContent)
+            }));
+            check('en inglés, la barra de navegación está traducida', res.nav.join(',') === 'Home,Train,History,Progress,More', res.nav.join(','));
+            check('en inglés, todas las pantallas abren sin errores', errors.length === 0, errors.join(' | '));
             await page.close();
         }
     } catch (err) {

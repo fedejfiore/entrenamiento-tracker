@@ -39,15 +39,19 @@ function voiceSupported() {
     return 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined';
 }
 
-function getSpanishVoices() {
+// Voces del idioma de la app (español, inglés o portugués), con las más comunes primero.
+const PREFERRED_VOICE_LANGS = { es: /es-(AR|419|US|MX)/i, en: /en-(US|GB)/i, pt: /pt-BR/i };
+
+function getAppVoices() {
     if (!voiceSupported()) return [];
-    return speechSynthesis.getVoices().filter(v => /^es(-|_|$)/i.test(v.lang));
+    const re = new RegExp(`^${appLanguage}(-|_|$)`, 'i');
+    return speechSynthesis.getVoices().filter(v => re.test(v.lang));
 }
 
 function pickVoice(settings) {
-    const voices = getSpanishVoices();
+    const voices = getAppVoices();
     return voices.find(v => v.voiceURI === settings.voiceURI)
-        || voices.find(v => /es-(AR|419|US|MX)/i.test(v.lang))
+        || voices.find(v => (PREFERRED_VOICE_LANGS[appLanguage] || PREFERRED_VOICE_LANGS.es).test(v.lang))
         || voices[0] || null;
 }
 
@@ -63,10 +67,11 @@ function speak(text, key, opts = {}) {
             stopCuePlayback();
             speechSynthesis.cancel();
         }
-        const u = new SpeechSynthesisUtterance(text);
+        // Lo que dice la voz también va en el idioma de la app.
+        const u = new SpeechSynthesisUtterance(tr(text));
         const voice = pickVoice(st);
         if (voice) u.voice = voice;
-        u.lang = voice?.lang || 'es-AR';
+        u.lang = voice?.lang || appLocale();
         // El estilo elegido (tierno, militar…) ajusta tono y velocidad de la voz.
         const style = typeof currentVoiceStyle === 'function' ? currentVoiceStyle() : { pitch: 1, rate: 1 };
         u.rate = Math.min(2, st.rate * style.rate);
@@ -129,8 +134,8 @@ function populateVoiceSelect() {
     const sel = document.getElementById('voiceSelect');
     if (!sel) return;
     const st = loadVoiceSettings();
-    const voices = getSpanishVoices();
-    sel.innerHTML = '<option value="">Automática (español)</option>'
+    const voices = getAppVoices();
+    sel.innerHTML = `<option value="">Automática (${escapeHtml(APP_LANGUAGES[appLanguage].name)})</option>`
         + voices.map(v => `<option value="${escapeHtml(v.voiceURI)}">${escapeHtml(v.name)} (${escapeHtml(v.lang)})</option>`).join('');
     sel.value = voices.some(v => v.voiceURI === st.voiceURI) ? st.voiceURI : '';
 }

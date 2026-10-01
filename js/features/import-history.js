@@ -22,7 +22,7 @@ async function onImportHistoryFile(file) {
             existingKeys: existingImportKeys()
         });
         pendingImport = res;
-        const d = s => (s ? new Date(s + 'T00:00:00').toLocaleDateString('es-AR') : '');
+        const d = s => (s ? new Date(s + 'T00:00:00').toLocaleDateString(appLocale()) : '');
         const known = res.exercises.filter(n => catalogMuscleGroup(n));
         box.hidden = false;
         box.innerHTML = res.workouts.length

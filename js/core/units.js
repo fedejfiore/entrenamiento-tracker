@@ -108,7 +108,7 @@ function formatWeight(kg, sep = '') {
 
 /** Volumen o totales grandes: "12.500 kg" / "27.558 lb" (sin decimales). */
 function formatWeightTotal(kg) {
-    return `${Math.round(kgToDisplay(Number(kg) || 0)).toLocaleString('es-AR')} ${weightUnitDef().label}`;
+    return `${Math.round(kgToDisplay(Number(kg) || 0)).toLocaleString((typeof appLocale === 'function' ? appLocale() : 'es-AR'))} ${weightUnitDef().label}`;
 }
 
 /** Incremento en la unidad elegida, redondeado a algo que se pueda cargar (2,5 kg → 5 lb). */

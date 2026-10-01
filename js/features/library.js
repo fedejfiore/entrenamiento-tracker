@@ -17,7 +17,7 @@ function libRoutineItemHtml(key, { archived = false } = {}) {
     const label = routineLabelOf(key);
     const exercises = routineExercisesOf(key);
     const last = lastDoneOf(key);
-    const lastText = last ? `última vez ${new Date(last + 'T00:00:00').toLocaleDateString('es-AR')}` : 'nunca la hiciste';
+    const lastText = last ? `última vez ${new Date(last + 'T00:00:00').toLocaleDateString(appLocale())}` : 'nunca la hiciste';
     const list = exercises.map(e => `<li>${escapeHtml(e)}</li>`).join('');
     const k = escapeHtml(key);
     const actions = archived

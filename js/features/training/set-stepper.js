@@ -20,7 +20,7 @@ function showSetStepper(input) {
         const sign = s > 0 ? '+' : '−';
         const abs = Math.abs(s);
         if (field === 'time' && abs >= 60) return `${sign}${abs / 60}m`;
-        return `${sign}${abs.toLocaleString('es-AR')}${unit}`;
+        return `${sign}${abs.toLocaleString(appLocale())}${unit}`;
     };
     setStepperEl = document.createElement('div');
     setStepperEl.className = 'set-stepper';
