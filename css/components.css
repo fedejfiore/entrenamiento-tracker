@@ -181,3 +181,22 @@ input[type="checkbox"] {
     background: #8b5cf6;
     color: white;
 }
+
+/* ---- Enviar error o sugerencia ---- */
+.feedback-open { margin-top: 8px; background: var(--bg-subtle); color: var(--text); border: 1px solid var(--border); }
+.help-content .feedback-open { margin: 0 0 10px; }
+.feedback-fieldset { border: 0; padding: 0; margin: 0 0 8px; min-width: 0; }
+.feedback-types { display: flex; flex-direction: column; gap: 6px; }
+.feedback-type { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-subtle); cursor: pointer; }
+.feedback-type input { width: auto; margin: 0; accent-color: var(--brand); }
+.feedback-type-icon { font-size: 20px; line-height: 1; }
+.feedback-type strong { display: block; font-size: 14px; }
+.feedback-type small { display: block; color: var(--text-muted); font-size: 12px; }
+.feedback-type:has(input:checked) { border-color: var(--brand); box-shadow: 0 0 0 2px rgba(var(--brand-rgb), 0.35); }
+.feedback-error { color: var(--danger); font-size: 13px; margin: -6px 0 10px; }
+.feedback-tech-row { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; color: var(--text-muted); margin: 4px 0 6px; }
+.feedback-tech-row input { width: auto; margin: 2px 0 0; }
+.feedback-tech-toggle { width: auto; margin-bottom: 8px; }
+.feedback-tech { white-space: pre-wrap; word-break: break-word; font-size: 11px; background: var(--bg-subtle); border-radius: var(--radius-sm); padding: 8px; margin-bottom: 10px; color: var(--text-muted); }
+.feedback-secondary { background: var(--bg-elevated); color: var(--text); }
+.feedback-to { font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 4px; }

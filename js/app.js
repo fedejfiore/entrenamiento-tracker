@@ -55,6 +55,7 @@ class App {
         bindArchivedRoutinesList();
         bindHistoryList();
         bindHelp();
+        bindFeedback();
         bindPlanSection();
         bindSupersetModal();
         bindPlateCalculator();

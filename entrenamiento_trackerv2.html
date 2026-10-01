@@ -415,6 +415,7 @@
                     <h2>❓ Ayuda</h2>
                     <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Cómo funciona cada parte de la app, con buscador y preguntas frecuentes.</div>
                     <button type="button" id="openHelpBtn">📖 Cómo usar la app</button>
+                    <button type="button" class="feedback-open" data-fn-click="openFeedback">💬 Enviar un error o una sugerencia</button>
                 </div>
 
                 <div class="section" data-hint="Tema, pantalla encendida, color, unidades (kg / lb, km / mi), inicio de semana, unilaterales">
@@ -594,8 +595,40 @@
                 <h3 id="helpTitle">📖 Cómo usar la app</h3>
                 <button type="button" class="small" style="width:auto;" id="helpClose" aria-label="Cerrar la ayuda">✕</button>
             </div>
+            <button type="button" class="feedback-open" data-fn-click="openFeedback">💬 ¿Encontraste un error o tenés una idea? Contanos</button>
             <input type="search" id="helpSearch" placeholder="Buscar (ej: backup, timer, reordenar, RIR)" autocomplete="off" aria-label="Buscar en la ayuda">
             <div id="helpContent" class="help-scroll"></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="feedbackModal" role="dialog" aria-modal="true" aria-labelledby="feedbackTitle">
+        <div class="modal-content feedback-content">
+            <div class="modal-header">
+                <h3 id="feedbackTitle">💬 Error o sugerencia</h3>
+                <button type="button" class="small" style="width:auto;" data-feedback="close" aria-label="Cerrar">✕</button>
+            </div>
+            <fieldset class="feedback-fieldset">
+                <legend class="settings-label">¿Qué querés contarnos?</legend>
+                <div id="feedbackTypes" class="feedback-types"></div>
+                <p class="feedback-error" data-error-for="type" hidden></p>
+            </fieldset>
+            <label for="feedbackArea" class="settings-label">¿En qué parte de la app?</label>
+            <select id="feedbackArea"></select>
+            <label for="feedbackText" class="settings-label">Contanos qué pasó o qué te gustaría</label>
+            <textarea id="feedbackText" rows="4" maxlength="2000" placeholder="Ej.: al tildar la última serie se cerró la app. O: me gustaría poder…"></textarea>
+            <p class="feedback-error" data-error-for="description" hidden></p>
+            <label for="feedbackName" class="settings-label">Nombre y apellido</label>
+            <input type="text" id="feedbackName" autocomplete="name" maxlength="80">
+            <p class="feedback-error" data-error-for="name" hidden></p>
+            <label for="feedbackContact" class="settings-label">Mail o WhatsApp (para responderte)</label>
+            <input type="text" id="feedbackContact" autocomplete="email" maxlength="120" placeholder="tu@mail.com o 11 2345 6789">
+            <p class="feedback-error" data-error-for="contact" hidden></p>
+            <label class="feedback-tech-row"><input type="checkbox" id="feedbackTech" checked> Incluir datos técnicos (versión, navegador y pantalla; nada de tus entrenamientos)</label>
+            <button type="button" class="small feedback-tech-toggle" data-feedback="tech">Ver qué se envía</button>
+            <pre id="feedbackTechPreview" class="feedback-tech" hidden></pre>
+            <button type="button" class="success" data-feedback="send">📧 Enviar por mail</button>
+            <button type="button" class="feedback-secondary" data-feedback="copy">📋 Copiar el texto</button>
+            <p class="feedback-to">Llega a <span id="feedbackTo"></span></p>
         </div>
     </div>
 
@@ -759,6 +792,7 @@
     <script src="js/features/profile.js"></script>
     <script src="js/features/backup.js"></script>
     <script src="js/features/help.js"></script>
+    <script src="js/features/feedback.js"></script>
     <script src="js/ui/collapsible.js"></script>
     <script src="js/ui/accessibility.js"></script>
     <script src="js/ui/navigation.js"></script>

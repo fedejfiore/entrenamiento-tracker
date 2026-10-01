@@ -8,7 +8,10 @@ const APP_BRAND = {
     by: 'by Inquieto',
     company: 'Inquieto',
     division: 'SFT',
-    meaning: 'la lucha interior'
+    meaning: 'la lucha interior',
+    // A dónde llegan los errores y sugerencias (Ajustes → Ayuda). Cambiar por el mail
+    // corporativo cuando exista.
+    feedbackEmail: 'federicojfiore@gmail.com'
 };
 
 function appBrandLine() {
