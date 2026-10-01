@@ -56,6 +56,16 @@ class WorkoutRepository {
         return data;
     }
 
+    /** Agrega varias sesiones nuevas (validadas) en una sola escritura: para importar historial. */
+    addMany(sessions) {
+        const list = sessions.map(s => (s instanceof WorkoutSession ? s.toJSON() : s));
+        list.forEach((data, i) => WorkoutSession.validate(data, `Sesión importada #${i + 1}`));
+        this.store.transaction(tx => {
+            tx.set('workouts', [...tx.get('workouts'), ...list]);
+        });
+        return list.length;
+    }
+
     /**
      * Guarda la lista completa después de editarla (ej. cambiar una fecha, unificar nombres).
      * Detecta qué sesiones cambiaron y les actualiza updatedAt: es lo que permite, a futuro,

@@ -533,14 +533,27 @@
                     <button data-fn-click="unifyFromSelectors">🔗 Unificar</button>
                 </div>
 
-                <div class="section" data-hint="Backup, restaurar y borrar todo">
+                <div class="section" data-hint="Backup, restaurar, exportar a CSV y borrar todo">
                     <h2>💾 Datos</h2>
                     <label class="toggle-row"><input type="checkbox" id="backupEncrypt"> Proteger el backup con contraseña</label>
                     <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Recomendado si el backup tiene fotos o medidas, o si lo vas a mandar por mail o WhatsApp. Si te olvidás la contraseña, el backup no se puede abrir.</div>
                     <button class="success" data-fn-click="downloadData">📥 Descargar backup</button>
                     <button data-fn-click="triggerFileInput">📤 Cargar backup</button>
+                    <button type="button" id="exportCsvBtn">📄 Exportar historial (CSV, para Excel o Sheets)</button>
                     <input type="file" id="fileInput" accept=".json,application/json" style="display:none;">
                     <button class="danger" data-fn-click="resetAllData">🗑️ Resetear todo</button>
+                </div>
+
+                <div class="section" id="importHistorySection" data-hint="Hevy, Strong o Fitbod: tu historial no se pierde al cambiarte">
+                    <h2>📥 Traer historial de otra app</h2>
+                    <p class="import-help">En la otra app buscá <b>Exportar datos</b> (suele estar en Ajustes o en el Perfil), guardá el archivo <b>CSV</b> y elegilo acá. Funciona con <b>Hevy</b>, <b>Strong</b> y <b>Fitbod</b>, y con el CSV que exporta esta app. Antes de guardar te muestro un resumen; si importás el mismo archivo dos veces, no se duplica.</p>
+                    <label for="importWeightUnit" class="settings-label">Si el archivo no dice la unidad (Strong), los pesos están en</label>
+                    <select id="importWeightUnit"><option value="kg">Kilos (kg)</option><option value="lb">Libras (lb)</option></select>
+                    <label class="toggle-row"><input type="checkbox" id="importMonthFirst"> Las fechas con barras son mes/día (formato de Estados Unidos)</label>
+                    <button type="button" data-import="pick">📂 Elegir archivo CSV</button>
+                    <input type="file" id="importHistoryFile" accept=".csv,text/csv" hidden>
+                    <div id="importHistoryPreview" class="import-preview" hidden></div>
+                    <p class="import-help">Los ejercicios quedan con el nombre que tenían (por ejemplo, en inglés). Si querés juntarlos con los tuyos, usá <b>🔗 Unificar Ejercicios Duplicados</b>, más arriba en Ajustes.</p>
                 </div>
             </div>
         </main>
@@ -773,6 +786,7 @@
     <script src="js/data/exercise-prefs.js"></script>
     <script src="js/data/routines-store.js"></script>
     <script src="js/domain/stats.js"></script>
+    <script src="js/domain/import-csv.js"></script>
     <script src="js/ui/toast.js"></script>
     <script src="js/ui/wake-lock.js"></script>
     <script src="js/audio/sound.js"></script>
@@ -808,6 +822,7 @@
     <script src="js/features/library.js"></script>
     <script src="js/features/profile.js"></script>
     <script src="js/features/backup.js"></script>
+    <script src="js/features/import-history.js"></script>
     <script src="js/features/help.js"></script>
     <script src="js/features/feedback.js"></script>
     <script src="js/ui/collapsible.js"></script>
