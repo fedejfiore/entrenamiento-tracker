@@ -6,15 +6,26 @@
 // el foco sale de la serie (Listo en el teclado, tocar afuera) o se marca como hecha.
 let setStepperEl = null;
 
+// La barra ocupa lugar: al abrirse, moverse o cerrarse corre todo lo de abajo. Si eso pasa
+// justo cuando el dedo toca otra serie, el toque cae en la de más abajo. Por eso se compensa
+// el desplazamiento: lo que se está tocando queda exactamente donde estaba en la pantalla.
+function keepInPlace(el, change) {
+    const before = el && el.isConnected ? el.getBoundingClientRect().top : null;
+    change();
+    if (before == null || !el.isConnected) return;
+    const shift = el.getBoundingClientRect().top - before;
+    if (Math.abs(shift) > 1) window.scrollBy(0, shift);
+}
+
 function showSetStepper(input) {
     const field = input.dataset.f;
     const timeUnit = field === 'time' ? (input.dataset.unit || 'mss') : null;
     const steps = timeUnit ? TIME_STEPS[timeUnit] : field === 'kg' ? weightUnitDef().steps : SET_STEPS[field];
     const row = input.closest('.set-row');
     if (!steps || !row) { hideSetStepper(); return; }
-    if (setStepperEl && setStepperEl.parentNode === row && setStepperEl.dataset.field === field && setStepperEl.dataset.unit === (timeUnit || '')) return;
+    if (setStepperEl && setStepperEl.parentNode === row && setStepperEl.dataset.field === field && setStepperEl.dataset.unit === (timeUnit || '')) { updateStepperApply(row); return; }
 
-    hideSetStepper();
+    keepInPlace(input, hideSetStepper);
     const unit = field === 'kg' ? weightUnitDef().label : field === 'km' ? distanceUnitDef().label : (field === 'time' || field === 'rest') ? 's' : '';
     const label = s => {
         const sign = s > 0 ? '+' : '−';
@@ -36,10 +47,15 @@ function showSetStepper(input) {
         if (b) stepSetField(row, field, parseFloat(b.dataset.step));
         if (e.target.closest('[data-tool="plates"]')) openPlateCalculator(row.querySelector('[data-f="kg"]'));
     });
+    // Usar el mismo valor en las series siguientes (aparece solo si alguna tiene otro).
+    setStepperEl.insertAdjacentHTML('beforeend', '<button type="button" class="stepper-apply" data-apply hidden></button>');
+    setStepperEl.addEventListener('click', e => { if (e.target.closest('[data-apply]')) applyToFollowingSets(row, field); });
     // Justo después de los inputs visibles, antes de la nota de la serie.
     const note = row.querySelector('.set-note');
     row.insertBefore(setStepperEl, note);
     updateStepperHint(row);
+    updateStepperApply(row);
+    row.addEventListener('input', onStepperRowInput);
     // Terminó de editar: el foco se fue de la serie (los botones de la barra no lo mueven).
     row.addEventListener('focusout', onStepperRowFocusOut);
 }
@@ -63,7 +79,7 @@ function initSetStepperAutoHide() {
         });
     }
     document.addEventListener('pointerdown', e => {
-        if (setStepperEl && !setStepperEl.parentNode?.contains(e.target)) hideSetStepper();
+        if (setStepperEl && !setStepperEl.parentNode?.contains(e.target)) keepInPlace(e.target, hideSetStepper);
     }, true);
 }
 
@@ -71,7 +87,7 @@ function onStepperRowFocusOut(e) {
     const row = e.currentTarget;
     setTimeout(() => {
         if (!setStepperEl || setStepperEl.parentNode !== row) return;
-        if (!row.contains(document.activeElement)) hideSetStepper();
+        if (!row.contains(document.activeElement)) keepInPlace(document.activeElement && document.activeElement !== document.body ? document.activeElement : null, hideSetStepper);
     }, 0);
 }
 
@@ -87,6 +103,7 @@ function updateStepperHint(row) {
 function hideSetStepper() {
     if (!setStepperEl) return;
     setStepperEl.parentNode?.removeEventListener('focusout', onStepperRowFocusOut);
+    setStepperEl.parentNode?.removeEventListener('input', onStepperRowInput);
     setStepperEl.remove();
     setStepperEl = null;
 }
@@ -111,3 +128,71 @@ function stepSetField(row, field, delta) {
     el.dispatchEvent(new Event('input', { bubbles: true }));
 }
 
+
+// ---- Usar el mismo peso / reps / descanso en las series siguientes ----
+
+function onStepperRowInput(e) {
+    updateStepperApply(e.currentTarget);
+}
+
+/** Series siguientes que todavía no se hicieron (las tildadas ya quedaron registradas). */
+function followingPendingRows(row) {
+    const rows = [...row.closest('.exercise-row').querySelectorAll('.set-row')];
+    return rows.slice(rows.indexOf(row) + 1).filter(r => !r.classList.contains('done') && !r.classList.contains('half'));
+}
+
+function stepperApplyPlan(row, field) {
+    const el = row.querySelector(`[data-f="${field}"]`);
+    const value = el?.value.trim();
+    if (!value) return null;
+    const rows = followingPendingRows(row);
+    const targets = rows.filter(r => {
+        const t = r.querySelector(`[data-f="${field}"]`);
+        return t && (t.value.trim() || t.dataset.prev || '') !== value;
+    });
+    if (!targets.length) return null;
+    const allRows = [...row.closest('.exercise-row').querySelectorAll('.set-row')];
+    const nums = targets.map(r => allRows.indexOf(r) + 1);
+    return { value, targets, nums };
+}
+
+function stepperValueLabel(field, value) {
+    if (field === 'kg') return `${value} ${weightUnitDef().label}`;
+    if (field === 'reps') return `${value} reps`;
+    if (field === 'rest') return `${value} s de descanso`;
+    if (field === 'km') return `${value} ${distanceUnitDef().label}`;
+    return value;
+}
+
+function updateStepperApply(row) {
+    const btn = setStepperEl?.parentNode === row ? setStepperEl.querySelector('[data-apply]') : null;
+    if (!btn) return;
+    const plan = stepperApplyPlan(row, setStepperEl.dataset.field);
+    btn.hidden = !plan;
+    if (!plan) return;
+    const which = plan.nums.length === 1 ? `la serie ${plan.nums[0]}`
+        : plan.nums.length === plan.nums[plan.nums.length - 1] - plan.nums[0] + 1 ? `las series ${plan.nums[0]} a ${plan.nums[plan.nums.length - 1]}`
+        : `las series ${plan.nums.join(', ')}`;
+    btn.textContent = `⇊ Usar ${stepperValueLabel(setStepperEl.dataset.field, plan.value)} en ${which}`;
+}
+
+function applyToFollowingSets(row, field) {
+    const plan = stepperApplyPlan(row, field);
+    if (!plan) return;
+    const previous = plan.targets.map(r => [r, r.querySelector(`[data-f="${field}"]`).value]);
+    plan.targets.forEach(r => {
+        const t = r.querySelector(`[data-f="${field}"]`);
+        t.value = plan.value;
+        t.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    updateStepperApply(row);
+    showUndoToast(`${stepperValueLabel(field, plan.value)} en ${plan.targets.length} ${plan.targets.length === 1 ? 'serie' : 'series'} más`, () => {
+        previous.forEach(([r, v]) => {
+            const t = r.querySelector(`[data-f="${field}"]`);
+            if (!t) return;
+            t.value = v;
+            t.dispatchEvent(new Event('input', { bubbles: true }));
+        });
+        updateStepperApply(row);
+    });
+}

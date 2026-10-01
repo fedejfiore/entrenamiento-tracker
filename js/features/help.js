@@ -77,6 +77,7 @@ const HELP_SECTIONS = [
                 <li><b>Tiempo y descanso:</b> según la unidad (segundos o minutos)</li>
             </ul>
             <p>Si el campo está vacío, parte del valor de la última vez. La barra se va sola cuando terminás de editar: al tocar <i>Listo</i> o cerrar el teclado, al tocar fuera de la serie o al marcarla con ✓.</p>
+            <p>Si cambiás el peso, las reps o el descanso y las series siguientes tienen otro valor, en la misma barra aparece <b>⇊ Usar … en las series …</b>: lo copia a las que todavía no hiciste (las tildadas no se tocan). Si fue sin querer, tocá <b>Deshacer</b>.</p>
             <p>En las máquinas de placas, junto al peso se ve en qué placa va la clavija (ej. <b>placa 7</b>).</p>`
     },
     {

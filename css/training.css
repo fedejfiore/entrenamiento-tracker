@@ -372,3 +372,8 @@ body.rep-counter-off .rep-count-btn { display: none; }
 .set-row.swiping { transition: none; }
 .set-row.swipe-done { background-color: color-mix(in srgb, var(--success) 30%, transparent); }
 .set-row.swipe-undo { background-color: color-mix(in srgb, var(--danger) 25%, transparent); }
+
+/* Barra de ajuste: usar el mismo valor en las series siguientes (segunda línea). */
+.set-stepper { flex-wrap: wrap; }
+.set-stepper .stepper-apply { flex: 1 1 100%; width: 100%; margin: 4px 0 0; padding: 7px 10px; font-size: 13px; font-weight: 600; background: rgba(var(--brand-rgb), 0.16); color: var(--text); border: 1px dashed var(--brand); }
+.set-stepper .stepper-apply[hidden] { display: none; }
