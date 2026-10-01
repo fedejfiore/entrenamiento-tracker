@@ -598,6 +598,23 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="finishPrompt" role="dialog" aria-modal="true" aria-labelledby="finishPromptTitle">
+        <div class="modal-content finish-prompt">
+            <h3 id="finishPromptTitle">🏁 ¡Terminaste todas las series!</h3>
+            <p class="finish-prompt-summary" id="finishPromptSummary"></p>
+            <p class="finish-prompt-label">¿Cómo te sentiste?</p>
+            <div class="finish-prompt-mood">
+                <button type="button" class="emoji-btn" data-mood="1" aria-label="Mal">😢</button>
+                <button type="button" class="emoji-btn" data-mood="2" aria-label="Regular">😐</button>
+                <button type="button" class="emoji-btn" data-mood="3" aria-label="Bien">🙂</button>
+                <button type="button" class="emoji-btn" data-mood="4" aria-label="Muy bien">😊</button>
+                <button type="button" class="emoji-btn" data-mood="5" aria-label="Excelente">🔥</button>
+            </div>
+            <button type="button" class="success" data-finish="save">✅ Guardar sesión</button>
+            <button type="button" class="finish-prompt-keep" data-finish="keep">Seguir entrenando</button>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="feedbackModal" role="dialog" aria-modal="true" aria-labelledby="feedbackTitle">
         <div class="modal-content feedback-content">
             <div class="modal-header">
@@ -774,6 +791,7 @@
     <script src="js/features/training/reorder.js"></script>
     <script src="js/features/training/workout.js"></script>
     <script src="js/features/training/workout-screen.js"></script>
+    <script src="js/features/training/finish-prompt.js"></script>
     <script src="js/features/training/train-mode.js"></script>
     <script src="js/features/training/supersets.js"></script>
     <script src="js/features/exercises.js"></script>

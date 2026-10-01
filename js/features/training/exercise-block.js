@@ -336,6 +336,8 @@ function toggleSetDone(btn) {
     saveWorkoutDraft();
     // Todas las series hechas: el bloque se contrae solo (se vuelve a abrir con ▸).
     if (isBlockComplete(block)) setTimeout(() => { if (isBlockComplete(block)) setBlockCollapsed(block, true); }, 700);
+    // Era la última serie de la sesión: en vez del descanso, se pregunta si guardar.
+    if (isSessionComplete()) { setTimeout(() => { if (isSessionComplete()) openFinishPrompt(); }, 400); return; }
     if (goToNextInSuperset(block, row)) return; // superserie: el descanso va al final de la vuelta
     if (restSeconds > 0) runRestTimer(restSeconds);
 }

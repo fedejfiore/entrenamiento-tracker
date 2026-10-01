@@ -45,7 +45,7 @@ const HELP_SECTIONS = [
                 <li>En <b>Entrenar</b>, pestaña <b>🏋️ Rutina</b>, elegí la rutina del día en el selector (o tocá ▶ Entrenar en la Biblioteca). Para intervalos, pestaña <b>⏱️ Tabata / Intervalos</b>.</li>
                 <li>Tocá <b>▶ Iniciar Rutina</b> para medir la duración. Si te olvidás, arranca sola cuando cargás el primer dato.</li>
                 <li>En cada ejercicio, cargá las series y tocá <b>✓</b> al terminar cada una: arranca el descanso.</li>
-                <li>Al terminar, bajá hasta la sección <b>Finalizar Sesión</b> (al final de Entrenar): elegí cómo te sentiste, sumá una nota si querés y tocá <b>✅ GUARDAR SESIÓN</b>.</li>
+                <li>Al tildar la <b>última serie</b> de la sesión, la app te pregunta si guardar: elegí cómo te sentiste y tocá <b>✅ Guardar sesión</b> (o <b>Seguir entrenando</b>). Si dejaste algún ejercicio sin hacer, guardá desde <b>Finalizar Sesión</b>, al final de Entrenar (ahí también podés sumar una nota).</li>
             </ol>
             <p><b>No perdés nada:</b> lo que vas cargando se guarda solo. Si cerrás la app sin guardar, al volver te recupera la sesión del día.</p>
             <p>Solo se guardan las series que marcaste con ✓ o en las que escribiste algo. Lo que se ve en gris no se guarda por sí solo.</p>`
