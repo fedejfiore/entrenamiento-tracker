@@ -381,8 +381,13 @@
                 </div>
                 <div class="section" data-hint="Constancia, récords, kilos, horas y cardio">
                     <h2>🏅 Medallas</h2>
-                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Se ganan con tu historial real. Tocá 📤 para compartir la medalla como imagen.</div>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Se ganan con tu historial real. Tocá 📤 para compartir la medalla como imagen (historia o publicación).</div>
                     <div id="profileMedals"></div>
+                </div>
+                <div class="section" data-hint="Tus récords personales, listos para compartir">
+                    <h2>🏆 Trofeos</h2>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Cada récord personal es un trofeo. Tocá 📤 para compartirlo como imagen (historia o publicación).</div>
+                    <div id="profileTrophies"></div>
                 </div>
                 <div class="section" data-hint="Tu evolución en fotos (quedan en tu celular)">
                     <h2>📸 Fotos de progreso</h2>
@@ -611,6 +616,22 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="shareSheet" role="dialog" aria-modal="true" aria-labelledby="shareSheetTitle">
+        <div class="modal-content share-sheet">
+            <div class="modal-header">
+                <h3 id="shareSheetTitle">📤 Compartir</h3>
+                <button type="button" class="small" style="width:auto;" data-share="close" aria-label="Cerrar">✕</button>
+            </div>
+            <div class="share-formats">
+                <button type="button" class="small" data-share-format="story">Historia (9:16)</button>
+                <button type="button" class="small" data-share-format="post">Publicación (4:5)</button>
+            </div>
+            <img id="shareSheetPreview" class="share-preview" alt="Vista previa de la imagen">
+            <button type="button" class="success" data-share="send">📤 Compartir</button>
+            <button type="button" class="share-download" data-share="download">⬇️ Guardar imagen</button>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="finishPrompt" role="dialog" aria-modal="true" aria-labelledby="finishPromptTitle">
         <div class="modal-content finish-prompt">
             <h3 id="finishPromptTitle">🏁 ¡Terminaste todas las series!</h3>
@@ -821,6 +842,7 @@
     <script src="js/features/general-settings.js"></script>
     <script src="js/features/programs.js"></script>
     <script src="js/features/library.js"></script>
+    <script src="js/features/share-cards.js"></script>
     <script src="js/features/profile.js"></script>
     <script src="js/features/backup.js"></script>
     <script src="js/features/import-history.js"></script>

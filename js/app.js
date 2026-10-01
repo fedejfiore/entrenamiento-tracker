@@ -59,6 +59,7 @@ class App {
         bindGarden();
         bindFinishPrompt();
         bindImportHistory();
+        bindShareSheet();
         bindPlanSection();
         bindSupersetModal();
         bindPlateCalculator();

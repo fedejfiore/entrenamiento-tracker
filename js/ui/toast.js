@@ -18,23 +18,29 @@ function showToast(message, type = 'success', duration = 3200) {
 }
 
 
+/** Aviso con un botón de acción (ej. "Compartir"); el botón funciona una sola vez. */
+function showActionToast(message, type, duration, label, onClick) {
+    const toast = showToast(message, type, duration);
+    if (!toast || !toast.classList) return toast;
+    toast.classList.add('has-action');
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'toast-action-btn';
+    btn.textContent = label;
+    btn.addEventListener('click', () => {
+        if (btn.disabled) return;
+        btn.disabled = true;
+        onClick();
+        toast.remove();
+    }, { once: true });
+    toast.appendChild(btn);
+    return toast;
+}
+
 /**
  * Aviso con "Deshacer": la acción ya se hizo (sin pedir confirmación antes) y se puede
  * revertir unos segundos. Más rápido entre series que un diálogo de "¿Seguro?".
  */
 function showUndoToast(message, onUndo, duration = 6000) {
-    const toast = showToast(message, 'undo', duration);
-    if (!toast || !toast.classList) return toast;
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'toast-undo-btn';
-    btn.textContent = 'Deshacer';
-    btn.addEventListener('click', () => {
-        if (btn.disabled) return;
-        btn.disabled = true;
-        onUndo();
-        toast.remove();
-    }, { once: true });
-    toast.appendChild(btn);
-    return toast;
+    return showActionToast(message, 'undo', duration, 'Deshacer', onUndo);
 }

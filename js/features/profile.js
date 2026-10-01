@@ -74,6 +74,7 @@ async function renderProfile() {
     if (since) since.textContent = (age != null ? `${age} años · ` : '') + sinceText;
     renderProfileStats(stats);
     renderMedals(stats);
+    renderTrophies();
     await renderPhotos();
 }
 
@@ -150,50 +151,55 @@ async function openPhoto(id) {
     modal.classList.add('open');
 }
 
-// ---------- Imagen para compartir una medalla ----------
+// ---------- Medallas y trofeos para compartir (ver js/features/share-cards.js) ----------
 
-function drawMedalImage(a, profileName) {
-    const W = 1080, H = 1350;
-    const c = document.createElement('canvas');
-    c.width = W; c.height = H;
-    const g = c.getContext('2d');
-    const bg = g.createLinearGradient(0, 0, 0, H);
-    bg.addColorStop(0, '#12141a'); bg.addColorStop(1, '#262a36');
-    g.fillStyle = bg; g.fillRect(0, 0, W, H);
-    // Medalla: cinta, disco con degradé metálico, borde y brillo
-    g.fillStyle = '#c0392b'; g.beginPath(); g.moveTo(420, 180); g.lineTo(540, 470); g.lineTo(660, 180); g.lineTo(600, 180); g.lineTo(540, 330); g.lineTo(480, 180); g.closePath(); g.fill();
-    const metal = g.createRadialGradient(480, 540, 40, 540, 620, 260);
-    metal.addColorStop(0, '#ffffff'); metal.addColorStop(0.25, a.tier.color); metal.addColorStop(1, '#2b2b2b');
-    g.fillStyle = metal; g.beginPath(); g.arc(540, 640, 240, 0, Math.PI * 2); g.fill();
-    g.lineWidth = 18; g.strokeStyle = 'rgba(255,255,255,0.55)'; g.stroke();
-    g.font = '200px serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
-    g.fillText(a.icon, 540, 650);
-    g.fillStyle = '#ffffff'; g.textBaseline = 'alphabetic';
-    g.font = 'bold 78px system-ui, sans-serif'; g.fillText(`${a.title}`, 540, 1000);
-    g.fillStyle = a.tier.color; g.font = 'bold 64px system-ui, sans-serif'; g.fillText(`Medalla de ${a.tier.name}`, 540, 1085);
-    g.fillStyle = '#c3c6cc'; g.font = '44px system-ui, sans-serif';
-    g.fillText(`${a.id === 'volume' ? formatWeightTotal(a.value) : `${formatNumber(a.value)} ${a.unit}`}${profileName ? ` · ${profileName}` : ''}`, 540, 1160);
-    g.fillStyle = '#8e929b'; g.font = '36px system-ui, sans-serif'; g.fillText(appBrandLine(), 540, 1290);
-    return c;
+function shareDateText(dateStr) {
+    return new Date((dateStr || getLocalDateString()) + 'T00:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
-async function shareMedal(id) {
+function medalShareSpec(a) {
+    const qty = n => a.id === 'volume' ? formatWeightTotal(n) : `${formatNumber(n)} ${a.unit}`;
+    return {
+        kind: 'medal', title: a.title, tierName: a.tier.name, color: a.tier.color, icon: a.icon,
+        level: a.level, levels: MEDAL_TIERS.length, valueText: qty(a.value),
+        nextText: a.next ? `Próxima: ${MEDAL_TIERS[a.level].name} a ${qty(a.next)}` : '¡Nivel máximo!',
+        name: loadProfile().name, date: shareDateText(),
+        shareText: `¡Gané la medalla de ${a.tier.name} en ${a.title}! (${qty(a.value)})`
+    };
+}
+
+function recordValueText(r) {
+    return r.kind === 'reps' ? `${r.valueText} reps` : r.valueText;
+}
+
+function trophyShareSpec(r) {
+    return {
+        kind: 'trophy', exercise: r.exercise, title: r.exercise, color: '#ffc83d',
+        valueText: recordValueText(r), beforeText: r.kind === 'reps' && r.beforeText ? `${r.beforeText} reps` : r.beforeText,
+        deltaText: r.deltaText, name: loadProfile().name, date: shareDateText(r.date),
+        shareText: `¡Nuevo récord en ${r.exercise}: ${recordValueText(r)}!`
+    };
+}
+
+function shareMedal(id) {
     const a = evaluateAchievements(computeUsageStats(repo.workouts.all(), loadAppSettings().weekStart)).find(x => x.id === id);
-    if (!a || !a.tier) return;
-    const canvas = drawMedalImage(a, loadProfile().name);
-    const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
-    const file = new File([blob], `medalla-${a.id}-${a.tier.name.toLowerCase()}.png`, { type: 'image/png' });
-    const text = `¡Gané la medalla de ${a.tier.name} en ${a.title}! (${a.id === 'volume' ? formatWeightTotal(a.value) : `${formatNumber(a.value)} ${a.unit}`})`;
-    try {
-        if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], text }); return; }
-    } catch (e) {
-        if (e && e.name === 'AbortError') return;
-    }
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url; link.download = file.name; link.click();
-    setTimeout(() => URL.revokeObjectURL(url), 2000);
-    showToast('🖼️ Imagen descargada: compartila en tus redes', 'success', 3000);
+    if (a && a.tier) openShareSheet(medalShareSpec(a));
+}
+
+let profileTrophies = [];
+
+function renderTrophies() {
+    const box = document.getElementById('profileTrophies');
+    if (!box) return;
+    profileTrophies = recentRecords(repo.workouts.all(), 12);
+    box.innerHTML = profileTrophies.length
+        ? profileTrophies.map((r, i) => `<div class="trophy-row">
+                <span class="trophy-cup" aria-hidden="true">🏆</span>
+                <div class="trophy-text"><strong>${escapeHtml(r.exercise)}</strong>
+                    <small>${escapeHtml(r.label)}: ${escapeHtml(recordValueText(r))}${r.deltaText ? ` (${escapeHtml(r.deltaText)})` : ''} · ${new Date(r.date + 'T00:00:00').toLocaleDateString('es-AR')}</small></div>
+                <button type="button" class="small lib-secondary" data-share-trophy="${i}" aria-label="Compartir el récord de ${escapeHtml(r.exercise)}">📤</button>
+            </div>`).join('')
+        : emptyStateHtml('Cada récord personal (más peso, más reps, más distancia) se convierte en un trofeo para compartir.', ['train']);
 }
 
 // ---------- Eventos ----------
@@ -221,6 +227,8 @@ function bindProfile() {
         if (thumb) openPhoto(thumb.dataset.photo);
         const medal = e.target.closest('[data-share-medal]');
         if (medal) shareMedal(medal.dataset.shareMedal);
+        const trophy = e.target.closest('[data-share-trophy]');
+        if (trophy && profileTrophies[+trophy.dataset.shareTrophy]) openShareSheet(trophyShareSpec(profileTrophies[+trophy.dataset.shareTrophy]));
     });
     const modal = document.getElementById('photoModal');
     modal?.addEventListener('click', async e => {

@@ -45,3 +45,21 @@ test('medallas: nivel alcanzado, próximo umbral y progreso', () => {
     assert.equal(streak.tier, null);
     assert.equal(streak.next, 2);
 });
+
+test('trofeos: se leen los récords guardados como texto, el más importante por ejercicio y día', () => {
+    const recent = app('recentRecords');
+    const ws = [
+        { date: '2026-09-20', prs: ['Press de pecho: 81kg (antes 75kg)', 'Press de pecho: volumen total 4.860 kg (antes 4.500 kg)', 'Remo sentado: 15 reps (antes 12)'] },
+        { date: '2026-09-27', prs: ['Bici: distancia 18km (antes 9km)', 'Curl: mismo peso y reps con menos descanso (60s, antes 90s)', 'Curl martillo: volumen total 1.275 kg (antes 1.200 kg)'] },
+        { date: '2026-09-28', prs: ['Press de pecho: 82,5kg (antes 81kg)'], deletedAt: '2026-09-29' },
+        { date: '2026-09-10', prs: ['Sentadilla: 225lb (antes 205lb)'] }
+    ];
+    const r = JSON.parse(JSON.stringify(recent(ws)));
+    assert.deepEqual(r.map(x => [x.date, x.exercise, x.kind, x.valueText, x.deltaText]), [
+        ['2026-09-27', 'Bici', 'distance', '18km', null],
+        ['2026-09-27', 'Curl martillo', 'volume', '1.275 kg', null],
+        ['2026-09-20', 'Press de pecho', 'weight', '81kg', '+6 kg'],
+        ['2026-09-20', 'Remo sentado', 'reps', '15', '+3 reps'],
+        ['2026-09-10', 'Sentadilla', 'weight', '225lb', '+20 lb']
+    ]);
+});

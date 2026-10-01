@@ -248,11 +248,27 @@ input[type="checkbox"] {
 .import-actions button { flex: 1; margin: 0; }
 
 /* Aviso con "Deshacer" */
-.toast.undo { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: var(--bg-elevated); color: var(--text); border: 1px solid var(--border); pointer-events: auto; }
-.toast-undo-btn { width: auto; margin: 0; padding: 8px 14px; min-height: 40px; background: var(--brand); color: var(--on-color); font-weight: 700; flex-shrink: 0; }
+.toast.has-action { display: flex; align-items: center; justify-content: space-between; gap: 12px; pointer-events: auto; white-space: pre-line; }
+.toast.undo { background: var(--bg-elevated); color: var(--text); border: 1px solid var(--border); }
+.toast-action-btn { width: auto; margin: 0; padding: 8px 14px; min-height: 40px; background: var(--brand); color: var(--on-color); font-weight: 700; flex-shrink: 0; }
 
 /* Estados vacíos: qué pasa y qué hacer */
 .empty-state { padding: 12px; border: 1px dashed var(--border); border-radius: var(--radius-sm); color: var(--text-muted); font-size: 13px; }
 .empty-state p { margin: 0; }
 .empty-state-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 .empty-state-actions button { width: auto; margin: 0; }
+
+/* ---- Trofeos y ventana para compartir ---- */
+.trophy-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.trophy-row:last-child { border-bottom: 0; }
+.trophy-cup { font-size: 26px; }
+.trophy-text { flex: 1; min-width: 0; }
+.trophy-text strong { display: block; overflow-wrap: anywhere; }
+.trophy-text small { color: var(--text-muted); font-size: 12px; }
+.trophy-row button { width: auto; margin: 0; }
+.share-sheet { max-width: 440px; }
+.share-formats { display: flex; gap: 6px; margin-bottom: 10px; }
+.share-formats button { flex: 1; margin: 0; background: var(--bg-subtle); color: var(--text); }
+.share-formats button.active { background: var(--brand); color: var(--on-color); }
+.share-preview { display: block; width: 100%; max-height: 52vh; object-fit: contain; border-radius: var(--radius-sm); margin-bottom: 12px; background: #0b0d12; }
+.share-download { background: var(--bg-elevated); color: var(--text); }

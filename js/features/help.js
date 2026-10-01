@@ -295,12 +295,13 @@ const HELP_SECTIONS = [
             </ul>`
     },
     {
-        id: 'perfil', icon: '👤', title: 'Perfil, medallas y fotos',
+        id: 'perfil', icon: '👤', title: 'Perfil, medallas, trofeos y fotos',
         html: `
             <ul>
                 <li><b>Tu nombre, tu foto y tu fecha de nacimiento</b> (la edad se calcula sola). Tocá el círculo para elegir la foto.</li>
                 <li><b>Tu actividad:</b> sesiones, días entrenados, horas, semanas seguidas, récords y kilos levantados, además de tu mejor racha y tu ejercicio más hecho.</li>
-                <li><b>Medallas:</b> 6 familias (constancia, semanas seguidas, kilos, récords, horas y cardio) con 6 niveles: bronce, plata, oro, platino, diamante y leyenda. Se ganan con tu historial real y muestran cuánto falta para el próximo nivel. <b>📤</b> arma una imagen de la medalla para compartir en tus redes.</li>
+                <li><b>Medallas:</b> 6 familias (constancia, semanas seguidas, kilos, récords, horas y cardio) con 6 niveles: bronce, plata, oro, platino, diamante y leyenda. Se ganan con tu historial real y muestran cuánto falta para el próximo nivel. <b>📤</b> arma una imagen de la medalla para compartir, en formato <b>historia</b> (9:16, Instagram y estados de WhatsApp) o <b>publicación</b> (4:5), con vista previa.</li>
+                <li><b>Trofeos:</b> cada récord personal (más peso, más reps, más distancia) es un trofeo con cuánto mejoraste. También se comparten con 📤, y al guardar una sesión con récord aparece <b>📤 Compartir</b> en el aviso.</li>
                 <li><b>Fotos de progreso:</b> <b>📷 Agregar foto de hoy</b>, o sumala al cargar tus medidas. Se guardan comprimidas en tu celular. Tocá una para verla grande o borrarla. Consejo: misma luz y misma pose cada 2 a 4 semanas.</li>
                 <li><b>Contacto:</b> tu email y teléfono. Por ahora quedan solo en tu celular; cuando llegue la cuenta, desde acá vas a poder cambiarlos.</li>
             </ul>`

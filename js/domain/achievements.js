@@ -95,3 +95,55 @@ function evaluateAchievements(stats) {
         };
     });
 }
+
+// ---------- Trofeos: récords personales para compartir ----------
+// Los récords se guardan como texto en cada sesión ("Press de pecho: 81kg (antes 75kg)"),
+// en la unidad que se usaba al guardar. Se leen de ahí; el más importante de cada ejercicio
+// y día (peso > reps > distancia > velocidad > duración > volumen) es su trofeo.
+
+const RECORD_KINDS = [
+    { kind: 'weight', re: /^(\d[\d.,]*\s?(?:kg|lb))$/, label: 'Peso máximo' },
+    { kind: 'reps', re: /^(\d+) reps$/, label: 'Más reps' },
+    { kind: 'distance', re: /^distancia (.+)$/, label: 'Distancia' },
+    { kind: 'speed', re: /^velocidad (.+)$/, label: 'Velocidad' },
+    { kind: 'duration', re: /^duración (.+)$/, label: 'Duración' },
+    { kind: 'volume', re: /^volumen total (.+)$/, label: 'Volumen total' }
+];
+
+/** "Press de pecho: 81kg (antes 75kg)" → { exercise, kind, label, valueText, beforeText } o null. */
+function parseRecordText(text) {
+    const m = String(text || '').match(/^(.+?): (.+?)(?: \(antes ([^)]+)\))?$/);
+    if (!m) return null;
+    const def = RECORD_KINDS.find(k => k.re.test(m[2]));
+    if (!def) return null;
+    return { exercise: m[1], kind: def.kind, label: def.label, valueText: m[2].match(def.re)[1], beforeText: m[3] || null };
+}
+
+/** Diferencia legible para peso y reps: "+6 kg", "+2 reps". */
+function recordDelta(rec) {
+    if (!rec.beforeText || !['weight', 'reps'].includes(rec.kind)) return null;
+    const num = s => parseDecimal(String(s).replace(/[^\d,.]/g, '').replace(/\.(?=\d{3}\b)/g, ''));
+    const a = num(rec.valueText), b = num(rec.beforeText);
+    if (a == null || b == null || a <= b) return null;
+    const unit = rec.kind === 'reps' ? 'reps' : (rec.valueText.match(/kg|lb/) || ['kg'])[0];
+    return `+${formatNumber(Math.round((a - b) * 100) / 100)} ${unit}`;
+}
+
+/** Trofeos más recientes primero: [{ date, exercise, kind, label, valueText, beforeText, deltaText }]. */
+function recentRecords(workouts, limit = 30) {
+    const order = RECORD_KINDS.map(k => k.kind);
+    const best = new Map();
+    (workouts || []).filter(w => w && !w.deletedAt && Array.isArray(w.prs)).forEach(w => {
+        w.prs.forEach(t => {
+            const rec = parseRecordText(t);
+            if (!rec) return;
+            const key = `${w.date}|${rec.exercise}`;
+            const cur = best.get(key);
+            if (!cur || order.indexOf(rec.kind) < order.indexOf(cur.kind)) best.set(key, { date: w.date, ...rec });
+        });
+    });
+    return [...best.values()]
+        .sort((a, b) => b.date.localeCompare(a.date) || order.indexOf(a.kind) - order.indexOf(b.kind))
+        .slice(0, limit)
+        .map(r => ({ ...r, deltaText: recordDelta(r) }));
+}
