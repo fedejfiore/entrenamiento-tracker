@@ -54,7 +54,7 @@ function renderPlanSection() {
     renderPlanEditor(plan);
     renderPlanStatus(plan);
     renderPlanCalendar(plan);
-    renderTodayPlanBanner(plan);
+    renderTodayCard(plan);
 }
 
 // Hora y minutos con dos selectores (cada 5 minutos). El reloj nativo de Android abría un
@@ -114,25 +114,99 @@ function renderPlanCalendar(plan) {
         .join('');
 }
 
-// Aviso de arriba en Inicio: hoy toca / ya entrenaste / hoy descansás.
-function renderTodayPlanBanner(plan) {
-    const banner = document.getElementById('todayPlanBanner');
-    if (!banner) return;
-    if (plan.isEmpty) { banner.hidden = true; return; }
-    const today = new Date().getDay();
-    banner.hidden = false;
-    banner.className = 'plan-banner';
-    if (plan.includes(today) && !trainedToday()) {
-        banner.classList.add('due');
-        const routine = suggestedRoutineKey ? (customRoutineLabels[suggestedRoutineKey] || ROUTINE_LABELS[suggestedRoutineKey] || suggestedRoutineKey) : '';
-        banner.innerHTML = `<div><strong>🏋️ Hoy toca entrenar</strong> · ${plan.timeFor(today)}${routine ? `<br><small>Sugerida: ${escapeHtml(routine)}</small>` : ''}</div>
-            <button type="button" class="small" data-plan-action="start">▶ Empezar</button>`;
-    } else if (plan.includes(today)) {
-        banner.classList.add('done');
-        banner.innerHTML = '<div><strong>✅ Hoy ya entrenaste.</strong> ¡Bien!</div>';
-    } else {
-        banner.innerHTML = `<div>💤 Hoy es día de descanso. Próximo: ${escapeHtml(describeNext(plan.nextSession()))}.</div>`;
+// ---------- Tarjeta "Hoy toca" (arriba de Inicio) ----------
+// Qué entrenar hoy con un toque: la rutina del programa en curso o, si no hay, la que hace
+// más que no hacés. Se puede cambiar desde la misma tarjeta. Si hay una sesión empezada,
+// ofrece seguirla; los días de descanso o ya entrenados lo dice, y deja entrenar igual.
+
+let todayCardChoice = null; // rutina elegida a mano en la tarjeta (solo por hoy)
+
+function todayRoutineKey() {
+    const keys = [...document.querySelectorAll('#routine option')].map(o => o.value).filter(Boolean);
+    if (todayCardChoice && keys.includes(todayCardChoice)) return todayCardChoice;
+    const active = repo.routines.activeProgram();
+    const program = active && findProgram(active.id);
+    if (program) {
+        const { key } = nextProgramDay(program);
+        if (keys.includes(key)) return key;
     }
+    return suggestedRoutineKey && keys.includes(suggestedRoutineKey) ? suggestedRoutineKey : (keys[0] || null);
+}
+
+function todayRoutinePreviewHtml(key) {
+    const names = routineExercisesOf(key);
+    const shown = names.slice(0, 5).map(escapeHtml).join(' · ');
+    const last = lastDoneOf(key);
+    const days = last ? Math.floor((Date.now() - new Date(last + 'T00:00:00').getTime()) / 86400000) : null;
+    const when = days === null ? 'Nunca la hiciste' : days === 0 ? 'La hiciste hoy' : `La última vez: hace ${days} ${days === 1 ? 'día' : 'días'}`;
+    return `<small class="today-exercises">${shown}${names.length > 5 ? ` · +${names.length - 5} más` : ''}</small>
+        <small class="today-when">${names.length} ${names.length === 1 ? 'ejercicio' : 'ejercicios'} · ${when}</small>`;
+}
+
+function renderTodayCard(plan) {
+    const card = document.getElementById('todayPlanBanner');
+    if (!card) return;
+    card.hidden = false;
+    const weekday = new Date().getDay();
+    const draftRoutine = document.getElementById('routine')?.value;
+    const inProgress = !!(currentSessionStartTime && draftRoutine);
+    let head;
+    let state;
+    if (inProgress) {
+        const min = Math.max(1, Math.round((Date.now() - currentSessionStartTime) / 60000));
+        state = 'progress';
+        head = `⏱️ <strong>Sesión en curso</strong> · ${escapeHtml(routineLabelOf(draftRoutine))} · ${min} min`;
+    } else if (!plan.isEmpty && plan.includes(weekday) && !trainedToday()) {
+        state = 'due';
+        head = `🏋️ <strong>Hoy toca entrenar</strong> · ${plan.timeFor(weekday)}`;
+    } else if (!plan.isEmpty && trainedToday()) {
+        state = 'done';
+        const tomorrow = new Date();
+        tomorrow.setHours(24, 0, 0, 0);
+        const next = plan.nextSession(tomorrow);
+        head = `✅ <strong>Hoy ya entrenaste.</strong> ¡Bien!${next ? ` Próximo: ${escapeHtml(describeNext(next))}.` : ''}`;
+    } else if (!plan.isEmpty) {
+        state = 'rest';
+        head = `💤 <strong>Hoy es día de descanso.</strong> Próximo: ${escapeHtml(describeNext(plan.nextSession()))}.`;
+    } else {
+        state = 'free';
+        head = '🎯 <strong>Rutina sugerida</strong>';
+    }
+    card.className = `plan-banner today-card today-${state}`;
+    if (inProgress) {
+        card.innerHTML = `<div class="today-head">${head}</div>
+            <button type="button" class="success today-go" data-today="continue">▶ Seguir entrenando</button>`;
+        return;
+    }
+    const key = todayRoutineKey();
+    if (!key) {
+        card.innerHTML = `<div class="today-head">${head}</div><small>Creá tu primera rutina en Entrenar o elegí un programa.</small>`;
+        return;
+    }
+    const options = [...document.querySelectorAll('#routine option')].filter(o => o.value)
+        .map(o => `<option value="${escapeHtml(o.value)}"${o.value === key ? ' selected' : ''}>${escapeHtml(o.textContent)}</option>`).join('');
+    const primary = state === 'due' || state === 'free';
+    card.innerHTML = `<div class="today-head">${head}</div>
+        <div class="today-routine">
+            <strong class="today-name">${escapeHtml(routineLabelOf(key))}</strong>
+            ${todayRoutinePreviewHtml(key)}
+        </div>
+        <div class="today-actions">
+            <button type="button" class="${primary ? 'success' : 'today-secondary'} today-go" data-today="start">▶ ${primary ? 'Empezar' : 'Entrenar igual'}</button>
+            <select class="today-pick" aria-label="Elegir otra rutina para hoy">${options}</select>
+        </div>`;
+}
+
+function startTodayRoutine() {
+    const key = todayRoutineKey();
+    if (!key) return;
+    showScreen('entrenar', true);
+    const sel = document.getElementById('routine');
+    if (!sel) return;
+    sel.value = key;
+    loadRoutineExercises();
+    saveWorkoutDraft();
+    todayCardChoice = null;
 }
 
 /** Al abrir la app un día de entrenamiento (sin haber entrenado): un aviso, una vez por día. */
@@ -140,6 +214,8 @@ function maybeRemindTodayPlan() {
     const plan = getCurrentPlan();
     const today = getLocalDateString();
     if (plan.isEmpty || !plan.includes(new Date().getDay()) || trainedToday()) return;
+    // En Inicio ya lo dice la tarjeta "Hoy toca": el aviso es para cuando la app abre en otra pantalla.
+    if (document.querySelector('.screen-active')?.dataset.screen === 'inicio') return;
     if (db.get('planReminderShown') === today) return;
     try { db.set('planReminderShown', today); } catch (e) {}
     showToast(`🏋️ Hoy toca entrenar (${plan.timeFor(new Date().getDay())})`, 'success', 4500);
@@ -210,8 +286,18 @@ function bindPlanSection() {
         if (!el) return;
         if (el.dataset.planAction === 'save') savePlanFromEditor();
         if (el.dataset.planAction === 'ics') exportPlanIcs();
-        if (el.dataset.planAction === 'start') startSuggestedRoutine();
     };
     section?.addEventListener('click', onAction);
-    document.getElementById('todayPlanBanner')?.addEventListener('click', onAction);
+    const card = document.getElementById('todayPlanBanner');
+    card?.addEventListener('click', e => {
+        const el = e.target.closest('[data-today]');
+        if (!el) return;
+        if (el.dataset.today === 'start') startTodayRoutine();
+        if (el.dataset.today === 'continue') showScreen('entrenar', true);
+    });
+    card?.addEventListener('change', e => {
+        if (!e.target.classList.contains('today-pick')) return;
+        todayCardChoice = e.target.value;
+        renderTodayCard(getCurrentPlan());
+    });
 }

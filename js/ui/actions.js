@@ -19,11 +19,11 @@ const DECLARED_ACTIONS = new Set([
     'openMusic', 'previewCue', 'removeRecording', 'renameRoutine', 'renderExerciseDetailChart',
     'renderRecordingsUI', 'resetAllData', 'resetRoutineTimer', 'saveBodyMetrics', 'saveMusicLink',
     'saveSoundSettings', 'saveWorkoutDraft', 'saveWorkoutSession', 'showScreen',
-    'showVoiceInstallHelp', 'startRoutineManually', 'startSuggestedRoutine', 'startTabata',
+    'showVoiceInstallHelp', 'startRoutineManually', 'startTabata',
     'stopRepCounter', 'testSound', 'testVoice', 'toggleDrawer', 'toggleRecentRoutinesExpanded',
     'toggleRecording', 'toggleRepCounterPause', 'toggleVariantGroup', 'toggleWakeLock',
     'triggerFileInput', 'unifyFromSelectors', 'updateBodyChart', 'uploadCueAudio',
-    'openFeedback', 'startTodayRoutine'
+    'openFeedback'
 ]);
 
 /** Atributos para el HTML generado: `<button ${fnAttrs('previewCue', id)}>`. */

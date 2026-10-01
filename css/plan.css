@@ -87,3 +87,17 @@
 .program-tier.tier-pro { background: rgba(var(--brand-rgb), 0.18); color: var(--brand); }
 .program-target { display: block; margin-top: 4px; font-size: 12px; color: var(--text-muted); }
 .program-target.program-weight { color: var(--success); font-weight: 600; }
+
+/* Tarjeta "Hoy toca" */
+.today-card { flex-direction: column; align-items: stretch; gap: 8px; }
+.today-card.today-due, .today-card.today-progress { border-color: var(--brand); background: rgba(var(--brand-rgb), 0.12); }
+.today-card.today-done { border-color: var(--success); }
+.today-head { font-size: 14px; }
+.today-routine { display: flex; flex-direction: column; gap: 2px; }
+.today-name { font-family: var(--font-heading); font-size: 20px; font-weight: 600; letter-spacing: 0.3px; }
+.today-exercises { color: var(--text); font-size: 13px; }
+.today-when { color: var(--text-muted); font-size: 12px; }
+.today-actions { display: flex; gap: 8px; align-items: stretch; }
+.today-card .today-go { flex: 1 1 60%; width: auto; margin: 0; min-height: 48px; font-size: 16px; }
+.today-pick { flex: 1 1 40%; min-width: 0; margin: 0; }
+.today-card .today-secondary { background: var(--bg-elevated); color: var(--text); border: 1px solid var(--border); }

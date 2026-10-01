@@ -68,30 +68,10 @@ function getRoutineSuggestionRanking() {
         });
 }
 
+// La rutina que hace más que no hacés: la usa la tarjeta "Hoy toca" de Inicio.
 function updateSuggestedRoutine() {
-    const el = document.getElementById('suggestedRoutine');
-    if (!el) return;
     const ranking = getRoutineSuggestionRanking();
-    if (ranking.length === 0) {
-        suggestedRoutineKey = null;
-        el.textContent = '-';
-        return;
-    }
-    const top = ranking[0];
-    suggestedRoutineKey = top.key;
-    el.textContent = top.daysSince === null
-        ? `${top.label} (nunca la hiciste)`
-        : `${top.label} — hace ${top.daysSince} día${top.daysSince === 1 ? '' : 's'}`;
-}
-
-function startSuggestedRoutine() {
-    if (!suggestedRoutineKey) return;
-    showScreen('entrenar', true);
-    const sel = document.getElementById('routine');
-    if (!sel) return;
-    sel.value = suggestedRoutineKey;
-    loadRoutineExercises();
-    saveWorkoutDraft();
+    suggestedRoutineKey = ranking.length ? ranking[0].key : null;
 }
 
 function createNewRoutine() {

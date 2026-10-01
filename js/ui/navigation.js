@@ -15,6 +15,7 @@ const APP_SCREENS = [
 // Qué refrescar al entrar a cada pantalla (los gráficos de Chart.js necesitan
 // que su canvas ya esté visible, si no renderizan a tamaño cero).
 const SCREEN_ON_SHOW = {
+    inicio: () => { renderTodayCard(getCurrentPlan()); renderGarden(); },
     progreso: () => {
         renderMuscleMap();
         generateProgressionAnalysis();
