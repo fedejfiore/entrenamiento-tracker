@@ -1,0 +1,47 @@
+# Publicación de la web: en cada cambio en main, arma la versión optimizada (dist/: página de
+# presentación, app con el código unido y minificado, textos legales), la prueba en un
+# navegador y, si pasa, la publica en GitHub Pages.
+name: Publicar la web
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Instalar dependencias
+        run: npm install --no-audit --no-fund
+      - name: Armar la versión optimizada
+        run: node scripts/build-web.js
+      - name: Instalar el navegador
+        run: npx playwright install --with-deps chromium
+      - name: Probar antes de publicar
+        run: npm run test:e2e
+        env:
+          E2E_ROOT: dist
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+      - id: deploy
+        uses: actions/deploy-pages@v4

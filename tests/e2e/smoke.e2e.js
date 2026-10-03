@@ -11,7 +11,8 @@ const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
 
-const ROOT = path.resolve(__dirname, '..', '..');
+// E2E_ROOT=dist prueba la copia optimizada (scripts/build-web.js) en vez del código fuente.
+const ROOT = path.resolve(__dirname, '..', '..', process.env.E2E_ROOT || '');
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.png': 'image/png', '.woff2': 'font/woff2', '.svg': 'image/svg+xml' };
 
 const server = http.createServer((req, res) => {

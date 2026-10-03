@@ -28,3 +28,5 @@ tools/
 
 # Carpeta generada para la app nativa (scripts/build-www.js)
 www/
+# Copia optimizada que se publica en GitHub Pages (scripts/build-web.js)
+dist/

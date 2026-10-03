@@ -23,3 +23,9 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Prueba en el navegador
         run: npm run test:e2e
+      - name: Armar la versión optimizada
+        run: node scripts/build-web.js
+      - name: Prueba en el navegador (versión optimizada)
+        run: npm run test:e2e
+        env:
+          E2E_ROOT: dist
