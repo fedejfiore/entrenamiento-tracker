@@ -232,7 +232,9 @@ I18N_DICTIONARIES.en = {
         'Fin del descanso': 'End of rest', 'Avisa cuando termina el descanso entre series': 'Alerts you when the rest between sets is over',
         'Plan semanal': 'Weekly plan', 'Recordatorios de los días de entrenamiento': 'Reminders for your training days',
         'Terminó el descanso': 'Rest is over', 'Permitir': 'Allow',
-        'Para que el aviso del descanso llegue justo a tiempo, permití las alarmas exactas.': 'To get the rest alert right on time, allow exact alarms.'
+        'Para que el aviso del descanso llegue justo a tiempo, permití las alarmas exactas.': 'To get the rest alert right on time, allow exact alarms.',
+        'Política de privacidad': 'Privacy policy', 'Términos y condiciones': 'Terms and conditions',
+        'Al usar la app aceptás los términos y la política de privacidad. Tus datos quedan en tu celular.': 'By using the app you accept the terms and the privacy policy. Your data stays on your phone.'
     },
 
     // Bloques con formato (<b>, <small>…): se completan en la segunda parte.

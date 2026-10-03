@@ -7,7 +7,7 @@ const path = require('path');
 const ROOT = path.resolve(__dirname, '..');
 const OUT = path.join(ROOT, 'www');
 const FILES = ['index.html', 'entrenamiento_trackerv2.html', 'manifest.json', 'service-worker.js', 'icon-192.png', 'icon-512.png', 'icon-512-maskable.png', 'apple-touch-icon.png'];
-const DIRS = ['js', 'css', 'fonts', 'vendor'];
+const DIRS = ['js', 'css', 'fonts', 'vendor', 'legal'];
 
 fs.rmSync(OUT, { recursive: true, force: true });
 fs.mkdirSync(OUT, { recursive: true });

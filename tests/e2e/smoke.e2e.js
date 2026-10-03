@@ -162,6 +162,17 @@ server.listen(0, '127.0.0.1', async () => {
             check('em português, todas as telas abrem sem erros', errors.length === 0, errors.join(' | '));
             await page.close();
         }
+        // 7. Textos legales: el link de Ajustes abre la versión del idioma de la app
+        for (const [language, expected] of [['es', 'privacidad.html'], ['en', 'privacy.html']]) {
+            const { page, errors } = await newPage(browser, { language });
+            await page.evaluate(() => showScreen('ajustes'));
+            await Promise.all([page.waitForURL(`**/legal/${expected}`), page.click('.legal-links [data-fn-args=\'["privacy"]\']')]);
+            const h1 = await page.textContent('h1');
+            const css = await page.evaluate(() => getComputedStyle(document.querySelector('.summary')).borderLeftStyle);
+            check(`la política de privacidad abre en ${language} con estilos`, h1 && css === 'solid', `${page.url()} · ${h1} · ${css}`);
+            check(`la página legal en ${language} no tiene errores`, errors.length === 0, errors.join(' | '));
+            await page.close();
+        }
     } catch (err) {
         check('la prueba terminó', false, err.stack);
     } finally {

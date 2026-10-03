@@ -73,6 +73,9 @@ function onboardingStepHtml(step) {
             <button type="button" class="ob-start" data-start="basic"><b>🏋️ Una rutina básica</b><small>Torso y pierna, lista para entrenar hoy.</small></button>
             <button type="button" class="ob-start" data-start="create"><b>✏️ Armar la mía</b><small>Le ponés nombre y le sumás tus ejercicios.</small></button>
             <button type="button" class="ob-start" data-start="import"><b>📥 Traer mi historial</b><small>De Hevy, Strong o Fitbod (archivo CSV).</small></button>
+        </div>
+        <div class="ob-legal">Al usar la app aceptás los términos y la política de privacidad. Tus datos quedan en tu celular.
+            <div class="legal-links"><button type="button" class="link-btn" ${fnAttrs('openLegal', 'privacy')}>Política de privacidad</button><span aria-hidden="true">·</span><button type="button" class="link-btn" ${fnAttrs('openLegal', 'terms')}>Términos y condiciones</button></div>
         </div>`;
 }
 

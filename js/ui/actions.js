@@ -16,7 +16,7 @@ const DECLARED_ACTIONS = new Set([
     'createNewRoutine', 'displayWorkoutHistory', 'downloadData', 'finishRoutineManually',
     'finishTabataSession', 'generateProgressionAnalysis', 'loadRoutineExercises',
     'onHistoryViewModeChange', 'onSoundVolumeInput', 'onTimerWidgetClick', 'onVoiceSettingChange',
-    'openMusic', 'previewCue', 'removeRecording', 'renameRoutine', 'renderExerciseDetailChart',
+    'openLegal', 'openMusic', 'previewCue', 'removeRecording', 'renameRoutine', 'renderExerciseDetailChart',
     'renderRecordingsUI', 'resetAllData', 'resetRoutineTimer', 'saveBodyMetrics', 'saveMusicLink',
     'saveSoundSettings', 'saveWorkoutDraft', 'saveWorkoutSession', 'showScreen',
     'showVoiceInstallHelp', 'startRoutineManually', 'startTabata',

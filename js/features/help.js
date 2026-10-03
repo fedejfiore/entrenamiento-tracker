@@ -431,3 +431,10 @@ function bindHelp() {
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeHelp(); });
     window.addEventListener('popstate', () => closeHelp(true));
 }
+
+// Textos legales (carpeta legal/): en castellano o en inglés según el idioma de la app.
+function openLegal(kind) {
+    const es = appLanguage === 'es';
+    const file = kind === 'terms' ? (es ? 'terminos' : 'terms') : (es ? 'privacidad' : 'privacy');
+    location.href = `legal/${file}.html`;
+}
