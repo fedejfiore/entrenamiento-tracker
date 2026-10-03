@@ -234,6 +234,7 @@ I18N_DICTIONARIES.en = {
         'Terminó el descanso': 'Rest is over', 'Permitir': 'Allow',
         'Para que el aviso del descanso llegue justo a tiempo, permití las alarmas exactas.': 'To get the rest alert right on time, allow exact alarms.',
         'Política de privacidad': 'Privacy policy', 'Términos y condiciones': 'Terms and conditions',
+        'Por lado': 'Per side', 'Peso prom': 'Avg weight', 'Reps prom': 'Avg reps', 'volumen': 'volume',
         'Al usar la app aceptás los términos y la política de privacidad. Tus datos quedan en tu celular.': 'By using the app you accept the terms and the privacy policy. Your data stays on your phone.'
     },
 

@@ -2,11 +2,269 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0; url=./entrenamiento_trackerv2.html">
-    <title>Esō Agōn by Inquieto</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+    <title>Esō Agōn · Tu entrenamiento, tu progreso</title>
+    <meta name="description" content="Registrá tus series en segundos, descansá con aviso por voz y mirá tu progreso semana a semana. Gratis, sin cuenta, funciona sin conexión y tus datos quedan en tu celular.">
+    <meta name="theme-color" content="#0f1115">
+    <link rel="canonical" href="https://fedejfiore.github.io/entrenamiento-tracker/">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Esō Agōn · Tu entrenamiento, tu progreso">
+    <meta property="og:description" content="Registro de gimnasio gratis, sin cuenta y sin conexión. Plan semanal, descanso con voz, músculos trabajados, medallas y más.">
+    <meta property="og:image" content="https://fedejfiore.github.io/entrenamiento-tracker/icon-512.png">
+    <meta property="og:url" content="https://fedejfiore.github.io/entrenamiento-tracker/">
+    <link rel="icon" href="icon-192.png">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/fonts.css">
+    <link rel="stylesheet" href="landing/landing.css">
+    <script src="landing/landing.js" defer></script>
 </head>
 <body>
-    <script>location.replace('./entrenamiento_trackerv2.html');</script>
-    <p>Abriendo Esō Agōn... si no pasa nada, <a href="./entrenamiento_trackerv2.html">tocá acá</a>.</p>
+<a class="skip" href="#main" data-i18n="skip">Saltar al contenido</a>
+
+<header class="top" id="top">
+    <div class="wrap top-row">
+        <a class="logo" href="#top" aria-label="Esō Agōn">
+            <img src="icon-192.png" alt="" width="32" height="32">
+            <span translate="no">Esō Agōn</span>
+        </a>
+        <nav class="top-nav" aria-label="Secciones">
+            <a href="#funciones" data-i18n="nav.features">Funciones</a>
+            <a href="#probalo" data-i18n="nav.try">Probalo</a>
+            <a href="#privacidad" data-i18n="nav.privacy">Privacidad</a>
+            <a href="#preguntas" data-i18n="nav.faq">Preguntas</a>
+        </nav>
+        <div class="top-actions">
+            <div class="lang" role="group" aria-label="Idioma / Language" translate="no">
+                <button type="button" data-lang="es" aria-pressed="true">ES</button>
+                <button type="button" data-lang="en" aria-pressed="false">EN</button>
+                <button type="button" data-lang="pt" aria-pressed="false">PT</button>
+            </div>
+            <a class="btn btn-sm" href="entrenamiento_trackerv2.html" data-i18n="cta.open">Abrir la app</a>
+        </div>
+    </div>
+</header>
+
+<main id="main">
+    <!-- Portada -->
+    <section class="hero">
+        <div class="wrap hero-grid">
+            <div class="hero-copy">
+                <p class="eyebrow"><span translate="no">Esō Agōn</span> · <span data-i18n="hero.meaning">la lucha interior</span></p>
+                <h1 data-i18n-html="hero.title">Entrená con un plan.<br><span class="accent">Mirá cómo progresás.</span></h1>
+                <p class="lead" data-i18n="hero.lead">Registrá tus series en segundos, descansá con aviso por voz y mirá tu progreso semana a semana. Sin cuenta, sin anuncios y sin conexión: tus datos quedan en tu celular.</p>
+                <div class="cta-row">
+                    <a class="btn" href="entrenamiento_trackerv2.html" data-i18n="cta.web">Usar gratis en el navegador</a>
+                    <a class="btn btn-ghost" href="https://github.com/fedejfiore/entrenamiento-tracker/releases/download/android-ultima/esoagon.apk" data-i18n="cta.android">Descargar para Android</a>
+                </div>
+                <p class="fine" data-i18n="hero.fine">Android: versión de prueba (se instala a mano). iPhone: abrila en Safari y tocá Compartir → Agregar a inicio.</p>
+            </div>
+            <div class="hero-phone">
+                <div class="phone" aria-roledescription="carrusel" aria-label="Capturas de la app">
+                    <div class="phone-screen" id="heroScreens">
+                        <img class="shot on" data-shot="inicio" src="landing/img/inicio-es.jpg" alt="Inicio: hoy toca entrenar, con la rutina del día y la flor del plan" width="390" height="844">
+                        <img class="shot" data-shot="entrenar" src="landing/img/entrenar-es.jpg" alt="Entrenar: series marcadas y el descanso corriendo" width="390" height="844" loading="lazy">
+                        <img class="shot" data-shot="progreso" src="landing/img/progreso-es.jpg" alt="Progreso: músculos trabajados en la semana" width="390" height="844" loading="lazy">
+                        <img class="shot" data-shot="medidas" src="landing/img/medidas-es.jpg" alt="Medidas: evolución del peso, la grasa y el músculo" width="390" height="844" loading="lazy">
+                        <img class="shot" data-shot="perfil" src="landing/img/perfil-es.jpg" alt="Perfil: actividad, récords y medallas" width="390" height="844" loading="lazy">
+                    </div>
+                </div>
+                <div class="dots" id="heroDots" role="tablist" aria-label="Capturas">
+                    <button type="button" role="tab" aria-selected="true" data-go="0" data-i18n="tab.home">Hoy</button>
+                    <button type="button" role="tab" aria-selected="false" data-go="1" data-i18n="tab.train">Entrenar</button>
+                    <button type="button" role="tab" aria-selected="false" data-go="2" data-i18n="tab.progress">Progreso</button>
+                    <button type="button" role="tab" aria-selected="false" data-go="3" data-i18n="tab.body">Medidas</button>
+                    <button type="button" role="tab" aria-selected="false" data-go="4" data-i18n="tab.profile">Logros</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Datos clave -->
+    <section class="facts" aria-label="En pocas palabras">
+        <div class="wrap facts-row">
+            <div class="fact reveal"><b class="count" data-to="0">0</b><span data-i18n="facts.cost">pesos: es gratis</span></div>
+            <div class="fact reveal"><b class="count" data-to="0">0</b><span data-i18n="facts.account">cuentas para crear</span></div>
+            <div class="fact reveal"><b class="count" data-to="100" data-suffix="%">100%</b><span data-i18n="facts.offline">funciona sin conexión</span></div>
+            <div class="fact reveal"><b class="count" data-to="3">3</b><span data-i18n="facts.langs">idiomas: español, inglés y portugués</span></div>
+        </div>
+    </section>
+
+    <!-- Funciones principales, con el teléfono que acompaña al leer -->
+    <section class="features" id="funciones">
+        <div class="wrap">
+            <h2 class="section-title reveal" data-i18n="features.title">Todo lo que pasa en el gimnasio, en una app</h2>
+            <p class="section-lead reveal" data-i18n="features.lead">Pensada para usarla con una mano, entre serie y serie.</p>
+            <div class="story">
+                <div class="story-steps">
+                    <article class="step" data-shot="inicio">
+                        <span class="step-tag" data-i18n="tab.home">Hoy</span>
+                        <h3 data-i18n="f1.title">Abrís la app y sabés qué toca</h3>
+                        <p data-i18n="f1.text">Armás tu plan semanal con días, horarios y la rutina de cada día. La app te avisa, te muestra qué entrenar hoy y lo empezás con un toque. Cada semana cumplida hace crecer tu flor.</p>
+                        <img class="step-shot" data-shot="inicio" src="landing/img/inicio-es.jpg" alt="" width="390" height="844" loading="lazy">
+                    </article>
+                    <article class="step" data-shot="entrenar">
+                        <span class="step-tag" data-i18n="tab.train">Entrenar</span>
+                        <h3 data-i18n="f2.title">Cada serie, en un toque</h3>
+                        <p data-i18n="f2.text">Ves lo que hiciste la última vez, ajustás peso y reps, y marcás la serie. El descanso arranca solo, con aviso por voz a los 10 segundos y al terminar. En Android, te avisa aunque la pantalla esté apagada.</p>
+                        <img class="step-shot" data-shot="entrenar" src="landing/img/entrenar-es.jpg" alt="" width="390" height="844" loading="lazy">
+                    </article>
+                    <article class="step" data-shot="progreso">
+                        <span class="step-tag" data-i18n="tab.progress">Progreso</span>
+                        <h3 data-i18n="f3.title">Qué músculos trabajaste, y si alcanza</h3>
+                        <p data-i18n="f3.text">Un mapa del cuerpo cuenta tus series efectivas por músculo y te dice si estás en el rango que la evidencia recomienda para ganar músculo. Si un ejercicio se estanca, te sugiere qué cambiar.</p>
+                        <img class="step-shot" data-shot="progreso" src="landing/img/progreso-es.jpg" alt="" width="390" height="844" loading="lazy">
+                    </article>
+                    <article class="step" data-shot="medidas">
+                        <span class="step-tag" data-i18n="tab.body">Medidas</span>
+                        <h3 data-i18n="f4.title">Tu cuerpo, en gráficos</h3>
+                        <p data-i18n="f4.text">Peso, grasa, músculo, agua y cintura en un mismo gráfico, con fotos de progreso para comparar. Todo queda guardado solo en tu celular.</p>
+                        <img class="step-shot" data-shot="medidas" src="landing/img/medidas-es.jpg" alt="" width="390" height="844" loading="lazy">
+                    </article>
+                    <article class="step" data-shot="perfil">
+                        <span class="step-tag" data-i18n="tab.profile">Logros</span>
+                        <h3 data-i18n="f5.title">Medallas que se ganan entrenando</h3>
+                        <p data-i18n="f5.text">Constancia, semanas seguidas, kilos levantados y récords personales. Cada logro se comparte como imagen para tus historias.</p>
+                        <img class="step-shot" data-shot="perfil" src="landing/img/perfil-es.jpg" alt="" width="390" height="844" loading="lazy">
+                    </article>
+                </div>
+                <div class="story-phone" aria-hidden="true">
+                    <div class="phone">
+                        <div class="phone-screen" id="storyScreens">
+                            <img class="shot on" data-shot="inicio" src="landing/img/inicio-es.jpg" alt="" width="390" height="844" loading="lazy">
+                            <img class="shot" data-shot="entrenar" src="landing/img/entrenar-es.jpg" alt="" width="390" height="844" loading="lazy">
+                            <img class="shot" data-shot="progreso" src="landing/img/progreso-es.jpg" alt="" width="390" height="844" loading="lazy">
+                            <img class="shot" data-shot="medidas" src="landing/img/medidas-es.jpg" alt="" width="390" height="844" loading="lazy">
+                            <img class="shot" data-shot="perfil" src="landing/img/perfil-es.jpg" alt="" width="390" height="844" loading="lazy">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo interactiva -->
+    <section class="try" id="probalo">
+        <div class="wrap try-grid">
+            <div class="try-copy reveal">
+                <h2 class="section-title" data-i18n="try.title">Probalo acá mismo</h2>
+                <p class="section-lead" data-i18n="try.lead">Marcá las tres series. Mirá cómo arranca el descanso y qué pasa cuando superás tu marca.</p>
+                <ul class="checks">
+                    <li data-i18n="try.p1">El descanso arranca solo al marcar la serie.</li>
+                    <li data-i18n="try.p2">La app compara con tu sesión anterior.</li>
+                    <li data-i18n="try.p3">Los récords se celebran (y se comparten).</li>
+                </ul>
+            </div>
+            <div class="demo reveal" id="demo">
+                <div class="demo-head">
+                    <div>
+                        <b translate="no">Press inclinado con barra</b>
+                        <small data-i18n="demo.last">Última vez: 3 × 10 con 42,5 kg</small>
+                    </div>
+                    <span class="flower" id="demoFlower" aria-hidden="true">🌱</span>
+                </div>
+                <div class="demo-sets" role="list">
+                    <div class="demo-set" role="listitem"><span>1</span><span>10 × 45 kg</span><button type="button" class="demo-check" aria-pressed="false" aria-label="Serie 1 hecha">✓</button></div>
+                    <div class="demo-set" role="listitem"><span>2</span><span>10 × 45 kg</span><button type="button" class="demo-check" aria-pressed="false" aria-label="Serie 2 hecha">✓</button></div>
+                    <div class="demo-set" role="listitem"><span>3</span><span>9 × 45 kg</span><button type="button" class="demo-check" aria-pressed="false" aria-label="Serie 3 hecha">✓</button></div>
+                </div>
+                <div class="demo-rest" id="demoRest" hidden>
+                    <svg viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="19" class="ring-bg"/><circle cx="22" cy="22" r="19" class="ring" id="demoRing"/></svg>
+                    <div><small data-i18n="demo.rest">Descanso</small><b id="demoTime">0:05</b></div>
+                    <button type="button" class="btn btn-sm btn-ghost" id="demoSkip" data-i18n="demo.skip">Saltar</button>
+                </div>
+                <div class="demo-pr" id="demoPr" hidden>
+                    <b data-i18n="demo.pr">🏆 ¡Nuevo récord! 45 kg (antes 42,5 kg)</b>
+                    <button type="button" class="btn btn-sm btn-ghost" id="demoReset" data-i18n="demo.again">Repetir</button>
+                </div>
+                <p class="demo-hint" id="demoHint" data-i18n="demo.hint">Tocá ✓ en la primera serie.</p>
+                <p class="sr-only" aria-live="polite" id="demoLive"></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Más funciones -->
+    <section class="more">
+        <div class="wrap">
+            <h2 class="section-title reveal" data-i18n="more.title">Y mucho más</h2>
+            <div class="grid">
+                <article class="card reveal"><span class="ic" aria-hidden="true">📚</span><h3 data-i18n="m1.t">Programas con progresión</h3><p data-i18n="m1.p">Programas armados que te dicen qué peso y cuántas reps hacer cada día.</p></article>
+                <article class="card reveal"><span class="ic" aria-hidden="true">📥</span><h3 data-i18n="m2.t">Traé tu historial</h3><p data-i18n="m2.p">Importá tus entrenamientos de Hevy, Strong o Fitbod con un archivo CSV.</p></article>
+                <article class="card reveal"><span class="ic" aria-hidden="true">⏱️</span><h3 data-i18n="m3.t">Tabata e intervalos</h3><p data-i18n="m3.p">Bloques de trabajo y descanso con aviso por voz y sonido.</p></article>
+                <article class="card reveal"><span class="ic" aria-hidden="true">🗣️</span><h3 data-i18n="m4.t">Contador de reps con voz</h3><p data-i18n="m4.p">Marca la cadencia de cada repetición. Hasta podés grabar tus propios avisos.</p></article>
+                <article class="card reveal"><span class="ic" aria-hidden="true">🧮</span><h3 data-i18n="m5.t">Calculadora de discos</h3><p data-i18n="m5.p">Te dice qué discos poner de cada lado según tu barra.</p></article>
+                <article class="card reveal"><span class="ic" aria-hidden="true">🔗</span><h3 data-i18n="m6.t">Superseries y unilaterales</h3><p data-i18n="m6.p">Agrupá ejercicios y registrá por lado los que se hacen con un brazo o una pierna.</p></article>
+                <article class="card reveal"><span class="ic" aria-hidden="true">🔒</span><h3 data-i18n="m7.t">Backup cifrado</h3><p data-i18n="m7.p">Un archivo con todos tus datos, protegido con contraseña si querés. Para cambiar de celular sin perder nada.</p></article>
+                <article class="card reveal"><span class="ic" aria-hidden="true">♿</span><h3 data-i18n="m8.t">Para todas las personas</h3><p data-i18n="m8.p">Botones grandes, alto contraste, colores para daltonismo, tema claro u oscuro, kg o lb.</p></article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Privacidad -->
+    <section class="privacy" id="privacidad">
+        <div class="wrap privacy-box reveal">
+            <span class="lock" aria-hidden="true">🔐</span>
+            <div>
+                <h2 class="section-title" data-i18n="priv.title">Tus datos son tuyos</h2>
+                <p data-i18n="priv.text">La app guarda todo en tu celular. No tiene servidores con tus datos, no usa publicidad ni rastreadores y técnicamente no puede conectarse a servicios de terceros. Algo sale de tu dispositivo solo cuando vos lo decidís: un backup, una imagen o un comentario.</p>
+                <p><a href="legal/privacidad.html" data-legal="privacy" data-i18n="priv.link">Leer la política de privacidad</a></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lo que viene -->
+    <section class="next">
+        <div class="wrap">
+            <h2 class="section-title reveal" data-i18n="next.title">Lo que viene</h2>
+            <p class="section-lead reveal" data-i18n="next.lead">En desarrollo. Las funciones que usen datos fuera de tu celular van a pedir tu consentimiento antes.</p>
+            <div class="timeline">
+                <div class="tl reveal"><b data-i18n="n1.t">App en Google Play</b><p data-i18n="n1.p">La app de Android, con instalación desde la tienda.</p></div>
+                <div class="tl reveal"><b data-i18n="n2.t">Cuentas y sincronización</b><p data-i18n="n2.p">Tus datos en todos tus dispositivos, si querés.</p></div>
+                <div class="tl reveal"><b data-i18n="n3.t">Modo entrenador</b><p data-i18n="n3.p">Para que tu entrenador te arme las rutinas y siga tu progreso desde la compu.</p></div>
+                <div class="tl reveal"><b data-i18n="n4.t">Rutinas y nutrición con IA</b><p data-i18n="n4.p">Sugerencias orientativas de rutinas, calorías y comidas para personas adultas y sanas.</p><p class="warn" data-i18n="n4.w">No reemplazan la consulta con un médico ni con un licenciado en nutrición matriculado.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Preguntas -->
+    <section class="faq" id="preguntas">
+        <div class="wrap narrow">
+            <h2 class="section-title reveal" data-i18n="faq.title">Preguntas frecuentes</h2>
+            <details class="reveal"><summary data-i18n="q1">¿Es gratis?</summary><p data-i18n="a1">Sí. Todas las funciones de hoy son gratis y sin anuncios. Más adelante puede haber un plan pago con funciones extra, pero lo que ya usás no se va a cobrar.</p></details>
+            <details class="reveal"><summary data-i18n="q2">¿Necesito crear una cuenta?</summary><p data-i18n="a2">No. Abrís la app y empezás. Tus datos quedan en tu celular.</p></details>
+            <details class="reveal"><summary data-i18n="q3">¿Funciona sin internet?</summary><p data-i18n="a3">Sí. Después de abrirla una vez, funciona sin conexión, ideal para gimnasios sin señal.</p></details>
+            <details class="reveal"><summary data-i18n="q4">¿Cómo la instalo en el celular?</summary><p data-i18n-html="a4">En <b>Android</b>, descargá el instalador desde esta página, o abrí la app en Chrome y tocá "Instalar". En <b>iPhone</b>, abrila en Safari, tocá Compartir y después "Agregar a inicio".</p></details>
+            <details class="reveal"><summary data-i18n="q5">¿Puedo traer lo que registré en otra app?</summary><p data-i18n="a5">Sí, desde Hevy, Strong o Fitbod: exportás el historial como CSV y lo importás en Ajustes.</p></details>
+            <details class="reveal"><summary data-i18n="q6">¿Qué pasa si cambio de celular?</summary><p data-i18n="a6">Hacés un backup en Ajustes → Datos, lo guardás (por ejemplo, en tu Drive) y lo cargás en el celular nuevo.</p></details>
+            <details class="reveal"><summary data-i18n="q7">¿Reemplaza a un entrenador o a un médico?</summary><p data-i18n="a7">No. Es una herramienta para registrar y organizar tu entrenamiento. Antes de empezar a entrenar o de subir la intensidad, consultá a un médico, sobre todo si tenés alguna condición de salud.</p></details>
+        </div>
+    </section>
+
+    <!-- Cierre -->
+    <section class="final">
+        <div class="wrap final-box reveal">
+            <h2 data-i18n="final.title">Tu próxima serie empieza acá</h2>
+            <div class="cta-row center">
+                <a class="btn" href="entrenamiento_trackerv2.html" data-i18n="cta.web">Usar gratis en el navegador</a>
+                <a class="btn btn-ghost" href="https://github.com/fedejfiore/entrenamiento-tracker/releases/download/android-ultima/esoagon.apk" data-i18n="cta.android">Descargar para Android</a>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="foot">
+    <div class="wrap foot-row">
+        <div>
+            <b translate="no">Esō Agōn</b> <span translate="no">by Inquieto</span> · SFT<br>
+            <small data-i18n="foot.health">Información orientativa: no reemplaza el consejo de un profesional de la salud.</small>
+        </div>
+        <nav aria-label="Legales">
+            <a href="legal/privacidad.html" data-legal="privacy" data-i18n="foot.privacy">Privacidad</a>
+            <a href="legal/terminos.html" data-legal="terms" data-i18n="foot.terms">Términos</a>
+            <a href="mailto:federicojfiore@gmail.com" data-i18n="foot.contact">Contacto</a>
+        </nav>
+    </div>
+</footer>
 </body>
 </html>

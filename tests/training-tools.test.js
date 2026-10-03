@@ -195,3 +195,16 @@ test('estancamiento: no cuentan calentamientos; con peso corporal se miran las r
     // Tiempo o distancia: no aplica
     assert.equal(detect([s('2026-08-25'), s('2026-09-01'), s('2026-09-10'), s('2026-09-20')], { type: 'time', today }), null);
 });
+
+test('el tipo sugerido no confunde ejercicios de fuerza con cardio (ej. "inclinado" contiene "nado")', () => {
+    const infer = app('inferExerciseType');
+    const groups = app('MUSCLE_GROUPS');
+    const strength = ['Pecho', 'Espalda', 'Hombros', 'Bíceps', 'Tríceps', 'Cuádriceps', 'Isquios', 'Glúteos', 'Gemelos'];
+    const wrong = strength.flatMap(g => groups[g].exercises).filter(n => !['kg', 'bw'].includes(infer(n)));
+    assert.deepEqual(wrong, []);
+    assert.equal(infer('Press inclinado con barra'), 'kg');
+    assert.equal(infer('Bici 9km+9km'), 'km');
+    assert.equal(infer('Bicicleta fija'), 'km');
+    assert.equal(infer('Natación'), 'km');
+    assert.equal(infer('Cinta'), 'km');
+});

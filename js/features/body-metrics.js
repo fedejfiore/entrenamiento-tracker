@@ -65,11 +65,11 @@ function updateBodyChart() {
     };
 
     const metricDefs = [
-        { checkboxId: 'metric_weight', field: 'weight', label: `Peso (${weightUnitDef().label})`, weight: true },
-        { checkboxId: 'metric_fat', field: 'fat', label: 'Grasa' },
-        { checkboxId: 'metric_muscle', field: 'muscle', label: 'Músculo' },
-        { checkboxId: 'metric_water', field: 'water', label: 'Agua' },
-        { checkboxId: 'metric_waist', field: 'waist', label: 'Cintura' }
+        { checkboxId: 'metric_weight', field: 'weight', label: `${tr('Peso')} (${weightUnitDef().label})`, weight: true },
+        { checkboxId: 'metric_fat', field: 'fat', label: tr('Grasa') },
+        { checkboxId: 'metric_muscle', field: 'muscle', label: tr('Músculo') },
+        { checkboxId: 'metric_water', field: 'water', label: tr('Agua') },
+        { checkboxId: 'metric_waist', field: 'waist', label: tr('Cintura') }
     ];
 
     metricDefs.forEach(def => {

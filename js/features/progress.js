@@ -53,16 +53,16 @@ function changeExerciseDetailGroup(group) {
 // las líneas más chicas. Cada una se prende/apaga con su checkbox y arma su propio
 // eje sólo si está tildada, así el gráfico no queda con ejes vacíos de más.
 const EXERCISE_CHART_METRICS = [
-    { checkboxId: 'exmetric_weight', field: 'weight', label: () => `Peso promedio (${weightUnitDef().label})`, color: () => cssVar('--brand'), axis: 'kg', weight: true },
-    { checkboxId: 'exmetric_1rm', field: 'oneRM', label: () => `1RM estimado (${weightUnitDef().label})`, weight: true, color: () => cssVar('--danger'), axis: 'kg', dash: [5, 5] },
-    { checkboxId: 'exmetric_reps', field: 'totalReps', label: 'Reps totales', color: () => '#3498db', axis: 'reps' },
-    { checkboxId: 'exmetric_volume', field: 'volume', label: () => `Volumen total (${weightUnitDef().label})`, color: () => '#8b5cf6', axis: 'volume', weight: true }
+    { checkboxId: 'exmetric_weight', field: 'weight', label: () => `${tr('Peso promedio')} (${weightUnitDef().label})`, color: () => cssVar('--brand'), axis: 'kg', weight: true },
+    { checkboxId: 'exmetric_1rm', field: 'oneRM', label: () => `${tr('1RM estimado')} (${weightUnitDef().label})`, weight: true, color: () => cssVar('--danger'), axis: 'kg', dash: [5, 5] },
+    { checkboxId: 'exmetric_reps', field: 'totalReps', label: () => tr('Reps totales'), color: () => '#3498db', axis: 'reps' },
+    { checkboxId: 'exmetric_volume', field: 'volume', label: () => `${tr('Volumen total')} (${weightUnitDef().label})`, color: () => '#8b5cf6', axis: 'volume', weight: true }
 ];
 
 const EXERCISE_CHART_AXIS_META = {
     kg: { position: 'left', title: () => weightUnitDef().label },
     reps: { position: 'right', title: () => 'reps' },
-    volume: { position: 'right', title: () => `volumen (${weightUnitDef().label})` }
+    volume: { position: 'right', title: () => `${tr('volumen')} (${weightUnitDef().label})` }
 };
 
 function renderExerciseDetailChart() {

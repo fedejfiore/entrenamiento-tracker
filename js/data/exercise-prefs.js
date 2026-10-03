@@ -36,7 +36,8 @@ class ExercisePreferences {
     // Sugerencia automática para ejercicios que todavía no tienen un tipo elegido.
     static inferType(name, routine) {
         const n = normalizeForCompare(name || '');
-        if (/\bkm\b|\dkm|bici|correr|corrida|trote|running|caminata|cinta|spinning|natacion|nado/.test(n)) return 'km';
+        // Palabras completas: "nado" no tiene que encontrarse adentro de "inclinado".
+        if (/\bkm\b|\dkm|\b(bici\w*|correr|corrida|trote|running|caminata|cinta|spinning|natacion|nado|nadar)\b/.test(n)) return 'km';
         if (routine === 'FUT' || /futbol|partido|clase|yoga|pilates|estiramiento/.test(n)) return 'min';
         if (/plancha|plank|tabata|soga|isometric/.test(n)) return 'time';
         if (/flexiones|push-?ups?|burpee|dominadas(?! asistidas)/.test(n)) return 'bw';

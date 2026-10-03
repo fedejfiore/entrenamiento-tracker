@@ -11,6 +11,8 @@ tracker viejos BackUp/
 ultimo tracker funcionando backup/
 *.jpeg
 *.jpg
+# Capturas de la landing: datos de demostración ficticios (scripts de capturas, no fotos reales)
+!landing/img/*.jpg
 *.json
 !manifest.json
 # Necesario para las pruebas automáticas (scripts y Playwright); no tiene datos privados.

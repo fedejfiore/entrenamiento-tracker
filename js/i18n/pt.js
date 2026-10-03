@@ -6,6 +6,9 @@
 I18N_DICTIONARIES.pt = {
  "text": {
   "Política de privacidad": "Política de privacidade",
+  "Peso prom": "Peso méd.",
+  "Reps prom": "Reps méd.",
+  "volumen": "volume",
   "Términos y condiciones": "Termos e condições",
   "Al usar la app aceptás los términos y la política de privacidad. Tus datos quedan en tu celular.": "Ao usar o app você aceita os termos e a política de privacidade. Seus dados ficam no seu celular.",
   "Fin del descanso": "Fim do descanso",
