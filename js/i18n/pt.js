@@ -6,6 +6,7 @@
 I18N_DICTIONARIES.pt = {
  "text": {
   "Política de privacidad": "Política de privacidade",
+  "Por lado": "Por lado",
   "Peso prom": "Peso méd.",
   "Reps prom": "Reps méd.",
   "volumen": "volume",
@@ -1002,6 +1003,9 @@ I18N_DICTIONARIES.pt = {
   "💾 Como los datos viven en el celular, descargá un <b>backup</b> de vez en cuando (Ajustes → Datos). Es lo que te permite recuperar todo si cambiás de teléfono o borrás el navegador.": "💾 Como os dados ficam no celular, baixe um <b>backup</b> de vez em quando (Ajustes → Dados). É o que permite recuperar tudo se você trocar de telefone ou apagar o navegador."
  },
  "patterns": [
+  ["Iniciada {a} · Finalizada {b} — guardá la sesión o reiniciá para empezar otra", "Iniciada {a} · Finalizada {b} — salve a sessão ou reinicie para começar outra"],
+  ["Iniciada {t}", "Iniciada {t}"],
+  ["Volumen: {a} → {b} ({p}) · Reps: {r} · Peso máx: {w} ({d})", "Volume: {a} → {b} ({p}) · Reps: {r} · Peso máx.: {w} ({d})"],
   [
    "{a} · {b}",
    "{a} · {b}"

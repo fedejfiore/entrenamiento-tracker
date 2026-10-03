@@ -163,6 +163,16 @@ server.listen(0, '127.0.0.1', async () => {
             check('em português, todas as telas abrem sem erros', errors.length === 0, errors.join(' | '));
             await page.close();
         }
+        // 6b. Alemán y chino
+        for (const [language, expectedNav] of [['de', 'Start,Training,Verlauf,Fortschritt,Mehr'], ['zh', '首页,训练,历史,进步,更多']]) {
+            const { page, errors } = await newPage(browser, { language });
+            await page.waitForFunction(l => document.documentElement.lang === l && !document.documentElement.classList.contains('i18n-pending'), language);
+            await visitAll(page);
+            const nav = await page.evaluate(() => [...document.querySelectorAll('.bottom-nav-item span:last-child')].map(s => s.textContent).join(','));
+            check(`${language}: la barra de navegación está traducida`, nav === expectedNav, nav);
+            check(`${language}: todas las pantallas abren sin errores`, errors.length === 0, errors.join(' | '));
+            await page.close();
+        }
         // 7. Textos legales: el link de Ajustes abre la versión del idioma de la app
         for (const [language, expected] of [['es', 'privacidad.html'], ['en', 'privacy.html']]) {
             const { page, errors } = await newPage(browser, { language });

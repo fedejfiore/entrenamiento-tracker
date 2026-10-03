@@ -6,12 +6,15 @@ const { loadApp, CORE_FILES } = require('./helpers/load-app');
 const app = loadApp([...CORE_FILES, 'js/core/i18n.js']);
 const Translator = app('Translator');
 
-test('idioma: el elegido, o el del celular (español, portugués; el resto, inglés)', () => {
+test('idioma: el elegido, o el del celular (español, portugués, alemán, chino; el resto, inglés)', () => {
     const resolve = app('resolveLanguage');
     assert.equal(resolve('en', 'es-AR'), 'en');
     assert.equal(resolve('auto', 'es-AR'), 'es');
     assert.equal(resolve('auto', 'pt-BR'), 'pt');
-    assert.equal(resolve(null, 'de-DE'), 'en');
+    assert.equal(resolve('auto', 'de-AT'), 'de');
+    assert.equal(resolve('auto', 'zh-CN'), 'zh');
+    assert.equal(resolve('zh', 'es-AR'), 'zh');
+    assert.equal(resolve(null, 'fr-FR'), 'en');
     assert.equal(resolve('xx', 'es-MX'), 'es');
     assert.equal(resolve(null, ''), 'es');
 });
@@ -84,4 +87,27 @@ test('partes variables con tipo: un patrón no se pega a cualquier oración', ()
     assert.equal(t4.tr('Compartir rutinas: tocá el link.'), 'Compartir rutinas: tocá el link.', 'una oración no es un nombre');
     assert.equal(t4.tr('Faltan 3 semanas'), 'Faltan 3 semanas');
     assert.equal(t4.tr('3 semanas'), '3 weeks');
+});
+
+test('todos los diccionarios tienen las mismas claves que el inglés, con sus variables y etiquetas', () => {
+    const vm = require('node:vm');
+    const fs = require('node:fs');
+    const path = require('node:path');
+    const load = lang => {
+        const ctx = vm.createContext({ I18N_DICTIONARIES: {} });
+        vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'js', 'i18n', `${lang}.js`), 'utf8'), ctx);
+        return ctx.I18N_DICTIONARIES[lang];
+    };
+    const en = load('en');
+    const vars = s => (s.replace(/\{(\w+):\w+\}/g, '{$1}').match(/\{\w+\}/g) || []).sort().join(',');
+    const tags = s => (s.match(/<\/?[a-z]+/g) || []).join('');
+    for (const lang of ['pt', 'de', 'zh']) {
+        const d = load(lang);
+        assert.deepEqual(Object.keys(d.text).filter(k => !(k in en.text)), [], `${lang}: claves de texto de más`);
+        assert.deepEqual(Object.keys(en.text).filter(k => !(k in d.text)), [], `${lang}: faltan textos`);
+        assert.deepEqual(Object.keys(en.html).filter(k => !(k in d.html)), [], `${lang}: faltan bloques`);
+        assert.deepEqual([...en.patterns].map(p => p[0]).filter(p => !d.patterns.some(q => q[0] === p)), [], `${lang}: faltan patrones`);
+        d.patterns.forEach(([es, tr]) => assert.equal(vars(tr), vars(es), `${lang}: variables de "${es}"`));
+        Object.entries(d.html).forEach(([es, tr]) => assert.equal(tags(tr), tags(en.html[es] ?? es), `${lang}: etiquetas de un bloque`));
+    }
 });

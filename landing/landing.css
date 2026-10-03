@@ -94,7 +94,8 @@ h1 { font-family: var(--font-heading); font-size: clamp(2.4rem, 6vw, 4.2rem); fo
 .phone { position: relative; width: min(300px, 78vw); aspect-ratio: 390 / 844; border-radius: 42px; padding: 10px; background: linear-gradient(145deg, #2b2f38, #0b0c0f); box-shadow: 0 30px 80px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.08); }
 .phone::after { content: ''; position: absolute; top: 18px; left: 50%; width: 76px; height: 20px; transform: translateX(-50%); background: #000; border-radius: 12px; }
 .phone-screen { position: relative; width: 100%; height: 100%; border-radius: 33px; overflow: hidden; background: #0f1115; }
-.shot { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1.03); transition: opacity .6s ease, transform .8s ease; }
+/* La captura empieza debajo de una franja de estado, así el notch no tapa el contenido. */
+.shot { position: absolute; inset: 30px 0 0; width: 100%; height: calc(100% - 30px); object-fit: cover; object-position: top; opacity: 0; transform: scale(1.03); transition: opacity .6s ease, transform .8s ease; }
 .shot.on { opacity: 1; transform: none; }
 .dots { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
 .dots button { background: var(--card); color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 6px 12px; font: 600 .8rem var(--font-body); cursor: pointer; position: relative; overflow: hidden; }
@@ -221,4 +222,10 @@ details p { color: var(--muted); margin: 0 0 16px; }
     html { scroll-behavior: auto; }
     *, *::before, *::after { animation: none !important; transition: none !important; }
     .js .reveal { opacity: 1; transform: none; }
+}
+
+/* Chino: fuentes del sistema para los caracteres CJK (Inter y Oswald no los tienen). */
+html[lang="zh"] {
+    --font-heading: 'Oswald', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', 'Noto Sans CJK SC', sans-serif;
+    --font-body: 'Inter', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', 'Noto Sans CJK SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }

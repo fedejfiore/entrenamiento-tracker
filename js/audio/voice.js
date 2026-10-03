@@ -40,7 +40,7 @@ function voiceSupported() {
 }
 
 // Voces del idioma de la app (español, inglés o portugués), con las más comunes primero.
-const PREFERRED_VOICE_LANGS = { es: /es-(AR|419|US|MX)/i, en: /en-(US|GB)/i, pt: /pt-BR/i };
+const PREFERRED_VOICE_LANGS = { es: /es-(AR|419|US|MX)/i, en: /en-(US|GB)/i, pt: /pt-BR/i, de: /de-DE/i, zh: /zh-CN/i };
 
 function getAppVoices() {
     if (!voiceSupported()) return [];

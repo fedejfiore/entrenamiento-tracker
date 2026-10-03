@@ -93,6 +93,8 @@
     .rest-timer-widget.rest-mode .rest-timer-inner { justify-content: space-between; }
     .rest-timer-widget.rest-mode .rest-timer-controls { flex: 1; justify-content: flex-end; }
     .rest-timer-widget.rest-mode .rest-timer-controls button { flex: 1; max-width: 72px; }
+    /* "Saltar" toma el ancho de su texto: en otros idiomas es más largo (Überspringen). */
+    .rest-timer-widget.rest-mode .rest-timer-controls button.skip { flex: 0 0 auto; max-width: none; padding-inline: 12px; white-space: nowrap; }
 }
 
 /* CONTADOR DE REPS: panel fijo abajo, grande para verlo de lejos */

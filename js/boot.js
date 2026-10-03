@@ -16,7 +16,7 @@
         // Otro idioma: se oculta hasta traducir (js/core/i18n.js la vuelve a mostrar).
         var lang = localStorage.getItem('language') || 'auto';
         var nav = (navigator.language || '').toLowerCase();
-        if (lang === 'en' || lang === 'pt' || (lang === 'auto' && nav && nav.indexOf('es') !== 0)) document.documentElement.classList.add('i18n-pending');
+        if ((lang !== 'auto' && lang !== 'es') || (lang === 'auto' && nav && nav.indexOf('es') !== 0)) document.documentElement.classList.add('i18n-pending');
     } catch (e) {}
 })();
 // Registra el service worker sólo si el navegador lo soporta (requiere

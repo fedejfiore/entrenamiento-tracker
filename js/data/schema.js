@@ -47,7 +47,7 @@ const STORAGE_SCHEMA = {
     onboardingDone: { group: 'prefs', format: 'text', type: 'string', default: null, description: '"1" cuando ya se mostró (o se salteó) el primer uso guiado.' },
     gardenSeen: { group: 'prefs', type: 'object', default: {}, description: 'Última etapa de la flor que se vio (para festejar una sola vez cuando crece). La flor en sí se calcula del historial.' },
     feedbackContact: { group: 'prefs', type: 'object', default: {}, description: 'Nombre y mail o WhatsApp que la persona dejó al enviar un error o sugerencia (para no volver a escribirlos).' },
-    language: { group: 'prefs', format: 'text', type: 'string', default: null, description: 'Idioma: "auto" (como el celular), "es", "en" o "pt".' },
+    language: { group: 'prefs', format: 'text', type: 'string', default: null, description: 'Idioma: "auto" (como el celular), "es", "en", "pt", "de" o "zh".' },
     theme: { group: 'prefs', format: 'text', type: 'string', default: null, description: 'Tema: "auto" (como el celular), "light" o "dark".' },
     soundType: { group: 'prefs', format: 'text', type: 'string', default: null, description: 'Sonido de fin de descanso.' },
     soundVolume: { group: 'prefs', format: 'text', type: 'string', default: null, description: 'Volumen 0-100.' },

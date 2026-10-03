@@ -527,6 +527,9 @@ I18N_DICTIONARIES.en = {
     // </html>
 
     patterns: [
+        ["Iniciada {a} · Finalizada {b} — guardá la sesión o reiniciá para empezar otra", "Started {a} · Finished {b} — save the session or reset to start another"],
+        ["Iniciada {t}", "Started {t}"],
+        ["Volumen: {a} → {b} ({p}) · Reps: {r} · Peso máx: {w} ({d})", "Volume: {a} → {b} ({p}) · Reps: {r} · Max weight: {w} ({d})"],
         ['{a} · {b}', '{a} · {b}'],
         ['{n:num} de {m:num} entrenamientos esta semana', '{n} of {m} workouts this week'],
         ['{n:num} de {m:num} esta semana', '{n} of {m} this week'],

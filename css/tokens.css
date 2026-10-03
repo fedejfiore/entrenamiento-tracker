@@ -100,3 +100,10 @@ body {
     color: var(--text);
     line-height: 1.5;
 }
+
+/* Chino: Inter y Oswald no tienen caracteres CJK; se usan las fuentes del sistema
+   (PingFang en Apple, Microsoft YaHei en Windows, Noto Sans SC en Android). */
+html[lang="zh"] {
+    --font-heading: 'Oswald', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', 'Noto Sans CJK SC', sans-serif;
+    --font-body: 'Inter', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', 'Noto Sans CJK SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}

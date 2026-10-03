@@ -46,6 +46,8 @@ function onboardingStepHtml(step) {
                 <option value="es"${lang === 'es' ? ' selected' : ''}>Español</option>
                 <option value="en"${lang === 'en' ? ' selected' : ''}>English</option>
                 <option value="pt"${lang === 'pt' ? ' selected' : ''}>Português (Brasil)</option>
+                <option value="de"${lang === 'de' ? ' selected' : ''}>Deutsch</option>
+                <option value="zh"${lang === 'zh' ? ' selected' : ''}>简体中文</option>
             </select>`;
     }
     if (step === 2) {

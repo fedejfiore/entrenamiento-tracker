@@ -13,7 +13,9 @@
 const APP_LANGUAGES = {
     es: { name: 'Español', locale: 'es-AR' },
     en: { name: 'English', locale: 'en-US' },
-    pt: { name: 'Português (Brasil)', locale: 'pt-BR' }
+    pt: { name: 'Português (Brasil)', locale: 'pt-BR' },
+    de: { name: 'Deutsch', locale: 'de-DE' },
+    zh: { name: '简体中文', locale: 'zh-CN' }
 };
 const I18N_DICTIONARIES = {};
 
@@ -23,6 +25,8 @@ function resolveLanguage(saved, navigatorLanguage) {
     const nav = String(navigatorLanguage || '').toLowerCase();
     if (nav.startsWith('es')) return 'es';
     if (nav.startsWith('pt')) return 'pt';
+    if (nav.startsWith('de')) return 'de';
+    if (nav.startsWith('zh')) return 'zh';
     if (nav) return 'en';
     return 'es';
 }
@@ -30,7 +34,7 @@ function resolveLanguage(saved, navigatorLanguage) {
 let appLanguage = 'es';
 try { appLanguage = resolveLanguage(localStorage.getItem('language'), navigator.language); } catch (e) { appLanguage = 'es'; }
 
-/** Configuración regional para fechas y números (es-AR, en-US, pt-BR). */
+/** Configuración regional para fechas y números (es-AR, en-US, pt-BR, de-DE, zh-CN). */
 function appLocale() {
     return (APP_LANGUAGES[appLanguage] || APP_LANGUAGES.es).locale;
 }
