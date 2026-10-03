@@ -18,6 +18,7 @@ function saveCurrentPlan(plan) {
     if (last && last.date === mondayStr) history[history.length - 1] = entry;
     else history.push(entry);
     repo.routines.savePlanHistory(history);
+    if (typeof syncNativePlanReminders === 'function') syncNativePlanReminders(plan);
 }
 
 /** Duración típica de una sesión (promedio de las últimas 10 con duración), para el calendario. */

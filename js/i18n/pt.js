@@ -5,6 +5,13 @@
 
 I18N_DICTIONARIES.pt = {
  "text": {
+  "Fin del descanso": "Fim do descanso",
+  "Avisa cuando termina el descanso entre series": "Avisa quando termina o descanso entre séries",
+  "Plan semanal": "Plano semanal",
+  "Recordatorios de los días de entrenamiento": "Lembretes dos dias de treino",
+  "Terminó el descanso": "O descanso acabou",
+  "Permitir": "Permitir",
+  "Para que el aviso del descanso llegue justo a tiempo, permití las alarmas exactas.": "Para o aviso do descanso chegar na hora certa, permita os alarmes exatos.",
   "Inicio": "Início",
   "Entrenar": "Treinar",
   "Historial": "Histórico",

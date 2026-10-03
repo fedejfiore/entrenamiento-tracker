@@ -227,7 +227,12 @@ I18N_DICTIONARIES.en = {
         // ---- Estados vacíos y avisos ----
         'Empezar a entrenar': 'Start training', 'Crear una rutina': 'Create a routine',
         'Mostrar todo': 'Show all', 'Deshacer': 'Undo',
-        'Las secciones están cerradas: tocá la que quieras ver.': 'Sections are collapsed: tap the one you want to see.'
+        'Las secciones están cerradas: tocá la que quieras ver.': 'Sections are collapsed: tap the one you want to see.',
+        // Notificaciones de la app nativa
+        'Fin del descanso': 'End of rest', 'Avisa cuando termina el descanso entre series': 'Alerts you when the rest between sets is over',
+        'Plan semanal': 'Weekly plan', 'Recordatorios de los días de entrenamiento': 'Reminders for your training days',
+        'Terminó el descanso': 'Rest is over', 'Permitir': 'Allow',
+        'Para que el aviso del descanso llegue justo a tiempo, permití las alarmas exactas.': 'To get the rest alert right on time, allow exact alarms.'
     },
 
     // Bloques con formato (<b>, <small>…): se completan en la segunda parte.

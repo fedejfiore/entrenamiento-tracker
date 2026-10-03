@@ -111,6 +111,7 @@ class App {
     render() {
         initTheme();
         initWakeLock();
+        initNativeFeatures();
         initSoundSettingsUI();
         initVoiceSettingsUI();
         initMusicSettingsUI();
