@@ -5,6 +5,17 @@
 
 I18N_DICTIONARIES.zh = {
  "text": {
+  "Solo se guardan las series que marcaste con ✓. Lo que se ve en gris no se guarda por sí solo. Si al terminar quedan series sin marcar, la app te pregunta si marcarlas todas como hechas o guardar sin ellas.": "只有用 ✓ 勾选的组才会保存。灰色显示的内容不会自动保存。如果结束时还有未勾选的组，应用会询问你是全部标记为完成，还是不保存它们。",
+  "Son los de la última vez que hiciste ese ejercicio, como sugerencia. Se guardan cuando marcás esa serie con ✓.": "它们来自你上次做这个动作的记录，作为建议。用 ✓ 勾选这一组后才会保存。",
+  "Los días que entrenaste, mes a mes: tocá uno para ver qué hiciste": "你训练过的日子，按月显示：点按某一天查看当天的训练",
+  "Marcá (✓) al menos una serie": "请至少勾选（✓）一组",
+  "Quedaron series sin marcar": "还有未勾选的组",
+  "Marcar todas como hechas y guardar": "全部标记为完成并保存",
+  "Guardar sin ellas (no cuentan como hechas)": "不保存它们（不计为已完成）",
+  "Queda 1 serie sin marcar. Si guardás sin marcarla, no cuenta como hecha.": "还有 1 组未勾选。如果不勾选就保存，它不计为已完成。",
+  "1 serie sin valores quedó sin marcar": "1 组没有数值，未被勾选",
+  "Sin entrenamientos este día.": "这一天没有训练。",
+  "1 récord": "1 项纪录",
   "Inicio": "首页",
   "Entrenar": "训练",
   "Historial": "历史",
@@ -100,7 +111,6 @@ I18N_DICTIONARIES.zh = {
   "Ver todos los programas": "查看所有计划",
   "Programas": "现成计划",
   "Entrenamientos totales, desde cuándo y promedio semanal": "训练总次数、开始时间和每周平均",
-  "Los días que entrenaste, mes a mes": "你训练过的日子，按月显示",
   "Peso y reps promedio de tus últimas sesiones": "最近几次训练的平均重量和次数",
   "Peso y reps promedio (de todas las series) en tus últimas sesiones de fuerza.": "最近几次力量训练的平均重量和次数（所有组）。",
   "Peso promedio": "平均重量",
@@ -616,8 +626,7 @@ I18N_DICTIONARIES.zh = {
   "Primero te da unos segundos para prepararte (5 por defecto): \"Preparate… 3, 2, 1, ¡Ya!\".": "开始前会先给你几秒准备时间（默认 5 秒）：“准备……3、2、1，开始！”。",
   "Revisá el volumen del celular y de la app (Ajustes → Sonido). En iPhone, el interruptor de silencio los apaga. El navegador solo deja sonar audio después de tocar la pantalla al menos una vez.": "检查手机和应用的音量（设置 → 声音）。在 iPhone 上，静音开关会让它们静音。浏览器只有在你至少触摸过一次屏幕后才会播放声音。",
   "Se pierde todo lo guardado en este celular. Por eso conviene descargar un backup de vez en cuando.": "保存在这部手机上的所有内容都会丢失。所以最好不时下载一份备份。",
-  "Solo se guardan las series que marcaste con ✓ o en las que escribiste algo. Lo que se ve en gris no se guarda por sí solo.": "只有你用 ✓ 勾选或输入过内容的组才会保存。灰色显示的内容不会自动保存。",
-  "Son los de la última vez que hiciste ese ejercicio, como sugerencia. No se guardan hasta que tocás ✓ o escribís algo en esa serie.": "它们来自你上次做这个动作的记录，作为建议。在你点按 ✓ 或在该组中输入内容之前不会保存。",
+
   "Sí. En la otra app buscá \"Exportar datos\" y guardá el CSV. Después, en Ajustes → 📥 Traer historial de otra app, elegí el archivo: te muestra cuántas sesiones, series y fechas trae antes de guardar. Si lo importás dos veces, no se duplica. Los ejercicios quedan con su nombre original; el grupo muscular se reconoce solo en la mayoría (también en inglés). Para llevar tu historial a una planilla, usá Ajustes → Datos → 📄 Exportar historial (CSV).": "可以。在另一个应用中找到“导出数据”并保存 CSV 文件。然后在 设置 → 📥 从其他应用导入历史 中选择该文件：保存前会显示包含多少次训练、多少组以及哪些日期。重复导入不会产生重复记录。动作保留原来的名称；大多数动作的肌群会自动识别（英文也可以）。如需把历史导出到表格，请使用 设置 → 数据 → 📄 导出历史（CSV）。",
   "Tabata ahora es una pestaña dentro de Entrenar (⏱️ Tabata / Intervalos). Variantes está en Biblioteca → Ejercicios.": "Tabata 现在是“训练”中的一个标签页（⏱️ Tabata / 间歇）。替代动作在 动作库 → 动作 中。",
   "Toco los puntos ⠿ pero no se mueve el ejercicio.": "我点按 ⠿ 但动作不动。",
@@ -797,7 +806,6 @@ I18N_DICTIONARIES.zh = {
   "Ingresá la cantidad de rondas": "请输入轮数",
   "Ingresá los segundos de trabajo": "请输入训练秒数",
   "Las contraseñas no coinciden": "两次输入的密码不一致",
-  "Marcá (✓) o cargá al menos una serie": "请至少勾选（✓）或填写一组",
   "Mínimo 8 caracteres": "至少 8 个字符",
   "No hay permiso para usar el micrófono. Habilitalo en los permisos del navegador para esta app.": "没有使用麦克风的权限。请在浏览器的权限设置中为本应用开启。",
   "No se grabó nada. Probá de nuevo.": "没有录到声音。请再试一次。",
@@ -1046,6 +1054,12 @@ I18N_DICTIONARIES.zh = {
   "Al guardar aparece un <b>resumen</b>: series, volumen y duración, los récords del día (con 📤 para compartir cada uno) y cuánto te falta para cumplir la semana.": "保存时会出现<b>摘要</b>：组数、训练量和时长、当天的纪录（每项都可用 📤 分享），以及还差多少完成本周。"
  },
  "patterns": [
+  ["¡Bien! Próximo: {x}.","很棒！下一次：{x}。"],
+  ["Quedan {n:num} series sin marcar. Si guardás sin marcarlas, no cuentan como hechas.", "还有 {n} 组未勾选。如果不勾选就保存，它们不计为已完成。"],
+  ["{n:num} series sin valores quedaron sin marcar", "{n} 组没有数值，未被勾选"],
+  ["mañana a las {t:num}", "明天 {t}"],
+  ["{n:num} récords", "{n} 项纪录"],
+  ["Vuelta completa: descansá y seguí con {x}", "一轮完成：休息后继续 {x}"],
   ["Iniciada {a} · Finalizada {b} — guardá la sesión o reiniciá para empezar otra", "开始于 {a} · 结束于 {b} — 保存训练或重置以开始新的训练"],
   ["Iniciada {t}", "开始于 {t}"],
   ["Volumen: {a} → {b} ({p}) · Reps: {r} · Peso máx: {w} ({d})", "训练量：{a} → {b}（{p}）· 次数：{r} · 最大重量：{w}（{d}）"],

@@ -49,7 +49,7 @@ const HELP_SECTIONS = [
                 <li>Al guardar aparece un <b>resumen</b>: series, volumen y duración, los récords del día (con 📤 para compartir cada uno) y cuánto te falta para cumplir la semana.</li>
             </ol>
             <p><b>No perdés nada:</b> lo que vas cargando se guarda solo. Si cerrás la app sin guardar, al volver te recupera la sesión del día.</p>
-            <p>Solo se guardan las series que marcaste con ✓ o en las que escribiste algo. Lo que se ve en gris no se guarda por sí solo.</p>`
+            <p>Solo se guardan las series que marcaste con ✓. Lo que se ve en gris no se guarda por sí solo. Si al terminar quedan series sin marcar, la app te pregunta si marcarlas todas como hechas o guardar sin ellas.</p>`
     },
     {
         id: 'series', icon: '📋', title: 'Series: cómo cargarlas',
@@ -343,7 +343,7 @@ const HELP_FAQ = [
     ['Los botones me quedan chicos o me cuesta distinguir los colores.', 'En Ajustes → Accesibilidad podés agrandar botones y campos (Grandes o Muy grandes) y activar los colores para daltonismo, que cambian el verde y el rojo por azul y naranja.'],
     ['¿Qué significa el aviso 📈 "Llevás X semanas en…"?', 'Ese ejercicio lleva 3 semanas o más (y al menos 3 sesiones) sin mejorar: ni más peso ni más reps con ese peso. Si ya llegás al tope de reps (el de tu objetivo, o 12), te sugiere subir el peso; si no, sumar una rep. Con 6 semanas o más, también probar una variante o una semana más liviana (descarga). Si bajaste el peso a propósito, cuenta desde ahí.'],
     ['¿Qué es la C que aparece al tocar el número de una serie?', 'Marca esa serie como de calentamiento. Se guarda, pero no cuenta para récords, volumen ni el mapa de músculos. Tocá la C de nuevo para que vuelva a ser una serie normal.'],
-    ['¿Por qué algunos valores se ven en gris?', 'Son los de la última vez que hiciste ese ejercicio, como sugerencia. No se guardan hasta que tocás ✓ o escribís algo en esa serie.'],
+    ['¿Por qué algunos valores se ven en gris?', 'Son los de la última vez que hiciste ese ejercicio, como sugerencia. Se guardan cuando marcás esa serie con ✓.'],
     ['Se me escondieron las series de los ejercicios.', 'Pasaba en versiones anteriores al reordenar ejercicios. Ya está corregido; si alguna vez ves los bloques achicados, volvé a elegir la rutina en el selector y se ven normales.'],
     ['Toco los puntos ⠿ pero no se mueve el ejercicio.', 'Hay que mantenerlos apretados un momento, hasta que se llenen de color y el celular vibre. Recién ahí arrastrá. Así se evita mover algo sin querer.'],
     ['La voz o los sonidos no se escuchan.', 'Revisá el volumen del celular y de la app (Ajustes → Sonido). En iPhone, el interruptor de silencio los apaga. El navegador solo deja sonar audio después de tocar la pantalla al menos una vez.'],

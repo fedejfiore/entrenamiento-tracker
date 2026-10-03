@@ -45,7 +45,9 @@ function trainedToday() {
 function describeNext(next) {
     if (!next) return '';
     const day = WEEKDAYS.find(w => w.n === next.weekday);
-    return next.isToday ? `hoy a las ${next.time}` : `el ${day.long} a las ${next.time}`;
+    if (next.isToday) return `hoy a las ${next.time}`;
+    if (next.isTomorrow) return `mañana a las ${next.time}`;
+    return `el ${day.long} a las ${next.time}`;
 }
 
 // ---------- Dibujo ----------

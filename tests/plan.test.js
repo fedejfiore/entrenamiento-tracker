@@ -36,12 +36,24 @@ test('días agrupados por horario, de lunes a domingo', () => {
 
 test('próximo entrenamiento', () => {
     // Domingo 27/09/2026 10:00 -> lunes 19:00
-    const next = plan().nextSession(new Date(2026, 8, 27, 10, 0));
+    const next = plan().nextSession(new Date(2026, 8, 27, 10, 0), new Date(2026, 8, 27, 10, 0));
     assert.equal(next.weekday, 1);
     assert.equal(next.time, '19:00');
     assert.equal(next.isToday, false);
+    assert.equal(next.isTomorrow, true);
     // Lunes 28/09 a las 12:00 -> hoy a las 19:00
-    assert.equal(plan().nextSession(new Date(2026, 8, 28, 12, 0)).isToday, true);
+    assert.equal(plan().nextSession(new Date(2026, 8, 28, 12, 0), new Date(2026, 8, 28, 12, 0)).isToday, true);
+});
+
+test('si ya entrenaste hoy, el próximo (buscado desde mañana) es "mañana", no "hoy"', () => {
+    // Viernes 2/10/2026 a las 23:55, ya entrenaste; el sábado se entrena a las 11.
+    const p = new TrainingPlan({ days: [5, 6], times: { 5: '19:00', 6: '11:00' } });
+    const now = new Date(2026, 9, 2, 23, 55);
+    const next = p.nextSession(new Date(2026, 9, 3, 0, 0), now);
+    assert.equal(next.weekday, 6);
+    assert.equal(next.time, '11:00');
+    assert.equal(next.isToday, false);
+    assert.equal(next.isTomorrow, true);
 });
 
 test('.ics: un evento semanal por horario, con alarma y en hora local', () => {

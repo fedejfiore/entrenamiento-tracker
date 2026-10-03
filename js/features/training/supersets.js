@@ -125,8 +125,12 @@ function goToNextInSuperset(block, row) {
     const routine = document.getElementById('routine')?.value;
     const blocks = [...document.querySelectorAll('#exercisesContainer .exercise-row')];
     const names = blocks.map(getBlockName);
-    const nextName = nextInSuperset(names, n => getSupersetLetter(routine, n), getBlockName(block));
-    if (!nextName) return false;
+    const letterOf = n => getSupersetLetter(routine, n);
+    const nextName = nextInSuperset(names, letterOf, getBlockName(block));
+    if (!nextName) {
+        backToSupersetStart(blocks, names, letterOf(getBlockName(block)), letterOf);
+        return false; // fin de la vuelta: ahora sí, descanso
+    }
 
     const nextBlock = blocks[names.indexOf(nextName)];
     const rowIndex = [...block.querySelectorAll('.set-row')].indexOf(row);
@@ -138,6 +142,23 @@ function goToNextInSuperset(block, row) {
     }
     showToast(`🔗 Seguí con ${nextName}, sin descanso`, 'success', 2200);
     return true;
+}
+
+/**
+ * Fin de una vuelta de superserie: mientras corre el descanso, la pantalla vuelve al primer
+ * ejercicio de la superserie que tenga series pendientes (la próxima vuelta).
+ */
+function backToSupersetStart(blocks, names, letter, letterOf) {
+    if (!letter) return;
+    const members = blocks.filter((b, i) => letterOf(names[i]) === letter);
+    const firstPending = members.find(b => b.querySelector('.set-row:not(.done)'));
+    if (!firstPending) return; // superserie terminada
+    const target = firstPending.querySelector('.set-row:not(.done)');
+    setBlockCollapsed(firstPending, false);
+    target.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    target.classList.add('superset-next');
+    setTimeout(() => target.classList.remove('superset-next'), 1800);
+    showToast(`🔗 Vuelta completa: descansá y seguí con ${getBlockName(firstPending)}`, 'success', 2600);
 }
 
 function bindSupersetModal() {

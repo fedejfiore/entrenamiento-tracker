@@ -288,14 +288,14 @@ function saveWorkoutSession() {
     }
 
     // Leer todos los bloques de ejercicio (en el orden en que están en pantalla).
-    // Solo cuentan las series hechas: tildadas o con valores escritos. Las
-    // sugerencias en gris (lo de la última vez) no se guardan por sí solas.
+    // Solo cuentan las series tildadas (✓). Si quedaban sin marcar, finishSession() ya
+    // preguntó si marcarlas o guardar sin ellas (y entonces no cuentan como realizadas).
     const exercises = [];
     document.querySelectorAll('#exercisesContainer .exercise-row').forEach(block => {
         const name = getBlockName(block);
         const type = EXERCISE_TYPES[block.dataset.type] ? block.dataset.type : 'kg';
         const sets = readBlockSets(block)
-            .filter(set => set.done || setHasMetric(set, type))
+            .filter(set => set.done && setHasMetric(set, type))
             .map(set => cleanSetForSave(set, type));
         if (!name || sets.length === 0) return;
 
@@ -310,7 +310,7 @@ function saveWorkoutSession() {
     });
 
     if (exercises.length === 0) {
-        showToast('Marcá (✓) o cargá al menos una serie', 'error');
+        showToast('Marcá (✓) al menos una serie', 'error');
         return;
     }
 

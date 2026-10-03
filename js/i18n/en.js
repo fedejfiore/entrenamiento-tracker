@@ -35,7 +35,7 @@ I18N_DICTIONARIES.en = {
         'Tu programa en curso y qué día te toca': 'Your current program and which day is next',
         'Ver programas': 'See programs', 'Ver todos los programas': 'See all programs', 'Programas': 'Programs',
         'Entrenamientos totales, desde cuándo y promedio semanal': 'Total workouts, since when and weekly average',
-        'Los días que entrenaste, mes a mes': 'The days you trained, month by month', 'Peso y reps promedio de tus últimas sesiones': 'Average weight and reps in your last sessions',
+'Peso y reps promedio de tus últimas sesiones': 'Average weight and reps in your last sessions',
         'Peso y reps promedio (de todas las series) en tus últimas sesiones de fuerza.': 'Average weight and reps (all sets) in your last strength sessions.',
         'Peso promedio': 'Average weight', 'Reps totales': 'Total reps', 'Volumen total': 'Total volume', 'Peso total': 'Total weight', 'Peso levantado': 'Weight lifted',
         'Lunes': 'Monday', 'Martes': 'Tuesday', 'Miércoles': 'Wednesday', 'Jueves': 'Thursday', 'Viernes': 'Friday', 'Sábado': 'Saturday', 'Domingo': 'Sunday',
@@ -234,7 +234,18 @@ I18N_DICTIONARIES.en = {
         'Terminó el descanso': 'Rest is over', 'Permitir': 'Allow',
         'Para que el aviso del descanso llegue justo a tiempo, permití las alarmas exactas.': 'To get the rest alert right on time, allow exact alarms.',
         'Política de privacidad': 'Privacy policy', 'Términos y condiciones': 'Terms and conditions',
-        'Por lado': 'Per side', 'Peso prom': 'Avg weight', 'Reps prom': 'Avg reps', 'volumen': 'volume',
+        'Por lado': 'Per side',
+        "Solo se guardan las series que marcaste con ✓. Lo que se ve en gris no se guarda por sí solo. Si al terminar quedan series sin marcar, la app te pregunta si marcarlas todas como hechas o guardar sin ellas.": "Only the sets you ticked with ✓ are saved. What is shown in gray is not saved on its own. If there are unticked sets when you finish, the app asks whether to mark them all as done or save without them.",
+        "Son los de la última vez que hiciste ese ejercicio, como sugerencia. Se guardan cuando marcás esa serie con ✓.": "They are from the last time you did that exercise, as a suggestion. They are saved when you tick that set with ✓.",
+        "Los días que entrenaste, mes a mes: tocá uno para ver qué hiciste": "The days you trained, month by month: tap one to see what you did",
+        "Marcá (✓) al menos una serie": "Tick (✓) at least one set",
+        "Quedaron series sin marcar": "Some sets are not ticked",
+        "Marcar todas como hechas y guardar": "Mark them all as done and save",
+        "Guardar sin ellas (no cuentan como hechas)": "Save without them (they do not count as done)",
+        "Queda 1 serie sin marcar. Si guardás sin marcarla, no cuenta como hecha.": "1 set is not ticked. If you save without ticking it, it does not count as done.",
+        "1 serie sin valores quedó sin marcar": "1 set with no values was left unticked",
+        "Sin entrenamientos este día.": "No workouts this day.",
+        "1 récord": "1 record", 'Peso prom': 'Avg weight', 'Reps prom': 'Avg reps', 'volumen': 'volume',
         'Al usar la app aceptás los términos y la política de privacidad. Tus datos quedan en tu celular.': 'By using the app you accept the terms and the privacy policy. Your data stays on your phone.'
     },
 
@@ -527,6 +538,12 @@ I18N_DICTIONARIES.en = {
     // </html>
 
     patterns: [
+        ["¡Bien! Próximo: {x}.","Nice! Next: {x}."],
+        ["Quedan {n:num} series sin marcar. Si guardás sin marcarlas, no cuentan como hechas.", "{n} sets are not ticked. If you save without ticking them, they do not count as done."],
+        ["{n:num} series sin valores quedaron sin marcar", "{n} sets with no values were left unticked"],
+        ["mañana a las {t:num}", "tomorrow at {t}"],
+        ["{n:num} récords", "{n} records"],
+        ["Vuelta completa: descansá y seguí con {x}", "Round complete: rest, then go on with {x}"],
         ["Iniciada {a} · Finalizada {b} — guardá la sesión o reiniciá para empezar otra", "Started {a} · Finished {b} — save the session or reset to start another"],
         ["Iniciada {t}", "Started {t}"],
         ["Volumen: {a} → {b} ({p}) · Reps: {r} · Peso máx: {w} ({d})", "Volume: {a} → {b} ({p}) · Reps: {r} · Max weight: {w} ({d})"],
@@ -682,8 +699,7 @@ Object.assign(I18N_DICTIONARIES.en.text, {
     'Revisá el volumen del celular y de la app (Ajustes → Sonido). En iPhone, el interruptor de silencio los apaga. El navegador solo deja sonar audio después de tocar la pantalla al menos una vez.':
         'Check the phone and app volume (Settings → Sound). On iPhone, the silent switch mutes them. The browser only plays audio after you have touched the screen at least once.',
     'Se pierde todo lo guardado en este celular. Por eso conviene descargar un backup de vez en cuando.': 'Everything saved on this phone is lost. That is why it is a good idea to download a backup from time to time.',
-    'Solo se guardan las series que marcaste con ✓ o en las que escribiste algo. Lo que se ve en gris no se guarda por sí solo.': 'Only the sets you ticked with ✓ or typed something into are saved. What is shown in gray is not saved on its own.',
-    'Son los de la última vez que hiciste ese ejercicio, como sugerencia. No se guardan hasta que tocás ✓ o escribís algo en esa serie.': 'They are from the last time you did that exercise, as a suggestion. They are not saved until you tap ✓ or type something in that set.',
+
     'Sí. En la otra app buscá "Exportar datos" y guardá el CSV. Después, en Ajustes → 📥 Traer historial de otra app, elegí el archivo: te muestra cuántas sesiones, series y fechas trae antes de guardar. Si lo importás dos veces, no se duplica. Los ejercicios quedan con su nombre original; el grupo muscular se reconoce solo en la mayoría (también en inglés). Para llevar tu historial a una planilla, usá Ajustes → Datos → 📄 Exportar historial (CSV).':
         'Yes. In the other app look for "Export data" and save the CSV. Then, in Settings → 📥 Bring history from another app, choose the file: it shows how many sessions, sets and dates it brings before saving. If you import it twice, it is not duplicated. Exercises keep their original name; the muscle group is recognized automatically for most of them (also in English). To take your history to a spreadsheet, use Settings → Data → 📄 Export history (CSV).',
     'Tabata ahora es una pestaña dentro de Entrenar (⏱️ Tabata / Intervalos). Variantes está en Biblioteca → Ejercicios.': 'Tabata is now a tab inside Train (⏱️ Tabata / Intervals). Variations are in Library → Exercises.',
@@ -775,7 +791,7 @@ Object.assign(I18N_DICTIONARIES.en.text, {
     'Este navegador no permite grabar audio desde la app.': 'This browser does not allow recording audio from the app.',
     'Formato de fecha inválido. Usá AAAA-MM-DD, por ejemplo 2026-08-11': 'Invalid date format. Use YYYY-MM-DD, for example 2026-08-11',
     'Ingresá la cantidad de rondas': 'Enter the number of rounds', 'Ingresá los segundos de trabajo': 'Enter the work seconds',
-    'Las contraseñas no coinciden': 'The passwords do not match', 'Marcá (✓) o cargá al menos una serie': 'Tick (✓) or enter at least one set', 'Mínimo 8 caracteres': 'At least 8 characters',
+    'Las contraseñas no coinciden': 'The passwords do not match','Mínimo 8 caracteres': 'At least 8 characters',
     'No hay permiso para usar el micrófono. Habilitalo en los permisos del navegador para esta app.': 'There is no permission to use the microphone. Enable it in the browser permissions for this app.',
     'No se grabó nada. Probá de nuevo.': 'Nothing was recorded. Try again.', 'No se pudo guardar el ajuste': 'The setting could not be saved', 'No se pudo guardar el perfil': 'The profile could not be saved',
     'No se pudo guardar la grabación. Probá de nuevo.': 'The recording could not be saved. Try again.', 'No se pudo leer ese audio. Probá con otro formato (mp3 o m4a).': 'That audio could not be read. Try another format (mp3 or m4a).',

@@ -5,6 +5,17 @@
 
 I18N_DICTIONARIES.pt = {
  "text": {
+  "Solo se guardan las series que marcaste con ✓. Lo que se ve en gris no se guarda por sí solo. Si al terminar quedan series sin marcar, la app te pregunta si marcarlas todas como hechas o guardar sin ellas.": "Só são salvas as séries que você marcou com ✓. O que aparece em cinza não é salvo sozinho. Se ao terminar sobrarem séries sem marcar, o app pergunta se você quer marcar todas como feitas ou salvar sem elas.",
+  "Son los de la última vez que hiciste ese ejercicio, como sugerencia. Se guardan cuando marcás esa serie con ✓.": "São da última vez que você fez esse exercício, como sugestão. São salvos quando você marca essa série com ✓.",
+  "Los días que entrenaste, mes a mes: tocá uno para ver qué hiciste": "Os dias em que você treinou, mês a mês: toque em um para ver o que fez",
+  "Marcá (✓) al menos una serie": "Marque (✓) pelo menos uma série",
+  "Quedaron series sin marcar": "Ficaram séries sem marcar",
+  "Marcar todas como hechas y guardar": "Marcar todas como feitas e salvar",
+  "Guardar sin ellas (no cuentan como hechas)": "Salvar sem elas (não contam como feitas)",
+  "Queda 1 serie sin marcar. Si guardás sin marcarla, no cuenta como hecha.": "Falta marcar 1 série. Se você salvar sem marcá-la, ela não conta como feita.",
+  "1 serie sin valores quedó sin marcar": "1 série sem valores ficou sem marcar",
+  "Sin entrenamientos este día.": "Nenhum treino neste dia.",
+  "1 récord": "1 recorde",
   "Política de privacidad": "Política de privacidade",
   "Por lado": "Por lado",
   "Peso prom": "Peso méd.",
@@ -114,7 +125,6 @@ I18N_DICTIONARIES.pt = {
   "Ver todos los programas": "Ver todos os programas",
   "Programas": "Programas",
   "Entrenamientos totales, desde cuándo y promedio semanal": "Total de treinos, desde quando e média semanal",
-  "Los días que entrenaste, mes a mes": "Os dias em que você treinou, mês a mês",
   "Peso y reps promedio de tus últimas sesiones": "Peso e reps médios das suas últimas sessões",
   "Peso y reps promedio (de todas las series) en tus últimas sesiones de fuerza.": "Peso e reps médios (de todas as séries) nas suas últimas sessões de força.",
   "Peso promedio": "Peso médio",
@@ -616,8 +626,7 @@ I18N_DICTIONARIES.pt = {
   "Primero te da unos segundos para prepararte (5 por defecto): \"Preparate… 3, 2, 1, ¡Ya!\".": "Primeiro dá alguns segundos para você se preparar (5 por padrão): \"Prepare-se… 3, 2, 1, Já!\".",
   "Revisá el volumen del celular y de la app (Ajustes → Sonido). En iPhone, el interruptor de silencio los apaga. El navegador solo deja sonar audio después de tocar la pantalla al menos una vez.": "Confira o volume do celular e do app (Ajustes → Som). No iPhone, a chave de silêncio os desliga. O navegador só deixa tocar áudio depois de você tocar na tela pelo menos uma vez.",
   "Se pierde todo lo guardado en este celular. Por eso conviene descargar un backup de vez en cuando.": "Perde-se tudo o que está salvo neste celular. Por isso vale a pena baixar um backup de vez em quando.",
-  "Solo se guardan las series que marcaste con ✓ o en las que escribiste algo. Lo que se ve en gris no se guarda por sí solo.": "Só são salvas as séries que você marcou com ✓ ou nas quais escreveu algo. O que aparece em cinza não é salvo sozinho.",
-  "Son los de la última vez que hiciste ese ejercicio, como sugerencia. No se guardan hasta que tocás ✓ o escribís algo en esa serie.": "São os da última vez que você fez esse exercício, como sugestão. Não são salvos até você tocar em ✓ ou escrever algo nessa série.",
+
   "Sí. En la otra app buscá \"Exportar datos\" y guardá el CSV. Después, en Ajustes → 📥 Traer historial de otra app, elegí el archivo: te muestra cuántas sesiones, series y fechas trae antes de guardar. Si lo importás dos veces, no se duplica. Los ejercicios quedan con su nombre original; el grupo muscular se reconoce solo en la mayoría (también en inglés). Para llevar tu historial a una planilla, usá Ajustes → Datos → 📄 Exportar historial (CSV).": "Sim. No outro app procure \"Exportar dados\" e salve o CSV. Depois, em Ajustes → 📥 Trazer histórico de outro app, escolha o arquivo: ele mostra quantas sessões, séries e datas traz antes de salvar. Se você importar duas vezes, não duplica. Os exercícios ficam com o nome original; o grupo muscular é reconhecido sozinho na maioria (também em inglês). Para levar seu histórico a uma planilha, use Ajustes → Dados → 📄 Exportar histórico (CSV).",
   "Tabata ahora es una pestaña dentro de Entrenar (⏱️ Tabata / Intervalos). Variantes está en Biblioteca → Ejercicios.": "O Tabata agora é uma aba dentro de Treinar (⏱️ Tabata / Intervalos). As Variações estão em Biblioteca → Exercícios.",
   "Toco los puntos ⠿ pero no se mueve el ejercicio.": "Toco nos pontos ⠿ mas o exercício não se move.",
@@ -797,7 +806,6 @@ I18N_DICTIONARIES.pt = {
   "Ingresá la cantidad de rondas": "Informe a quantidade de rodadas",
   "Ingresá los segundos de trabajo": "Informe os segundos de trabalho",
   "Las contraseñas no coinciden": "As senhas não coincidem",
-  "Marcá (✓) o cargá al menos una serie": "Marque (✓) ou registre pelo menos uma série",
   "Mínimo 8 caracteres": "Mínimo de 8 caracteres",
   "No hay permiso para usar el micrófono. Habilitalo en los permisos del navegador para esta app.": "Não há permissão para usar o microfone. Habilite-a nas permissões do navegador para este app.",
   "No se grabó nada. Probá de nuevo.": "Nada foi gravado. Tente de novo.",
@@ -1003,6 +1011,12 @@ I18N_DICTIONARIES.pt = {
   "💾 Como los datos viven en el celular, descargá un <b>backup</b> de vez en cuando (Ajustes → Datos). Es lo que te permite recuperar todo si cambiás de teléfono o borrás el navegador.": "💾 Como os dados ficam no celular, baixe um <b>backup</b> de vez em quando (Ajustes → Dados). É o que permite recuperar tudo se você trocar de telefone ou apagar o navegador."
  },
  "patterns": [
+  ["¡Bien! Próximo: {x}.","Boa! Próximo: {x}."],
+  ["Quedan {n:num} series sin marcar. Si guardás sin marcarlas, no cuentan como hechas.", "Faltam marcar {n} séries. Se você salvar sem marcá-las, elas não contam como feitas."],
+  ["{n:num} series sin valores quedaron sin marcar", "{n} séries sem valores ficaram sem marcar"],
+  ["mañana a las {t:num}", "amanhã às {t}"],
+  ["{n:num} récords", "{n} recordes"],
+  ["Vuelta completa: descansá y seguí con {x}", "Volta completa: descanse e siga com {x}"],
   ["Iniciada {a} · Finalizada {b} — guardá la sesión o reiniciá para empezar otra", "Iniciada {a} · Finalizada {b} — salve a sessão ou reinicie para começar outra"],
   ["Iniciada {t}", "Iniciada {t}"],
   ["Volumen: {a} → {b} ({p}) · Reps: {r} · Peso máx: {w} ({d})", "Volume: {a} → {b} ({p}) · Reps: {r} · Peso máx.: {w} ({d})"],

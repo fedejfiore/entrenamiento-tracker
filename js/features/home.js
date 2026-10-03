@@ -175,10 +175,55 @@ function renderMonthCalendar() {
         const title = trained ? `${dateStr}: ${label}` : dateStr;
         const isToday = dateStr === todayStr;
 
-        html += `<div class="calendar-cell ${trained ? 'trained ' + intensity : ''}${isToday ? ' today' : ''}" title="${escapeHtml(title)}">${day}</div>`;
+        const selected = dateStr === calendarSelectedDate;
+        html += `<button type="button" class="calendar-cell ${trained ? 'trained ' + intensity : ''}${isToday ? ' today' : ''}${selected ? ' selected' : ''}" data-cal-date="${dateStr}" aria-pressed="${selected}" title="${escapeHtml(title)}">${day}</button>`;
     }
     html += '</div>';
     container.innerHTML = html;
+    bindCalendarDayDetail(container);
+    renderCalendarDayDetail();
+}
+
+// ---- Tocar un día del calendario: qué se hizo ese día ----
+let calendarSelectedDate = null;
+
+function bindCalendarDayDetail(container) {
+    if (container.dataset.bound) return;
+    container.dataset.bound = '1';
+    container.addEventListener('click', e => {
+        const cell = e.target.closest('[data-cal-date]');
+        if (!cell) return;
+        calendarSelectedDate = calendarSelectedDate === cell.dataset.calDate ? null : cell.dataset.calDate;
+        renderMonthCalendar();
+    });
+}
+
+function renderCalendarDayDetail() {
+    const box = document.getElementById('calendarDayDetail');
+    if (!box) return;
+    if (!calendarSelectedDate) { box.hidden = true; box.innerHTML = ''; return; }
+    const date = new Date(calendarSelectedDate + 'T00:00:00');
+    const title = date.toLocaleDateString(appLocale(), { weekday: 'long', day: 'numeric', month: 'long' });
+    const sessions = repo.workouts.all().filter(w => w && w.date === calendarSelectedDate);
+    box.hidden = false;
+    box.innerHTML = `<div class="cal-detail-head"><strong>${escapeHtml(title.charAt(0).toUpperCase() + title.slice(1))}</strong></div>`
+        + (sessions.length ? sessions.map(calendarSessionHtml).join('') : '<p class="cal-detail-empty">Sin entrenamientos este día.</p>');
+}
+
+function calendarSessionHtml(w) {
+    if (w.type === 'tabata') {
+        const blocks = Array.isArray(w.blocks) ? w.blocks : [{ name: w.name, rounds: w.rounds, roundsCompleted: w.roundsCompleted }];
+        return `<div class="cal-detail-session"><div class="cal-detail-title">🔥 Tabata${w.duration ? ` · ${w.duration} min` : ''}</div>`
+            + `<ul>${blocks.map(b => `<li><span translate="no">${escapeHtml(b.name || 'Tabata')}</span> · ${b.roundsCompleted ?? b.rounds}/${b.rounds}</li>`).join('')}</ul></div>`;
+    }
+    const label = customRoutineLabels[w.routine] || ROUTINE_LABELS[w.routine] || w.routine || 'Entreno';
+    const meta = [w.duration ? `${w.duration} min` : '', w.volume ? formatWeightTotal(w.volume) : ''].filter(Boolean).join(' · ');
+    const exercises = (w.exercises || []).map(ex => {
+        const summary = formatSetsSummary(ex.sets, ex.type || 'kg');
+        return `<li><span translate="no">${escapeHtml(ex.name)}</span>${summary ? `: ${escapeHtml(summary)}` : ''}</li>`;
+    }).join('');
+    const prs = Array.isArray(w.prs) && w.prs.length ? `<div class="cal-detail-prs">🏆 ${w.prs.length === 1 ? '1 récord' : `${w.prs.length} récords`}</div>` : '';
+    return `<div class="cal-detail-session"><div class="cal-detail-title"><span>${escapeHtml(label)}</span>${meta ? ` <small>${escapeHtml(meta)}</small>` : ''}</div><ul>${exercises}</ul>${prs}</div>`;
 }
 
 // Devuelve: 'sin-plan' | 'dias-respetados' | 'cantidad-cumplida' | 'en-curso' | 'incumplido'

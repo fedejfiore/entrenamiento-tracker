@@ -110,7 +110,7 @@
                     <button type="button" data-plan-action="ics">📥 Agregar al calendario del celular (iPhone y otros)</button>
                 </div>
 
-                <div class="section" data-hint="Los días que entrenaste, mes a mes" data-open="1">
+                <div class="section" data-hint="Los días que entrenaste, mes a mes: tocá uno para ver qué hiciste" data-open="1">
                     <h2>📆 Calendario de Entrenamientos</h2>
                     <div class="calendar-nav">
                         <button type="button" class="small" style="width:auto;" data-fn-click="changeCalendarMonth" data-fn-args='[-1]'>◀</button>
@@ -118,6 +118,7 @@
                         <button type="button" class="small" style="width:auto;" data-fn-click="changeCalendarMonth" data-fn-args='[1]'>▶</button>
                     </div>
                     <div id="trainingCalendar"></div>
+                    <div id="calendarDayDetail" class="calendar-day-detail" hidden aria-live="polite"></div>
                 </div>
 
                 <div class="section" data-hint="Peso y reps promedio de tus últimas sesiones">
@@ -182,7 +183,7 @@
                         <label for="workoutDate" style="display:block; font-size:12px; color:var(--text-muted); margin-bottom:4px;">Fecha de la sesión</label>
                         <input type="date" id="workoutDate">
                         <input type="text" id="sessionNotes" placeholder="Notas de la sesión (opcional)" data-fn-input="saveWorkoutDraft">
-                        <button class="success" data-fn-click="saveWorkoutSession" style="font-size: 16px; padding: 14px;">✅ GUARDAR SESIÓN</button>
+                        <button class="success" data-fn-click="finishSession" style="font-size: 16px; padding: 14px;">✅ GUARDAR SESIÓN</button>
                     </div>
                 </div>
                 <div class="train-mode" data-mode="tabata" hidden>
@@ -688,6 +689,16 @@
             </div>
             <button type="button" class="success" data-finish="save">✅ Guardar sesión</button>
             <button type="button" class="finish-prompt-keep" data-finish="keep">Seguir entrenando</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="pendingSetsPrompt" role="dialog" aria-modal="true" aria-labelledby="pendingSetsTitle">
+        <div class="modal-content finish-prompt">
+            <h3 id="pendingSetsTitle">Quedaron series sin marcar</h3>
+            <p class="finish-prompt-summary" id="pendingSetsSummary"></p>
+            <button type="button" class="success" data-pending="mark">✓ Marcar todas como hechas y guardar</button>
+            <button type="button" data-pending="skip">Guardar sin ellas (no cuentan como hechas)</button>
+            <button type="button" class="finish-prompt-keep" data-pending="keep">Seguir entrenando</button>
         </div>
     </div>
 

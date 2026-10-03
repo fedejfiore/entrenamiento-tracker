@@ -5,6 +5,17 @@
 
 I18N_DICTIONARIES.de = {
  "text": {
+  "Solo se guardan las series que marcaste con ✓. Lo que se ve en gris no se guarda por sí solo. Si al terminar quedan series sin marcar, la app te pregunta si marcarlas todas como hechas o guardar sin ellas.": "Gespeichert werden nur die Sätze, die du mit ✓ abgehakt hast. Was grau angezeigt wird, wird nicht von selbst gespeichert. Wenn beim Beenden noch Sätze offen sind, fragt die App, ob du alle als erledigt markieren oder ohne sie speichern willst.",
+  "Son los de la última vez que hiciste ese ejercicio, como sugerencia. Se guardan cuando marcás esa serie con ✓.": "Sie stammen vom letzten Mal, als du diese Übung gemacht hast, als Vorschlag. Sie werden gespeichert, wenn du diesen Satz mit ✓ abhakst.",
+  "Los días que entrenaste, mes a mes: tocá uno para ver qué hiciste": "Die Tage, an denen du trainiert hast, Monat für Monat: Tippe auf einen, um zu sehen, was du gemacht hast",
+  "Marcá (✓) al menos una serie": "Hake mindestens einen Satz ab (✓)",
+  "Quedaron series sin marcar": "Es sind noch Sätze offen",
+  "Marcar todas como hechas y guardar": "Alle als erledigt markieren und speichern",
+  "Guardar sin ellas (no cuentan como hechas)": "Ohne sie speichern (zählen nicht als erledigt)",
+  "Queda 1 serie sin marcar. Si guardás sin marcarla, no cuenta como hecha.": "1 Satz ist nicht abgehakt. Wenn du ohne ihn speicherst, zählt er nicht als erledigt.",
+  "1 serie sin valores quedó sin marcar": "1 Satz ohne Werte blieb offen",
+  "Sin entrenamientos este día.": "Kein Training an diesem Tag.",
+  "1 récord": "1 Rekord",
   "Inicio": "Start",
   "Entrenar": "Training",
   "Historial": "Verlauf",
@@ -100,7 +111,6 @@ I18N_DICTIONARIES.de = {
   "Ver todos los programas": "Alle Programme ansehen",
   "Programas": "Programme",
   "Entrenamientos totales, desde cuándo y promedio semanal": "Trainings insgesamt, seit wann und Wochendurchschnitt",
-  "Los días que entrenaste, mes a mes": "Die Tage, an denen du trainiert hast, Monat für Monat",
   "Peso y reps promedio de tus últimas sesiones": "Durchschnittliches Gewicht und Wiederholungen deiner letzten Einheiten",
   "Peso y reps promedio (de todas las series) en tus últimas sesiones de fuerza.": "Durchschnittliches Gewicht und Wiederholungen (alle Sätze) deiner letzten Krafteinheiten.",
   "Peso promedio": "Durchschnittsgewicht",
@@ -616,8 +626,7 @@ I18N_DICTIONARIES.de = {
   "Primero te da unos segundos para prepararte (5 por defecto): \"Preparate… 3, 2, 1, ¡Ya!\".": "Zuerst gibt er dir ein paar Sekunden zur Vorbereitung (standardmäßig 5): „Mach dich bereit … 3, 2, 1, los!“.",
   "Revisá el volumen del celular y de la app (Ajustes → Sonido). En iPhone, el interruptor de silencio los apaga. El navegador solo deja sonar audio después de tocar la pantalla al menos una vez.": "Prüfe die Lautstärke des Handys und der App (Einstellungen → Ton). Beim iPhone schaltet der Stummschalter sie stumm. Der Browser spielt Ton erst ab, nachdem du den Bildschirm mindestens einmal berührt hast.",
   "Se pierde todo lo guardado en este celular. Por eso conviene descargar un backup de vez en cuando.": "Alles, was auf diesem Handy gespeichert ist, geht verloren. Deshalb lohnt es sich, ab und zu ein Backup herunterzuladen.",
-  "Solo se guardan las series que marcaste con ✓ o en las que escribiste algo. Lo que se ve en gris no se guarda por sí solo.": "Gespeichert werden nur die Sätze, die du mit ✓ abgehakt oder in die du etwas eingetragen hast. Was grau angezeigt wird, wird nicht von selbst gespeichert.",
-  "Son los de la última vez que hiciste ese ejercicio, como sugerencia. No se guardan hasta que tocás ✓ o escribís algo en esa serie.": "Sie stammen vom letzten Mal, als du diese Übung gemacht hast, als Vorschlag. Sie werden erst gespeichert, wenn du auf ✓ tippst oder in diesem Satz etwas einträgst.",
+
   "Sí. En la otra app buscá \"Exportar datos\" y guardá el CSV. Después, en Ajustes → 📥 Traer historial de otra app, elegí el archivo: te muestra cuántas sesiones, series y fechas trae antes de guardar. Si lo importás dos veces, no se duplica. Los ejercicios quedan con su nombre original; el grupo muscular se reconoce solo en la mayoría (también en inglés). Para llevar tu historial a una planilla, usá Ajustes → Datos → 📄 Exportar historial (CSV).": "Ja. Suche in der anderen App nach „Daten exportieren“ und speichere die CSV-Datei. Wähle dann unter Einstellungen → 📥 Verlauf aus einer anderen App übernehmen die Datei aus: Vor dem Speichern siehst du, wie viele Einheiten, Sätze und Daten sie enthält. Wenn du sie zweimal importierst, wird nichts doppelt angelegt. Die Übungen behalten ihren ursprünglichen Namen; die Muskelgruppe wird bei den meisten automatisch erkannt (auch auf Englisch). Um deinen Verlauf in eine Tabelle zu bringen, nutze Einstellungen → Daten → 📄 Verlauf exportieren (CSV).",
   "Tabata ahora es una pestaña dentro de Entrenar (⏱️ Tabata / Intervalos). Variantes está en Biblioteca → Ejercicios.": "Tabata ist jetzt ein Reiter unter Training (⏱️ Tabata / Intervalle). Die Varianten findest du unter Bibliothek → Übungen.",
   "Toco los puntos ⠿ pero no se mueve el ejercicio.": "Ich tippe auf die Punkte ⠿, aber die Übung bewegt sich nicht.",
@@ -797,7 +806,6 @@ I18N_DICTIONARIES.de = {
   "Ingresá la cantidad de rondas": "Gib die Anzahl der Runden ein",
   "Ingresá los segundos de trabajo": "Gib die Sekunden für die Arbeit ein",
   "Las contraseñas no coinciden": "Die Passwörter stimmen nicht überein",
-  "Marcá (✓) o cargá al menos una serie": "Hake mindestens einen Satz ab (✓) oder trage ihn ein",
   "Mínimo 8 caracteres": "Mindestens 8 Zeichen",
   "No hay permiso para usar el micrófono. Habilitalo en los permisos del navegador para esta app.": "Keine Berechtigung für das Mikrofon. Aktiviere sie in den Browserberechtigungen für diese App.",
   "No se grabó nada. Probá de nuevo.": "Es wurde nichts aufgenommen. Versuch es noch einmal.",
@@ -1046,6 +1054,12 @@ I18N_DICTIONARIES.de = {
   "Al guardar aparece un <b>resumen</b>: series, volumen y duración, los récords del día (con 📤 para compartir cada uno) y cuánto te falta para cumplir la semana.": "Beim Speichern erscheint eine <b>Zusammenfassung</b>: Sätze, Volumen und Dauer, die Rekorde des Tages (mit 📤, um jeden zu teilen) und was noch fehlt, um die Woche zu schaffen."
  },
  "patterns": [
+  ["¡Bien! Próximo: {x}.","Super! Als Nächstes: {x}."],
+  ["Quedan {n:num} series sin marcar. Si guardás sin marcarlas, no cuentan como hechas.", "{n} Sätze sind nicht abgehakt. Wenn du ohne sie speicherst, zählen sie nicht als erledigt."],
+  ["{n:num} series sin valores quedaron sin marcar", "{n} Sätze ohne Werte blieben offen"],
+  ["mañana a las {t:num}", "morgen um {t}"],
+  ["{n:num} récords", "{n} Rekorde"],
+  ["Vuelta completa: descansá y seguí con {x}", "Runde geschafft: Pause machen, dann weiter mit {x}"],
   ["Iniciada {a} · Finalizada {b} — guardá la sesión o reiniciá para empezar otra", "Begonnen {a} · Beendet {b} — speichere die Einheit oder setze zurück, um eine neue zu beginnen"],
   ["Iniciada {t}", "Begonnen {t}"],
   ["Volumen: {a} → {b} ({p}) · Reps: {r} · Peso máx: {w} ({d})", "Volumen: {a} → {b} ({p}) · Wdh.: {r} · Höchstgewicht: {w} ({d})"],

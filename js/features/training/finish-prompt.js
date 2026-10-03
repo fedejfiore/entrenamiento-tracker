@@ -33,6 +33,7 @@ function closeFinishPrompt() {
 }
 
 function bindFinishPrompt() {
+    bindPendingSetsPrompt();
     const modal = document.getElementById('finishPrompt');
     if (!modal) return;
     modal.addEventListener('click', e => {
@@ -45,6 +46,59 @@ function bindFinishPrompt() {
             return;
         }
         if (e.target === modal || e.target.closest('[data-finish="keep"]')) { closeFinishPrompt(); return; }
-        if (e.target.closest('[data-finish="save"]')) { closeFinishPrompt(); saveWorkoutSession(); }
+        if (e.target.closest('[data-finish="save"]')) { closeFinishPrompt(); finishSession(); }
+    });
+}
+
+// ---- Terminar con series sin marcar ----
+// Solo cuentan las series tildadas (✓). Si al terminar quedan series sin marcar, se pregunta:
+// marcarlas todas como hechas, guardar sin ellas (no cuentan como realizadas) o seguir.
+
+function pendingSetRows() {
+    return [...document.querySelectorAll('#exercisesContainer .exercise-row .set-row:not(.done)')];
+}
+
+/** Marca una serie como hecha sin descanso ni avisos: completa lo que se ve en gris. */
+function markSetRowDone(row) {
+    const block = row.closest('.exercise-row');
+    const type = block?.dataset.type;
+    (EXERCISE_TYPES[type] || EXERCISE_TYPES.kg).cols.forEach(f => {
+        const el = row.querySelector(`[data-f="${f}"]`);
+        if (el && !el.value.trim() && el.dataset.prev) el.value = el.dataset.prev;
+    });
+    if (!setHasMetric(readSetRow(row), type)) return false;
+    row.classList.remove('half');
+    row.classList.add('done');
+    const btn = row.querySelector('.set-check');
+    if (btn) { btn.textContent = '✓'; btn.setAttribute('aria-pressed', 'true'); }
+    return true;
+}
+
+function finishSession() {
+    const pending = pendingSetRows();
+    if (pending.length === 0) { saveWorkoutSession(); return; }
+    const modal = document.getElementById('pendingSetsPrompt');
+    if (!modal) { saveWorkoutSession(); return; }
+    document.getElementById('pendingSetsSummary').textContent = pending.length === 1
+        ? 'Queda 1 serie sin marcar. Si guardás sin marcarla, no cuenta como hecha.'
+        : `Quedan ${pending.length} series sin marcar. Si guardás sin marcarlas, no cuentan como hechas.`;
+    modal.classList.add('open');
+    modal.querySelector('[data-pending="mark"]')?.focus();
+}
+
+function bindPendingSetsPrompt() {
+    const modal = document.getElementById('pendingSetsPrompt');
+    if (!modal) return;
+    modal.addEventListener('click', e => {
+        const action = e.target === modal ? 'keep' : e.target.closest('[data-pending]')?.dataset.pending;
+        if (!action) return;
+        modal.classList.remove('open');
+        if (action === 'keep') return;
+        if (action === 'mark') {
+            const left = pendingSetRows().filter(row => !markSetRowDone(row)).length;
+            if (left) showToast(left === 1 ? '1 serie sin valores quedó sin marcar' : `${left} series sin valores quedaron sin marcar`, 'error', 4000);
+            saveWorkoutDraft();
+        }
+        saveWorkoutSession();
     });
 }

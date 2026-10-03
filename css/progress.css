@@ -133,3 +133,21 @@
 .calendar-cell.today {
     box-shadow: 0 0 0 2px var(--brand) inset;
 }
+
+/* Celdas del calendario: son botones (tocar un día muestra qué se hizo). */
+button.calendar-cell { width: auto; margin: 0; padding: 0; border: 0; font: inherit; font-size: 11px; letter-spacing: 0; cursor: pointer; transition: none; }
+button.calendar-cell:hover { transform: none; box-shadow: none; background: var(--bg-elevated); }
+button.calendar-cell.trained:hover { filter: brightness(1.1); }
+button.calendar-cell.trained.low:hover { background: color-mix(in srgb, var(--success) 45%, transparent); }
+button.calendar-cell.trained.mid:hover { background: color-mix(in srgb, var(--success) 75%, transparent); }
+button.calendar-cell.trained.high:hover { background: var(--success); }
+.calendar-cell.selected { outline: 2px solid var(--text); outline-offset: 1px; }
+.calendar-day-detail { margin-top: 12px; padding: 12px 14px; border-radius: var(--radius-sm); background: var(--bg-subtle); font-size: 13px; }
+.cal-detail-head { margin-bottom: 6px; }
+.cal-detail-empty { margin: 0; color: var(--text-faint); }
+.cal-detail-session + .cal-detail-session { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+.cal-detail-title { font-weight: 700; }
+.cal-detail-title small { font-weight: 400; color: var(--text-muted); }
+.calendar-day-detail ul { margin: 6px 0 0; padding-left: 18px; color: var(--text-muted); }
+.calendar-day-detail li { margin: 2px 0; }
+.cal-detail-prs { margin-top: 6px; color: var(--warning); font-weight: 600; }

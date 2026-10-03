@@ -73,14 +73,23 @@ class TrainingPlan {
     }
 
     /** Próximo entrenamiento a partir de `from` (incluye hoy si todavía no pasó la hora). */
-    nextSession(from = new Date()) {
+    /**
+     * Próximo entrenamiento a partir de `from`. "Hoy" y "mañana" se cuentan contra `today`
+     * (la fecha real), no contra `from`: si ya entrenaste hoy se busca desde mañana, y ese
+     * entrenamiento es "mañana", no "hoy".
+     */
+    nextSession(from = new Date(), today = new Date()) {
         if (this.isEmpty) return null;
+        const dayKey = x => `${x.getFullYear()}-${x.getMonth()}-${x.getDate()}`;
+        const tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
         for (let i = 0; i < 8; i++) {
             const d = new Date(from.getFullYear(), from.getMonth(), from.getDate() + i);
             if (!this.includes(d.getDay())) continue;
             const [h, m] = this.times[d.getDay()].split(':').map(Number);
             const at = new Date(d.getFullYear(), d.getMonth(), d.getDate(), h, m);
-            if (at >= from || i === 0) return { date: at, weekday: d.getDay(), time: this.times[d.getDay()], isToday: i === 0 };
+            if (at >= from || i === 0) {
+                return { date: at, weekday: d.getDay(), time: this.times[d.getDay()], isToday: dayKey(d) === dayKey(today), isTomorrow: dayKey(d) === dayKey(tomorrow) };
+            }
         }
         return null;
     }

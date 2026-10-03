@@ -18,7 +18,7 @@ const DECLARED_ACTIONS = new Set([
     'onHistoryViewModeChange', 'onSoundVolumeInput', 'onTimerWidgetClick', 'onVoiceSettingChange',
     'openLegal', 'openMusic', 'previewCue', 'removeRecording', 'renameRoutine', 'renderExerciseDetailChart',
     'renderRecordingsUI', 'resetAllData', 'resetRoutineTimer', 'saveBodyMetrics', 'saveMusicLink',
-    'saveSoundSettings', 'saveWorkoutDraft', 'saveWorkoutSession', 'showScreen',
+    'finishSession', 'saveSoundSettings', 'saveWorkoutDraft', 'saveWorkoutSession', 'showScreen',
     'showVoiceInstallHelp', 'startRoutineManually', 'startTabata',
     'stopRepCounter', 'testSound', 'testVoice', 'toggleDrawer', 'toggleRecentRoutinesExpanded',
     'toggleRecording', 'toggleRepCounterPause', 'toggleVariantGroup', 'toggleWakeLock',
