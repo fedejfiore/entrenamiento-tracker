@@ -58,6 +58,27 @@ function showSetStepper(input) {
     row.addEventListener('input', onStepperRowInput);
     // Terminó de editar: el foco se fue de la serie (los botones de la barra no lo mueven).
     row.addEventListener('focusout', onStepperRowFocusOut);
+    requestAnimationFrame(ensureStepperVisible);
+}
+
+// La barra entera (con "Usar … en las series") tiene que quedar a la vista: arriba del teclado
+// y de lo que está fijo abajo (barra de navegación, timer), sin que el campo que se está
+// editando se vaya por arriba de la barra superior.
+function ensureStepperVisible() {
+    if (!setStepperEl?.isConnected) return;
+    const vv = window.visualViewport;
+    let bottom = (vv ? vv.offsetTop + vv.height : window.innerHeight) - 8;
+    document.querySelectorAll('.bottom-nav, .rest-timer-widget').forEach(el => {
+        const rect = el.getBoundingClientRect();
+        if (rect.height > 0 && getComputedStyle(el).display !== 'none' && getComputedStyle(el).visibility !== 'hidden' && rect.top < bottom) bottom = rect.top - 8;
+    });
+    const top = (document.querySelector('.topbar')?.getBoundingClientRect().bottom || 0) + 8;
+    const bar = setStepperEl.getBoundingClientRect();
+    const row = setStepperEl.parentNode.getBoundingClientRect();
+    const overflow = bar.bottom - bottom;
+    if (overflow <= 0) return;
+    const shift = Math.min(overflow, Math.max(0, row.top - top));
+    if (shift > 1) window.scrollBy(0, shift);
 }
 
 // En Android, cerrar el teclado con "atrás" no saca el foco del campo: se detecta porque
@@ -70,7 +91,9 @@ function initSetStepperAutoHide() {
         stepperViewportHeight = vv.height;
         vv.addEventListener('resize', () => {
             const grew = vv.height - stepperViewportHeight > 120;
+            const shrank = stepperViewportHeight - vv.height > 40;
             stepperViewportHeight = vv.height;
+            if (shrank && setStepperEl) setTimeout(ensureStepperVisible, 60);
             if (grew && setStepperEl) {
                 const active = document.activeElement;
                 if (active && setStepperEl.parentNode?.contains(active)) active.blur();
@@ -78,8 +101,21 @@ function initSetStepperAutoHide() {
             }
         });
     }
+    // Tocar fuera de la serie cierra la barra; deslizar para bajar la pantalla, no (así se
+    // puede llegar al botón "Usar … en las series"). Al deslizar, el navegador cancela el
+    // toque (pointercancel) o el dedo se mueve: en esos casos no se cierra.
+    let outside = null;
     document.addEventListener('pointerdown', e => {
-        if (setStepperEl && !setStepperEl.parentNode?.contains(e.target)) keepInPlace(e.target, hideSetStepper);
+        outside = setStepperEl && !setStepperEl.parentNode?.contains(e.target) ? { id: e.pointerId, x: e.clientX, y: e.clientY } : null;
+    }, true);
+    document.addEventListener('pointercancel', () => { outside = null; }, true);
+    document.addEventListener('pointerup', e => {
+        const start = outside;
+        outside = null;
+        if (!start || !setStepperEl || e.pointerId !== start.id) return;
+        if (Math.hypot(e.clientX - start.x, e.clientY - start.y) > 10) return;
+        if (setStepperEl.parentNode?.contains(e.target)) return;
+        keepInPlace(e.target, hideSetStepper);
     }, true);
 }
 
@@ -168,8 +204,10 @@ function updateStepperApply(row) {
     const btn = setStepperEl?.parentNode === row ? setStepperEl.querySelector('[data-apply]') : null;
     if (!btn) return;
     const plan = stepperApplyPlan(row, setStepperEl.dataset.field);
+    const wasHidden = btn.hidden;
     btn.hidden = !plan;
     if (!plan) return;
+    if (wasHidden) requestAnimationFrame(ensureStepperVisible);
     const which = plan.nums.length === 1 ? `la serie ${plan.nums[0]}`
         : plan.nums.length === plan.nums[plan.nums.length - 1] - plan.nums[0] + 1 ? `las series ${plan.nums[0]} a ${plan.nums[plan.nums.length - 1]}`
         : `las series ${plan.nums.join(', ')}`;
