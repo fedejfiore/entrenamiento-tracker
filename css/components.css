@@ -324,9 +324,13 @@ input[type="checkbox"] {
 .ob-disciplines { margin-bottom: 14px; }
 
 /* Ajustes → Mi reformer */
-.reformer-spring { display: grid; grid-template-columns: 1.3fr 1.2fr 0.7fr auto; gap: 6px; align-items: center; margin-bottom: 6px; }
-.reformer-spring select { margin: 0; min-width: 0; }
-.reformer-spring .reformer-remove { width: auto; margin: 0; padding: 8px 10px; background: var(--bg-subtle); color: var(--text-muted); }
+/* Cada resorte en dos líneas: color, cantidad y quitar; abajo la carga (entra en celulares chicos). */
+.reformer-spring { display: grid; grid-template-columns: minmax(0, 1fr) 72px 34px; grid-template-areas: "color count remove" "load load ."; gap: 6px; align-items: center; padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid var(--border); }
+.reformer-spring select { margin: 0; min-width: 0; padding: 8px 4px 8px 8px; font-size: 14px; }
+.reformer-spring [data-r="color"] { grid-area: color; }
+.reformer-spring [data-r="load"] { grid-area: load; }
+.reformer-spring [data-r="count"] { grid-area: count; }
+.reformer-spring .reformer-remove { grid-area: remove; width: 34px; margin: 0; padding: 8px 0; background: var(--bg-subtle); color: var(--text-muted); }
 /* En la computadora el selector va en la barra superior; en el celular, arriba del contenido. */
 .module-switch-main { margin: 0 auto 12px; width: max-content; }
 @media (min-width: 769px) { .module-switch-main { display: none !important; } }

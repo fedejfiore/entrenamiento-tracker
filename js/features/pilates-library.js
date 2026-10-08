@@ -111,7 +111,7 @@ function openPilatesInfo(name) {
         <p class="pl-target">🎯 ${escapeHtml(e.reps)}</p>
         ${e.kind === 'reformer' ? `<div class="pl-springs-box">
             <div>Resortes sugeridos con tu reformer: <b translate="no">${springs || '0'}</b> · ${escapeHtml(springLevelLabel(load))}</div>
-            <small>${escapeHtml(PILATES_DIR_TEXT[e.dir])}. Ajustalo a tu cuerpo: es un punto de partida.</small>
+            <small><span>${escapeHtml(PILATES_DIR_TEXT[e.dir])}.</span> <span>Ajustalo a tu cuerpo: es un punto de partida.</span></small>
         </div>` : ''}
         <h4>🌬️ Respiración</h4><p>${escapeHtml(breath)}</p>
         <h4>📋 Cómo se hace</h4><ol>${e.steps.map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ol>
