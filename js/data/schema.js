@@ -37,6 +37,7 @@ const STORAGE_SCHEMA = {
     routineSupersets: { group: 'data', type: 'object', default: {}, description: 'Superseries por rutina: { rutina: { ejercicioNormalizado: "A" } }.' },
     routineTargets: { group: 'data', type: 'object', default: {}, description: 'Objetivos por rutina y ejercicio (series, rango de reps, descanso, incremento): { rutina: { ejercicioNormalizado: {...} } }.' },
     activeProgram: { group: 'data', type: 'object', default: {}, description: 'Programa prearmado en curso: { id, startedAt, routines: [claves] }.' },
+    routineDisciplines: { group: 'data', type: 'object', default: {}, description: 'Módulo de cada rutina creada: { clave: "pilates" } (las demás son de gimnasio).' },
     trainingDaysPlanHistory: { group: 'data', type: 'array', default: [], description: 'Plan semanal: días, horarios y aviso previo, con la fecha (lunes) desde la que rige.' },
 
     // ---- Preferencias ----

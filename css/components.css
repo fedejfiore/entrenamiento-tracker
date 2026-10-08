@@ -305,3 +305,29 @@ input[type="checkbox"] {
 .legal-links .link-btn { width: auto; min-height: 0; margin: 0; padding: 6px 4px; background: none; border: none; box-shadow: none; color: var(--text-muted); font-size: 13px; text-decoration: underline; cursor: pointer; }
 .ob-legal { margin-top: 12px; font-size: 12px; text-align: center; color: var(--text-muted); }
 .ob-legal .legal-links { margin-top: 2px; }
+
+/* Selector de módulo (Gym / Pilates) en la barra superior: solo si se entrena más de una disciplina */
+.module-switch { display: flex; margin-left: auto; border: 1px solid var(--border); border-radius: 999px; overflow: hidden; flex-shrink: 0; }
+.module-switch[hidden] { display: none; }
+.module-switch button { width: auto; margin: 0; padding: 6px 10px; min-height: 34px; border-radius: 0; background: transparent; color: var(--text-muted); font-size: 12px; box-shadow: none; }
+.module-switch button:hover { transform: none; box-shadow: none; background: var(--bg-subtle); }
+.module-switch button[aria-pressed="true"] { background: var(--brand); color: var(--on-color); }
+.module-switch:not([hidden]) + .topbar-theme-toggle { margin-left: 6px; }
+
+/* Qué entrenás: chips de selección múltiple (Ajustes y primer uso) */
+.discipline-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.discipline-chip { width: auto; margin: 0; padding: 9px 14px; border-radius: 999px; background: var(--bg-subtle); color: var(--text); border: 1px solid var(--border); font-weight: 600; }
+.discipline-chip:hover { transform: none; box-shadow: none; background: var(--bg-elevated); }
+.discipline-chip.on { background: var(--brand); color: var(--on-color); border-color: var(--brand); }
+.account-status { margin: 0 0 6px; font-size: 14px; }
+.account-note { margin: 0; font-size: 12px; color: var(--text-muted); }
+.ob-disciplines { margin-bottom: 14px; }
+
+/* Ajustes → Mi reformer */
+.reformer-spring { display: grid; grid-template-columns: 1.3fr 1.2fr 0.7fr auto; gap: 6px; align-items: center; margin-bottom: 6px; }
+.reformer-spring select { margin: 0; min-width: 0; }
+.reformer-spring .reformer-remove { width: auto; margin: 0; padding: 8px 10px; background: var(--bg-subtle); color: var(--text-muted); }
+/* En la computadora el selector va en la barra superior; en el celular, arriba del contenido. */
+.module-switch-main { margin: 0 auto 12px; width: max-content; }
+@media (min-width: 769px) { .module-switch-main { display: none !important; } }
+@media (max-width: 768px) { .module-switch-main button { padding: 8px 16px; font-size: 13px; min-height: 38px; } }

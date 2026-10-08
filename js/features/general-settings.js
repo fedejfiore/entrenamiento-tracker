@@ -31,7 +31,10 @@ function loadAppSettings() {
     const saved = db.get('appSettings') || {};
     const weekStart = WEEK_START_OPTIONS.some(([v]) => v === saved.weekStart) ? saved.weekStart : 1;
     const side = Number(saved.sideSwitchSeconds);
+    // Se conservan los demás ajustes (disciplinas, módulo, Mi reformer…): guardar uno no
+    // tiene que borrar los otros.
     return {
+        ...saved,
         weekStart,
         sideSwitchSeconds: Number.isFinite(side) && side >= 0 && side <= 30 ? side : SIDE_SWITCH_DEFAULT,
         distanceUnit: DISTANCE_UNITS[saved.distanceUnit] ? saved.distanceUnit : 'km',

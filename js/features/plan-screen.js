@@ -218,6 +218,7 @@ function renderTodayCard(plan) {
 function startTodayRoutine() {
     const key = document.querySelector('#todayPlanBanner .today-pick')?.value || todayRoutineKey();
     if (!key) return;
+    ensureModuleForRoutine(key);
     showScreen('entrenar', true);
     const sel = document.getElementById('routine');
     if (!sel) return;

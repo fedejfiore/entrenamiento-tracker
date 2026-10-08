@@ -89,7 +89,7 @@ function setsFromLegacy(ex, type) {
 function legacyStringsFromSets(sets, type) {
     const work = sets.filter(s => !s.warmup);
     const pause = work.map(s => s.rest).filter(Boolean).join('-');
-    if (type !== 'kg' && type !== 'bw') return { reps: '', weight: '', pause };
+    if (type !== 'kg' && type !== 'bw' && type !== 'pilates' && type !== 'springs') return { reps: '', weight: '', pause };
     const withReps = work.filter(s => s.reps);
     const hasKg = type === 'kg' && withReps.some(s => s.kg);
     return {

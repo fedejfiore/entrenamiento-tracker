@@ -38,7 +38,7 @@ function libRoutineItemHtml(key, { archived = false } = {}) {
 function renderLibrary() {
     loadCustomRoutines();
     loadCustomRoutineLabels();
-    const visible = k => !archivedRoutines.has(k);
+    const visible = k => !archivedRoutines.has(k) && routineInActiveModule(k);
     const own = Object.keys(customRoutines).filter(k => !k.startsWith('PRG_') && visible(k)).sort((a, b) => routineLabelOf(a).localeCompare(routineLabelOf(b), 'es'));
     const fromPrograms = Object.keys(customRoutines).filter(k => k.startsWith('PRG_') && visible(k));
     const base = Object.keys(routines).filter(k => !customRoutines[k] && visible(k));
@@ -77,6 +77,7 @@ function renderLibraryExercises() {
 }
 
 function trainRoutine(key) {
+    ensureModuleForRoutine(key);
     showScreen('entrenar', true);
     setTrainMode('rutina');
     const select = document.getElementById('routine');

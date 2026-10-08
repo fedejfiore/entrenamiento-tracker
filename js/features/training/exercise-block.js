@@ -10,7 +10,7 @@ function isSessionDataEvent(e) {
 const DRAG_DOTS_SVG = '<svg viewBox="0 0 12 20" aria-hidden="true"><circle cx="3" cy="4" r="1.6"/><circle cx="9" cy="4" r="1.6"/><circle cx="3" cy="10" r="1.6"/><circle cx="9" cy="10" r="1.6"/><circle cx="3" cy="16" r="1.6"/><circle cx="9" cy="16" r="1.6"/></svg>';
 
 function buildTypeOptionsHtml(selected) {
-    return Object.entries(EXERCISE_TYPES)
+    return typesForModule(selected).map(key => [key, EXERCISE_TYPES[key]])
         .map(([key, def]) => `<option value="${key}"${key === selected ? ' selected' : ''}>${def.label}</option>`)
         .join('');
 }
@@ -51,6 +51,9 @@ function buildSetRowHtml(type, label, set = {}, prev = {}, unit = 'mss') {
         // Distancia: el valor exacto en km viaja aparte, así mostrarlo redondeado en millas no lo cambia.
         const exactKm = field === 'km' && set.km ? ` data-km="${escapeHtml(String(set.km))}"`
             : field === 'kg' && set.kg ? ` data-kg="${escapeHtml(String(set.kg))}"` : '';
+        if (field === 'springs') {
+            return `<input type="text" class="springs-input" readonly inputmode="none" autocomplete="off" data-f="springs" data-prev="${escapeHtml(prevVal)}" placeholder="${escapeHtml(prevVal || hint)}" value="${escapeHtml(value)}" aria-label="Resortes, serie ${n}. Tocá para elegirlos"${hidden ? ' hidden' : ''}>`;
+        }
         return `<input type="text" inputmode="${inputmode}"${pattern} autocomplete="off" data-f="${field}"${isTime ? ` data-unit="${unit}"` : ''}${exactKm} data-prev="${escapeHtml(prevVal)}" placeholder="${escapeHtml(prevVal || hint)}" value="${escapeHtml(value)}" aria-label="${head}, serie ${n}"${hidden ? ' hidden' : ''}>`;
     };
     // Los campos de otros tipos quedan ocultos (no se pierden si se cambia el tipo).

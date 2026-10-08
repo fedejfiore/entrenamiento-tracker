@@ -19,6 +19,7 @@ function keepInPlace(el, change) {
 
 function showSetStepper(input) {
     const field = input.dataset.f;
+    if (field === 'springs') { showSpringsStepper(input); return; }
     const timeUnit = field === 'time' ? (input.dataset.unit || 'mss') : null;
     const steps = timeUnit ? TIME_STEPS[timeUnit] : field === 'kg' ? weightUnitDef().steps : SET_STEPS[field];
     const row = input.closest('.set-row');
@@ -79,6 +80,56 @@ function ensureStepperVisible() {
     if (overflow <= 0) return;
     const shift = Math.min(overflow, Math.max(0, row.top - top));
     if (shift > 1) window.scrollBy(0, shift);
+}
+
+function showSpringsStepper(input) {
+    const row = input.closest('.set-row');
+    if (!row) return;
+    if (setStepperEl && setStepperEl.parentNode === row && setStepperEl.dataset.field === 'springs') { updateStepperApply(row); return; }
+    keepInPlace(input, hideSetStepper);
+    const reformer = loadReformer();
+    setStepperEl = document.createElement('div');
+    setStepperEl.className = 'set-stepper springs-stepper';
+    setStepperEl.dataset.field = 'springs';
+    setStepperEl.dataset.unit = '';
+    setStepperEl.innerHTML = '<span class="set-stepper-label">Resortes</span>'
+        + reformer.springs.map(s => `<button type="button" data-spring="${s.color}" aria-label="Sumar un resorte ${escapeHtml(springColorName(s.color))}">+${s.color}</button>`).join('')
+        + '<button type="button" data-spring-action="back" aria-label="Quitar el último resorte">⌫</button>'
+        + '<button type="button" data-spring-action="none" title="Sin resortes">0</button>'
+        + '<span class="springs-load" aria-live="polite"></span>'
+        + '<button type="button" class="stepper-apply" data-apply hidden></button>';
+    setStepperEl.addEventListener('pointerdown', e => e.preventDefault());
+    setStepperEl.addEventListener('click', e => {
+        const add = e.target.closest('[data-spring]');
+        const action = e.target.closest('[data-spring-action]')?.dataset.springAction;
+        if (e.target.closest('[data-apply]')) { applyToFollowingSets(row, 'springs'); return; }
+        if (!add && !action) return;
+        const el = row.querySelector('[data-f="springs"]');
+        const current = el.value.trim() === '0' ? [] : parseSprings(el.value.trim() || el.dataset.prev);
+        let next;
+        if (add) next = sortSprings([...current, add.dataset.spring].join(''), reformer);
+        else if (action === 'back') next = current.slice(0, -1).join('');
+        else next = '0';
+        el.value = next;
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+        updateSpringsLoad(row);
+    });
+    const note = row.querySelector('.set-note');
+    row.insertBefore(setStepperEl, note);
+    updateSpringsLoad(row);
+    updateStepperApply(row);
+    row.addEventListener('input', onStepperRowInput);
+    row.addEventListener('focusout', onStepperRowFocusOut);
+    requestAnimationFrame(ensureStepperVisible);
+}
+
+/** Debajo de los colores: cuánta carga es (liviano / medio / pesado) según Mi reformer. */
+function updateSpringsLoad(row) {
+    const out = setStepperEl?.querySelector('.springs-load');
+    if (!out) return;
+    const el = row.querySelector('[data-f="springs"]');
+    const value = el.value.trim() || el.dataset.prev || '';
+    out.textContent = value === '0' ? 'Sin resortes' : value ? springLevelLabel(springsLoad(value, loadReformer())) : '';
 }
 
 // En Android, cerrar el teclado con "atrás" no saca el foco del campo: se detecta porque
@@ -193,6 +244,7 @@ function stepperApplyPlan(row, field) {
 }
 
 function stepperValueLabel(field, value) {
+    if (field === 'springs') return value === '0' ? 'sin resortes' : value;
     if (field === 'kg') return `${value} ${weightUnitDef().label}`;
     if (field === 'reps') return `${value} reps`;
     if (field === 'rest') return `${value} s de descanso`;

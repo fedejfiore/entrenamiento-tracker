@@ -37,6 +37,7 @@
         <header class="topbar">
             <button type="button" class="topbar-hamburger" data-fn-click="toggleDrawer" aria-label="Abrir menú">☰</button>
             <div class="topbar-title" id="topbarTitle">Inicio</div>
+            <div class="module-switch module-switch-top" role="group" aria-label="Módulo" hidden></div>
             <button type="button" class="topbar-theme-toggle" id="wakeLockBtn" data-fn-click="toggleWakeLock" aria-label="Evitar que la pantalla se bloquee">🔅</button>
         </header>
 
@@ -55,6 +56,7 @@
         </nav>
 
         <main class="app-main">
+            <div class="module-switch module-switch-main" role="group" aria-label="Módulo" hidden></div>
             <!-- INICIO -->
             <div data-screen="inicio">
                 <div id="todayPlanBanner" class="plan-banner" hidden></div>
@@ -376,6 +378,12 @@
                     <input type="date" id="profileBirth" autocomplete="bday">
                     <input type="file" id="profilePhotoInput" accept="image/*" hidden>
                 </div>
+                <div class="section" data-hint="Invitado: tus datos quedan en este celular">
+                    <h2>👤 Cuenta</h2>
+                    <p class="account-status"><strong>Estás usando la app como invitado.</strong> Todo funciona sin cuenta y tus datos quedan solo en este celular.</p>
+                    <p class="account-note">Cuando lleguen las cuentas vas a poder iniciar sesión, usar la app en varios dispositivos y acceder a los módulos de tu plan: Gimnasio, Pilates, Profesor o Gimnasio / estudio.</p>
+                </div>
+
                 <div class="section" data-hint="Sesiones, horas, rachas y récords">
                     <h2>📈 Tu actividad</h2>
                     <div id="profileStats"></div>
@@ -426,8 +434,21 @@
                     </div>
                 </div>
 
+                <div class="section" id="reformerSection" style="display:none;" data-hint="Marca y resortes de tu reformer">
+                    <h2>🛏️ Mi reformer</h2>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Cada marca usa otros colores. Elegí la tuya y ajustá cuántos resortes tiene de cada color y cuánto pesa cada uno: así la app sabe qué combinación es liviana, media o pesada, y te sugiere los resortes de cada ejercicio.</div>
+                    <label for="reformerBrand" class="settings-label">Marca</label>
+                    <select id="reformerBrand"></select>
+                    <p class="settings-label">Resortes (color · carga · cantidad)</p>
+                    <div id="reformerSprings"></div>
+                    <button type="button" class="small" id="reformerAddSpring">+ Agregar color</button>
+                </div>
+
                 <div class="section" data-hint="Idioma, tema, pantalla encendida, color, unidades (kg / lb, km / mi), inicio de semana, unilaterales">
                     <h2>⚙️ General</h2>
+                    <p class="settings-label">Qué entrenás</p>
+                    <div class="discipline-chips" id="disciplineSettings"></div>
+                    <div style="font-size: 12px; color: var(--text-muted); margin: 4px 0 12px;">Podés elegir más de una. Si entrenás gimnasio y pilates, arriba aparece un selector para pasar de un módulo al otro.</div>
                     <label for="languageSelect" class="settings-label">Idioma / Language</label>
                     <select id="languageSelect" translate="no">
                         <option value="auto">Automático (como el celular) / Auto</option>
@@ -844,6 +865,7 @@
     <script src="js/data/store.js"></script>
     <script src="js/data/schema.js"></script>
     <script src="js/domain/catalog.js"></script>
+    <script src="js/domain/pilates.js"></script>
     <script src="js/domain/legacy-format.js"></script>
     <script src="js/domain/sets.js"></script>
     <script src="js/domain/models.js"></script>
@@ -896,6 +918,8 @@
     <script src="js/features/muscle-map.js"></script>
     <script src="js/features/plate-calculator.js"></script>
     <script src="js/features/general-settings.js"></script>
+    <script src="js/features/disciplines.js"></script>
+    <script src="js/features/reformer.js"></script>
     <script src="js/features/programs.js"></script>
     <script src="js/features/library.js"></script>
     <script src="js/features/share-cards.js"></script>

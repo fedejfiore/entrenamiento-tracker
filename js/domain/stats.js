@@ -44,6 +44,9 @@ function calculateStats() {
                 st.maxSetSec = Math.max(st.maxSetSec || 0, c.maxSetSec);
                 if (c.bestSpeed && (!st.bestSpeed || c.bestSpeed > st.bestSpeed)) st.bestSpeed = c.bestSpeed;
             }
+            if (typeof isPilatesType === 'function' && isPilatesType(exType)) {
+                updatePilatesStats(exerciseStats[ex.name], lastSets, exType, ex.name, typeof loadReformer === 'function' ? loadReformer() : undefined);
+            }
 
             const weightStr = ex.weight || '';
             const repsStr = ex.reps || '';
@@ -130,6 +133,11 @@ function detectPRs(exercises, previousStats) {
 
         if (isCardioType(ex.type)) {
             prs.push(...detectCardioPRs(ex, prev));
+            return;
+        }
+        // Pilates: resortes según el sentido de dificultad del ejercicio, reps y dominio.
+        if (typeof isPilatesType === 'function' && isPilatesType(ex.type)) {
+            prs.push(...detectPilatesPRs(ex, prev, typeof loadReformer === 'function' ? loadReformer() : undefined));
             return;
         }
 

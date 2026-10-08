@@ -9,6 +9,7 @@ function populateRoutineOptions() {
     const currentValue = select.value;
     const keys = Array.from(new Set([...Object.keys(routines), ...Object.keys(customRoutines)]))
         .filter(isRoutineVisible)
+        .filter(k => k === currentValue || routineInActiveModule(k))
         .sort();
 
     let html = '<option value="">Elige una rutina...</option>';
@@ -30,6 +31,7 @@ function getRoutineSuggestionRanking() {
     const EXCLUDE_RE = /f[uú]tbol|bici/i;
     const keys = Array.from(new Set([...Object.keys(routines), ...Object.keys(customRoutines)]))
         .filter(isRoutineVisible)
+        .filter(routineInActiveModule)
         .filter(key => {
             const label = customRoutineLabels[key] || ROUTINE_LABELS[key] || key;
             return !EXCLUDE_RE.test(label) && !EXCLUDE_RE.test(key);
@@ -89,6 +91,7 @@ function createNewRoutine() {
     const key = slugifyRoutineKey(name);
     // Plantilla y nombre juntos (una transacción): nunca queda uno sin el otro.
     repo.routines.create(key, name);
+    tagRoutineModule(key);
     loadCustomRoutines();
     loadCustomRoutineLabels();
 

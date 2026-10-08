@@ -53,7 +53,11 @@ const EXERCISE_TYPES = {
     bw:   { label: 'Solo reps', cols: ['reps'], effort: 'rir', defaultSets: 3, rest: true },
     time: { label: 'Tiempo', cols: ['time'], effort: 'rpe', defaultSets: 1, rest: true },
     min:  { label: 'Duración', cols: ['time'], effort: 'rpe', defaultSets: 1, rest: false },
-    km:   { label: 'Tiempo + km', cols: ['time', 'km'], effort: 'rpe', defaultSets: 1, rest: false, calc: 'speed' }
+    km:   { label: 'Tiempo + km', cols: ['time', 'km'], effort: 'rpe', defaultSets: 1, rest: false, calc: 'speed' },
+    // Pilates (solo se ofrecen si la persona entrena pilates; ver js/features/disciplines.js).
+    // En vez del RIR, el dominio del ejercicio. Sin timer de descanso: el pilates es continuo.
+    pilates: { label: 'Pilates (reps)', cols: ['reps'], effort: 'mastery', defaultSets: 1, rest: false, discipline: 'pilates' },
+    springs: { label: 'Resortes + reps', cols: ['reps', 'springs'], effort: 'mastery', defaultSets: 1, rest: false, discipline: 'reformer' }
 };
 
 function isCardioType(type) {
@@ -68,14 +72,18 @@ const SET_FIELDS = {
     reps: { head: 'Reps', inputmode: 'numeric', hint: '–' },
     kg:   { head: 'Kg', inputmode: 'decimal', hint: '–' },
     km:   { head: 'Km', inputmode: 'decimal', hint: '–' },
-    time: { head: 'm:ss', inputmode: 'numeric', hint: 'm:ss' }
+    time: { head: 'm:ss', inputmode: 'numeric', hint: 'm:ss' },
+    // Resortes del reformer: se eligen tocando colores en la barra (no se tipean).
+    springs: { head: 'Resortes', inputmode: 'none', hint: '–' }
 };
 
 // RIR = reps que quedaban en reserva (0 = al fallo). Para cardio/tiempo no tiene
 // sentido contar reps en reserva, así que se usa una escala de esfuerzo simple.
 const EFFORT_SCALES = {
     rir: { head: 'RIR', title: 'Reps en reserva (F = al fallo)', options: [['', '–'], ['0', 'F'], ['1', '1'], ['2', '2'], ['3', '3'], ['4', '4+']] },
-    rpe: { head: 'Esfuerzo', title: 'Qué tan exigente fue', options: [['', '–'], ['suave', 'Suave'], ['media', 'Media'], ['alta', 'Alta'], ['max', 'Máx']] }
+    rpe: { head: 'Esfuerzo', title: 'Qué tan exigente fue', options: [['', '–'], ['suave', 'Suave'], ['media', 'Media'], ['alta', 'Alta'], ['max', 'Máx']] },
+    // Pilates: cómo salió el ejercicio. Tres sesiones "Domino" → sugerir la variante siguiente.
+    mastery: { head: 'Dominio', title: 'Cómo te salió: aprendiendo, con control o dominado', options: [['', '–'], ['aprendiendo', 'Aprendo'], ['controlado', 'Controlo'], ['dominado', 'Domino']] }
 };
 
 // Botones de ajuste rápido que aparecen bajo la serie al tocar un campo, para

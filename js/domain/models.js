@@ -17,7 +17,7 @@ function assertValid(condition, message, details) {
 }
 
 class SetEntry {
-    static get FIELDS() { return ['reps', 'kg', 'km', 'time', 'rest', 'effort', 'note', 'warmup', 'done']; }
+    static get FIELDS() { return ['reps', 'kg', 'km', 'time', 'springs', 'rest', 'effort', 'note', 'warmup', 'done']; }
 
     constructor(data = {}) {
         SetEntry.FIELDS.forEach(f => {
@@ -32,7 +32,7 @@ class SetEntry {
 
     static validate(set, where) {
         assertValid(set && typeof set === 'object' && !Array.isArray(set), `${where}: la serie tiene que ser un objeto.`);
-        ['reps', 'kg', 'km', 'time', 'rest', 'effort', 'note'].forEach(f => {
+        ['reps', 'kg', 'km', 'time', 'springs', 'rest', 'effort', 'note'].forEach(f => {
             if (set[f] !== undefined) assertValid(typeof set[f] === 'string', `${where}: "${f}" tiene que ser texto.`);
         });
         ['warmup', 'done'].forEach(f => {

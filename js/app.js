@@ -110,6 +110,8 @@ class App {
 
     render() {
         initTheme();
+        initDisciplines();
+        initReformerSettings();
         initWakeLock();
         initNativeFeatures();
         initSoundSettingsUI();

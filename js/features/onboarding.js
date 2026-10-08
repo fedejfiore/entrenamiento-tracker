@@ -53,7 +53,11 @@ function onboardingStepHtml(step) {
     if (step === 2) {
         const st = loadAppSettings();
         const opt = (v, cur, label) => `<button type="button" class="ob-choice${v === cur ? ' on' : ''}" data-value="${v}">${label}</button>`;
-        return `<h3>¿En qué unidades entrenás?</h3>
+        const on = loadDisciplines();
+        return `<h3>¿Qué entrenás?</h3>
+            <p>Podés elegir más de una. La app te muestra solo lo tuyo.</p>
+            <div class="discipline-chips ob-disciplines">${DISCIPLINES.map(([k, icon, label]) => `<button type="button" class="discipline-chip${on.includes(k) ? ' on' : ''}" data-discipline="${k}" aria-pressed="${on.includes(k)}">${icon} ${label}</button>`).join('')}</div>
+            <h3>¿En qué unidades?</h3>
             <p>Se puede cambiar cuando quieras en Ajustes → General. Tu historial no cambia.</p>
             <p class="settings-label">Peso</p>
             <div class="ob-choices" data-ob="weight">${opt('kg', st.weightUnit, 'Kilos (kg)')}${opt('lb', st.weightUnit, 'Libras (lb)')}</div>
@@ -144,6 +148,8 @@ function bindOnboarding() {
         if (action === 'next') { onboardingNext(); return; }
         if (action === 'back') { onboardingStep = Math.max(1, onboardingStep - 1); renderOnboarding(); return; }
         if (action === 'skip') { finishOnboarding(null); return; }
+        const disc = e.target.closest('[data-discipline]');
+        if (disc) { toggleDiscipline(disc.dataset.discipline); renderOnboarding(); return; }
         const choice = e.target.closest('.ob-choice');
         if (choice) {
             const group = choice.closest('[data-ob]').dataset.ob;

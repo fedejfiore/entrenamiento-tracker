@@ -6,7 +6,8 @@ function formatSetValue(set, type) {
     const num = f => { const n = parseDecimal(v(f)); return n == null ? '' : formatNumber(n); };
     const dur = formatDurationHuman(parseTimeSeconds(v('time')));
     if (type === 'kg') return v('kg') ? `${v('reps') || '?'}×${formatWeight(parseDecimal(v('kg')))}` : v('reps');
-    if (type === 'bw') return v('reps') ? `${v('reps')} reps` : '';
+    if (type === 'bw' || type === 'pilates') return v('reps') ? `${v('reps')} reps` : '';
+    if (type === 'springs') return [v('springs') === '0' ? 'sin resortes' : v('springs'), v('reps') ? `${v('reps')} reps` : ''].filter(Boolean).join(' × ');
     if (type === 'time' || type === 'min') return dur;
     if (type === 'km') {
         // Bici / correr: duración · distancia · velocidad (en km o millas, según Ajustes)
@@ -52,7 +53,8 @@ function cleanSetForSave(set, type) {
     const clean = {};
     (EXERCISE_TYPES[type] || EXERCISE_TYPES.kg).cols.forEach(f => {
         if (!set[f]) return;
-        const v = f === 'time' ? formatTimeValue(set[f]) : f === 'reps' ? set[f].replace(/\D/g, '') : normalizeDecimalString(set[f]);
+        const v = f === 'time' ? formatTimeValue(set[f]) : f === 'reps' ? set[f].replace(/\D/g, '')
+            : f === 'springs' ? (String(set[f]).trim() === '0' ? '0' : parseSprings(set[f]).join('')) : normalizeDecimalString(set[f]);
         if (v) clean[f] = v;
     });
     ['rest', 'effort', 'note'].forEach(f => { if (set[f]) clean[f] = set[f]; });

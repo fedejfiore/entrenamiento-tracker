@@ -44,6 +44,7 @@ function restoreWorkoutDraft() {
 
     const routineSelect = document.getElementById('routine');
     if (!routineSelect) return;
+    ensureModuleForRoutine(draft.routine);
     routineSelect.value = draft.routine;
     loadRoutineExercises();
 

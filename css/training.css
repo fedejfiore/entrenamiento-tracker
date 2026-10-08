@@ -394,3 +394,9 @@ body.rep-counter-off .rep-count-btn { display: none; }
 .summary-record button { width: auto; margin: 0; }
 .summary-week { font-size: 14px; margin: 4px 0 12px; }
 .session-summary .success { min-height: 50px; font-size: 16px; }
+
+/* Pilates: resortes del reformer (colores que se eligen con la barra, sin teclado) */
+.set-row input.springs-input { cursor: pointer; font-size: 15px; letter-spacing: -1px; caret-color: transparent; }
+.springs-stepper button[data-spring] { font-size: 15px; padding: 6px 0; }
+.springs-stepper .springs-load { flex: 1 1 100%; text-align: center; font-size: 11px; font-weight: 600; color: var(--text-muted); min-height: 14px; }
+.springs-stepper .springs-load:empty { display: none; }
