@@ -178,3 +178,27 @@ function initPilatesLibrary() {
     renderPilatesCatalog();
     renderPilatesLearn();
 }
+
+// ---- Nivel del elemento (banda, pelota, aro…) ----
+function equipLevelOf(name) {
+    return (db.get('exerciseEquipLevels') || {})[normalizeForCompare(name || '')] || '';
+}
+
+function saveEquipLevel(name, level) {
+    const map = db.get('exerciseEquipLevels') || {};
+    const key = normalizeForCompare(name || '');
+    if (level) map[key] = level; else delete map[key];
+    try { db.set('exerciseEquipLevels', map); } catch (e) { showToast('No se pudo guardar el elemento', 'error'); }
+}
+
+/** Chip del elemento en Entrenar, solo para ejercicios del catálogo que usan uno. */
+function equipLevelChipHtml(name) {
+    const info = typeof pilatesExerciseInfo === 'function' ? pilatesExerciseInfo(name) : null;
+    if (!info || !EQUIPMENT_WITH_LEVEL.includes(info.equip)) return '';
+    const [icon, label] = PILATES_EQUIPMENT[info.equip];
+    const current = equipLevelOf(name);
+    return `<select class="type-chip equip-chip" data-change="equip-level" aria-label="Nivel del elemento: ${escapeHtml(label)}" title="${escapeHtml(label)}: elegí el nivel una vez">
+            <option value="">${icon} ${escapeHtml(label)}</option>
+            ${EQUIPMENT_LEVELS.map(([v, l]) => `<option value="${v}"${v === current ? ' selected' : ''}>${icon} ${escapeHtml(l)}</option>`).join('')}
+        </select>`;
+}

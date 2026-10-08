@@ -53,6 +53,7 @@ class WorkoutScreen {
     get changeActions() {
         return {
             'change-type': el => changeExerciseType(el),
+            'equip-level': el => { saveEquipLevel(getBlockName(el.closest('.exercise-row')), el.value); saveWorkoutDraft(); },
             'quick-add-type': el => { el.dataset.touched = '1'; },
             'quick-add-group': el => { el.dataset.touched = '1'; }
         };

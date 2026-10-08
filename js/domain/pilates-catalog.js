@@ -58,6 +58,10 @@ const PILATES_BREATH = {
     articulate: 'Exhalá para articular la columna vértebra por vértebra e inhalá arriba.'
 };
 
+// Nivel de resistencia de un elemento: se elige una vez por ejercicio y queda en cada sesión.
+const EQUIPMENT_LEVELS = [['liviana', 'Liviana'], ['media', 'Media'], ['fuerte', 'Fuerte']];
+const EQUIPMENT_WITH_LEVEL = ['band', 'ball', 'ring', 'weights', 'roller'];
+
 const PILATES_EXERCISES = [];
 
 /**

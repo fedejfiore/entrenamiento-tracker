@@ -154,6 +154,7 @@ function buildExerciseRowHtml(idx, ex, routine) {
                     <div class="exercise-done-summary" hidden></div>
                     <div class="exercise-meta">
                         <select class="type-chip" aria-label="Cómo se mide ${safeName}" data-change="change-type">${buildTypeOptionsHtml(type)}</select>
+                        ${equipLevelChipHtml(ex)}
                         <button type="button" class="side-chip${unilateral ? ' on' : ''}" data-action="toggle-unilateral" aria-pressed="${unilateral ? 'true' : 'false'}" title="${unilateral ? 'Unilateral: cada serie se marca por lado (tocá para desactivar)' : 'Marcar como unilateral (de a un lado)'}">↔${unilateral ? ' Por lado' : ''}</button>
                 <button type="button" class="superset-chip${superset ? ' on' : ''}" data-action="superset" title="${superset ? `Superserie ${escapeHtml(superset)} (tocá para cambiarla)` : 'Armar una superserie con otro ejercicio'}">🔗${superset ? ' ' + escapeHtml(superset) : ''}</button>
                         <span class="exercise-last">${buildLastSummaryText(stats, type)}</span>
