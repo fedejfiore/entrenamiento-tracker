@@ -15,10 +15,10 @@
             'cta.open': 'Open the app', 'cta.web': 'Use it free in your browser', 'cta.android': 'Download for Android',
             'hero.meaning': 'the inner struggle',
             'hero.title': 'Train with a plan.<br><span class="accent">See yourself progress.</span>',
-            'hero.lead': 'Log your sets in seconds, rest with voice alerts and watch your progress week by week. No account, no ads and no connection needed: your data stays on your phone.',
+            'hero.lead': "Log your sets in seconds, rest with voice alerts and watch your progress week by week. No account and no ads: your data stays on your phone.",
             'hero.fine': 'Android: test version (installed manually). iPhone: open it in Safari and tap Share → Add to Home Screen.',
             'tab.home': 'Today', 'tab.train': 'Train', 'tab.progress': 'Progress', 'tab.body': 'Body', 'tab.profile': 'Achievements',
-            'facts.cost': 'dollars: it’s free', 'facts.account': 'accounts to create', 'facts.offline': 'works offline', 'facts.langs': 'languages: Spanish, English, Portuguese, German and Chinese',
+            'facts.cost': 'dollars: it’s free', 'facts.account': 'accounts to create', 'facts.ads': "ads while you train", 'facts.langs': 'languages: Spanish, English, Portuguese, German and Chinese',
             'features.title': 'Everything that happens at the gym, in one app',
             'features.lead': 'Designed to use with one hand, between sets.',
             'f1.title': 'Open the app and know what’s next',
@@ -58,7 +58,7 @@
             'faq.title': 'Frequently asked questions',
             'q1': 'Is it free?', 'a1': 'Yes. All of today’s features are free and ad-free. A paid plan with extra features may come later, but what you already use won’t be charged.',
             'q2': 'Do I need an account?', 'a2': 'No. Open the app and start. Your data stays on your phone.',
-            'q3': 'Does it work without internet?', 'a3': 'Yes. After opening it once, it works offline, perfect for gyms with no signal.',
+            'q3': 'Does it work without internet?', 'a3': "Today, yes: after opening it once it works without a connection, ideal for gyms with no signal. When accounts arrive, training offline will be part of the Pro plan.",
             'q4': 'How do I install it on my phone?', 'a4': 'On <b>Android</b>, download the installer from this page, or open the app in Chrome and tap "Install". On <b>iPhone</b>, open it in Safari, tap Share and then "Add to Home Screen".',
             'q5': 'Can I bring what I logged in another app?', 'a5': 'Yes, from Hevy, Strong or Fitbod: export your history as CSV and import it in Settings.',
             'q6': 'What if I change phones?', 'a6': 'Make a backup in Settings → Data, save it (for example, in your Drive) and load it on the new phone.',
@@ -72,7 +72,7 @@
             'alt.medidas': 'Body: weight, fat and muscle over time',
             'alt.perfil': 'Profile: activity, records and medals',
             'meta.title': 'Esō Agōn · Your training, your progress',
-            'meta.description': 'Log your sets in seconds, rest with voice alerts and see your progress week by week. Free, no account, works offline and your data stays on your phone.'
+            'meta.description': "Log your sets in seconds, rest with voice alerts and see your progress week by week. Free, no account, no ads, and your data stays on your phone."
         },
         pt: {
             'skip': 'Pular para o conteúdo',
@@ -80,10 +80,10 @@
             'cta.open': 'Abrir o app', 'cta.web': 'Usar grátis no navegador', 'cta.android': 'Baixar para Android',
             'hero.meaning': 'a luta interior',
             'hero.title': 'Treine com um plano.<br><span class="accent">Veja seu progresso.</span>',
-            'hero.lead': 'Registre suas séries em segundos, descanse com aviso por voz e acompanhe seu progresso semana a semana. Sem conta, sem anúncios e sem conexão: seus dados ficam no seu celular.',
+            'hero.lead': "Registre suas séries em segundos, descanse com aviso por voz e acompanhe seu progresso semana a semana. Sem conta e sem anúncios: seus dados ficam no seu celular.",
             'hero.fine': 'Android: versão de teste (instalada manualmente). iPhone: abra no Safari e toque em Compartilhar → Adicionar à Tela de Início.',
             'tab.home': 'Hoje', 'tab.train': 'Treinar', 'tab.progress': 'Progresso', 'tab.body': 'Medidas', 'tab.profile': 'Conquistas',
-            'facts.cost': 'reais: é grátis', 'facts.account': 'contas para criar', 'facts.offline': 'funciona sem conexão', 'facts.langs': 'idiomas: espanhol, inglês, português, alemão e chinês',
+            'facts.cost': 'reais: é grátis', 'facts.account': 'contas para criar', 'facts.ads': "anúncios enquanto você treina", 'facts.langs': 'idiomas: espanhol, inglês, português, alemão e chinês',
             'features.title': 'Tudo o que acontece na academia, em um app',
             'features.lead': 'Pensado para usar com uma mão, entre uma série e outra.',
             'f1.title': 'Abra o app e saiba o que tem hoje',
@@ -123,7 +123,7 @@
             'faq.title': 'Perguntas frequentes',
             'q1': 'É grátis?', 'a1': 'Sim. Todas as funções de hoje são grátis e sem anúncios. Mais adiante pode haver um plano pago com funções extras, mas o que você já usa não vai ser cobrado.',
             'q2': 'Preciso criar uma conta?', 'a2': 'Não. Abra o app e comece. Seus dados ficam no seu celular.',
-            'q3': 'Funciona sem internet?', 'a3': 'Sim. Depois de abrir uma vez, funciona sem conexão, ideal para academias sem sinal.',
+            'q3': 'Funciona sem internet?', 'a3': "Hoje, sim: depois de abrir uma vez funciona sem conexão, ideal para academias sem sinal. Quando chegarem as contas, treinar sem internet vai fazer parte do plano Pro.",
             'q4': 'Como instalo no celular?', 'a4': 'No <b>Android</b>, baixe o instalador nesta página ou abra o app no Chrome e toque em "Instalar". No <b>iPhone</b>, abra no Safari, toque em Compartilhar e depois em "Adicionar à Tela de Início".',
             'q5': 'Posso trazer o que registrei em outro app?', 'a5': 'Sim, do Hevy, Strong ou Fitbod: exporte o histórico como CSV e importe em Ajustes.',
             'q6': 'E se eu trocar de celular?', 'a6': 'Faça um backup em Ajustes → Dados, salve (por exemplo, no seu Drive) e carregue no celular novo.',
@@ -137,7 +137,7 @@
             'alt.medidas': 'Medidas: evolução do peso, da gordura e do músculo',
             'alt.perfil': 'Perfil: atividade, recordes e medalhas',
             'meta.title': 'Esō Agōn · Seu treino, seu progresso',
-            'meta.description': 'Registre suas séries em segundos, descanse com aviso por voz e veja seu progresso semana a semana. Grátis, sem conta, funciona sem conexão e seus dados ficam no seu celular.'
+            'meta.description': "Registre suas séries em segundos, descanse com aviso por voz e veja seu progresso semana a semana. Grátis, sem conta, sem anúncios, e seus dados ficam no seu celular."
         }
     };
     T.de = {
@@ -151,7 +151,7 @@
         "cta.android": "Für Android herunterladen",
         "hero.meaning": "der innere Kampf",
         "hero.title": "Trainiere mit Plan.<br><span class=\"accent\">Sieh deinen Fortschritt.</span>",
-        "hero.lead": "Trage deine Sätze in Sekunden ein, mach Pause mit Sprachhinweis und verfolge deinen Fortschritt Woche für Woche. Ohne Konto, ohne Werbung und ohne Verbindung: Deine Daten bleiben auf deinem Handy.",
+        "hero.lead": "Trage deine Sätze in Sekunden ein, mach Pause mit Sprachhinweis und verfolge deinen Fortschritt Woche für Woche. Ohne Konto und ohne Werbung: Deine Daten bleiben auf deinem Handy.",
         "hero.fine": "Android: Testversion (wird manuell installiert). iPhone: in Safari öffnen und auf Teilen → Zum Home-Bildschirm tippen.",
         "tab.home": "Heute",
         "tab.train": "Training",
@@ -160,7 +160,7 @@
         "tab.profile": "Erfolge",
         "facts.cost": "Euro: Sie ist kostenlos",
         "facts.account": "Konten zu erstellen",
-        "facts.offline": "funktioniert offline",
+        "facts.ads": "Werbung beim Training",
         "facts.langs": "Sprachen: Spanisch, Englisch, Portugiesisch, Deutsch und Chinesisch",
         "features.title": "Alles, was im Studio passiert, in einer App",
         "features.lead": "Gemacht für die Bedienung mit einer Hand, zwischen zwei Sätzen.",
@@ -225,7 +225,7 @@
         "q2": "Brauche ich ein Konto?",
         "a2": "Nein. App öffnen und loslegen. Deine Daten bleiben auf deinem Handy.",
         "q3": "Funktioniert sie ohne Internet?",
-        "a3": "Ja. Nach dem ersten Öffnen funktioniert sie offline, ideal für Studios ohne Empfang.",
+        "a3": "Heute ja: Nach dem ersten Öffnen funktioniert sie ohne Verbindung, ideal für Studios ohne Empfang. Wenn es Konten gibt, wird Offline-Training Teil des Pro-Plans.",
         "q4": "Wie installiere ich sie auf dem Handy?",
         "a4": "Auf <b>Android</b> lade den Installer von dieser Seite herunter oder öffne die App in Chrome und tippe auf „Installieren“. Auf dem <b>iPhone</b> öffne sie in Safari, tippe auf Teilen und dann auf „Zum Home-Bildschirm“.",
         "q5": "Kann ich übernehmen, was ich in einer anderen App eingetragen habe?",
@@ -245,7 +245,7 @@
         "alt.medidas": "Maße: Entwicklung von Gewicht, Fett und Muskeln",
         "alt.perfil": "Profil: Aktivität, Rekorde und Medaillen",
         "meta.title": "Esō Agōn · Dein Training, dein Fortschritt",
-        "meta.description": "Trage deine Sätze in Sekunden ein, mach Pause mit Sprachhinweis und sieh deinen Fortschritt Woche für Woche. Kostenlos, ohne Konto, offline nutzbar, und deine Daten bleiben auf deinem Handy."
+        "meta.description": "Trage deine Sätze in Sekunden ein, mach Pause mit Sprachhinweis und sieh deinen Fortschritt Woche für Woche. Kostenlos, ohne Konto, ohne Werbung, und deine Daten bleiben auf deinem Handy."
     };
     T.zh = {
         "skip": "跳到内容",
@@ -258,7 +258,7 @@
         "cta.android": "下载 Android 版",
         "hero.meaning": "内心的较量",
         "hero.title": "按计划训练。<br><span class=\"accent\">看见自己的进步。</span>",
-        "hero.lead": "几秒钟记录每一组，休息时有语音提醒，每周看到自己的进步。无需账户、没有广告、无需联网：你的数据保存在你的手机上。",
+        "hero.lead": "几秒钟记录每一组，休息时有语音提醒，每周看到自己的进步。无需账户、没有广告：你的数据保存在你的手机上。",
         "hero.fine": "Android：测试版（需手动安装）。iPhone：在 Safari 中打开，点按 分享 → 添加到主屏幕。",
         "tab.home": "今天",
         "tab.train": "训练",
@@ -267,7 +267,7 @@
         "tab.profile": "成就",
         "facts.cost": "元：完全免费",
         "facts.account": "个需要注册的账户",
-        "facts.offline": "离线可用",
+        "facts.ads": "训练时的广告",
         "facts.langs": "种语言：西班牙语、英语、葡萄牙语、德语和中文",
         "features.title": "健身房里的一切，尽在一个应用",
         "features.lead": "专为组间单手操作设计。",
@@ -332,7 +332,7 @@
         "q2": "需要注册账户吗？",
         "a2": "不需要。打开应用就能开始。你的数据保存在你的手机上。",
         "q3": "没有网络能用吗？",
-        "a3": "可以。打开一次之后就能离线使用，非常适合没有信号的健身房。",
+        "a3": "目前可以：打开一次之后就能离线使用，非常适合没有信号的健身房。等账户功能上线后，离线训练将成为 Pro 方案的一部分。",
         "q4": "怎么安装到手机上？",
         "a4": "在 <b>Android</b> 上，从本页面下载安装包，或在 Chrome 中打开应用并点按“安装”。在 <b>iPhone</b> 上，用 Safari 打开，点按“分享”，再点按“添加到主屏幕”。",
         "q5": "能导入我在其他应用中的记录吗？",
@@ -352,7 +352,7 @@
         "alt.medidas": "身体数据：体重、体脂和肌肉的变化",
         "alt.perfil": "个人资料：活动、纪录和奖牌",
         "meta.title": "Esō Agōn · 你的训练，你的进步",
-        "meta.description": "几秒钟记录每一组，休息时有语音提醒，每周看到自己的进步。免费、无需账户、离线可用，你的数据保存在你的手机上。"
+        "meta.description": "几秒钟记录每一组，休息时有语音提醒，每周看到自己的进步。免费、无需账户、没有广告，你的数据保存在你的手机上。"
     };
     const ES = {
         'demo.next': '¡Bien! Marcá la próxima serie cuando estés.',
@@ -421,6 +421,11 @@
 
     // ---------- Encabezado ----------
     const top = document.getElementById('top');
+    document.querySelector('.logo')?.addEventListener('click', e => {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+        if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+    });
     const onScroll = () => top.classList.toggle('scrolled', window.scrollY > 8);
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
