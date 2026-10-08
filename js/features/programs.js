@@ -40,7 +40,9 @@ function programPrevSets(routineKey, name, prevSets) {
     const work = s.reps.map((reps, i) => {
         const base = lastWork[i] || lastWork[lastWork.length - 1] || {};
         const kg = s.kg != null ? String(Math.round(s.kg * 1000) / 1000).replace('.', ',') : (base.kg || '');
-        return { reps: String(reps), kg, rest: String(s.target.rest || base.rest || '') };
+        // Reformer: los resortes de la última vez o, la primera, los sugeridos para tu reformer.
+        const springs = s.target.type === 'springs' ? (base.springs || suggestedSpringsFor(pilatesExerciseInfo(name))) : '';
+        return { reps: String(reps), kg, rest: String(s.target.rest || base.rest || ''), ...(springs ? { springs } : {}) };
     });
     return [...warmups, ...work];
 }
@@ -151,9 +153,15 @@ function programCardHtml(p, activeId) {
         </div>`;
 }
 
+/** Programas del módulo activo (los de pilates, solo de las disciplinas que se entrenan). */
+function programsForActiveModule() {
+    const module = typeof activeModule === 'function' ? activeModule() : 'gym';
+    return PROGRAMS.filter(p => (p.discipline ? module === 'pilates' && hasDiscipline(p.discipline) : module === 'gym'));
+}
+
 function openProgramsModal() {
     const active = repo.routines.activeProgram();
-    document.getElementById('programList').innerHTML = PROGRAMS.map(p => programCardHtml(p, active?.id)).join('');
+    document.getElementById('programList').innerHTML = programsForActiveModule().map(p => programCardHtml(p, active?.id)).join('');
     document.getElementById('programsModal').classList.add('open');
 }
 
@@ -189,6 +197,7 @@ function startProgram(id) {
     }
     // Las rutinas del programa vuelven a estar visibles si alguna vez se archivaron.
     days.forEach(d => archivedRoutines.delete(d.key));
+    if (program.discipline) days.forEach(d => tagRoutineModule(d.key, 'pilates'));
     saveArchivedRoutines();
     loadCustomRoutines();
     loadCustomRoutineLabels();

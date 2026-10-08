@@ -109,6 +109,7 @@ function applyModule() {
     renderModuleSwitch();
     renderDisciplineSettings();
     if (typeof renderReformerSettings === 'function') renderReformerSettings();
+    if (typeof renderPilatesCatalog === 'function') renderPilatesCatalog();
     if (typeof populateRoutineOptions === 'function') populateRoutineOptions();
     if (typeof renderLibrary === 'function' && document.getElementById('libMyRoutines')) renderLibrary();
     if (typeof renderTodayCard === 'function') { try { renderTodayCard(); } catch (e) { /* sin plan */ } }

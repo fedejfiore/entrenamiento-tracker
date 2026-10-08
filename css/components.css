@@ -331,3 +331,50 @@ input[type="checkbox"] {
 .module-switch-main { margin: 0 auto 12px; width: max-content; }
 @media (min-width: 769px) { .module-switch-main { display: none !important; } }
 @media (max-width: 768px) { .module-switch-main button { padding: 8px 16px; font-size: 13px; min-height: 38px; } }
+
+/* Lo de un solo módulo (Gym / Pilates) se oculta en el otro */
+html[data-module="pilates"] [data-module-only="gym"], html[data-module="gym"] [data-module-only="pilates"] { display: none !important; }
+
+/* Catálogo de pilates */
+.pl-filters { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; margin-bottom: 8px; }
+.pl-filters label { display: flex; flex-direction: column; gap: 4px; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .4px; }
+.pl-filters select, .pl-filters input { margin: 0; font-size: 14px; text-transform: none; letter-spacing: 0; }
+.pl-filters input[type="search"] { grid-column: 1 / -1; }
+.pl-count { margin: 4px 0 8px; font-size: 12px; color: var(--text-muted); }
+.pl-group { border-top: 1px solid var(--border); }
+.pl-group summary { cursor: pointer; padding: 10px 2px; font-weight: 700; }
+.pl-item { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; width: 100%; margin: 0 0 6px; padding: 10px 12px; background: var(--bg-subtle); color: var(--text); text-align: left; font-weight: 400; }
+.pl-item:hover { transform: none; box-shadow: none; background: var(--bg-elevated); }
+.pl-item strong { font-size: 14px; }
+.pl-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.pl-chip { font-size: 11px; padding: 2px 8px; border-radius: 999px; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-muted); }
+.pl-chip.lvl-1 { color: var(--success); border-color: color-mix(in srgb, var(--success) 40%, transparent); }
+.pl-chip.lvl-2 { color: var(--warning); border-color: color-mix(in srgb, var(--warning) 40%, transparent); }
+.pl-chip.lvl-3 { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 40%, transparent); }
+.pl-chip.pl-springs { font-size: 13px; letter-spacing: -1px; background: transparent; }
+.pl-learn summary { cursor: pointer; padding: 10px 2px; font-weight: 600; border-top: 1px solid var(--border); }
+.pl-learn p { margin: 0 0 12px; font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+.pl-info-btn { width: auto; margin: 0 0 0 6px; padding: 2px 6px; min-height: 0; background: transparent; font-size: 16px; box-shadow: none; }
+.pl-info-btn:hover { transform: none; box-shadow: none; background: var(--bg-subtle); }
+
+/* Ficha del ejercicio */
+.pilates-info { max-width: 560px; max-height: 88vh; overflow-y: auto; }
+.pilates-info h3 { margin: 0 0 8px; }
+.pilates-info h4 { margin: 16px 0 6px; font-size: 14px; }
+.pilates-info p, .pilates-info li { font-size: 14px; line-height: 1.5; }
+.pilates-info ol, .pilates-info ul { margin: 0; padding-left: 20px; }
+.pl-target { margin: 8px 0 0; font-weight: 600; }
+.pl-springs-box { margin-top: 10px; padding: 10px 12px; border-radius: var(--radius-sm); background: var(--bg-subtle); font-size: 14px; }
+.pl-springs-box b { font-size: 16px; letter-spacing: -1px; }
+.pl-springs-box small { display: block; margin-top: 4px; color: var(--text-muted); }
+.pl-errors { list-style: none; padding: 0 !important; }
+.pl-errors li { display: flex; flex-direction: column; gap: 2px; margin-bottom: 8px; }
+.pl-err { color: var(--danger); font-weight: 600; }
+.pl-fix { color: var(--text); }
+.pl-cautions li { color: var(--text-muted); }
+.pl-disclaimer { margin-top: 14px; font-size: 12px !important; color: var(--text-muted); border-left: 3px solid var(--warning); padding-left: 10px; }
+.pl-video { display: block; margin: 14px 0; font-weight: 700; }
+.pl-add { display: flex; gap: 8px; align-items: center; }
+.pl-add select { margin: 0; flex: 1; min-width: 0; }
+.pl-add button { width: auto; margin: 0; }
+.pl-add-hint { font-size: 12px !important; color: var(--text-muted); }

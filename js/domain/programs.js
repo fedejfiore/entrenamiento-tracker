@@ -206,7 +206,8 @@ function suggestDoubleProgression(lastSets, target) {
     const { sets, repsMin, repsMax } = target;
     const inc = target.inc > 0 ? target.inc : 2.5;
     const unit = target.unit || 'kg'; // unidad de los pesos que se reciben y se devuelven
-    const bodyweight = target.type === 'bw';
+    const pilates = target.type === 'pilates' || target.type === 'springs';
+    const bodyweight = target.type === 'bw' || pilates;
     const fill = n => Array.from({ length: sets }, () => n);
     const work = (lastSets || [])
         .filter(s => s && !s.warmup)
@@ -214,7 +215,9 @@ function suggestDoubleProgression(lastSets, target) {
         .filter(s => s.reps > 0);
 
     if (work.length === 0) {
-        const text = bodyweight
+        const text = pilates
+            ? `Primera vez: ${repsMin} reps lentas y con control; la técnica está en la ficha.`
+            : bodyweight
             ? `Primera vez: hacé ${repsMin} reps por serie con buena técnica.`
             : `Primera vez: elegí un peso con el que llegues a ${repsMin} reps dejando 2 o 3 en reserva.`;
         return { action: 'start', kg: null, reps: fill(repsMin), text };
@@ -226,6 +229,9 @@ function suggestDoubleProgression(lastSets, target) {
     const allAtMax = atTop.length >= sets && reps.every(r => r >= repsMax);
 
     if (allAtMax) {
+        if (pilates) {
+            return { action: 'level', kg: null, reps: fill(repsMax), text: `Llegaste a ${repsMax}: pasá a la versión más difícil (mirá la ficha) o ajustá el resorte.` };
+        }
         if (bodyweight) {
             return { action: 'level', kg: null, reps: fill(repsMax), text: `Llegaste a ${repsMax} en todas: pasá a una variante más difícil, sumá lastre o una serie.` };
         }

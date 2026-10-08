@@ -62,6 +62,7 @@ function initReformerSettings() {
         spring[field] = field === 'color' ? e.target.value : Number(e.target.value);
         saveReformer({ ...reformer, brand: 'otro' });
         renderReformerSettings();
+        if (typeof renderPilatesCatalog === 'function') renderPilatesCatalog();
     });
     section.addEventListener('click', e => {
         if (e.target.id === 'reformerAddSpring') {

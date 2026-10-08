@@ -35,6 +35,8 @@ class ExercisePreferences {
 
     // Sugerencia automática para ejercicios que todavía no tienen un tipo elegido.
     static inferType(name, routine) {
+        const info = typeof pilatesExerciseInfo === 'function' ? pilatesExerciseInfo(name) : null;
+        if (info) return info.type;
         const n = normalizeForCompare(name || '');
         // Palabras completas: "nado" no tiene que encontrarse adentro de "inclinado".
         if (/\bkm\b|\dkm|\b(bici\w*|correr|corrida|trote|running|caminata|cinta|spinning|natacion|nado|nadar)\b/.test(n)) return 'km';

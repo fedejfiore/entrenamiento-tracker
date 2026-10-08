@@ -54,7 +54,7 @@ function springLevelLabel(load) {
     if (load <= 0) return 'Sin resortes';
     // 100 = un resorte completo. El footwork suele ir con 3 o 4 completos (pesado).
     if (load <= 50) return 'Liviano';
-    if (load <= 125) return 'Medio';
+    if (load <= 150) return 'Medio';
     if (load <= 300) return 'Pesado';
     return 'Muy pesado';
 }

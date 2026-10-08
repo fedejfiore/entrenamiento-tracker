@@ -112,6 +112,7 @@ class App {
         initTheme();
         initDisciplines();
         initReformerSettings();
+        initPilatesLibrary();
         initWakeLock();
         initNativeFeatures();
         initSoundSettingsUI();

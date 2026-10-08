@@ -32,11 +32,16 @@ function startRepCounter(btn) {
     const name = getBlockName(block);
     const repsEl = row.querySelector('[data-f="reps"]');
     const target = parseInt(repsEl?.value || repsEl?.dataset.prev, 10) || 10;
-    const tempo = loadExerciseTempos()[normalizeForCompare(name)] || st.tempo;
+    // Pilates: la voz guía la respiración (exhalá en el esfuerzo, inhalá al volver) y el
+    // ritmo es más lento. Los cien tienen su patrón: cinco bombeos inhalando y cinco exhalando.
+    const pilatesInfo = typeof isPilatesType === 'function' && isPilatesType(block.dataset.type) ? (pilatesExerciseInfo(name) || {}) : null;
+    const breath = pilatesInfo ? (pilatesInfo.breath === 'hundred' ? 'hundred' : 'pilates') : null;
+    const defaultTempo = breath === 'hundred' ? 10 : breath ? Math.max(st.tempo, 4) : st.tempo;
+    const tempo = loadExerciseTempos()[normalizeForCompare(name)] || defaultTempo;
     const unilateral = block.dataset.unilateral === '1';
 
     repState = {
-        block, row, name, target, tempo, unilateral,
+        block, row, name, target, tempo, unilateral, breath,
         side: unilateral && row.classList.contains('half') ? 2 : 1,
         phase: 'prep',
         prepSeconds: st.prepSeconds,
@@ -98,9 +103,13 @@ function repCounterTick() {
     if (!s.midCued && elapsed >= repMs / 2) {
         s.midCued = true;
         playTick(520, 0.06, 0.35);
-        // El ánimo va a mitad de la rep, DESPUÉS del número: el conteo nunca se pierde.
-        const cue = repCue(s.rep, s.target, loadVoiceSettings().encourage);
-        if (cue) speakCue(cue.ids, cue.text, null, { interrupt: false });
+        if (s.breath) {
+            speak(s.breath === 'hundred' ? 'Exhalá, cinco' : (s.rep === s.target ? 'Inhalá, última' : 'Inhalá'), null, { interrupt: false });
+        } else {
+            // El ánimo va a mitad de la rep, DESPUÉS del número: el conteo nunca se pierde.
+            const cue = repCue(s.rep, s.target, loadVoiceSettings().encourage);
+            if (cue) speakCue(cue.ids, cue.text, null, { interrupt: false });
+        }
     }
     if (elapsed >= repMs) {
         if (s.rep >= s.target) {
@@ -135,6 +144,11 @@ function onRepStart(first) {
     const st = loadVoiceSettings();
     playTick(1200, 0.08);
     // Al empezar cada rep se dice su número (la primera es el "¡Ya!").
+    if (s.breath) {
+        const phase = s.breath === 'hundred' ? 'Inhalá, cinco' : 'Exhalá';
+        speak(st.countAloud && !first ? `${s.rep}. ${phase}` : phase);
+        return;
+    }
     if (first) speakCue(['repGo'], '¡Ya!');
     else if (st.countAloud) speak(String(s.rep));
 }

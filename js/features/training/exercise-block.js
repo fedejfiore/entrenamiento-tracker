@@ -148,6 +148,7 @@ function buildExerciseRowHtml(idx, ex, routine) {
                 <div class="exercise-title">
                     <div class="exercise-name-line">
                         <strong id="exname_${idx}" translate="no" data-action="open-detail" data-dblaction="rename-exercise" title="Tocá para ver el progreso · doble toque para renombrar" style="cursor:pointer;">${safeName}</strong>
+                        ${typeof pilatesExerciseInfo === 'function' && pilatesExerciseInfo(ex) ? `<button type="button" class="pl-info-btn" data-pilates-info="${safeName}" aria-label="Ficha de ${safeName}: técnica, respiración y errores" title="Ficha: técnica, respiración y errores">📖</button>` : ''}
                         <button type="button" class="collapse-btn" data-action="toggle-collapse" aria-expanded="true" aria-label="Contraer ${safeName}" title="Contraer / expandir">▾</button>
                     </div>
                     <div class="exercise-done-summary" hidden></div>
