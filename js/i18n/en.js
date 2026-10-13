@@ -153,7 +153,7 @@ I18N_DICTIONARIES.en = {
 
         // ---- Compartir ----
         'Historia (9:16)': 'Story (9:16)', 'Publicación (4:5)': 'Post (4:5)', 'Guardar imagen': 'Save image', 'Vista previa de la imagen': 'Image preview',
-        'MEDALLA': 'MEDAL', 'RÉCORD PERSONAL': 'PERSONAL RECORD', 'RÉCORD': 'RECORD', 'la lucha interior': 'the inner struggle',
+        'MEDALLA': 'MEDAL', 'RÉCORD PERSONAL': 'PERSONAL RECORD', 'RÉCORD': 'RECORD', "tu entrenador personal": "your personal trainer",
 
         // ---- Ajustes ----
         'Ayuda': 'Help', 'Cómo usar la app': 'How to use the app', 'Cómo funciona cada parte de la app, con buscador y preguntas frecuentes.': 'How each part of the app works, with search and FAQ.',
@@ -1546,8 +1546,8 @@ I18N_DICTIONARIES.en = {
             "<b>Statistics:</b> total workouts, since when and weekly average.",
         "<b>Estilo:</b> <b>Neutro</b>, <b>Tierno</b>, <b>Militar</b>, <b>Motivador</b> o <b>Calma</b>. Cambia las frases (\"¡Cinco más, sin excusas!\") y el tono de la voz.":
             "<b>Style:</b> <b>Neutral</b>, <b>Gentle</b>, <b>Drill sergeant</b>, <b>Motivating</b> or <b>Calm</b>. It changes the phrases (\"Five more, no excuses!\") and the tone of the voice.",
-        "<b>Esō Agōn</b> (en griego, <i>la lucha interior</i>: el agón era la competencia de los Juegos Olímpicos antiguos) registra tus entrenamientos de gimnasio, cardio y Tabata, calcula tus récords y te muestra cómo venís progresando. Es un producto de Inquieto.":
-            "<b>Esō Agōn</b> (in Greek, <i>the inner struggle</i>: the agon was the competition of the ancient Olympic Games) logs your gym, cardio and Tabata workouts, calculates your records and shows you how you are progressing. It is a product by Inquieto.",
+        "<b>Gymnastés</b> (en la antigua Grecia, el <i>gymnastés</i> era el entrenador de los atletas) registra tus entrenamientos de gimnasio, cardio y Tabata, calcula tus récords y te muestra cómo venís progresando. Es un producto de Inquieto.":
+            "<b>Gymnastés</b> (in ancient Greece, the <i>gymnastés</i> was the athletes' trainer) logs your gym, cardio and Tabata workouts, calculates your records and shows you how you are progressing. It is a product by Inquieto.",
         "<b>Fotos de progreso:</b> <b>📷 Agregar foto de hoy</b>, o sumala al cargar tus medidas. Se guardan comprimidas en tu celular. Tocá una para verla grande o borrarla. Consejo: misma luz y misma pose cada 2 a 4 semanas.":
             "<b>Progress photos:</b> <b>📷 Add today's photo</b>, or add one when logging your measurements. They are saved compressed on your phone. Tap one to see it large or delete it. Tip: same light and same pose every 2 to 4 weeks.",
         "<b>Fotos:</b> no salen de tu celular (solo van dentro del backup).":

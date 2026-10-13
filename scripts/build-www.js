@@ -11,7 +11,7 @@ build('www', {
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="refresh" content="0; url=./entrenamiento_trackerv2.html">
-    <title>Esō Agōn</title>
+    <title>Gymnastés</title>
 </head>
 <body></body>
 </html>

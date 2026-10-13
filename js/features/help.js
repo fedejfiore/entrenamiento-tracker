@@ -24,7 +24,7 @@ const HELP_SECTIONS = [
     {
         id: 'inicio-rapido', icon: '🚀', title: 'Primeros pasos',
         html: `
-            <p><b>Esō Agōn</b> (en griego, <i>la lucha interior</i>: el agón era la competencia de los Juegos Olímpicos antiguos) registra tus entrenamientos de gimnasio, cardio y Tabata, calcula tus récords y te muestra cómo venís progresando. Es un producto de Inquieto.</p>
+            <p><b>Gymnastés</b> (en la antigua Grecia, el <i>gymnastés</i> era el entrenador de los atletas) registra tus entrenamientos de gimnasio, cardio y Tabata, calcula tus récords y te muestra cómo venís progresando. Es un producto de Inquieto.</p>
             <p class="help-tip"><span>✨ Simple para usar, tan profesional como necesites.</span> <span>Arranca con lo justo y en Ajustes → Funciones activás lo que vayas necesitando. Apagar algo no borra nada.</span></p>
             <ul>
                 <li><b>Sin cuenta:</b> todo se guarda en este celular (o navegador). Nada se sube a internet.</li>

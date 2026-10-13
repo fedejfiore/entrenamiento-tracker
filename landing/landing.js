@@ -1,4 +1,4 @@
-// Landing de Esō Agōn: idioma, carrusel de capturas, funciones que acompañan el scroll,
+// Landing de Gymnastés: idioma, carrusel de capturas, funciones que acompañan el scroll,
 // contadores, aparición de bloques y la demo de series. Sin dependencias.
 (() => {
     'use strict';
@@ -13,7 +13,7 @@
             'skip': 'Skip to content',
             'nav.features': 'Features', 'nav.try': 'Try it', 'nav.privacy': 'Privacy', 'nav.faq': 'FAQ',
             'cta.open': 'Open the app', 'cta.web': 'Use it free in your browser', 'cta.android': 'Download for Android',
-            'hero.meaning': 'the inner struggle',
+            'hero.meaning': 'your personal trainer',
             'hero.title': 'Train with a plan.<br><span class="accent">See yourself progress.</span>',
             'hero.lead': "Log your sets in seconds, rest with voice alerts and watch your progress week by week. No account and no ads: your data stays on your phone.",
             'hero.fine': 'Android: test version (installed manually). iPhone: open it in Safari and tap Share → Add to Home Screen.',
@@ -92,14 +92,14 @@
             'alt.progreso': 'Progress: muscles worked this week',
             'alt.medidas': 'Body: weight, fat and muscle over time',
             'alt.perfil': 'Profile: activity, records and medals',
-            'meta.title': 'Esō Agōn · Your training, your progress',
+            'meta.title': 'Gymnastés · Your personal trainer',
             'meta.description': "Log your sets in seconds, rest with voice alerts and see your progress week by week. Free, no account, no ads, and your data stays on your phone."
         },
         pt: {
             'skip': 'Pular para o conteúdo',
             'nav.features': 'Funções', 'nav.try': 'Experimente', 'nav.privacy': 'Privacidade', 'nav.faq': 'Perguntas',
             'cta.open': 'Abrir o app', 'cta.web': 'Usar grátis no navegador', 'cta.android': 'Baixar para Android',
-            'hero.meaning': 'a luta interior',
+            'hero.meaning': 'seu personal trainer',
             'hero.title': 'Treine com um plano.<br><span class="accent">Veja seu progresso.</span>',
             'hero.lead': "Registre suas séries em segundos, descanse com aviso por voz e acompanhe seu progresso semana a semana. Sem conta e sem anúncios: seus dados ficam no seu celular.",
             'hero.fine': 'Android: versão de teste (instalada manualmente). iPhone: abra no Safari e toque em Compartilhar → Adicionar à Tela de Início.',
@@ -178,7 +178,7 @@
             'alt.progreso': 'Progresso: músculos trabalhados na semana',
             'alt.medidas': 'Medidas: evolução do peso, da gordura e do músculo',
             'alt.perfil': 'Perfil: atividade, recordes e medalhas',
-            'meta.title': 'Esō Agōn · Seu treino, seu progresso',
+            'meta.title': 'Gymnastés · Seu personal trainer',
             'meta.description': "Registre suas séries em segundos, descanse com aviso por voz e veja seu progresso semana a semana. Grátis, sem conta, sem anúncios, e seus dados ficam no seu celular."
         }
     };
@@ -191,7 +191,7 @@
         "cta.open": "App öffnen",
         "cta.web": "Kostenlos im Browser nutzen",
         "cta.android": "Für Android herunterladen",
-        "hero.meaning": "der innere Kampf",
+        "hero.meaning": "dein Personal Trainer",
         "hero.title": "Trainiere mit Plan.<br><span class=\"accent\">Sieh deinen Fortschritt.</span>",
         "hero.lead": "Trage deine Sätze in Sekunden ein, mach Pause mit Sprachhinweis und verfolge deinen Fortschritt Woche für Woche. Ohne Konto und ohne Werbung: Deine Daten bleiben auf deinem Handy.",
         "hero.fine": "Android: Testversion (wird manuell installiert). iPhone: in Safari öffnen und auf Teilen → Zum Home-Bildschirm tippen.",
@@ -307,7 +307,7 @@
         "alt.progreso": "Fortschritt: in dieser Woche trainierte Muskeln",
         "alt.medidas": "Maße: Entwicklung von Gewicht, Fett und Muskeln",
         "alt.perfil": "Profil: Aktivität, Rekorde und Medaillen",
-        "meta.title": "Esō Agōn · Dein Training, dein Fortschritt",
+        "meta.title": "Gymnastés · Dein Personal Trainer",
         "meta.description": "Trage deine Sätze in Sekunden ein, mach Pause mit Sprachhinweis und sieh deinen Fortschritt Woche für Woche. Kostenlos, ohne Konto, ohne Werbung, und deine Daten bleiben auf deinem Handy."
     };
     T.zh = {
@@ -319,7 +319,7 @@
         "cta.open": "打开应用",
         "cta.web": "在浏览器中免费使用",
         "cta.android": "下载 Android 版",
-        "hero.meaning": "内心的较量",
+        "hero.meaning": "你的私人教练",
         "hero.title": "按计划训练。<br><span class=\"accent\">看见自己的进步。</span>",
         "hero.lead": "几秒钟记录每一组，休息时有语音提醒，每周看到自己的进步。无需账户、没有广告：你的数据保存在你的手机上。",
         "hero.fine": "Android：测试版（需手动安装）。iPhone：在 Safari 中打开，点按 分享 → 添加到主屏幕。",
@@ -435,7 +435,7 @@
         "alt.progreso": "进步：本周训练到的肌肉",
         "alt.medidas": "身体数据：体重、体脂和肌肉的变化",
         "alt.perfil": "个人资料：活动、纪录和奖牌",
-        "meta.title": "Esō Agōn · 你的训练，你的进步",
+        "meta.title": "Gymnastés · 你的私人教练",
         "meta.description": "几秒钟记录每一组，休息时有语音提醒，每周看到自己的进步。免费、无需账户、没有广告，你的数据保存在你的手机上。"
     };
     const ES = {

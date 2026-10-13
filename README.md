@@ -1,6 +1,6 @@
-# Esō Agōn by Inquieto
+# Gymnastés by Inquieto
 
-*Esō Agōn* (ἔσω ἀγών, "la lucha interior"). App para registrar rutinas de gimnasio, series, cardio y progreso. Es una PWA: se instala en
+*Gymnastés* (γυμναστής: en la antigua Grecia, el entrenador de los atletas). App para registrar rutinas de gimnasio, series, cardio y progreso. Es una PWA: se instala en
 la pantalla de inicio del celular y funciona sin conexión. Los datos quedan en el
 dispositivo de cada usuario.
 

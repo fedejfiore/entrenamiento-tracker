@@ -12,7 +12,7 @@ const IMPORT_SOURCES = {
     hevy: 'Hevy',
     strong: 'Strong',
     fitbod: 'Fitbod',
-    esoagon: 'Esō Agōn (CSV)'
+    esoagon: 'Gymnastés (CSV)'
 };
 const IMPORT_LIMITS = { maxBytes: 20 * 1024 * 1024, maxRows: 200000, maxName: 80 };
 const LB_TO_KG = 0.45359237;

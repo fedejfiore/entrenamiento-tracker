@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace = "com.inquieto.esoagon"
+    namespace = "com.inquieto.gymnastes"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.inquieto.esoagon"
+        applicationId "com.inquieto.gymnastes"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

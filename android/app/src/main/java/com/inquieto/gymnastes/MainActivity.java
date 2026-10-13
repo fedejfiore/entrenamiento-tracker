@@ -1,4 +1,4 @@
-package com.inquieto.esoagon;
+package com.inquieto.gymnastes;
 
 import com.getcapacitor.BridgeActivity;
 

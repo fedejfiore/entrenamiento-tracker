@@ -1,6 +1,6 @@
 {
-  "appId": "com.inquieto.esoagon",
-  "appName": "Esō Agōn",
+  "appId": "com.inquieto.gymnastes",
+  "appName": "Gymnastés",
   "webDir": "www",
   "android": {
     "allowMixedContent": false

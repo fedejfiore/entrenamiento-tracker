@@ -74,7 +74,7 @@ function exportHistoryCsv() {
     const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
     const a = document.createElement('a');
     a.href = url;
-    a.download = `esoagon_historial_${getLocalDateString()}.csv`;
+    a.download = `gymnastes_historial_${getLocalDateString()}.csv`;
     a.click();
     URL.revokeObjectURL(url);
     showToast('📄 Historial exportado en CSV (se abre con Excel o Google Sheets)', 'success', 4000);

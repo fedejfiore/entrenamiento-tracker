@@ -319,7 +319,7 @@ async function shareSheetSend(download) {
     const canvas = drawShareCard(shareSheetSpec, shareSheetFormat);
     const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
     const slug = normalizeForCompare(shareSheetSpec.title || shareSheetSpec.exercise || 'logro').replace(/[^a-z0-9]+/g, '-');
-    const file = new File([blob], `esoagon-${shareSheetSpec.kind}-${slug}-${shareSheetFormat}.png`, { type: 'image/png' });
+    const file = new File([blob], `gymnastes-${shareSheetSpec.kind}-${slug}-${shareSheetFormat}.png`, { type: 'image/png' });
     if (!download) {
         try {
             if (navigator.canShare && navigator.canShare({ files: [file] })) {

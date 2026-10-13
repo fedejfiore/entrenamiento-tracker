@@ -1,7 +1,7 @@
 {
-  "name": "Esō Agōn by Inquieto",
-  "short_name": "Esō Agōn",
-  "description": "Esō Agōn, la lucha interior: registro de rutinas, series y progreso de gimnasio, con guía por voz.",
+  "name": "Gymnastés by Inquieto",
+  "short_name": "Gymnastés",
+  "description": "Gymnastés, tu entrenador personal: registro de rutinas, series y progreso de gimnasio, con guía por voz.",
   "start_url": "./entrenamiento_trackerv2.html",
   "scope": "./",
   "id": "./entrenamiento_trackerv2.html",

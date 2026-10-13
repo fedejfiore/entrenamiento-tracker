@@ -1,14 +1,14 @@
 // Marca de la app: un solo lugar para el nombre (se usa en las imágenes para compartir, la
 // ayuda y los textos). La app es un producto de Inquieto, división SFT (software).
 //
-// Esō Agōn (en griego, ἔσω ἀγών): "la lucha interior". El agón era la competencia de los
-// Juegos Olímpicos antiguos; ἔσω, "hacia adentro". La lucha con uno mismo por superarse.
+// Gymnastés (en griego, γυμναστής): en la antigua Grecia, el entrenador de los atletas, el que
+// sabía qué ejercicios hacía falta y cuánto. Es lo que la app quiere ser: tu entrenador personal.
 const APP_BRAND = {
-    name: 'Esō Agōn',
+    name: 'Gymnastés',
     by: 'by Inquieto',
     company: 'Inquieto',
     division: 'SFT',
-    meaning: 'la lucha interior',
+    meaning: 'tu entrenador personal',
     // A dónde llegan los errores y sugerencias (Ajustes → Ayuda). Cambiar por el mail
     // corporativo cuando exista.
     feedbackEmail: 'federicojfiore@gmail.com'

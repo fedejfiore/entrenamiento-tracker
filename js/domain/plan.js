@@ -161,7 +161,7 @@ function buildPlanIcs(plan, { title = '🏋️ Entrenar', description = '', dura
     const lines = [
         'BEGIN:VCALENDAR',
         'VERSION:2.0',
-        'PRODID:-//Inquieto//Eso Agon//ES',
+        'PRODID:-//Inquieto//Gymnastes//ES',
         'CALSCALE:GREGORIAN',
         'METHOD:PUBLISH'
     ];
