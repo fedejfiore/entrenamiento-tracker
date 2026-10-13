@@ -1911,6 +1911,10 @@
   "file": "js/domain/import-csv.js",
   "kind": "const"
  },
+ "mirrorHalf": {
+  "file": "js/features/muscle-map.js",
+  "kind": "const"
+ },
  "MODULES": {
   "file": "js/features/disciplines.js",
   "kind": "const"

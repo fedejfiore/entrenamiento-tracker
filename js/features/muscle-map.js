@@ -18,34 +18,48 @@ const MUSCLE_PATTERN_SVG = `<svg width="0" height="0" style="position:absolute" 
         <rect width="5" height="5" fill="var(--heat-4)"/><rect width="2" height="5" fill="var(--heat-4-stripe)"/>
     </pattern></defs></svg>`;
 
-// Figura estilizada: la silueta de base y encima cada músculo con su grupo (data-group).
+// Figura anatómica (frente y espalda): la silueta de base y encima cada músculo con su forma
+// real y su grupo (data-group). Se dibuja solo la mitad izquierda de la figura y la derecha
+// sale espejada (simétrica y fácil de ajustar). viewBox 0 0 100 212, eje del cuerpo en x = 50.
+const mirrorHalf = half => `${half}<g transform="matrix(-1 0 0 1 100 0)">${half}</g>`;
+
 const BODY_BASE = `
-    <circle cx="50" cy="14" r="10"/>
-    <rect x="45" y="22" width="10" height="8" rx="3"/>
-    <path d="M28 32 Q50 25 72 32 L75 98 Q50 108 25 98 Z"/>
-    <ellipse cx="20" cy="60" rx="7" ry="16"/><ellipse cx="80" cy="60" rx="7" ry="16"/>
-    <ellipse cx="16" cy="88" rx="5" ry="15"/><ellipse cx="84" cy="88" rx="5" ry="15"/>
-    <path d="M27 97 Q50 110 73 97 L71 116 Q50 122 29 116 Z"/>
-    <ellipse cx="40" cy="140" rx="10" ry="28"/><ellipse cx="60" cy="140" rx="10" ry="28"/>
-    <ellipse cx="40" cy="186" rx="7" ry="22"/><ellipse cx="60" cy="186" rx="7" ry="22"/>`;
+    <ellipse cx="50" cy="12" rx="8.5" ry="10"/>
+    <path d="M45 19 L45 27 L55 27 L55 19 Z"/>` + mirrorHalf(`
+    <path d="M50 25 L37 27 Q25 29 21.5 39 Q20 46 22 51 L26 51 L33 49 L34 76 Q34.5 90 33 97 L50 99 Z"/>
+    <path d="M21.5 40 Q16.5 52 17.5 64 L26.5 66 Q28.5 56 28.5 46 Z"/>
+    <path d="M17.5 63 Q13.5 76 14.5 88 L20.5 89.5 Q24.5 78 26.5 66 Z"/>
+    <ellipse cx="17" cy="94.5" rx="3.6" ry="5.5"/>
+    <path d="M33 95 Q30.5 104 31.5 111 L50 113 L50 98 Z"/>
+    <path d="M31.5 105 Q27.5 126 30.5 150 L44 156 Q49.5 138 49.5 112 Z"/>
+    <path d="M31.5 151 Q29.5 170 33.5 192 L42 194 Q46.5 172 44 156 Z"/>
+    <path d="M33.5 191 L32 199 Q37.5 203.5 44 200.5 L42.5 192 Z"/>`);
 
-const BODY_FRONT = `
-    <ellipse data-group="Hombros" cx="27" cy="38" rx="8" ry="7"/><ellipse data-group="Hombros" cx="73" cy="38" rx="8" ry="7"/>
-    <ellipse data-group="Pecho" cx="40" cy="47" rx="10" ry="8"/><ellipse data-group="Pecho" cx="60" cy="47" rx="10" ry="8"/>
-    <rect data-group="Core" x="42" y="58" width="16" height="38" rx="5"/>
-    <ellipse data-group="Core" cx="34" cy="78" rx="4" ry="13"/><ellipse data-group="Core" cx="66" cy="78" rx="4" ry="13"/>
-    <ellipse data-group="Bíceps" cx="20" cy="58" rx="5" ry="12"/><ellipse data-group="Bíceps" cx="80" cy="58" rx="5" ry="12"/>
-    <ellipse data-group="Cuádriceps" cx="40" cy="138" rx="9" ry="25"/><ellipse data-group="Cuádriceps" cx="60" cy="138" rx="9" ry="25"/>`;
+// Frente: deltoides, pectorales, bíceps, recto abdominal y oblicuos, cuádriceps.
+const BODY_FRONT = mirrorHalf(`
+    <path data-group="Hombros" d="M34 29.5 Q25 30 22 38.5 Q21 44.5 23 49 Q27.5 42.5 33.5 39.5 Q35.5 34 34 29.5 Z"/>
+    <path data-group="Pecho" d="M49.2 31.5 L49.2 49.5 Q42.5 53 36 50.5 Q31.5 47 33.5 40 Q36 33.5 42 31.5 Q46 30.8 49.2 31.5 Z"/>
+    <path data-group="Bíceps" d="M22.4 48.6 Q19.2 56.2 20 64.8 Q23.6 69.4 27.6 64.8 Q29.2 56.6 28.4 48.9 Q25.4 45.9 22.4 48.6 Z"/>
+    <rect data-group="Core" x="42.3" y="53.5" width="6.6" height="8.3" rx="2"/>
+    <rect data-group="Core" x="42.3" y="62.8" width="6.6" height="8.3" rx="2"/>
+    <rect data-group="Core" x="42.6" y="72.1" width="6.3" height="9.6" rx="2"/>
+    <path data-group="Core" d="M42.8 83 L48.9 83 L48.9 95.5 Q45 95 43.4 91 Z"/>
+    <path data-group="Core" d="M35 52.5 Q39.5 54.5 41.2 59.5 L41.2 84 Q37.5 87 34.6 82 Q32.6 67 35 52.5 Z"/>
+    <path data-group="Espalda" d="M49.2 24.5 L49.2 28.6 Q42.5 29.6 36.5 28.6 Q43 26.8 47.2 24.6 Z"/>
+    <path data-group="Gemelos" d="M32.8 160 Q31.2 170.5 33.4 182 Q35.8 185.5 37.6 181.4 Q38.6 170 37.2 160.2 Q35.2 157 32.8 160 Z"/>
+    <path data-group="Cuádriceps" d="M34.2 104 Q29.8 121 31.6 139 Q34.4 151.5 40.8 154 Q46.2 148 47.3 133 Q48.4 116 46.3 104.5 Q40.2 100.5 34.2 104 Z"/>`);
 
-const BODY_BACK = `
-    <ellipse data-group="Espalda" cx="50" cy="35" rx="13" ry="7"/>
-    <ellipse data-group="Hombros" cx="27" cy="38" rx="8" ry="7"/><ellipse data-group="Hombros" cx="73" cy="38" rx="8" ry="7"/>
-    <ellipse data-group="Espalda" cx="38" cy="62" rx="9" ry="17"/><ellipse data-group="Espalda" cx="62" cy="62" rx="9" ry="17"/>
-    <rect data-group="Espalda" x="44" y="78" width="12" height="18" rx="4"/>
-    <ellipse data-group="Tríceps" cx="20" cy="58" rx="5" ry="12"/><ellipse data-group="Tríceps" cx="80" cy="58" rx="5" ry="12"/>
-    <ellipse data-group="Glúteos" cx="41" cy="108" rx="10" ry="9"/><ellipse data-group="Glúteos" cx="59" cy="108" rx="10" ry="9"/>
-    <ellipse data-group="Isquios" cx="40" cy="142" rx="8" ry="22"/><ellipse data-group="Isquios" cx="60" cy="142" rx="8" ry="22"/>
-    <ellipse data-group="Gemelos" cx="40" cy="184" rx="7" ry="16"/><ellipse data-group="Gemelos" cx="60" cy="184" rx="7" ry="16"/>`;
+// Espalda: trapecio, dorsales y lumbares (espalda), deltoides posterior, tríceps, glúteos,
+// isquiotibiales y gemelos.
+const BODY_BACK = mirrorHalf(`
+    <path data-group="Espalda" d="M49.2 21.5 L49.2 47 Q42.5 40.5 34.5 32 Q41 26.5 49.2 21.5 Z"/>
+    <path data-group="Hombros" d="M34 29.5 Q25 30 22 38.5 Q21 44.5 23 49 Q27.5 42.5 33.5 39.5 Q35.5 34 34 29.5 Z"/>
+    <path data-group="Espalda" d="M47.6 48.5 Q40.5 45 33.6 40.5 Q31.2 52.5 35.2 64.5 Q41 72.5 47.6 76.5 Z"/>
+    <path data-group="Espalda" d="M47.6 78 L47.6 93 Q44.6 95.2 42.4 92.6 L42.4 75 Q45 77 47.6 78 Z"/>
+    <path data-group="Tríceps" d="M22.4 48.6 Q19.2 56.2 20 64.8 Q23.6 69.4 27.6 64.8 Q29.2 56.6 28.4 48.9 Q25.4 45.9 22.4 48.6 Z"/>
+    <path data-group="Glúteos" d="M49.2 96.5 Q40.5 94.5 34.2 100.5 Q31.8 110 36.8 116.2 Q43.5 119.5 49.2 114.5 Z"/>
+    <path data-group="Isquios" d="M35.2 120 Q31.8 134 33.8 148 Q37.6 156 42.2 154.2 Q47.2 146 47.2 132 Q47 122.5 44.2 118.4 Z"/>
+    <path data-group="Gemelos" d="M35.6 161.5 Q32.6 172 35.6 184 Q39 188.5 42.2 184 Q45.2 172 43.2 161.8 Q39.6 157.6 35.6 161.5 Z"/>`);
 
 // Cuádriceps se ve de frente e isquios de espaldas (la cara posterior del muslo).
 const MAPPED_GROUPS = ['Pecho', 'Espalda', 'Hombros', 'Bíceps', 'Tríceps', 'Cuádriceps', 'Isquios', 'Glúteos', 'Gemelos', 'Core'];
