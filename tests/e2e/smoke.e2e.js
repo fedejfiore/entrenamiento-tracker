@@ -29,7 +29,7 @@ const check = (name, ok, detail = '') => { results.push({ name, ok: !!ok, detail
 // Datos de prueba con código escondido en todos los textos que se muestran.
 const EVIL = '<img src=x onerror="window.__pwn=1">';
 const evilSeed = {
-    workouts: [{ id: 1, date: '2026-09-01', routine: 'EV', mood: 3, notes: EVIL, exercises: [{ name: `Press ${EVIL}`, type: 'kg', sets: [{ reps: '10', kg: '50', done: true, note: EVIL }] }] }],
+    workouts: [{ id: 1, date: '2026-09-01', routine: 'EV', mood: 3, notes: EVIL, exercises: [{ name: `Press ${EVIL}`, type: 'kg', sets: [{ reps: '10', kg: '50', done: true, note: EVIL, effort: EVIL }] }] }],
     customRoutines: { EV: [`Press ${EVIL}`, `Curl <script>window.__pwn=1</script>`] },
     customRoutineLabels: { EV: `Rutina ${EVIL}` },
     exerciseGroupOverrides: { [`press ${EVIL}`]: EVIL },
@@ -112,6 +112,14 @@ server.listen(0, '127.0.0.1', async () => {
             const { page, errors } = await newPage(browser, evilSeed);
             await visitAll(page);
             await page.evaluate(() => { openHelp(); openFeedback(); });
+            // Abrir todo lo que muestra los datos en detalle: historial y día del calendario.
+            await page.evaluate(() => {
+                showScreen('historial');
+                document.querySelectorAll('[data-screen="historial"] [data-uid]').forEach(x => x.click());
+                document.querySelectorAll('details').forEach(d => { d.open = true; });
+                showScreen('inicio');
+                document.querySelector('[data-cal-date].trained')?.click();
+            });
             const res = await page.evaluate(() => ({ pwn: window.__pwn === 1, imgs: document.querySelectorAll('img[src="x"]').length, scripts: [...document.querySelectorAll('script')].filter(s => !s.src).length }));
             check('el código escondido en los datos no se ejecuta', !res.pwn);
             check('no se inyectan imágenes ni scripts', res.imgs === 0 && res.scripts === 0, JSON.stringify(res));

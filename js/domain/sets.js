@@ -28,9 +28,12 @@ function formatSetsSummary(sets, type) {
 function formatEffort(effort, type) {
     if (!effort) return '';
     const scale = EFFORT_SCALES[(EXERCISE_TYPES[type] || EXERCISE_TYPES.kg).effort];
-    if (scale === EFFORT_SCALES.rir) return effort === '0' ? 'al fallo' : `RIR ${effort === '4' ? '4+' : effort}`;
-    const opt = scale.options.find(([v]) => v === effort);
-    return opt ? `esfuerzo ${opt[1].toLowerCase()}` : effort;
+    // Solo valores de la escala: un dato raro (ej. un backup editado a mano) no se muestra.
+    const opt = scale.options.find(([v]) => v && v === String(effort));
+    if (!opt) return '';
+    if (scale === EFFORT_SCALES.rir) return effort === '0' ? 'al fallo' : `RIR ${opt[1]}`;
+    if (scale === EFFORT_SCALES.mastery) return `dominio: ${opt[1].toLowerCase()}`;
+    return `esfuerzo ${opt[1].toLowerCase()}`;
 }
 
 // Las de calentamiento se muestran como "C" y no consumen número: C, C, 1, 2, 3.

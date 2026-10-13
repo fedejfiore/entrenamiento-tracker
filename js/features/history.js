@@ -53,7 +53,7 @@ function renderHistorySets(ex) {
     const type = EXERCISE_TYPES[ex.type] ? ex.type : 'kg';
     const labels = setLabels(ex.sets);
     return `<small>${ex.sets.map((set, i) => {
-        const extras = [formatEffort(set.effort, type), set.rest ? `${escapeHtml(set.rest)}s` : ''].filter(Boolean).join(' · ');
+        const extras = [escapeHtml(formatEffort(set.effort, type)), set.rest ? `${escapeHtml(set.rest)}s` : ''].filter(Boolean).join(' · ');
         const label = set.warmup ? `<span style="color:var(--warning);">Calent.</span>` : `S${labels[i]}`;
         return `${label}: <strong>${escapeHtml(formatSetValue(set, type) || '-')}</strong>`
             + (extras ? ` <span style="color:var(--text-muted);">· ${extras}</span>` : '')
