@@ -414,3 +414,17 @@ html[data-module="pilates"] [data-module-only="gym"], html[data-module="gym"] [d
 /* Ayuda: grupos y "ver toda la ayuda" */
 .help-group { margin-top: 14px; }
 .help-show-all { width: auto; margin: 12px 0; }
+
+/* Biblioteca → Ejercicios de gimnasio: figura para elegir el músculo */
+.gym-body { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; justify-items: center; }
+.gym-body .muscle-figure svg { max-width: 150px; }
+.gym-body .pick { fill: color-mix(in srgb, var(--brand) 18%, var(--bg-subtle)); stroke: var(--border); stroke-width: 1; cursor: pointer; transition: fill .15s; }
+.gym-body .pick:hover { fill: color-mix(in srgb, var(--brand) 40%, var(--bg-subtle)); }
+.gym-body .pick.on { fill: var(--brand); }
+.gym-body-hint { margin: 4px 0 10px; text-align: center; font-size: 13px; color: var(--text-muted); }
+.gym-equipment { margin-bottom: 10px; }
+.gym-equipment .discipline-chips { margin: 6px 0; }
+.gym-mine { font-size: 13px; }
+.gym-alts { display: flex; flex-wrap: wrap; gap: 6px; }
+.gym-alts button { width: auto; margin: 0; }
+.gym-body-hint .link-btn { width: auto; margin: 0; padding: 4px 10px; font-size: 13px; }

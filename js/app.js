@@ -133,6 +133,7 @@ class App {
             initDisciplines,
             initReformerSettings,
             initPilatesLibrary,
+            initGymLibrary,
             initWakeLock,
             initNativeFeatures,
             initSoundSettingsUI,
