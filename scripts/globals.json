@@ -1,0 +1,3798 @@
+{
+ "ACCENT_MAP": {
+  "file": "js/core/utils.js",
+  "kind": "const"
+ },
+ "ACCENT_OPTIONS": {
+  "file": "js/features/general-settings.js",
+  "kind": "const"
+ },
+ "ACHIEVEMENTS": {
+  "file": "js/domain/achievements.js",
+  "kind": "const"
+ },
+ "activeModule": {
+  "file": "js/features/disciplines.js",
+  "kind": "function"
+ },
+ "addGymExerciseToRoutine": {
+  "file": "js/features/gym-library.js",
+  "kind": "function"
+ },
+ "addPilatesExerciseToRoutine": {
+  "file": "js/features/pilates-library.js",
+  "kind": "function"
+ },
+ "addSet": {
+  "file": "js/features/training/exercise-block.js",
+  "kind": "function"
+ },
+ "addTabataBlockToSession": {
+  "file": "js/features/tabata.js",
+  "kind": "function"
+ },
+ "adjustRepTarget": {
+  "file": "js/features/rep-counter.js",
+  "kind": "function"
+ },
+ "adjustRepTempo": {
+  "file": "js/features/rep-counter.js",
+  "kind": "function"
+ },
+ "adjustRestTimer": {
+  "file": "js/features/rest-timer.js",
+  "kind": "function"
+ },
+ "advanceTabata": {
+  "file": "js/features/tabata.js",
+  "kind": "function"
+ },
+ "ageFrom": {
+  "file": "js/features/profile.js",
+  "kind": "function"
+ },
+ "ALL_PLATES": {
+  "file": "js/domain/training-tools.js",
+  "kind": "const"
+ },
+ "ALL_PLATES_LB": {
+  "file": "js/domain/training-tools.js",
+  "kind": "const"
+ },
+ "anyFeatureOn": {
+  "file": "js/features/feature-settings.js",
+  "kind": "function"
+ },
+ "App": {
+  "file": "js/app.js",
+  "kind": "class"
+ },
+ "APP_BRAND": {
+  "file": "js/core/brand.js",
+  "kind": "const"
+ },
+ "APP_LANGUAGES": {
+  "file": "js/core/i18n.js",
+  "kind": "const"
+ },
+ "APP_SCREENS": {
+  "file": "js/ui/navigation.js",
+  "kind": "const"
+ },
+ "appBrandLine": {
+  "file": "js/core/brand.js",
+  "kind": "function"
+ },
+ "appErrors": {
+  "file": "js/core/errors.js",
+  "kind": "const"
+ },
+ "appLanguage": {
+  "file": "js/core/i18n.js",
+  "kind": "let"
+ },
+ "appLocale": {
+  "file": "js/core/i18n.js",
+  "kind": "function"
+ },
+ "applyAccent": {
+  "file": "js/features/general-settings.js",
+  "kind": "function"
+ },
+ "applyColorVision": {
+  "file": "js/ui/accessibility.js",
+  "kind": "function"
+ },
+ "applyContrast": {
+  "file": "js/ui/accessibility.js",
+  "kind": "function"
+ },
+ "applyModule": {
+  "file": "js/features/disciplines.js",
+  "kind": "function"
+ },
+ "applySetsToBlock": {
+  "file": "js/features/training/exercise-block.js",
+  "kind": "function"
+ },
+ "applyTheme": {
+  "file": "js/ui/navigation.js",
+  "kind": "function"
+ },
+ "applyToFollowingSets": {
+  "file": "js/features/training/set-stepper.js",
+  "kind": "function"
+ },
+ "applyUiSize": {
+  "file": "js/ui/accessibility.js",
+  "kind": "function"
+ },
+ "applyVoiceSettingsToPage": {
+  "file": "js/audio/voice.js",
+  "kind": "function"
+ },
+ "appTranslator": {
+  "file": "js/core/i18n.js",
+  "kind": "let"
+ },
+ "appVersionLabel": {
+  "file": "js/features/feedback.js",
+  "kind": "function"
+ },
+ "archiveCurrentRoutine": {
+  "file": "js/features/training/routines-ui.js",
+  "kind": "function"
+ },
+ "archivedExercises": {
+  "file": "js/data/routines-store.js",
+  "kind": "let"
+ },
+ "archivedRoutines": {
+  "file": "js/data/routines-store.js",
+  "kind": "let"
+ },
+ "archiveExerciseFromRow": {
+  "file": "js/features/training/workout.js",
+  "kind": "function"
+ },
+ "archiveRoutineFromLibrary": {
+  "file": "js/features/library.js",
+  "kind": "function"
+ },
+ "arrayBufferToBase64": {
+  "file": "js/core/utils.js",
+  "kind": "function"
+ },
+ "askPassword": {
+  "file": "js/features/backup.js",
+  "kind": "function"
+ },
+ "assertValid": {
+  "file": "js/domain/models.js",
+  "kind": "function"
+ },
+ "audioUnlocked": {
+  "file": "js/audio/sound.js",
+  "kind": "let"
+ },
+ "availableModules": {
+  "file": "js/features/disciplines.js",
+  "kind": "function"
+ },
+ "averagePauseSeconds": {
+  "file": "js/domain/stats.js",
+  "kind": "function"
+ },
+ "backToSupersetStart": {
+  "file": "js/features/training/supersets.js",
+  "kind": "function"
+ },
+ "BACKUP_FORMAT": {
+  "file": "js/data/backup-service.js",
+  "kind": "const"
+ },
+ "BACKUP_FORMAT_VERSION": {
+  "file": "js/data/backup-service.js",
+  "kind": "const"
+ },
+ "BACKUP_GROUPS": {
+  "file": "js/data/schema.js",
+  "kind": "const"
+ },
+ "BACKUP_KDF_ITERATIONS": {
+  "file": "js/data/backup-crypto.js",
+  "kind": "const"
+ },
+ "backupService": {
+  "file": "js/data/backup-service.js",
+  "kind": "const"
+ },
+ "BackupService": {
+  "file": "js/data/backup-service.js",
+  "kind": "class"
+ },
+ "BAR_OPTIONS": {
+  "file": "js/domain/training-tools.js",
+  "kind": "const"
+ },
+ "BAR_OPTIONS_LB": {
+  "file": "js/domain/training-tools.js",
+  "kind": "const"
+ },
+ "base64ToArrayBuffer": {
+  "file": "js/core/utils.js",
+  "kind": "function"
+ },
+ "bestPilatesSet": {
+  "file": "js/domain/pilates.js",
+  "kind": "function"
+ },
+ "bindAccessibilitySettings": {
+  "file": "js/ui/accessibility.js",
+  "kind": "function"
+ },
+ "bindArchivedRoutinesList": {
+  "file": "js/features/training/workout-screen.js",
+  "kind": "function"
+ },
+ "bindCalendarDayDetail": {
+  "file": "js/features/home.js",
+  "kind": "function"
+ },
+ "bindFeedback": {
+  "file": "js/features/feedback.js",
+  "kind": "function"
+ },
+ "bindFinishPrompt": {
+  "file": "js/features/training/finish-prompt.js",
+  "kind": "function"
+ },
+ "bindGarden": {
+  "file": "js/features/garden.js",
+  "kind": "function"
+ },
+ "bindGeneralSettings": {
+  "file": "js/features/general-settings.js",
+  "kind": "function"
+ },
+ "bindHelp": {
+  "file": "js/features/help.js",
+  "kind": "function"
+ },
+ "bindHistoryList": {
+  "file": "js/features/history.js",
+  "kind": "function"
+ },
+ "bindImportHistory": {
+  "file": "js/features/import-history.js",
+  "kind": "function"
+ },
+ "bindLanguageSelect": {
+  "file": "js/features/general-settings.js",
+  "kind": "function"
+ },
+ "bindLibrary": {
+  "file": "js/features/library.js",
+  "kind": "function"
+ },
+ "bindMuscleMap": {
+  "file": "js/features/muscle-map.js",
+  "kind": "function"
+ },
+ "bindOnboarding": {
+  "file": "js/features/onboarding.js",
+  "kind": "function"
+ },
+ "bindPendingSetsPrompt": {
+  "file": "js/features/training/finish-prompt.js",
+  "kind": "function"
+ },
+ "bindPlanSection": {
+  "file": "js/features/plan-screen.js",
+  "kind": "function"
+ },
+ "bindPlateCalculator": {
+  "file": "js/features/plate-calculator.js",
+  "kind": "function"
+ },
+ "bindProfile": {
+  "file": "js/features/profile.js",
+  "kind": "function"
+ },
+ "bindPrograms": {
+  "file": "js/features/programs.js",
+  "kind": "function"
+ },
+ "bindProgression": {
+  "file": "js/features/progress.js",
+  "kind": "function"
+ },
+ "bindSessionSummary": {
+  "file": "js/features/training/session-summary.js",
+  "kind": "function"
+ },
+ "bindSetSwipe": {
+  "file": "js/features/training/set-swipe.js",
+  "kind": "function"
+ },
+ "bindShareSheet": {
+  "file": "js/features/share-cards.js",
+  "kind": "function"
+ },
+ "bindSupersetModal": {
+  "file": "js/features/training/supersets.js",
+  "kind": "function"
+ },
+ "bindTrainMode": {
+  "file": "js/features/training/train-mode.js",
+  "kind": "function"
+ },
+ "blockHasPending": {
+  "file": "js/features/training/focus.js",
+  "kind": "function"
+ },
+ "BODY_BACK": {
+  "file": "js/features/muscle-map.js",
+  "kind": "const"
+ },
+ "BODY_BASE": {
+  "file": "js/features/muscle-map.js",
+  "kind": "const"
+ },
+ "BODY_FRONT": {
+  "file": "js/features/muscle-map.js",
+  "kind": "const"
+ },
+ "bodyChart": {
+  "file": "js/features/body-metrics.js",
+  "kind": "let"
+ },
+ "BodyMeasurement": {
+  "file": "js/domain/models.js",
+  "kind": "class"
+ },
+ "BodyMetricsRepository": {
+  "file": "js/data/repositories.js",
+  "kind": "class"
+ },
+ "buildArchivedExercisesHtml": {
+  "file": "js/features/training/workout.js",
+  "kind": "function"
+ },
+ "buildExerciseRowHtml": {
+  "file": "js/features/training/exercise-block.js",
+  "kind": "function"
+ },
+ "buildHelpHtml": {
+  "file": "js/features/help.js",
+  "kind": "function"
+ },
+ "buildImportedWorkouts": {
+  "file": "js/domain/import-csv.js",
+  "kind": "function"
+ },
+ "buildLastSummaryText": {
+  "file": "js/features/training/exercise-block.js",
+  "kind": "function"
+ },
+ "buildPlanIcs": {
+  "file": "js/domain/plan.js",
+  "kind": "function"
+ },
+ "buildProgressionHistory": {
+  "file": "js/features/progress.js",
+  "kind": "function"
+ },
+ "buildSetRowHtml": {
+  "file": "js/features/training/exercise-block.js",
+  "kind": "function"
+ },
+ "buildSetsTableHtml": {
+  "file": "js/features/training/exercise-block.js",
+  "kind": "function"
+ },
+ "buildSpeedCellHtml": {
+  "file": "js/features/training/exercise-block.js",
+  "kind": "function"
+ },
+ "buildTypeOptionsHtml": {
+  "file": "js/features/training/exercise-block.js",
+  "kind": "function"
+ },
+ "calculateExerciseTotalReps": {
+  "file": "js/domain/stats.js",
+  "kind": "function"
+ },
+ "calculateExerciseVolume": {
+  "file": "js/domain/stats.js",
+  "kind": "function"
+ },
+ "calculatePlates": {
+  "file": "js/domain/training-tools.js",
+  "kind": "function"
+ },
+ "calculateSessionVolume": {
+  "file": "js/domain/stats.js",
+  "kind": "function"
+ },
+ "calculateStack": {
+  "file": "js/domain/training-tools.js",
+  "kind": "function"
+ },
+ "calculateStats": {
+  "file": "js/domain/stats.js",
+  "kind": "function"
+ },
+ "calendarMonthOffset": {
+  "file": "js/features/home.js",
+  "kind": "let"
+ },
+ "calendarSelectedDate": {
+  "file": "js/features/home.js",
+  "kind": "let"
+ },
+ "calendarSessionHtml": {
+  "file": "js/features/home.js",
+  "kind": "function"
+ },
+ "cancelImportHistory": {
+  "file": "js/features/import-history.js",
+  "kind": "function"
+ },
+ "cancelRestEndNotification": {
+  "file": "js/features/native.js",
+  "kind": "function"
+ },
+ "cancelRestTimer": {
+  "file": "js/features/rest-timer.js",
+  "kind": "function"
+ },
+ "cancelSideSwitch": {
+  "file": "js/features/training/exercise-block.js",
+  "kind": "function"
+ },
+ "cancelTabata": {
+  "file": "js/features/tabata.js",
+  "kind": "function"
+ },
+ "canRecord": {
+  "file": "js/audio/recordings.js",
+  "kind": "function"
+ },
+ "cardioMetrics": {
+  "file": "js/domain/stats.js",
+  "kind": "function"
+ },
+ "catalogMuscleGroup": {
+  "file": "js/domain/catalog.js",
+  "kind": "function"
+ },
+ "celebrateGardenGrowth": {
+  "file": "js/features/garden.js",
+  "kind": "function"
+ },
+ "changeCalendarMonth": {
+  "file": "js/features/home.js",
+  "kind": "function"
+ },
+ "changeDistanceUnit": {
+  "file": "js/features/general-settings.js",
+  "kind": "function"
+ },
+ "changeExerciseDetailGroup": {
+  "file": "js/features/progress.js",
+  "kind": "function"
+ },
+ "changeExerciseType": {
+  "file": "js/features/training/exercise-block.js",
+  "kind": "function"
+ },
+ "changeWeightUnit": {
+  "file": "js/features/general-settings.js",
+  "kind": "function"
+ },
+ "checkRoutineLinkOnStart": {
+  "file": "js/features/library.js",
+  "kind": "function"
+ },
+ "cleanSetForSave": {
+  "file": "js/domain/sets.js",
+  "kind": "function"
+ },
+ "cleanShareText": {
+  "file": "js/domain/routine-share.js",
+  "kind": "function"
+ },
+ "clearStoredSessionTimes": {
+  "file": "js/features/training/session-clock.js",
+  "kind": "function"
+ },
+ "clearWorkoutDraft": {
+  "file": "js/features/training/draft.js",
+  "kind": "function"
+ },
+ "closeDrawer": {
+  "file": "js/ui/navigation.js",
+  "kind": "function"
+ },
+ "closeExerciseDetail": {
+  "file": "js/features/progress.js",
+  "kind": "function"
+ },
+ "closeFeedback": {
+  "file": "js/features/feedback.js",
+  "kind": "function"
+ },
+ "closeFinishPrompt": {
+  "file": "js/features/training/finish-prompt.js",
+  "kind": "function"
+ },
+ "closeHelp": {
+  "file": "js/features/help.js",
+  "kind": "function"
+ },
+ "closePilatesInfo": {
+  "file": "js/features/pilates-library.js",
+  "kind": "function"
+ },
+ "closePlateCalculator": {
+  "file": "js/features/plate-calculator.js",
+  "kind": "function"
+ },
+ "closeProgramsModal": {
+  "file": "js/features/programs.js",
+  "kind": "function"
+ },
+ "closeRepCounterPanel": {
+  "file": "js/features/rep-counter.js",
+  "kind": "function"
+ },
+ "closeSessionSummary": {
+  "file": "js/features/training/session-summary.js",
+  "kind": "function"
+ },
+ "closeShareSheet": {
+  "file": "js/features/share-cards.js",
+  "kind": "function"
+ },
+ "closeSupersetModal": {
+  "file": "js/features/training/supersets.js",
+  "kind": "function"
+ },
+ "composeFeedback": {
+  "file": "js/features/feedback.js",
+  "kind": "function"
+ },
+ "compressImage": {
+  "file": "js/features/profile.js",
+  "kind": "function"
+ },
+ "computeGarden": {
+  "file": "js/domain/garden.js",
+  "kind": "function"
+ },
+ "computeSpeed": {
+  "file": "js/core/time.js",
+  "kind": "function"
+ },
+ "computeUsageStats": {
+  "file": "js/domain/achievements.js",
+  "kind": "function"
+ },
+ "confirmImportHistory": {
+  "file": "js/features/import-history.js",
+  "kind": "function"
+ },
+ "createNewRoutine": {
+  "file": "js/features/training/routines-ui.js",
+  "kind": "function"
+ },
+ "cssVar": {
+  "file": "js/core/utils.js",
+  "kind": "function"
+ },
+ "csvCell": {
+  "file": "js/domain/import-csv.js",
+  "kind": "function"
+ },
+ "cueSources": {
+  "file": "js/audio/recordings.js",
+  "kind": "let"
+ },
+ "currentAccent": {
+  "file": "js/features/general-settings.js",
+  "kind": "function"
+ },
+ "currentExerciseDetailData": {
+  "file": "js/features/progress.js",
+  "kind": "let"
+ },
+ "currentExerciseDetailName": {
+  "file": "js/features/progress.js",
+  "kind": "let"
+ },
+ "currentFocusGroup": {
+  "file": "js/features/training/focus.js",
+  "kind": "function"
+ },
+ "currentPlateInputs": {
+  "file": "js/features/plate-calculator.js",
+  "kind": "function"
+ },
+ "currentSessionEndTime": {
+  "file": "js/features/training/session-clock.js",
+  "kind": "let"
+ },
+ "currentSessionStartTime": {
+  "file": "js/features/training/session-clock.js",
+  "kind": "let"
+ },
+ "currentStackInputs": {
+  "file": "js/features/plate-calculator.js",
+  "kind": "function"
+ },
+ "currentThemePref": {
+  "file": "js/ui/navigation.js",
+  "kind": "function"
+ },
+ "currentTrainMode": {
+  "file": "js/features/training/train-mode.js",
+  "kind": "function"
+ },
+ "currentVoiceStyle": {
+  "file": "js/audio/voice-styles.js",
+  "kind": "function"
+ },
+ "currentWeekStartStr": {
+  "file": "js/features/plan-screen.js",
+  "kind": "function"
+ },
+ "customRoutineLabels": {
+  "file": "js/data/routines-store.js",
+  "kind": "let"
+ },
+ "customRoutines": {
+  "file": "js/data/routines-store.js",
+  "kind": "let"
+ },
+ "cycleTimeUnit": {
+  "file": "js/features/training/exercise-block.js",
+  "kind": "function"
+ },
+ "db": {
+  "file": "js/data/repositories.js",
+  "kind": "const"
+ },
+ "DECLARED_ACTIONS": {
+  "file": "js/ui/actions.js",
+  "kind": "const"
+ },
+ "decodeAudio": {
+  "file": "js/audio/recordings.js",
+  "kind": "function"
+ },
+ "decodeRoutineShare": {
+  "file": "js/domain/routine-share.js",
+  "kind": "function"
+ },
+ "decryptBackupText": {
+  "file": "js/data/backup-crypto.js",
+  "kind": "function"
+ },
+ "DEFAULT_MATCH_MINUTES": {
+  "file": "js/domain/catalog.js",
+  "kind": "const"
+ },
+ "DEFAULT_PLAN_TIME": {
+  "file": "js/domain/plan.js",
+  "kind": "const"
+ },
+ "DEFAULT_PLATES": {
+  "file": "js/domain/training-tools.js",
+  "kind": "const"
+ },
+ "DEFAULT_PLATES_LB": {
+  "file": "js/domain/training-tools.js",
+  "kind": "const"
+ },
+ "DEFAULT_REFORMER": {
+  "file": "js/domain/pilates.js",
+  "kind": "const"
+ },
+ "DEFAULT_REMIND_MINUTES": {
+  "file": "js/domain/plan.js",
+  "kind": "const"
+ },
+ "DEFAULT_REST_SECONDS": {
+  "file": "js/domain/catalog.js",
+  "kind": "const"
+ },
+ "DEFAULT_STACK": {
+  "file": "js/domain/training-tools.js",
+  "kind": "const"
+ },
+ "DEFAULT_TIME_UNIT_BY_TYPE": {
+  "file": "js/core/time.js",
+  "kind": "const"
+ },
+ "deleteCustomRoutineForever": {
+  "file": "js/features/training/routines-ui.js",
+  "kind": "function"
+ },
+ "deleteRowQuick": {
+  "file": "js/features/training/workout.js",
+  "kind": "function"
+ },
+ "deleteWorkout": {
+  "file": "js/features/history.js",
+  "kind": "function"
+ },
+ "deriveBackupKey": {
+  "file": "js/data/backup-crypto.js",
+  "kind": "function"
+ },
+ "describeBlockSessionData": {
+  "file": "js/features/training/exercise-block.js",
+  "kind": "function"
+ },
+ "describeNext": {
+  "file": "js/features/plan-screen.js",
+  "kind": "function"
+ },
+ "detectCardioPRs": {
+  "file": "js/domain/stats.js",
+  "kind": "function"
+ },
+ "detectCsvSource": {
+  "file": "js/domain/import-csv.js",
+  "kind": "function"
+ },
+ "detectPilatesPRs": {
+  "file": "js/domain/pilates.js",
+  "kind": "function"
+ },
+ "detectPRs": {
+  "file": "js/domain/stats.js",
+  "kind": "function"
+ },
+ "detectStall": {
+  "file": "js/domain/training-tools.js",
+  "kind": "function"
+ },
+ "DISCIPLINES": {
+  "file": "js/features/disciplines.js",
+  "kind": "const"
+ },
+ "displayIncrement": {
+  "file": "js/core/units.js",
+  "kind": "function"
+ },
+ "displayStringToKg": {
+  "file": "js/core/units.js",
+  "kind": "function"
+ },
+ "displayStringToKm": {
+  "file": "js/core/units.js",
+  "kind": "function"
+ },
+ "displayToKg": {
+  "file": "js/core/units.js",
+  "kind": "function"
+ },
+ "displayToKm": {
+  "file": "js/core/units.js",
+  "kind": "function"
+ },
+ "displayWorkoutHistory": {
+  "file": "js/features/history.js",
+  "kind": "function"
+ },
+ "DISTANCE_UNITS": {
+  "file": "js/core/units.js",
+  "kind": "const"
+ },
+ "distanceUnit": {
+  "file": "js/core/units.js",
+  "kind": "let"
+ },
+ "distanceUnitDef": {
+  "file": "js/core/units.js",
+  "kind": "function"
+ },
+ "downloadData": {
+  "file": "js/features/backup.js",
+  "kind": "function"
+ },
+ "DRAG_DOTS_SVG": {
+  "file": "js/features/training/exercise-block.js",
+  "kind": "const"
+ },
+ "drawMedalDisc": {
+  "file": "js/features/share-cards.js",
+  "kind": "function"
+ },
+ "drawShareBackground": {
+  "file": "js/features/share-cards.js",
+  "kind": "function"
+ },
+ "drawShareCard": {
+  "file": "js/features/share-cards.js",
+  "kind": "function"
+ },
+ "drawShareFooter": {
+  "file": "js/features/share-cards.js",
+  "kind": "function"
+ },
+ "drawStars": {
+  "file": "js/features/share-cards.js",
+  "kind": "function"
+ },
+ "drawTrophyCup": {
+  "file": "js/features/share-cards.js",
+  "kind": "function"
+ },
+ "editExerciseName": {
+  "file": "js/features/training/workout.js",
+  "kind": "function"
+ },
+ "editWorkoutDate": {
+  "file": "js/features/history.js",
+  "kind": "function"
+ },
+ "effectiveSetCount": {
+  "file": "js/domain/training-tools.js",
+  "kind": "function"
+ },
+ "EFFORT_SCALES": {
+  "file": "js/domain/catalog.js",
+  "kind": "const"
+ },
+ "EMPTY_STATE_ACTIONS": {
+  "file": "js/ui/navigation.js",
+  "kind": "const"
+ },
+ "emptyStateHtml": {
+  "file": "js/ui/navigation.js",
+  "kind": "function"
+ },
+ "encodeRoutineShare": {
+  "file": "js/domain/routine-share.js",
+  "kind": "function"
+ },
+ "encryptBackupText": {
+  "file": "js/data/backup-crypto.js",
+  "kind": "function"
+ },
+ "ENCRYPTED_BACKUP_FORMAT": {
+  "file": "js/data/backup-crypto.js",
+  "kind": "const"
+ },
+ "endProgram": {
+  "file": "js/features/programs.js",
+  "kind": "function"
+ },
+ "ensureModuleForRoutine": {
+  "file": "js/features/disciplines.js",
+  "kind": "function"
+ },
+ "ensureNativeNotifications": {
+  "file": "js/features/native.js",
+  "kind": "function"
+ },
+ "ensureStepperVisible": {
+  "file": "js/features/training/set-stepper.js",
+  "kind": "function"
+ },
+ "equipLevelChipHtml": {
+  "file": "js/features/pilates-library.js",
+  "kind": "function"
+ },
+ "equipLevelOf": {
+  "file": "js/features/pilates-library.js",
+  "kind": "function"
+ },
+ "EQUIPMENT_LEVELS": {
+  "file": "js/domain/pilates-catalog.js",
+  "kind": "const"
+ },
+ "EQUIPMENT_WITH_LEVEL": {
+  "file": "js/domain/pilates-catalog.js",
+  "kind": "const"
+ },
+ "ErrorReporter": {
+  "file": "js/core/errors.js",
+  "kind": "class"
+ },
+ "escapeHtml": {
+  "file": "js/core/utils.js",
+  "kind": "function"
+ },
+ "estimate1RMForExercise": {
+  "file": "js/domain/stats.js",
+  "kind": "function"
+ },
+ "evaluateAchievements": {
+  "file": "js/domain/achievements.js",
+  "kind": "function"
+ },
+ "EXERCISE_CHART_AXIS_META": {
+  "file": "js/features/progress.js",
+  "kind": "const"
+ },
+ "EXERCISE_CHART_METRICS": {
+  "file": "js/features/progress.js",
+  "kind": "const"
+ },
+ "EXERCISE_TO_MUSCLE_GROUP": {
+  "file": "js/domain/catalog.js",
+  "kind": "const"
+ },
+ "EXERCISE_TYPES": {
+  "file": "js/domain/catalog.js",
+  "kind": "const"
+ },
+ "EXERCISE_VARIANTS": {
+  "file": "js/domain/catalog.js",
+  "kind": "const"
+ },
+ "exerciseBlocks": {
+  "file": "js/features/training/focus.js",
+  "kind": "function"
+ },
+ "exerciseBlockSiblings": {
+  "file": "js/features/training/reorder.js",
+  "kind": "function"
+ },
+ "exerciseDetailChart": {
+  "file": "js/features/progress.js",
+  "kind": "let"
+ },
+ "ExerciseLog": {
+  "file": "js/domain/models.js",
+  "kind": "class"
+ },
+ "ExercisePreferences": {
+  "file": "js/data/exercise-prefs.js",
+  "kind": "class"
+ },
+ "exercisePrefs": {
+  "file": "js/data/exercise-prefs.js",
+  "kind": "const"
+ },
+ "exerciseSessionsFor": {
+  "file": "js/features/programs.js",
+  "kind": "function"
+ },
+ "exerciseStats": {
+  "file": "js/domain/stats.js",
+  "kind": "let"
+ },
+ "existingImportKeys": {
+  "file": "js/features/import-history.js",
+  "kind": "function"
+ },
+ "EXPORT_CSV_HEADERS": {
+  "file": "js/domain/import-csv.js",
+  "kind": "const"
+ },
+ "exportHistoryCsv": {
+  "file": "js/features/import-history.js",
+  "kind": "function"
+ },
+ "exportPlanIcs": {
+  "file": "js/features/plan-screen.js",
+  "kind": "function"
+ },
+ "FEATURE_DEFINITIONS": {
+  "file": "js/core/feature-registry.js",
+  "kind": "const"
+ },
+ "FEATURE_GROUPS": {
+  "file": "js/core/feature-registry.js",
+  "kind": "const"
+ },
+ "FEATURE_HINTS": {
+  "file": "js/features/feature-settings.js",
+  "kind": "const"
+ },
+ "FeatureRegistry": {
+  "file": "js/core/feature-registry.js",
+  "kind": "class"
+ },
+ "features": {
+  "file": "js/features/feature-settings.js",
+  "kind": "const"
+ },
+ "featureView": {
+  "file": "js/features/feature-settings.js",
+  "kind": "const"
+ },
+ "FeatureView": {
+  "file": "js/features/feature-settings.js",
+  "kind": "class"
+ },
+ "FEEDBACK_AREAS": {
+  "file": "js/features/feedback.js",
+  "kind": "const"
+ },
+ "FEEDBACK_TYPES": {
+  "file": "js/features/feedback.js",
+  "kind": "const"
+ },
+ "feedbackTechnicalInfo": {
+  "file": "js/features/feedback.js",
+  "kind": "function"
+ },
+ "filteredGymExercises": {
+  "file": "js/features/gym-library.js",
+  "kind": "function"
+ },
+ "filteredPilatesExercises": {
+  "file": "js/features/pilates-library.js",
+  "kind": "function"
+ },
+ "filterHelp": {
+  "file": "js/features/help.js",
+  "kind": "function"
+ },
+ "findClosestSession": {
+  "file": "js/domain/stats.js",
+  "kind": "function"
+ },
+ "findProgram": {
+  "file": "js/domain/programs.js",
+  "kind": "function"
+ },
+ "finishOnboarding": {
+  "file": "js/features/onboarding.js",
+  "kind": "function"
+ },
+ "finishPromptSummary": {
+  "file": "js/features/training/finish-prompt.js",
+  "kind": "function"
+ },
+ "finishRepCounter": {
+  "file": "js/features/rep-counter.js",
+  "kind": "function"
+ },
+ "finishRoutineManually": {
+  "file": "js/features/training/session-clock.js",
+  "kind": "function"
+ },
+ "finishSession": {
+  "file": "js/features/training/finish-prompt.js",
+  "kind": "function"
+ },
+ "finishTabata": {
+  "file": "js/features/tabata.js",
+  "kind": "function"
+ },
+ "finishTabataSession": {
+  "file": "js/features/tabata.js",
+  "kind": "function"
+ },
+ "firstOccurrence": {
+  "file": "js/domain/plan.js",
+  "kind": "function"
+ },
+ "fitText": {
+  "file": "js/features/share-cards.js",
+  "kind": "function"
+ },
+ "fitTwoLines": {
+  "file": "js/features/share-cards.js",
+  "kind": "function"
+ },
+ "flipFrom": {
+  "file": "js/features/training/reorder.js",
+  "kind": "function"
+ },
+ "fnAttrs": {
+  "file": "js/ui/actions.js",
+  "kind": "function"
+ },
+ "focusCurrentExercise": {
+  "file": "js/features/training/focus.js",
+  "kind": "function"
+ },
+ "followingPendingRows": {
+  "file": "js/features/training/set-stepper.js",
+  "kind": "function"
+ },
+ "formatCalendarLocal": {
+  "file": "js/domain/plan.js",
+  "kind": "function"
+ },
+ "formatCalendarUtc": {
+  "file": "js/domain/plan.js",
+  "kind": "function"
+ },
+ "formatDateLocal": {
+  "file": "js/core/utils.js",
+  "kind": "function"
+ },
+ "formatDistance": {
+  "file": "js/core/units.js",
+  "kind": "function"
+ },
+ "formatDuration": {
+  "file": "js/core/time.js",
+  "kind": "function"
+ },
+ "formatDurationHuman": {
+  "file": "js/core/time.js",
+  "kind": "function"
+ },
+ "formatEffort": {
+  "file": "js/domain/sets.js",
+  "kind": "function"
+ },
+ "formatNumber": {
+  "file": "js/core/utils.js",
+  "kind": "function"
+ },
+ "formatSecondsClock": {
+  "file": "js/core/time.js",
+  "kind": "function"
+ },
+ "formatSetsSummary": {
+  "file": "js/domain/sets.js",
+  "kind": "function"
+ },
+ "formatSetValue": {
+  "file": "js/domain/sets.js",
+  "kind": "function"
+ },
+ "formatSpeed": {
+  "file": "js/core/units.js",
+  "kind": "function"
+ },
+ "formatTimeDigits": {
+  "file": "js/core/time.js",
+  "kind": "function"
+ },
+ "formatTimeForUnit": {
+  "file": "js/core/time.js",
+  "kind": "function"
+ },
+ "formatTimeHM": {
+  "file": "js/core/time.js",
+  "kind": "function"
+ },
+ "formatTimeValue": {
+  "file": "js/core/time.js",
+  "kind": "function"
+ },
+ "formatWeight": {
+  "file": "js/core/units.js",
+  "kind": "function"
+ },
+ "formatWeightTotal": {
+  "file": "js/core/units.js",
+  "kind": "function"
+ },
+ "fromBase64Url": {
+  "file": "js/domain/routine-share.js",
+  "kind": "function"
+ },
+ "GARDEN_DEFS": {
+  "file": "js/features/garden.js",
+  "kind": "const"
+ },
+ "GARDEN_FREE_WEEKS": {
+  "file": "js/domain/garden.js",
+  "kind": "const"
+ },
+ "GARDEN_FRUIT_EVERY": {
+  "file": "js/domain/garden.js",
+  "kind": "const"
+ },
+ "GARDEN_STAGES": {
+  "file": "js/domain/garden.js",
+  "kind": "const"
+ },
+ "gardenAriaLabel": {
+  "file": "js/features/garden.js",
+  "kind": "function"
+ },
+ "gardenDateStr": {
+  "file": "js/domain/garden.js",
+  "kind": "function"
+ },
+ "gardenDropsHtml": {
+  "file": "js/features/garden.js",
+  "kind": "function"
+ },
+ "gardenLeaf": {
+  "file": "js/features/garden.js",
+  "kind": "function"
+ },
+ "gardenMonday": {
+  "file": "js/domain/garden.js",
+  "kind": "function"
+ },
+ "gardenSvg": {
+  "file": "js/features/garden.js",
+  "kind": "function"
+ },
+ "generateId": {
+  "file": "js/core/utils.js",
+  "kind": "function"
+ },
+ "generateProgressionAnalysis": {
+  "file": "js/features/progress.js",
+  "kind": "function"
+ },
+ "getAllKnownExerciseNames": {
+  "file": "js/data/routines-store.js",
+  "kind": "function"
+ },
+ "getAllSessions": {
+  "file": "js/features/history.js",
+  "kind": "function"
+ },
+ "getAppVoices": {
+  "file": "js/audio/voice.js",
+  "kind": "function"
+ },
+ "getAudioCtx": {
+  "file": "js/audio/sound.js",
+  "kind": "function"
+ },
+ "getBlockName": {
+  "file": "js/features/training/exercise-block.js",
+  "kind": "function"
+ },
+ "getBlockPrevSets": {
+  "file": "js/features/training/exercise-block.js",
+  "kind": "function"
+ },
+ "getCurrentPlan": {
+  "file": "js/features/plan-screen.js",
+  "kind": "function"
+ },
+ "getExerciseHistoryData": {
+  "file": "js/domain/stats.js",
+  "kind": "function"
+ },
+ "getExerciseOrder": {
+  "file": "js/features/training/reorder.js",
+  "kind": "function"
+ },
+ "getExerciseTarget": {
+  "file": "js/features/programs.js",
+  "kind": "function"
+ },
+ "getExerciseType": {
+  "file": "js/data/exercise-prefs.js",
+  "kind": "function"
+ },
+ "getLastRoutineNote": {
+  "file": "js/data/routines-store.js",
+  "kind": "function"
+ },
+ "getLocalDateString": {
+  "file": "js/core/utils.js",
+  "kind": "function"
+ },
+ "getMonday": {
+  "file": "js/core/utils.js",
+  "kind": "function"
+ },
+ "getMuscleGroup": {
+  "file": "js/data/exercise-prefs.js",
+  "kind": "function"
+ },
+ "getNoSleepVideoEl": {
+  "file": "js/ui/wake-lock.js",
+  "kind": "function"
+ },
+ "getPrevSets": {
+  "file": "js/domain/stats.js",
+  "kind": "function"
+ },
+ "getRecentRoutineSummaries": {
+  "file": "js/domain/stats.js",
+  "kind": "function"
+ },
+ "getRoutineSuggestionRanking": {
+  "file": "js/features/training/routines-ui.js",
+  "kind": "function"
+ },
+ "getSupersetLetter": {
+  "file": "js/features/training/supersets.js",
+  "kind": "function"
+ },
+ "getTimeUnit": {
+  "file": "js/data/exercise-prefs.js",
+  "kind": "function"
+ },
+ "getTodaysLastSessionDurationLabel": {
+  "file": "js/features/training/session-clock.js",
+  "kind": "function"
+ },
+ "getWeeklyVolumeStats": {
+  "file": "js/domain/stats.js",
+  "kind": "function"
+ },
+ "getWeekStart": {
+  "file": "js/core/utils.js",
+  "kind": "function"
+ },
+ "getWeekStatus": {
+  "file": "js/features/home.js",
+  "kind": "function"
+ },
+ "goToNextInSuperset": {
+  "file": "js/features/training/supersets.js",
+  "kind": "function"
+ },
+ "goToSection": {
+  "file": "js/ui/navigation.js",
+  "kind": "function"
+ },
+ "guessMuscleGroup": {
+  "file": "js/domain/catalog.js",
+  "kind": "function"
+ },
+ "GYM_BY_NAME": {
+  "file": "js/domain/gym-catalog.js",
+  "kind": "const"
+ },
+ "GYM_CAUTIONS": {
+  "file": "js/domain/gym-catalog.js",
+  "kind": "const"
+ },
+ "GYM_EQUIPMENT": {
+  "file": "js/domain/gym-catalog.js",
+  "kind": "const"
+ },
+ "GYM_ERRORS": {
+  "file": "js/domain/gym-catalog.js",
+  "kind": "const"
+ },
+ "GYM_EXERCISES": {
+  "file": "js/domain/gym-catalog.js",
+  "kind": "const"
+ },
+ "GYM_LEVELS": {
+  "file": "js/domain/gym-catalog.js",
+  "kind": "const"
+ },
+ "gymBodyPickerHtml": {
+  "file": "js/features/gym-library.js",
+  "kind": "function"
+ },
+ "gymErrorPair": {
+  "file": "js/features/gym-library.js",
+  "kind": "function"
+ },
+ "gymEx": {
+  "file": "js/domain/gym-catalog.js",
+  "kind": "function"
+ },
+ "gymExerciseInfo": {
+  "file": "js/domain/gym-catalog.js",
+  "kind": "function"
+ },
+ "gymFilters": {
+  "file": "js/features/gym-library.js",
+  "kind": "const"
+ },
+ "gymItemHtml": {
+  "file": "js/features/gym-library.js",
+  "kind": "function"
+ },
+ "gymVideoUrl": {
+  "file": "js/domain/gym-catalog.js",
+  "kind": "function"
+ },
+ "harderLoad": {
+  "file": "js/domain/pilates.js",
+  "kind": "function"
+ },
+ "hasDiscipline": {
+  "file": "js/features/disciplines.js",
+  "kind": "function"
+ },
+ "hasPilates": {
+  "file": "js/features/disciplines.js",
+  "kind": "function"
+ },
+ "HELP_BASICS_ORDER": {
+  "file": "js/features/help.js",
+  "kind": "const"
+ },
+ "HELP_FAQ": {
+  "file": "js/features/help.js",
+  "kind": "const"
+ },
+ "HELP_SECTION_FEATURES": {
+  "file": "js/features/help.js",
+  "kind": "const"
+ },
+ "HELP_SECTIONS": {
+  "file": "js/features/help.js",
+  "kind": "const"
+ },
+ "helpFeatureOn": {
+  "file": "js/features/help.js",
+  "kind": "function"
+ },
+ "helpLastFocus": {
+  "file": "js/features/help.js",
+  "kind": "let"
+ },
+ "helpSectionHtml": {
+  "file": "js/features/help.js",
+  "kind": "function"
+ },
+ "helpShowAll": {
+  "file": "js/features/help.js",
+  "kind": "let"
+ },
+ "hexAlpha": {
+  "file": "js/features/share-cards.js",
+  "kind": "function"
+ },
+ "hexAlphaFromRgb": {
+  "file": "js/features/share-cards.js",
+  "kind": "function"
+ },
+ "hideSetStepper": {
+  "file": "js/features/training/set-stepper.js",
+  "kind": "function"
+ },
+ "hideTimerWidget": {
+  "file": "js/features/rest-timer.js",
+  "kind": "function"
+ },
+ "HISTORY_RECENT_COUNT": {
+  "file": "js/features/history.js",
+  "kind": "const"
+ },
+ "I18N_ATTRS": {
+  "file": "js/core/i18n.js",
+  "kind": "const"
+ },
+ "I18N_DICTIONARIES": {
+  "file": "js/core/i18n.js",
+  "kind": "const"
+ },
+ "I18N_INLINE": {
+  "file": "js/core/i18n.js",
+  "kind": "const"
+ },
+ "i18nDone": {
+  "file": "js/core/i18n.js",
+  "kind": "const"
+ },
+ "i18nMissing": {
+  "file": "js/core/i18n.js",
+  "kind": "let"
+ },
+ "i18nObserve": {
+  "file": "js/core/i18n.js",
+  "kind": "function"
+ },
+ "i18nObserver": {
+  "file": "js/core/i18n.js",
+  "kind": "let"
+ },
+ "i18nSkip": {
+  "file": "js/core/i18n.js",
+  "kind": "function"
+ },
+ "i18nTranslateAttrs": {
+  "file": "js/core/i18n.js",
+  "kind": "function"
+ },
+ "i18nTranslateBlock": {
+  "file": "js/core/i18n.js",
+  "kind": "function"
+ },
+ "i18nTranslateText": {
+  "file": "js/core/i18n.js",
+  "kind": "function"
+ },
+ "i18nTranslateTree": {
+  "file": "js/core/i18n.js",
+  "kind": "function"
+ },
+ "i18nWrapDialogs": {
+  "file": "js/core/i18n.js",
+  "kind": "function"
+ },
+ "icsEscape": {
+  "file": "js/domain/plan.js",
+  "kind": "function"
+ },
+ "icsFold": {
+  "file": "js/domain/plan.js",
+  "kind": "function"
+ },
+ "IMPORT_LIMITS": {
+  "file": "js/domain/import-csv.js",
+  "kind": "const"
+ },
+ "IMPORT_MONTHS": {
+  "file": "js/domain/import-csv.js",
+  "kind": "const"
+ },
+ "IMPORT_SOURCES": {
+  "file": "js/domain/import-csv.js",
+  "kind": "const"
+ },
+ "importDurationMinutes": {
+  "file": "js/domain/import-csv.js",
+  "kind": "function"
+ },
+ "importExerciseType": {
+  "file": "js/domain/import-csv.js",
+  "kind": "function"
+ },
+ "importNumber": {
+  "file": "js/domain/import-csv.js",
+  "kind": "function"
+ },
+ "importRoutineFromCode": {
+  "file": "js/features/library.js",
+  "kind": "function"
+ },
+ "importRoutineSeq": {
+  "file": "js/features/library.js",
+  "kind": "let"
+ },
+ "importRowsFrom": {
+  "file": "js/domain/import-csv.js",
+  "kind": "function"
+ },
+ "inferExerciseType": {
+  "file": "js/data/exercise-prefs.js",
+  "kind": "function"
+ },
+ "initBottomNavKeyboardHide": {
+  "file": "js/ui/navigation.js",
+  "kind": "function"
+ },
+ "initCollapsibleSections": {
+  "file": "js/ui/collapsible.js",
+  "kind": "function"
+ },
+ "initDisciplines": {
+  "file": "js/features/disciplines.js",
+  "kind": "function"
+ },
+ "initFeatures": {
+  "file": "js/features/feature-settings.js",
+  "kind": "function"
+ },
+ "initGymLibrary": {
+  "file": "js/features/gym-library.js",
+  "kind": "function"
+ },
+ "initI18n": {
+  "file": "js/core/i18n.js",
+  "kind": "function"
+ },
+ "initializeData": {
+  "file": "js/data/routines-store.js",
+  "kind": "function"
+ },
+ "initMusicSettingsUI": {
+  "file": "js/features/music.js",
+  "kind": "function"
+ },
+ "initNativeFeatures": {
+  "file": "js/features/native.js",
+  "kind": "function"
+ },
+ "initPilatesLibrary": {
+  "file": "js/features/pilates-library.js",
+  "kind": "function"
+ },
+ "initReformerSettings": {
+  "file": "js/features/reformer.js",
+  "kind": "function"
+ },
+ "initScreens": {
+  "file": "js/ui/navigation.js",
+  "kind": "function"
+ },
+ "initSetStepperAutoHide": {
+  "file": "js/features/training/set-stepper.js",
+  "kind": "function"
+ },
+ "initSoundSettingsUI": {
+  "file": "js/audio/sound.js",
+  "kind": "function"
+ },
+ "initTheme": {
+  "file": "js/ui/navigation.js",
+  "kind": "function"
+ },
+ "initVoiceSettingsUI": {
+  "file": "js/audio/voice.js",
+  "kind": "function"
+ },
+ "initWakeLock": {
+  "file": "js/ui/wake-lock.js",
+  "kind": "function"
+ },
+ "isBlockComplete": {
+  "file": "js/features/training/exercise-block.js",
+  "kind": "function"
+ },
+ "isCardioType": {
+  "file": "js/domain/catalog.js",
+  "kind": "function"
+ },
+ "isEncryptedBackup": {
+  "file": "js/data/backup-crypto.js",
+  "kind": "function"
+ },
+ "isLikelyStackMachine": {
+  "file": "js/domain/training-tools.js",
+  "kind": "function"
+ },
+ "isNativeApp": {
+  "file": "js/features/native.js",
+  "kind": "function"
+ },
+ "ISO_DATE_RE": {
+  "file": "js/domain/models.js",
+  "kind": "const"
+ },
+ "isPilatesType": {
+  "file": "js/domain/pilates.js",
+  "kind": "function"
+ },
+ "isRoutineVisible": {
+  "file": "js/data/routines-store.js",
+  "kind": "function"
+ },
+ "isSessionComplete": {
+  "file": "js/features/training/finish-prompt.js",
+  "kind": "function"
+ },
+ "isSessionDataEvent": {
+  "file": "js/features/training/exercise-block.js",
+  "kind": "function"
+ },
+ "isUnilateral": {
+  "file": "js/data/exercise-prefs.js",
+  "kind": "function"
+ },
+ "isValidFeedbackContact": {
+  "file": "js/features/feedback.js",
+  "kind": "function"
+ },
+ "keepInPlace": {
+  "file": "js/features/training/set-stepper.js",
+  "kind": "function"
+ },
+ "KG_PER_LB": {
+  "file": "js/core/units.js",
+  "kind": "const"
+ },
+ "kgStringToDisplay": {
+  "file": "js/core/units.js",
+  "kind": "function"
+ },
+ "kgToDisplay": {
+  "file": "js/core/units.js",
+  "kind": "function"
+ },
+ "KM_PER_MILE": {
+  "file": "js/core/units.js",
+  "kind": "const"
+ },
+ "kmStringToDisplay": {
+  "file": "js/core/units.js",
+  "kind": "function"
+ },
+ "kmToDisplay": {
+  "file": "js/core/units.js",
+  "kind": "function"
+ },
+ "lastDoneOf": {
+  "file": "js/features/library.js",
+  "kind": "function"
+ },
+ "LB_TO_KG": {
+  "file": "js/domain/import-csv.js",
+  "kind": "const"
+ },
+ "LEGACY_INTENSITY_TO_EFFORT": {
+  "file": "js/domain/catalog.js",
+  "kind": "const"
+ },
+ "LEGACY_LEG_GROUP": {
+  "file": "js/domain/catalog.js",
+  "kind": "const"
+ },
+ "legacyStringsFromSets": {
+  "file": "js/domain/legacy-format.js",
+  "kind": "function"
+ },
+ "libRoutineItemHtml": {
+  "file": "js/features/library.js",
+  "kind": "function"
+ },
+ "loadAppSettings": {
+  "file": "js/features/general-settings.js",
+  "kind": "function"
+ },
+ "loadArchivedExercises": {
+  "file": "js/data/routines-store.js",
+  "kind": "function"
+ },
+ "loadArchivedRoutines": {
+  "file": "js/data/routines-store.js",
+  "kind": "function"
+ },
+ "loadBodyChartScale": {
+  "file": "js/features/body-metrics.js",
+  "kind": "function"
+ },
+ "loadCustomRoutineLabels": {
+  "file": "js/data/routines-store.js",
+  "kind": "function"
+ },
+ "loadCustomRoutines": {
+  "file": "js/data/routines-store.js",
+  "kind": "function"
+ },
+ "loadDisciplines": {
+  "file": "js/features/disciplines.js",
+  "kind": "function"
+ },
+ "loadExerciseTempos": {
+  "file": "js/data/exercise-prefs.js",
+  "kind": "function"
+ },
+ "loadGymEquipment": {
+  "file": "js/features/gym-library.js",
+  "kind": "function"
+ },
+ "loadMusicLinks": {
+  "file": "js/features/music.js",
+  "kind": "function"
+ },
+ "loadPlatePrefs": {
+  "file": "js/features/plate-calculator.js",
+  "kind": "function"
+ },
+ "loadProfile": {
+  "file": "js/features/profile.js",
+  "kind": "function"
+ },
+ "loadRecordings": {
+  "file": "js/audio/recordings.js",
+  "kind": "function"
+ },
+ "loadReformer": {
+  "file": "js/features/reformer.js",
+  "kind": "function"
+ },
+ "loadRoutineDisciplines": {
+  "file": "js/features/disciplines.js",
+  "kind": "function"
+ },
+ "loadRoutineExercises": {
+  "file": "js/features/training/workout.js",
+  "kind": "function"
+ },
+ "loadShareFonts": {
+  "file": "js/features/share-cards.js",
+  "kind": "function"
+ },
+ "loadSoundSettings": {
+  "file": "js/audio/sound.js",
+  "kind": "function"
+ },
+ "loadTrainingDaysPlanHistory": {
+  "file": "js/data/routines-store.js",
+  "kind": "function"
+ },
+ "loadVoiceSettings": {
+  "file": "js/audio/voice.js",
+  "kind": "function"
+ },
+ "localNotifications": {
+  "file": "js/features/native.js",
+  "kind": "function"
+ },
+ "LocalStorageAdapter": {
+  "file": "js/data/store.js",
+  "kind": "class"
+ },
+ "MAPPED_GROUPS": {
+  "file": "js/features/muscle-map.js",
+  "kind": "const"
+ },
+ "markFeatureHintShown": {
+  "file": "js/features/feature-settings.js",
+  "kind": "function"
+ },
+ "markSetRowDone": {
+  "file": "js/features/training/finish-prompt.js",
+  "kind": "function"
+ },
+ "MAX_RECORDING_MS": {
+  "file": "js/audio/recordings.js",
+  "kind": "const"
+ },
+ "MAX_UPLOAD_BYTES": {
+  "file": "js/audio/recordings.js",
+  "kind": "const"
+ },
+ "maybeAutoStartSessionTimer": {
+  "file": "js/features/training/session-clock.js",
+  "kind": "function"
+ },
+ "maybeRemindTodayPlan": {
+  "file": "js/features/plan-screen.js",
+  "kind": "function"
+ },
+ "maybeStartOnboarding": {
+  "file": "js/features/onboarding.js",
+  "kind": "function"
+ },
+ "MEDAL_TIERS": {
+  "file": "js/domain/achievements.js",
+  "kind": "const"
+ },
+ "medalShareSpec": {
+  "file": "js/features/profile.js",
+  "kind": "function"
+ },
+ "MemoryAdapter": {
+  "file": "js/data/store.js",
+  "kind": "class"
+ },
+ "MIGRATIONS": {
+  "file": "js/data/migrations.js",
+  "kind": "const"
+ },
+ "MILE_TO_KM": {
+  "file": "js/domain/import-csv.js",
+  "kind": "const"
+ },
+ "MODULES": {
+  "file": "js/features/disciplines.js",
+  "kind": "const"
+ },
+ "MUSCLE_GROUP_GUESSES": {
+  "file": "js/domain/catalog.js",
+  "kind": "const"
+ },
+ "MUSCLE_GROUPS": {
+  "file": "js/domain/catalog.js",
+  "kind": "const"
+ },
+ "MUSCLE_IDEAL_RANGE": {
+  "file": "js/domain/training-tools.js",
+  "kind": "const"
+ },
+ "MUSCLE_LEVELS": {
+  "file": "js/domain/training-tools.js",
+  "kind": "const"
+ },
+ "MUSCLE_MAP_PERIODS": {
+  "file": "js/features/muscle-map.js",
+  "kind": "const"
+ },
+ "MUSCLE_PATTERN_SVG": {
+  "file": "js/features/muscle-map.js",
+  "kind": "const"
+ },
+ "muscleFigureSvg": {
+  "file": "js/features/muscle-map.js",
+  "kind": "function"
+ },
+ "muscleGroupOptionsHtml": {
+  "file": "js/features/exercises.js",
+  "kind": "function"
+ },
+ "muscleLevel": {
+  "file": "js/domain/training-tools.js",
+  "kind": "function"
+ },
+ "muscleMapData": {
+  "file": "js/features/muscle-map.js",
+  "kind": "function"
+ },
+ "muscleMapRange": {
+  "file": "js/domain/training-tools.js",
+  "kind": "function"
+ },
+ "muscleMapSelected": {
+  "file": "js/features/muscle-map.js",
+  "kind": "let"
+ },
+ "muscleRangeNote": {
+  "file": "js/features/muscle-map.js",
+  "kind": "function"
+ },
+ "muscleSetsByGroup": {
+  "file": "js/domain/training-tools.js",
+  "kind": "function"
+ },
+ "MUSIC_APPS": {
+  "file": "js/features/music.js",
+  "kind": "const"
+ },
+ "NATIVE_PLAN_BASE_ID": {
+  "file": "js/features/native.js",
+  "kind": "const"
+ },
+ "NATIVE_REST_ID": {
+  "file": "js/features/native.js",
+  "kind": "const"
+ },
+ "nativeNotifications": {
+  "file": "js/features/native.js",
+  "kind": "let"
+ },
+ "nativeNotificationsReady": {
+  "file": "js/features/native.js",
+  "kind": "let"
+ },
+ "nextFeatureHint": {
+  "file": "js/features/feature-settings.js",
+  "kind": "function"
+ },
+ "nextInSuperset": {
+  "file": "js/domain/training-tools.js",
+  "kind": "function"
+ },
+ "nextProgramDay": {
+  "file": "js/features/programs.js",
+  "kind": "function"
+ },
+ "nextSupersetLetter": {
+  "file": "js/domain/training-tools.js",
+  "kind": "function"
+ },
+ "normalizeDecimalString": {
+  "file": "js/core/utils.js",
+  "kind": "function"
+ },
+ "normalizeForCompare": {
+  "file": "js/core/utils.js",
+  "kind": "function"
+ },
+ "normalizeReformer": {
+  "file": "js/domain/pilates.js",
+  "kind": "function"
+ },
+ "NOSLEEP_VIDEO_SRC": {
+  "file": "js/ui/wake-lock.js",
+  "kind": "const"
+ },
+ "noSleepVideoEl": {
+  "file": "js/ui/wake-lock.js",
+  "kind": "let"
+ },
+ "ONBOARDING_STEPS": {
+  "file": "js/features/onboarding.js",
+  "kind": "const"
+ },
+ "onboardingDays": {
+  "file": "js/features/onboarding.js",
+  "kind": "let"
+ },
+ "onboardingFeatureChoice": {
+  "file": "js/features/onboarding.js",
+  "kind": "let"
+ },
+ "onboardingNext": {
+  "file": "js/features/onboarding.js",
+  "kind": "function"
+ },
+ "onboardingStep": {
+  "file": "js/features/onboarding.js",
+  "kind": "let"
+ },
+ "onboardingStepHtml": {
+  "file": "js/features/onboarding.js",
+  "kind": "function"
+ },
+ "onboardingTime": {
+  "file": "js/features/onboarding.js",
+  "kind": "let"
+ },
+ "onFeaturesChanged": {
+  "file": "js/features/feature-settings.js",
+  "kind": "function"
+ },
+ "onHistoryViewModeChange": {
+  "file": "js/features/history.js",
+  "kind": "function"
+ },
+ "onImportHistoryFile": {
+  "file": "js/features/import-history.js",
+  "kind": "function"
+ },
+ "onQuickAddNameInput": {
+  "file": "js/features/training/workout.js",
+  "kind": "function"
+ },
+ "onRepStart": {
+  "file": "js/features/rep-counter.js",
+  "kind": "function"
+ },
+ "onSoundVolumeInput": {
+  "file": "js/audio/sound.js",
+  "kind": "function"
+ },
+ "onStepperRowFocusOut": {
+  "file": "js/features/training/set-stepper.js",
+  "kind": "function"
+ },
+ "onStepperRowInput": {
+  "file": "js/features/training/set-stepper.js",
+  "kind": "function"
+ },
+ "onTimerWidgetClick": {
+  "file": "js/features/rest-timer.js",
+  "kind": "function"
+ },
+ "onVoiceSettingChange": {
+  "file": "js/audio/voice.js",
+  "kind": "function"
+ },
+ "openDrawer": {
+  "file": "js/ui/navigation.js",
+  "kind": "function"
+ },
+ "openExerciseDetail": {
+  "file": "js/features/progress.js",
+  "kind": "function"
+ },
+ "openExerciseDetailFromRow": {
+  "file": "js/features/progress.js",
+  "kind": "function"
+ },
+ "openFeedback": {
+  "file": "js/features/feedback.js",
+  "kind": "function"
+ },
+ "openFinishPrompt": {
+  "file": "js/features/training/finish-prompt.js",
+  "kind": "function"
+ },
+ "openGymInfo": {
+  "file": "js/features/gym-library.js",
+  "kind": "function"
+ },
+ "openHelp": {
+  "file": "js/features/help.js",
+  "kind": "function"
+ },
+ "openLegal": {
+  "file": "js/features/help.js",
+  "kind": "function"
+ },
+ "openMailto": {
+  "file": "js/features/feedback.js",
+  "kind": "function"
+ },
+ "openMusic": {
+  "file": "js/features/music.js",
+  "kind": "function"
+ },
+ "openOnboarding": {
+  "file": "js/features/onboarding.js",
+  "kind": "function"
+ },
+ "openPhoto": {
+  "file": "js/features/profile.js",
+  "kind": "function"
+ },
+ "openPilatesInfo": {
+  "file": "js/features/pilates-library.js",
+  "kind": "function"
+ },
+ "openPlateCalculator": {
+  "file": "js/features/plate-calculator.js",
+  "kind": "function"
+ },
+ "openProgramsModal": {
+  "file": "js/features/programs.js",
+  "kind": "function"
+ },
+ "openSectionsBeforeReload": {
+  "file": "js/ui/collapsible.js",
+  "kind": "function"
+ },
+ "openSessionSummary": {
+  "file": "js/features/training/session-summary.js",
+  "kind": "function"
+ },
+ "openShareSheet": {
+  "file": "js/features/share-cards.js",
+  "kind": "function"
+ },
+ "openSupersetModal": {
+  "file": "js/features/training/supersets.js",
+  "kind": "function"
+ },
+ "pad2": {
+  "file": "js/domain/plan.js",
+  "kind": "const"
+ },
+ "parseCsv": {
+  "file": "js/domain/import-csv.js",
+  "kind": "function"
+ },
+ "parseDecimal": {
+  "file": "js/core/utils.js",
+  "kind": "function"
+ },
+ "parseImportDate": {
+  "file": "js/domain/import-csv.js",
+  "kind": "function"
+ },
+ "parsePauseList": {
+  "file": "js/domain/legacy-format.js",
+  "kind": "function"
+ },
+ "parseRecordText": {
+  "file": "js/domain/achievements.js",
+  "kind": "function"
+ },
+ "parseRepsList": {
+  "file": "js/domain/legacy-format.js",
+  "kind": "function"
+ },
+ "parseRestSeconds": {
+  "file": "js/core/time.js",
+  "kind": "function"
+ },
+ "parseSprings": {
+  "file": "js/domain/pilates.js",
+  "kind": "function"
+ },
+ "parseTimeInput": {
+  "file": "js/core/time.js",
+  "kind": "function"
+ },
+ "parseTimeSeconds": {
+  "file": "js/core/time.js",
+  "kind": "function"
+ },
+ "parseWeightList": {
+  "file": "js/domain/legacy-format.js",
+  "kind": "function"
+ },
+ "pendingImport": {
+  "file": "js/features/import-history.js",
+  "kind": "let"
+ },
+ "pendingSetRows": {
+  "file": "js/features/training/finish-prompt.js",
+  "kind": "function"
+ },
+ "persistExerciseOrder": {
+  "file": "js/features/training/reorder.js",
+  "kind": "function"
+ },
+ "PHOTO_MAX_SIDE": {
+  "file": "js/features/profile.js",
+  "kind": "const"
+ },
+ "PHOTO_QUALITY": {
+  "file": "js/features/profile.js",
+  "kind": "const"
+ },
+ "photoRepo": {
+  "file": "js/data/recording-repository.js",
+  "kind": "const"
+ },
+ "pickRecordingMime": {
+  "file": "js/audio/recordings.js",
+  "kind": "function"
+ },
+ "pickVoice": {
+  "file": "js/audio/voice.js",
+  "kind": "function"
+ },
+ "PILATES_BREATH": {
+  "file": "js/domain/pilates-catalog.js",
+  "kind": "const"
+ },
+ "PILATES_CAUTIONS": {
+  "file": "js/domain/pilates-catalog.js",
+  "kind": "const"
+ },
+ "PILATES_DIR_TEXT": {
+  "file": "js/features/pilates-library.js",
+  "kind": "const"
+ },
+ "PILATES_EQUIPMENT": {
+  "file": "js/domain/pilates-catalog.js",
+  "kind": "const"
+ },
+ "PILATES_ERRORS": {
+  "file": "js/domain/pilates-catalog.js",
+  "kind": "const"
+ },
+ "PILATES_EXERCISES": {
+  "file": "js/domain/pilates-catalog.js",
+  "kind": "const"
+ },
+ "PILATES_LEARN": {
+  "file": "js/features/pilates-library.js",
+  "kind": "const"
+ },
+ "PILATES_LEVELS": {
+  "file": "js/domain/pilates-catalog.js",
+  "kind": "const"
+ },
+ "pilatesChip": {
+  "file": "js/features/pilates-library.js",
+  "kind": "function"
+ },
+ "pilatesDirection": {
+  "file": "js/domain/pilates.js",
+  "kind": "function"
+ },
+ "pilatesErrorPair": {
+  "file": "js/features/pilates-library.js",
+  "kind": "function"
+ },
+ "pilatesEx": {
+  "file": "js/domain/pilates-catalog.js",
+  "kind": "function"
+ },
+ "pilatesExerciseInfo": {
+  "file": "js/domain/pilates-catalog.js",
+  "kind": "function"
+ },
+ "pilatesFilters": {
+  "file": "js/features/pilates-library.js",
+  "kind": "const"
+ },
+ "pilatesItemHtml": {
+  "file": "js/features/pilates-library.js",
+  "kind": "function"
+ },
+ "pilatesKindsAvailable": {
+  "file": "js/features/pilates-library.js",
+  "kind": "function"
+ },
+ "pilatesProgramEx": {
+  "file": "js/domain/pilates-programs.js",
+  "kind": "const"
+ },
+ "pilatesRf": {
+  "file": "js/domain/pilates-reformer.js",
+  "kind": "const"
+ },
+ "pilatesVideoUrl": {
+  "file": "js/domain/pilates-catalog.js",
+  "kind": "function"
+ },
+ "planCalendarOptions": {
+  "file": "js/features/plan-screen.js",
+  "kind": "function"
+ },
+ "planGoogleCalendarLinks": {
+  "file": "js/domain/plan.js",
+  "kind": "function"
+ },
+ "planRoutineSelectHtml": {
+  "file": "js/features/plan-screen.js",
+  "kind": "function"
+ },
+ "planTimeSelectsHtml": {
+  "file": "js/features/plan-screen.js",
+  "kind": "function"
+ },
+ "PLATE_UNIT": {
+  "file": "js/domain/training-tools.js",
+  "kind": "const"
+ },
+ "plateExercise": {
+  "file": "js/features/plate-calculator.js",
+  "kind": "let"
+ },
+ "plateModeFor": {
+  "file": "js/features/plate-calculator.js",
+  "kind": "function"
+ },
+ "plateTargetInput": {
+  "file": "js/features/plate-calculator.js",
+  "kind": "let"
+ },
+ "plateVisualHtml": {
+  "file": "js/features/plate-calculator.js",
+  "kind": "function"
+ },
+ "playRecordings": {
+  "file": "js/audio/recordings.js",
+  "kind": "function"
+ },
+ "playRestTimerBeep": {
+  "file": "js/audio/sound.js",
+  "kind": "function"
+ },
+ "playTick": {
+  "file": "js/audio/sound.js",
+  "kind": "function"
+ },
+ "playTone": {
+  "file": "js/audio/sound.js",
+  "kind": "function"
+ },
+ "populateExerciseDatalist": {
+  "file": "js/features/training/workout.js",
+  "kind": "function"
+ },
+ "populateHistoryFilters": {
+  "file": "js/features/history.js",
+  "kind": "function"
+ },
+ "populateRoutineOptions": {
+  "file": "js/features/training/routines-ui.js",
+  "kind": "function"
+ },
+ "populateUnifySelectors": {
+  "file": "js/features/exercises.js",
+  "kind": "function"
+ },
+ "populateVoiceSelect": {
+  "file": "js/audio/voice.js",
+  "kind": "function"
+ },
+ "PREFERRED_VOICE_LANGS": {
+  "file": "js/audio/voice.js",
+  "kind": "const"
+ },
+ "prepareCsvImport": {
+  "file": "js/domain/import-csv.js",
+  "kind": "function"
+ },
+ "previewCue": {
+  "file": "js/audio/recordings.js",
+  "kind": "function"
+ },
+ "profilePhotoUrls": {
+  "file": "js/features/profile.js",
+  "kind": "let"
+ },
+ "profileTrophies": {
+  "file": "js/features/profile.js",
+  "kind": "let"
+ },
+ "PROGRAM_TIER_LABEL": {
+  "file": "js/features/programs.js",
+  "kind": "const"
+ },
+ "programCardHtml": {
+  "file": "js/features/programs.js",
+  "kind": "function"
+ },
+ "programDayKeys": {
+  "file": "js/features/programs.js",
+  "kind": "function"
+ },
+ "programExercise": {
+  "file": "js/domain/programs.js",
+  "kind": "const"
+ },
+ "programPrevSets": {
+  "file": "js/features/programs.js",
+  "kind": "function"
+ },
+ "programRoutineKey": {
+  "file": "js/domain/programs.js",
+  "kind": "function"
+ },
+ "PROGRAMS": {
+  "file": "js/domain/programs.js",
+  "kind": "const"
+ },
+ "programsForActiveModule": {
+  "file": "js/features/programs.js",
+  "kind": "function"
+ },
+ "programSuggestion": {
+  "file": "js/features/programs.js",
+  "kind": "function"
+ },
+ "programTargetLineHtml": {
+  "file": "js/features/programs.js",
+  "kind": "function"
+ },
+ "programTargetsFor": {
+  "file": "js/features/programs.js",
+  "kind": "function"
+ },
+ "PROGRESSION_GROUPINGS": {
+  "file": "js/features/progress.js",
+  "kind": "const"
+ },
+ "progressionRowHtml": {
+  "file": "js/features/progress.js",
+  "kind": "function"
+ },
+ "quickAddExercise": {
+  "file": "js/features/training/workout.js",
+  "kind": "function"
+ },
+ "readBlockSets": {
+  "file": "js/features/training/exercise-block.js",
+  "kind": "function"
+ },
+ "readFeedbackForm": {
+  "file": "js/features/feedback.js",
+  "kind": "function"
+ },
+ "readPlanFromEditor": {
+  "file": "js/features/plan-screen.js",
+  "kind": "function"
+ },
+ "readSetRow": {
+  "file": "js/features/training/exercise-block.js",
+  "kind": "function"
+ },
+ "RECENT_ROUTINES_COLLAPSED_COUNT": {
+  "file": "js/features/home.js",
+  "kind": "const"
+ },
+ "RECENT_ROUTINES_EXPANDED_COUNT": {
+  "file": "js/features/home.js",
+  "kind": "const"
+ },
+ "recentRecords": {
+  "file": "js/domain/achievements.js",
+  "kind": "function"
+ },
+ "recentRoutinesExpanded": {
+  "file": "js/features/home.js",
+  "kind": "let"
+ },
+ "RECORD_KINDS": {
+  "file": "js/domain/achievements.js",
+  "kind": "const"
+ },
+ "recordDelta": {
+  "file": "js/domain/achievements.js",
+  "kind": "function"
+ },
+ "recordingBuffers": {
+  "file": "js/audio/recordings.js",
+  "kind": "const"
+ },
+ "recordingMeta": {
+  "file": "js/audio/recordings.js",
+  "kind": "const"
+ },
+ "recordingRepo": {
+  "file": "js/data/recording-repository.js",
+  "kind": "const"
+ },
+ "RecordingRepository": {
+  "file": "js/data/recording-repository.js",
+  "kind": "class"
+ },
+ "recordValueText": {
+  "file": "js/features/profile.js",
+  "kind": "function"
+ },
+ "recState": {
+  "file": "js/audio/recordings.js",
+  "kind": "let"
+ },
+ "REFORMER_PRESETS": {
+  "file": "js/domain/pilates.js",
+  "kind": "const"
+ },
+ "refreshSupersetBadges": {
+  "file": "js/features/training/supersets.js",
+  "kind": "function"
+ },
+ "registerGymMuscles": {
+  "file": "js/domain/gym-catalog.js",
+  "kind": "function"
+ },
+ "registerPilatesMuscles": {
+  "file": "js/domain/pilates-catalog.js",
+  "kind": "function"
+ },
+ "releaseWakeLockNow": {
+  "file": "js/ui/wake-lock.js",
+  "kind": "function"
+ },
+ "rememberManualCollapse": {
+  "file": "js/features/training/focus.js",
+  "kind": "function"
+ },
+ "rememberOpenSections": {
+  "file": "js/ui/collapsible.js",
+  "kind": "function"
+ },
+ "REMIND_OPTIONS": {
+  "file": "js/domain/plan.js",
+  "kind": "const"
+ },
+ "removeFromSuperset": {
+  "file": "js/features/training/supersets.js",
+  "kind": "function"
+ },
+ "removeLastSet": {
+  "file": "js/features/training/exercise-block.js",
+  "kind": "function"
+ },
+ "removeRecording": {
+  "file": "js/audio/recordings.js",
+  "kind": "function"
+ },
+ "renameRoutine": {
+  "file": "js/features/training/routines-ui.js",
+  "kind": "function"
+ },
+ "renderArchivedRoutinesList": {
+  "file": "js/features/training/routines-ui.js",
+  "kind": "function"
+ },
+ "renderBlockSets": {
+  "file": "js/features/training/exercise-block.js",
+  "kind": "function"
+ },
+ "renderCalendarDayDetail": {
+  "file": "js/features/home.js",
+  "kind": "function"
+ },
+ "renderDisciplineSettings": {
+  "file": "js/features/disciplines.js",
+  "kind": "function"
+ },
+ "renderDrawerNav": {
+  "file": "js/ui/navigation.js",
+  "kind": "function"
+ },
+ "renderExerciseDetailChart": {
+  "file": "js/features/progress.js",
+  "kind": "function"
+ },
+ "renderFeatureHint": {
+  "file": "js/features/feature-settings.js",
+  "kind": "function"
+ },
+ "renderFeedbackTypes": {
+  "file": "js/features/feedback.js",
+  "kind": "function"
+ },
+ "renderGarden": {
+  "file": "js/features/garden.js",
+  "kind": "function"
+ },
+ "renderGymCatalog": {
+  "file": "js/features/gym-library.js",
+  "kind": "function"
+ },
+ "renderHelpContent": {
+  "file": "js/features/help.js",
+  "kind": "function"
+ },
+ "renderHistoryItem": {
+  "file": "js/features/history.js",
+  "kind": "function"
+ },
+ "renderHistorySets": {
+  "file": "js/features/history.js",
+  "kind": "function"
+ },
+ "renderLibrary": {
+  "file": "js/features/library.js",
+  "kind": "function"
+ },
+ "renderLibraryExercises": {
+  "file": "js/features/library.js",
+  "kind": "function"
+ },
+ "renderMedals": {
+  "file": "js/features/profile.js",
+  "kind": "function"
+ },
+ "renderModuleSwitch": {
+  "file": "js/features/disciplines.js",
+  "kind": "function"
+ },
+ "renderMonthCalendar": {
+  "file": "js/features/home.js",
+  "kind": "function"
+ },
+ "renderMuscleMap": {
+  "file": "js/features/muscle-map.js",
+  "kind": "function"
+ },
+ "renderMuscleMapList": {
+  "file": "js/features/muscle-map.js",
+  "kind": "function"
+ },
+ "renderOnboarding": {
+  "file": "js/features/onboarding.js",
+  "kind": "function"
+ },
+ "renderPhotos": {
+  "file": "js/features/profile.js",
+  "kind": "function"
+ },
+ "renderPilatesCatalog": {
+  "file": "js/features/pilates-library.js",
+  "kind": "function"
+ },
+ "renderPilatesLearn": {
+  "file": "js/features/pilates-library.js",
+  "kind": "function"
+ },
+ "renderPlanCalendar": {
+  "file": "js/features/plan-screen.js",
+  "kind": "function"
+ },
+ "renderPlanEditor": {
+  "file": "js/features/plan-screen.js",
+  "kind": "function"
+ },
+ "renderPlanSection": {
+  "file": "js/features/plan-screen.js",
+  "kind": "function"
+ },
+ "renderPlanStatus": {
+  "file": "js/features/plan-screen.js",
+  "kind": "function"
+ },
+ "renderPlateResult": {
+  "file": "js/features/plate-calculator.js",
+  "kind": "function"
+ },
+ "renderProfile": {
+  "file": "js/features/profile.js",
+  "kind": "function"
+ },
+ "renderProfileStats": {
+  "file": "js/features/profile.js",
+  "kind": "function"
+ },
+ "renderProgramsSection": {
+  "file": "js/features/programs.js",
+  "kind": "function"
+ },
+ "renderRecentRoutineAverages": {
+  "file": "js/features/home.js",
+  "kind": "function"
+ },
+ "renderRecordingsUI": {
+  "file": "js/audio/recordings.js",
+  "kind": "function"
+ },
+ "renderReformerSettings": {
+  "file": "js/features/reformer.js",
+  "kind": "function"
+ },
+ "renderRepCounter": {
+  "file": "js/features/rep-counter.js",
+  "kind": "function"
+ },
+ "renderRepCounterTitle": {
+  "file": "js/features/rep-counter.js",
+  "kind": "function"
+ },
+ "renderShareSheet": {
+  "file": "js/features/share-cards.js",
+  "kind": "function"
+ },
+ "renderStackResult": {
+  "file": "js/features/plate-calculator.js",
+  "kind": "function"
+ },
+ "renderTabataHistoryItem": {
+  "file": "js/features/history.js",
+  "kind": "function"
+ },
+ "renderTabataSessionBlocks": {
+  "file": "js/features/tabata.js",
+  "kind": "function"
+ },
+ "renderTodayCard": {
+  "file": "js/features/plan-screen.js",
+  "kind": "function"
+ },
+ "renderTrophies": {
+  "file": "js/features/profile.js",
+  "kind": "function"
+ },
+ "renderVariantsCatalog": {
+  "file": "js/features/exercises.js",
+  "kind": "function"
+ },
+ "renderWorkoutSummary": {
+  "file": "js/features/history.js",
+  "kind": "function"
+ },
+ "renumberSets": {
+  "file": "js/features/training/exercise-block.js",
+  "kind": "function"
+ },
+ "REORDER_HOLD_MS": {
+  "file": "js/features/training/reorder.js",
+  "kind": "const"
+ },
+ "REORDER_HOLD_TOLERANCE_PX": {
+  "file": "js/features/training/reorder.js",
+  "kind": "const"
+ },
+ "reorderController": {
+  "file": "js/features/training/reorder.js",
+  "kind": "const"
+ },
+ "ReorderController": {
+  "file": "js/features/training/reorder.js",
+  "kind": "class"
+ },
+ "REP_TEMPO_MAX": {
+  "file": "js/features/rep-counter.js",
+  "kind": "const"
+ },
+ "REP_TEMPO_MIN": {
+  "file": "js/features/rep-counter.js",
+  "kind": "const"
+ },
+ "REP_TEMPO_STEP": {
+  "file": "js/features/rep-counter.js",
+  "kind": "const"
+ },
+ "repCounterTick": {
+  "file": "js/features/rep-counter.js",
+  "kind": "function"
+ },
+ "repCue": {
+  "file": "js/features/rep-counter.js",
+  "kind": "function"
+ },
+ "repo": {
+  "file": "js/data/repositories.js",
+  "kind": "const"
+ },
+ "repState": {
+  "file": "js/features/rep-counter.js",
+  "kind": "let"
+ },
+ "repTimer": {
+  "file": "js/features/rep-counter.js",
+  "kind": "let"
+ },
+ "requestWakeLock": {
+  "file": "js/ui/wake-lock.js",
+  "kind": "function"
+ },
+ "resetAllData": {
+  "file": "js/features/backup.js",
+  "kind": "function"
+ },
+ "resetRoutineTimer": {
+  "file": "js/features/training/session-clock.js",
+  "kind": "function"
+ },
+ "resolveExerciseName": {
+  "file": "js/features/training/workout.js",
+  "kind": "function"
+ },
+ "resolveLanguage": {
+  "file": "js/core/i18n.js",
+  "kind": "function"
+ },
+ "resolveTheme": {
+  "file": "js/ui/navigation.js",
+  "kind": "function"
+ },
+ "REST_WARN_SECONDS": {
+  "file": "js/audio/voice.js",
+  "kind": "const"
+ },
+ "restoreArchivedExercise": {
+  "file": "js/features/training/workout.js",
+  "kind": "function"
+ },
+ "restoreRoutine": {
+  "file": "js/features/training/routines-ui.js",
+  "kind": "function"
+ },
+ "restoreSessionTimer": {
+  "file": "js/features/training/session-clock.js",
+  "kind": "function"
+ },
+ "restoreTabataSessionBlocks": {
+  "file": "js/features/tabata.js",
+  "kind": "function"
+ },
+ "restoreWorkoutDraft": {
+  "file": "js/features/training/draft.js",
+  "kind": "function"
+ },
+ "restTimerAudioCtx": {
+  "file": "js/audio/sound.js",
+  "kind": "let"
+ },
+ "restTimerEndsAt": {
+  "file": "js/features/rest-timer.js",
+  "kind": "let"
+ },
+ "restTimerInterval": {
+  "file": "js/features/rest-timer.js",
+  "kind": "let"
+ },
+ "restTimerRemainingSeconds": {
+  "file": "js/features/rest-timer.js",
+  "kind": "function"
+ },
+ "restTimerWarned": {
+  "file": "js/features/rest-timer.js",
+  "kind": "let"
+ },
+ "roundStr": {
+  "file": "js/domain/import-csv.js",
+  "kind": "const"
+ },
+ "roundTo": {
+  "file": "js/core/units.js",
+  "kind": "const"
+ },
+ "ROUTINE_LABELS": {
+  "file": "js/domain/catalog.js",
+  "kind": "const"
+ },
+ "ROUTINE_SHARE_LIMITS": {
+  "file": "js/domain/routine-share.js",
+  "kind": "const"
+ },
+ "ROUTINE_SHARE_VERSION": {
+  "file": "js/domain/routine-share.js",
+  "kind": "const"
+ },
+ "routineExercisesOf": {
+  "file": "js/features/library.js",
+  "kind": "function"
+ },
+ "routineInActiveModule": {
+  "file": "js/features/disciplines.js",
+  "kind": "function"
+ },
+ "routineLabelMatchesWeekday": {
+  "file": "js/domain/plan.js",
+  "kind": "function"
+ },
+ "routineLabelOf": {
+  "file": "js/features/progress.js",
+  "kind": "function"
+ },
+ "routineModule": {
+  "file": "js/features/disciplines.js",
+  "kind": "function"
+ },
+ "RoutineRepository": {
+  "file": "js/data/repositories.js",
+  "kind": "class"
+ },
+ "routines": {
+  "file": "js/domain/catalog.js",
+  "kind": "const"
+ },
+ "routineShareCodeFrom": {
+  "file": "js/features/library.js",
+  "kind": "function"
+ },
+ "routineShareCodesFrom": {
+  "file": "js/features/library.js",
+  "kind": "function"
+ },
+ "rpeToRir": {
+  "file": "js/domain/import-csv.js",
+  "kind": "function"
+ },
+ "runDeclaredAction": {
+  "file": "js/ui/actions.js",
+  "kind": "function"
+ },
+ "runMigrations": {
+  "file": "js/data/migrations.js",
+  "kind": "function"
+ },
+ "runRestTimer": {
+  "file": "js/features/rest-timer.js",
+  "kind": "function"
+ },
+ "runSideSwitch": {
+  "file": "js/features/training/exercise-block.js",
+  "kind": "function"
+ },
+ "runTabataPhase": {
+  "file": "js/features/tabata.js",
+  "kind": "function"
+ },
+ "sanitizeDecimalInput": {
+  "file": "js/core/utils.js",
+  "kind": "function"
+ },
+ "sanitizeSetInput": {
+  "file": "js/features/training/exercise-block.js",
+  "kind": "function"
+ },
+ "saveAppSettings": {
+  "file": "js/features/general-settings.js",
+  "kind": "function"
+ },
+ "saveArchivedExercises": {
+  "file": "js/data/routines-store.js",
+  "kind": "function"
+ },
+ "saveArchivedRoutines": {
+  "file": "js/data/routines-store.js",
+  "kind": "function"
+ },
+ "saveBodyChartScale": {
+  "file": "js/features/body-metrics.js",
+  "kind": "function"
+ },
+ "saveBodyMetrics": {
+  "file": "js/features/body-metrics.js",
+  "kind": "function"
+ },
+ "saveCurrentPlan": {
+  "file": "js/features/plan-screen.js",
+  "kind": "function"
+ },
+ "saveCustomRoutineLabels": {
+  "file": "js/data/routines-store.js",
+  "kind": "function"
+ },
+ "saveCustomRoutines": {
+  "file": "js/data/routines-store.js",
+  "kind": "function"
+ },
+ "saveDisciplines": {
+  "file": "js/features/disciplines.js",
+  "kind": "function"
+ },
+ "saveEquipLevel": {
+  "file": "js/features/pilates-library.js",
+  "kind": "function"
+ },
+ "saveExerciseTempo": {
+  "file": "js/data/exercise-prefs.js",
+  "kind": "function"
+ },
+ "saveExerciseType": {
+  "file": "js/data/exercise-prefs.js",
+  "kind": "function"
+ },
+ "saveGroupOverride": {
+  "file": "js/data/exercise-prefs.js",
+  "kind": "function"
+ },
+ "saveMeasurementPhoto": {
+  "file": "js/features/profile.js",
+  "kind": "function"
+ },
+ "saveMusicLink": {
+  "file": "js/features/music.js",
+  "kind": "function"
+ },
+ "saveOnboardingPlan": {
+  "file": "js/features/onboarding.js",
+  "kind": "function"
+ },
+ "savePhoto": {
+  "file": "js/features/profile.js",
+  "kind": "function"
+ },
+ "savePlanFromEditor": {
+  "file": "js/features/plan-screen.js",
+  "kind": "function"
+ },
+ "savePlatePrefs": {
+  "file": "js/features/plate-calculator.js",
+  "kind": "function"
+ },
+ "saveProfile": {
+  "file": "js/features/profile.js",
+  "kind": "function"
+ },
+ "saveRecordingData": {
+  "file": "js/audio/recordings.js",
+  "kind": "function"
+ },
+ "saveReformer": {
+  "file": "js/features/reformer.js",
+  "kind": "function"
+ },
+ "saveSoundSettings": {
+  "file": "js/audio/sound.js",
+  "kind": "function"
+ },
+ "saveSupersetFromModal": {
+  "file": "js/features/training/supersets.js",
+  "kind": "function"
+ },
+ "saveSupersetMap": {
+  "file": "js/features/training/supersets.js",
+  "kind": "function"
+ },
+ "saveTabataSessionBlocksDraft": {
+  "file": "js/features/tabata.js",
+  "kind": "function"
+ },
+ "saveTimeUnit": {
+  "file": "js/data/exercise-prefs.js",
+  "kind": "function"
+ },
+ "saveUnilateral": {
+  "file": "js/data/exercise-prefs.js",
+  "kind": "function"
+ },
+ "saveVoiceSettings": {
+  "file": "js/audio/voice.js",
+  "kind": "function"
+ },
+ "saveWorkoutDraft": {
+  "file": "js/features/training/draft.js",
+  "kind": "function"
+ },
+ "saveWorkoutSession": {
+  "file": "js/features/training/workout.js",
+  "kind": "function"
+ },
+ "scheduleRestEndNotification": {
+  "file": "js/features/native.js",
+  "kind": "function"
+ },
+ "SCHEMA_VERSION": {
+  "file": "js/data/schema.js",
+  "kind": "const"
+ },
+ "SCREEN_ON_SHOW": {
+  "file": "js/ui/navigation.js",
+  "kind": "const"
+ },
+ "SECONDARY_MUSCLE_RULES": {
+  "file": "js/domain/training-tools.js",
+  "kind": "const"
+ },
+ "secondaryMusclesFor": {
+  "file": "js/domain/training-tools.js",
+  "kind": "function"
+ },
+ "seededRandom": {
+  "file": "js/features/share-cards.js",
+  "kind": "function"
+ },
+ "selectedMood": {
+  "file": "js/features/training/routines-ui.js",
+  "kind": "let"
+ },
+ "sessionDurationInterval": {
+  "file": "js/features/training/session-clock.js",
+  "kind": "let"
+ },
+ "SET_FIELDS": {
+  "file": "js/domain/catalog.js",
+  "kind": "const"
+ },
+ "SET_STEPS": {
+  "file": "js/domain/catalog.js",
+  "kind": "const"
+ },
+ "SET_SWIPE": {
+  "file": "js/features/training/set-swipe.js",
+  "kind": "const"
+ },
+ "setActiveModule": {
+  "file": "js/features/disciplines.js",
+  "kind": "function"
+ },
+ "setAppLanguage": {
+  "file": "js/core/i18n.js",
+  "kind": "function"
+ },
+ "setBlockCollapsed": {
+  "file": "js/features/training/exercise-block.js",
+  "kind": "function"
+ },
+ "setColumnsFor": {
+  "file": "js/features/training/exercise-block.js",
+  "kind": "function"
+ },
+ "setDistanceUnit": {
+  "file": "js/core/units.js",
+  "kind": "function"
+ },
+ "SetEntry": {
+  "file": "js/domain/models.js",
+  "kind": "class"
+ },
+ "setHasAnyData": {
+  "file": "js/domain/sets.js",
+  "kind": "function"
+ },
+ "setHasMetric": {
+  "file": "js/domain/sets.js",
+  "kind": "function"
+ },
+ "setLabels": {
+  "file": "js/domain/sets.js",
+  "kind": "function"
+ },
+ "setLibraryTab": {
+  "file": "js/features/library.js",
+  "kind": "function"
+ },
+ "setSectionOpen": {
+  "file": "js/ui/collapsible.js",
+  "kind": "function"
+ },
+ "setsFromLegacy": {
+  "file": "js/domain/legacy-format.js",
+  "kind": "function"
+ },
+ "setsLegendHtml": {
+  "file": "js/features/training/workout.js",
+  "kind": "function"
+ },
+ "setStepperEl": {
+  "file": "js/features/training/set-stepper.js",
+  "kind": "let"
+ },
+ "setThemePref": {
+  "file": "js/ui/navigation.js",
+  "kind": "function"
+ },
+ "setTrainMode": {
+  "file": "js/features/training/train-mode.js",
+  "kind": "function"
+ },
+ "setWeightUnit": {
+  "file": "js/core/units.js",
+  "kind": "function"
+ },
+ "shadeHex": {
+  "file": "js/features/share-cards.js",
+  "kind": "function"
+ },
+ "SHARE_FONT_BODY": {
+  "file": "js/features/share-cards.js",
+  "kind": "const"
+ },
+ "SHARE_FONT_HEAD": {
+  "file": "js/features/share-cards.js",
+  "kind": "const"
+ },
+ "SHARE_FORMATS": {
+  "file": "js/features/share-cards.js",
+  "kind": "const"
+ },
+ "shareDateText": {
+  "file": "js/features/profile.js",
+  "kind": "function"
+ },
+ "shareMedal": {
+  "file": "js/features/profile.js",
+  "kind": "function"
+ },
+ "shareRoutine": {
+  "file": "js/features/library.js",
+  "kind": "function"
+ },
+ "shareSheetFormat": {
+  "file": "js/features/share-cards.js",
+  "kind": "let"
+ },
+ "shareSheetSend": {
+  "file": "js/features/share-cards.js",
+  "kind": "function"
+ },
+ "shareSheetSpec": {
+  "file": "js/features/share-cards.js",
+  "kind": "let"
+ },
+ "shouldShowOnboarding": {
+  "file": "js/features/onboarding.js",
+  "kind": "function"
+ },
+ "showActionToast": {
+  "file": "js/ui/toast.js",
+  "kind": "function"
+ },
+ "showFeedbackErrors": {
+  "file": "js/features/feedback.js",
+  "kind": "function"
+ },
+ "showScreen": {
+  "file": "js/ui/navigation.js",
+  "kind": "function"
+ },
+ "showSetStepper": {
+  "file": "js/features/training/set-stepper.js",
+  "kind": "function"
+ },
+ "showSpringsStepper": {
+  "file": "js/features/training/set-stepper.js",
+  "kind": "function"
+ },
+ "showToast": {
+  "file": "js/ui/toast.js",
+  "kind": "function"
+ },
+ "showUndoToast": {
+  "file": "js/ui/toast.js",
+  "kind": "function"
+ },
+ "showVoiceInstallHelp": {
+  "file": "js/audio/voice.js",
+  "kind": "function"
+ },
+ "SIDE_SWITCH_DEFAULT": {
+  "file": "js/features/general-settings.js",
+  "kind": "const"
+ },
+ "sideSwitchTimer": {
+  "file": "js/features/training/exercise-block.js",
+  "kind": "let"
+ },
+ "sideSwitchToast": {
+  "file": "js/features/training/exercise-block.js",
+  "kind": "let"
+ },
+ "slugifyRoutineKey": {
+  "file": "js/data/routines-store.js",
+  "kind": "function"
+ },
+ "sortSprings": {
+  "file": "js/domain/pilates.js",
+  "kind": "function"
+ },
+ "speak": {
+  "file": "js/audio/voice.js",
+  "kind": "function"
+ },
+ "speakCue": {
+  "file": "js/audio/recordings.js",
+  "kind": "function"
+ },
+ "splitLegacyLegGroup": {
+  "file": "js/domain/catalog.js",
+  "kind": "function"
+ },
+ "SPRING_COLORS": {
+  "file": "js/domain/pilates.js",
+  "kind": "const"
+ },
+ "SPRING_LOADS": {
+  "file": "js/domain/pilates.js",
+  "kind": "const"
+ },
+ "springColorName": {
+  "file": "js/features/reformer.js",
+  "kind": "function"
+ },
+ "springLevelLabel": {
+  "file": "js/domain/pilates.js",
+  "kind": "function"
+ },
+ "springsLoad": {
+  "file": "js/domain/pilates.js",
+  "kind": "function"
+ },
+ "stackFor": {
+  "file": "js/features/plate-calculator.js",
+  "kind": "function"
+ },
+ "stackHintText": {
+  "file": "js/features/plate-calculator.js",
+  "kind": "function"
+ },
+ "stackVisualHtml": {
+  "file": "js/features/plate-calculator.js",
+  "kind": "function"
+ },
+ "STALL_RULES": {
+  "file": "js/domain/training-tools.js",
+  "kind": "const"
+ },
+ "stallHintHtml": {
+  "file": "js/features/programs.js",
+  "kind": "function"
+ },
+ "startProgram": {
+  "file": "js/features/programs.js",
+  "kind": "function"
+ },
+ "startRecording": {
+  "file": "js/audio/recordings.js",
+  "kind": "function"
+ },
+ "startRepCounter": {
+  "file": "js/features/rep-counter.js",
+  "kind": "function"
+ },
+ "startRoutineManually": {
+  "file": "js/features/training/session-clock.js",
+  "kind": "function"
+ },
+ "startTabata": {
+  "file": "js/features/tabata.js",
+  "kind": "function"
+ },
+ "startTodayRoutine": {
+  "file": "js/features/plan-screen.js",
+  "kind": "function"
+ },
+ "stepperApplyPlan": {
+  "file": "js/features/training/set-stepper.js",
+  "kind": "function"
+ },
+ "stepperValueLabel": {
+  "file": "js/features/training/set-stepper.js",
+  "kind": "function"
+ },
+ "stepperViewportHeight": {
+  "file": "js/features/training/set-stepper.js",
+  "kind": "let"
+ },
+ "stepSetField": {
+  "file": "js/features/training/set-stepper.js",
+  "kind": "function"
+ },
+ "stopCuePlayback": {
+  "file": "js/audio/recordings.js",
+  "kind": "function"
+ },
+ "stopRepCounter": {
+  "file": "js/features/rep-counter.js",
+  "kind": "function"
+ },
+ "stopSessionTimer": {
+  "file": "js/features/training/session-clock.js",
+  "kind": "function"
+ },
+ "STORAGE_SCHEMA": {
+  "file": "js/data/schema.js",
+  "kind": "const"
+ },
+ "StorageError": {
+  "file": "js/data/store.js",
+  "kind": "class"
+ },
+ "Store": {
+  "file": "js/data/store.js",
+  "kind": "class"
+ },
+ "styledCueText": {
+  "file": "js/audio/voice-styles.js",
+  "kind": "function"
+ },
+ "submitFeedback": {
+  "file": "js/features/feedback.js",
+  "kind": "function"
+ },
+ "suggestDoubleProgression": {
+  "file": "js/domain/programs.js",
+  "kind": "function"
+ },
+ "suggestedRoutineKey": {
+  "file": "js/features/training/routines-ui.js",
+  "kind": "let"
+ },
+ "suggestedSpringsFor": {
+  "file": "js/features/reformer.js",
+  "kind": "function"
+ },
+ "suggestSprings": {
+  "file": "js/domain/pilates.js",
+  "kind": "function"
+ },
+ "summaryRecords": {
+  "file": "js/features/training/session-summary.js",
+  "kind": "let"
+ },
+ "supersetEditing": {
+  "file": "js/features/training/supersets.js",
+  "kind": "let"
+ },
+ "supersetMap": {
+  "file": "js/features/training/supersets.js",
+  "kind": "function"
+ },
+ "syncNativePlanReminders": {
+  "file": "js/features/native.js",
+  "kind": "function"
+ },
+ "systemLight": {
+  "file": "js/ui/navigation.js",
+  "kind": "const"
+ },
+ "tabataInterval": {
+  "file": "js/features/tabata.js",
+  "kind": "let"
+ },
+ "tabataSessionBlocks": {
+  "file": "js/features/tabata.js",
+  "kind": "let"
+ },
+ "tabataState": {
+  "file": "js/features/tabata.js",
+  "kind": "let"
+ },
+ "tagRoutineModule": {
+  "file": "js/features/disciplines.js",
+  "kind": "function"
+ },
+ "targetIncrement": {
+  "file": "js/features/programs.js",
+  "kind": "function"
+ },
+ "testSound": {
+  "file": "js/audio/sound.js",
+  "kind": "function"
+ },
+ "testVoice": {
+  "file": "js/audio/voice.js",
+  "kind": "function"
+ },
+ "tickRestTimer": {
+  "file": "js/features/rest-timer.js",
+  "kind": "function"
+ },
+ "TIME_RE": {
+  "file": "js/domain/plan.js",
+  "kind": "const"
+ },
+ "TIME_STEPS": {
+  "file": "js/core/time.js",
+  "kind": "const"
+ },
+ "TIME_UNIT_ORDER": {
+  "file": "js/core/time.js",
+  "kind": "const"
+ },
+ "TIME_UNITS": {
+  "file": "js/core/time.js",
+  "kind": "const"
+ },
+ "timeInputValue": {
+  "file": "js/core/time.js",
+  "kind": "function"
+ },
+ "toBase64Url": {
+  "file": "js/domain/routine-share.js",
+  "kind": "function"
+ },
+ "todayCardChoice": {
+  "file": "js/features/plan-screen.js",
+  "kind": "let"
+ },
+ "todayRoutineKey": {
+  "file": "js/features/plan-screen.js",
+  "kind": "function"
+ },
+ "todayRoutinePreviewHtml": {
+  "file": "js/features/plan-screen.js",
+  "kind": "function"
+ },
+ "toggleBlockCollapsed": {
+  "file": "js/features/training/exercise-block.js",
+  "kind": "function"
+ },
+ "toggleDiscipline": {
+  "file": "js/features/disciplines.js",
+  "kind": "function"
+ },
+ "toggleDrawer": {
+  "file": "js/ui/navigation.js",
+  "kind": "function"
+ },
+ "toggleGymEquipment": {
+  "file": "js/features/gym-library.js",
+  "kind": "function"
+ },
+ "toggleRecentRoutinesExpanded": {
+  "file": "js/features/home.js",
+  "kind": "function"
+ },
+ "toggleRecording": {
+  "file": "js/audio/recordings.js",
+  "kind": "function"
+ },
+ "toggleRepCounterPause": {
+  "file": "js/features/rep-counter.js",
+  "kind": "function"
+ },
+ "toggleSession": {
+  "file": "js/features/history.js",
+  "kind": "function"
+ },
+ "toggleSetDone": {
+  "file": "js/features/training/exercise-block.js",
+  "kind": "function"
+ },
+ "toggleSetNote": {
+  "file": "js/features/training/exercise-block.js",
+  "kind": "function"
+ },
+ "toggleTheme": {
+  "file": "js/ui/navigation.js",
+  "kind": "function"
+ },
+ "toggleUnilateral": {
+  "file": "js/features/training/exercise-block.js",
+  "kind": "function"
+ },
+ "toggleVariantGroup": {
+  "file": "js/features/exercises.js",
+  "kind": "function"
+ },
+ "toggleWakeLock": {
+  "file": "js/ui/wake-lock.js",
+  "kind": "function"
+ },
+ "toggleWarmup": {
+  "file": "js/features/training/exercise-block.js",
+  "kind": "function"
+ },
+ "topSetBetter": {
+  "file": "js/domain/training-tools.js",
+  "kind": "function"
+ },
+ "topSetOf": {
+  "file": "js/domain/training-tools.js",
+  "kind": "function"
+ },
+ "tr": {
+  "file": "js/core/i18n.js",
+  "kind": "function"
+ },
+ "trainedToday": {
+  "file": "js/features/plan-screen.js",
+  "kind": "function"
+ },
+ "TrainingPlan": {
+  "file": "js/domain/plan.js",
+  "kind": "class"
+ },
+ "trainProgramDay": {
+  "file": "js/features/programs.js",
+  "kind": "function"
+ },
+ "trainRoutine": {
+  "file": "js/features/library.js",
+  "kind": "function"
+ },
+ "Transaction": {
+  "file": "js/data/store.js",
+  "kind": "class"
+ },
+ "Translator": {
+  "file": "js/core/i18n.js",
+  "kind": "class"
+ },
+ "triggerFileInput": {
+  "file": "js/features/backup.js",
+  "kind": "function"
+ },
+ "trimSilence": {
+  "file": "js/audio/recordings.js",
+  "kind": "function"
+ },
+ "trophyShareSpec": {
+  "file": "js/features/profile.js",
+  "kind": "function"
+ },
+ "typesForModule": {
+  "file": "js/features/disciplines.js",
+  "kind": "function"
+ },
+ "typicalSessionMinutes": {
+  "file": "js/features/plan-screen.js",
+  "kind": "function"
+ },
+ "UI_SIZES": {
+  "file": "js/ui/accessibility.js",
+  "kind": "const"
+ },
+ "unifyExerciseName": {
+  "file": "js/features/exercises.js",
+  "kind": "function"
+ },
+ "unifyFromSelectors": {
+  "file": "js/features/exercises.js",
+  "kind": "function"
+ },
+ "unlockAudio": {
+  "file": "js/audio/sound.js",
+  "kind": "function"
+ },
+ "updateBodyChart": {
+  "file": "js/features/body-metrics.js",
+  "kind": "function"
+ },
+ "updateDeleteRoutineButtonVisibility": {
+  "file": "js/features/training/routines-ui.js",
+  "kind": "function"
+ },
+ "updateFeedbackTechPreview": {
+  "file": "js/features/feedback.js",
+  "kind": "function"
+ },
+ "updatePilatesStats": {
+  "file": "js/domain/pilates.js",
+  "kind": "function"
+ },
+ "updateRecordingCountdown": {
+  "file": "js/audio/recordings.js",
+  "kind": "function"
+ },
+ "updateRoutineTimeStatusUI": {
+  "file": "js/features/training/session-clock.js",
+  "kind": "function"
+ },
+ "updateSessionDurationDisplay": {
+  "file": "js/features/training/session-clock.js",
+  "kind": "function"
+ },
+ "updateSetCalc": {
+  "file": "js/features/training/exercise-block.js",
+  "kind": "function"
+ },
+ "updateSetControls": {
+  "file": "js/features/training/exercise-block.js",
+  "kind": "function"
+ },
+ "updateSidebar": {
+  "file": "js/features/home.js",
+  "kind": "function"
+ },
+ "updateSpringsLoad": {
+  "file": "js/features/training/set-stepper.js",
+  "kind": "function"
+ },
+ "updateStartDateAndWeeklyAverage": {
+  "file": "js/features/home.js",
+  "kind": "function"
+ },
+ "updateStepperApply": {
+  "file": "js/features/training/set-stepper.js",
+  "kind": "function"
+ },
+ "updateStepperHint": {
+  "file": "js/features/training/set-stepper.js",
+  "kind": "function"
+ },
+ "updateSuggestedRoutine": {
+  "file": "js/features/training/routines-ui.js",
+  "kind": "function"
+ },
+ "updateVoiceLabels": {
+  "file": "js/audio/voice.js",
+  "kind": "function"
+ },
+ "updateWakeLockBtn": {
+  "file": "js/ui/wake-lock.js",
+  "kind": "function"
+ },
+ "updateWeightPlaceholders": {
+  "file": "js/features/general-settings.js",
+  "kind": "function"
+ },
+ "uploadCueAudio": {
+  "file": "js/audio/recordings.js",
+  "kind": "function"
+ },
+ "uploadData": {
+  "file": "js/features/backup.js",
+  "kind": "function"
+ },
+ "usePlateWeight": {
+  "file": "js/features/plate-calculator.js",
+  "kind": "function"
+ },
+ "validateFeedback": {
+  "file": "js/features/feedback.js",
+  "kind": "function"
+ },
+ "ValidationError": {
+  "file": "js/data/store.js",
+  "kind": "class"
+ },
+ "VOICE_CUES": {
+  "file": "js/audio/recordings.js",
+  "kind": "const"
+ },
+ "VOICE_DEFAULTS": {
+  "file": "js/audio/voice.js",
+  "kind": "const"
+ },
+ "VOICE_STYLES": {
+  "file": "js/audio/voice-styles.js",
+  "kind": "const"
+ },
+ "voiceSupported": {
+  "file": "js/audio/voice.js",
+  "kind": "function"
+ },
+ "VOLUME_FLAT_THRESHOLD_PCT": {
+  "file": "js/features/progress.js",
+  "kind": "const"
+ },
+ "wakeLock": {
+  "file": "js/ui/wake-lock.js",
+  "kind": "let"
+ },
+ "wakeLockEnabled": {
+  "file": "js/ui/wake-lock.js",
+  "kind": "let"
+ },
+ "wakeLockMode": {
+  "file": "js/ui/wake-lock.js",
+  "kind": "let"
+ },
+ "WARMUP_LABEL": {
+  "file": "js/domain/catalog.js",
+  "kind": "const"
+ },
+ "warmupHintShown": {
+  "file": "js/features/training/exercise-block.js",
+  "kind": "let"
+ },
+ "WEEK_START_OPTIONS": {
+  "file": "js/features/general-settings.js",
+  "kind": "const"
+ },
+ "WEEK_STATUS_LABELS": {
+  "file": "js/features/home.js",
+  "kind": "const"
+ },
+ "WEEKDAYS": {
+  "file": "js/domain/plan.js",
+  "kind": "const"
+ },
+ "WEIGHT_UNITS": {
+  "file": "js/core/units.js",
+  "kind": "const"
+ },
+ "weightUnit": {
+  "file": "js/core/units.js",
+  "kind": "let"
+ },
+ "weightUnitDef": {
+  "file": "js/core/units.js",
+  "kind": "function"
+ },
+ "WorkoutRepository": {
+  "file": "js/data/repositories.js",
+  "kind": "class"
+ },
+ "workoutScreen": {
+  "file": "js/features/training/workout-screen.js",
+  "kind": "const"
+ },
+ "WorkoutScreen": {
+  "file": "js/features/training/workout-screen.js",
+  "kind": "class"
+ },
+ "WorkoutSession": {
+  "file": "js/domain/models.js",
+  "kind": "class"
+ },
+ "workoutsToCsv": {
+  "file": "js/domain/import-csv.js",
+  "kind": "function"
+ },
+ "youtubeSearchUrl": {
+  "file": "js/core/utils.js",
+  "kind": "function"
+ }
+}
