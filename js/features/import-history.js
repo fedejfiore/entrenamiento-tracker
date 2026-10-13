@@ -1,15 +1,26 @@
 // Ajustes → "Traer historial de otra app" (Hevy, Strong, Fitbod) y Datos → "Exportar
 // historial (CSV)". La lectura y la conversión están en js/domain/import-csv.js; acá solo
 // se elige el archivo, se muestra el resumen y se guarda cuando la persona confirma.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { escapeHtml, getLocalDateString } from '../core/utils.js';
+import { appLocale } from '../core/i18n.js';
+import { catalogMuscleGroup } from '../domain/catalog.js';
+import { repo } from '../data/repositories.js';
+import { calculateStats } from '../domain/stats.js';
+import { IMPORT_LIMITS, prepareCsvImport, workoutsToCsv } from '../domain/import-csv.js';
+import { showToast } from '../ui/toast.js';
+import { populateExerciseDatalist } from './training/workout.js';
+import { displayWorkoutHistory } from './history.js';
+import { routineLabelOf } from './progress.js';
+import { updateSidebar } from './home.js';
+import { loadAppSettings } from './general-settings.js';
 
-let pendingImport = null;
+export let pendingImport = null;
 
-function existingImportKeys() {
+export function existingImportKeys() {
     return new Set(repo.workouts.all().map(w => w && w.importKey).filter(Boolean));
 }
 
-async function onImportHistoryFile(file) {
+export async function onImportHistoryFile(file) {
     const box = document.getElementById('importHistoryPreview');
     pendingImport = null;
     if (!file || !box) return;
@@ -41,7 +52,7 @@ async function onImportHistoryFile(file) {
     }
 }
 
-function confirmImportHistory() {
+export function confirmImportHistory() {
     if (!pendingImport?.workouts.length) return;
     const n = pendingImport.workouts.length;
     try {
@@ -59,7 +70,7 @@ function confirmImportHistory() {
     showToast(`✅ ${n} ${n === 1 ? 'sesión importada' : 'sesiones importadas'} de ${label}`, 'success', 4500);
 }
 
-function cancelImportHistory() {
+export function cancelImportHistory() {
     pendingImport = null;
     const box = document.getElementById('importHistoryPreview');
     if (box) { box.hidden = true; box.innerHTML = ''; }
@@ -67,7 +78,7 @@ function cancelImportHistory() {
     if (input) input.value = '';
 }
 
-function exportHistoryCsv() {
+export function exportHistoryCsv() {
     const workouts = repo.workouts.all();
     if (!workouts.some(w => w && !w.deletedAt && Array.isArray(w.exercises))) { showToast('Todavía no hay sesiones para exportar', 'error'); return; }
     const csv = '﻿' + workoutsToCsv(workouts, routineLabelOf); // BOM: Excel lo abre con tildes
@@ -80,7 +91,7 @@ function exportHistoryCsv() {
     showToast('📄 Historial exportado en CSV (se abre con Excel o Google Sheets)', 'success', 4000);
 }
 
-function bindImportHistory() {
+export function bindImportHistory() {
     const unit = document.getElementById('importWeightUnit');
     if (unit) unit.value = loadAppSettings().weightUnit === 'lb' ? 'lb' : 'kg';
     document.getElementById('importHistoryFile')?.addEventListener('change', e => onImportHistoryFile(e.target.files?.[0]));

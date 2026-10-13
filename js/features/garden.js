@@ -1,10 +1,16 @@
 // Inicio → Hoy: la flor del plan semanal (el cálculo está en js/domain/garden.js).
 // Dibujo en SVG por etapas; al crecer se anima una vez y avisa. Con "reducir movimiento"
 // del sistema, el cambio se muestra sin animación (ver css).
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
 
 // Degradés para dar volumen (los colores salen de variables CSS, así se adaptan al tema).
-const GARDEN_DEFS = `<defs>
+import { escapeHtml } from '../core/utils.js';
+import { computeGarden } from '../domain/garden.js';
+import { db, repo } from '../data/repositories.js';
+import { loadTrainingDaysPlanHistory } from '../data/routines-store.js';
+import { showToast } from '../ui/toast.js';
+import { setSectionOpen } from '../ui/collapsible.js';
+
+export const GARDEN_DEFS = `<defs>
     <linearGradient id="gPot" x1="0" x2="1"><stop offset="0" stop-color="var(--plant-pot-dark)"/><stop offset="0.55" stop-color="var(--plant-pot)"/><stop offset="1" stop-color="var(--plant-pot-dark)"/></linearGradient>
     <linearGradient id="gLeaf" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--plant-leaf-light)"/><stop offset="1" stop-color="var(--plant-leaf)"/></linearGradient>
     <radialGradient id="gPetal" cx="0.5" cy="0.85" r="0.9"><stop offset="0" stop-color="var(--plant-petal-light)"/><stop offset="1" stop-color="var(--plant-petal)"/></radialGradient>
@@ -13,13 +19,13 @@ const GARDEN_DEFS = `<defs>
 </defs>`;
 
 // Hoja con forma de gota y nervadura, que sale del tallo en (x, y) hacia un lado (dir ±1).
-function gardenLeaf(x, y, dir, size = 1) {
+export function gardenLeaf(x, y, dir, size = 1) {
     const w = 18 * size * dir, h = 8 * size;
     return `<path class="g-leaf" d="M${x} ${y} q${w * 0.45} ${-h * 1.4} ${w} ${-h * 0.6} q${-w * 0.35} ${h * 1.3} ${-w} ${h * 0.6} Z"/>`
         + `<path class="g-vein" d="M${x} ${y} q${w * 0.5} ${-h * 0.55} ${w * 0.9} ${-h * 0.55}"/>`;
 }
 
-function gardenSvg(g) {
+export function gardenSvg(g) {
     const s = g.stageIndex;
     const top = [112, 94, 72, 54, 50][s];
     const parts = [];
@@ -47,18 +53,18 @@ function gardenSvg(g) {
     </svg>`;
 }
 
-function gardenAriaLabel(g) {
+export function gardenAriaLabel(g) {
     return `${g.stage.label}${g.fruits ? ` con ${g.fruits} ${g.fruits === 1 ? 'fruto' : 'frutos'}` : ''}${g.wilted ? ', un poco marchita' : ''}`;
 }
 
-function gardenDropsHtml(current) {
+export function gardenDropsHtml(current) {
     const { planned, trained } = current;
     if (!planned) return '';
     const drops = Array.from({ length: planned }, (_, i) => `<span class="${i < trained ? 'g-drop on' : 'g-drop'}" aria-hidden="true">${i < trained ? '💧' : '○'}</span>`).join('');
     return `<div class="garden-drops" aria-label="${trained} de ${planned} entrenamientos esta semana">${drops}<span class="garden-drops-text">${Math.min(trained, planned)} de ${planned} esta semana${trained >= planned ? ' ✓' : ''}</span></div>`;
 }
 
-function renderGarden() {
+export function renderGarden() {
     const box = document.getElementById('gardenCard');
     if (!box) return;
     const g = computeGarden({ workouts: repo.workouts.all(), planHistory: loadTrainingDaysPlanHistory(), today: new Date() });
@@ -90,7 +96,7 @@ function renderGarden() {
 }
 
 // Una sola vez por crecimiento: animación y aviso (la última etapa vista se recuerda).
-function celebrateGardenGrowth(g, box) {
+export function celebrateGardenGrowth(g, box) {
     let seen = {};
     try { seen = db.get('gardenSeen') || {}; } catch (e) {}
     if (typeof seen.grown === 'number' && g.grown > seen.grown) {
@@ -103,7 +109,7 @@ function celebrateGardenGrowth(g, box) {
     }
 }
 
-function bindGarden() {
+export function bindGarden() {
     document.getElementById('gardenCard')?.addEventListener('click', e => {
         if (!e.target.closest('[data-garden="plan"]')) return;
         const plan = document.getElementById('planSection');

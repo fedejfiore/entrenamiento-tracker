@@ -2,8 +2,14 @@
 // efectivas por músculo (sin calentamiento), por semana, para compararlas con el rango
 // habitual de 10 a 20 series por semana. Las semanas empiezan el día elegido en Ajustes; la
 // semana en curso muestra lo que va hasta hoy. Tocar un músculo muestra su detalle.
+import { escapeHtml, formatNumber } from '../core/utils.js';
+import { appLocale } from '../core/i18n.js';
+import { MUSCLE_LEVELS, muscleLevel, muscleMapRange, muscleRangeNote, muscleSetsByGroup } from '../domain/training-tools.js';
+import { repo } from '../data/repositories.js';
+import { getMuscleGroup } from '../data/exercise-prefs.js';
+import { loadAppSettings } from './general-settings.js';
 
-const MUSCLE_MAP_PERIODS = {
+export const MUSCLE_MAP_PERIODS = {
     last7: 'Últimos 7 días',
     week: 'Esta semana (en curso)',
     lastweek: 'Semana pasada',
@@ -11,9 +17,9 @@ const MUSCLE_MAP_PERIODS = {
     '12w': 'Últimas 12 semanas (promedio)'
 };
 
-let muscleMapSelected = null;
+export let muscleMapSelected = null;
 
-const MUSCLE_PATTERN_SVG = `<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+export const MUSCLE_PATTERN_SVG = `<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
     <pattern id="muscleHighPattern" patternUnits="userSpaceOnUse" width="5" height="5" patternTransform="rotate(45)">
         <rect width="5" height="5" fill="var(--heat-4)"/><rect width="2" height="5" fill="var(--heat-4-stripe)"/>
     </pattern></defs></svg>`;
@@ -21,9 +27,9 @@ const MUSCLE_PATTERN_SVG = `<svg width="0" height="0" style="position:absolute" 
 // Figura anatómica (frente y espalda): la silueta de base y encima cada músculo con su forma
 // real y su grupo (data-group). Se dibuja solo la mitad izquierda de la figura y la derecha
 // sale espejada (simétrica y fácil de ajustar). viewBox 0 0 100 212, eje del cuerpo en x = 50.
-const mirrorHalf = half => `${half}<g transform="matrix(-1 0 0 1 100 0)">${half}</g>`;
+export const mirrorHalf = half => `${half}<g transform="matrix(-1 0 0 1 100 0)">${half}</g>`;
 
-const BODY_BASE = `
+export const BODY_BASE = `
     <ellipse cx="50" cy="12" rx="8.5" ry="10"/>
     <path d="M45 19 L45 27 L55 27 L55 19 Z"/>` + mirrorHalf(`
     <path d="M50 25 L37 27 Q25 29 21.5 39 Q20 46 22 51 L26 51 L33 49 L34 76 Q34.5 90 33 97 L50 99 Z"/>
@@ -36,7 +42,7 @@ const BODY_BASE = `
     <path d="M33.5 191 L32 199 Q37.5 203.5 44 200.5 L42.5 192 Z"/>`);
 
 // Frente: deltoides, pectorales, bíceps, recto abdominal y oblicuos, cuádriceps.
-const BODY_FRONT = mirrorHalf(`
+export const BODY_FRONT = mirrorHalf(`
     <path data-group="Hombros" d="M34 29.5 Q25 30 22 38.5 Q21 44.5 23 49 Q27.5 42.5 33.5 39.5 Q35.5 34 34 29.5 Z"/>
     <path data-group="Pecho" d="M49.2 31.5 L49.2 49.5 Q42.5 53 36 50.5 Q31.5 47 33.5 40 Q36 33.5 42 31.5 Q46 30.8 49.2 31.5 Z"/>
     <path data-group="Bíceps" d="M22.4 48.6 Q19.2 56.2 20 64.8 Q23.6 69.4 27.6 64.8 Q29.2 56.6 28.4 48.9 Q25.4 45.9 22.4 48.6 Z"/>
@@ -51,7 +57,7 @@ const BODY_FRONT = mirrorHalf(`
 
 // Espalda: trapecio, dorsales y lumbares (espalda), deltoides posterior, tríceps, glúteos,
 // isquiotibiales y gemelos.
-const BODY_BACK = mirrorHalf(`
+export const BODY_BACK = mirrorHalf(`
     <path data-group="Espalda" d="M49.2 21.5 L49.2 47 Q42.5 40.5 34.5 32 Q41 26.5 49.2 21.5 Z"/>
     <path data-group="Hombros" d="M34 29.5 Q25 30 22 38.5 Q21 44.5 23 49 Q27.5 42.5 33.5 39.5 Q35.5 34 34 29.5 Z"/>
     <path data-group="Espalda" d="M47.6 48.5 Q40.5 45 33.6 40.5 Q31.2 52.5 35.2 64.5 Q41 72.5 47.6 76.5 Z"/>
@@ -62,9 +68,9 @@ const BODY_BACK = mirrorHalf(`
     <path data-group="Gemelos" d="M35.6 161.5 Q32.6 172 35.6 184 Q39 188.5 42.2 184 Q45.2 172 43.2 161.8 Q39.6 157.6 35.6 161.5 Z"/>`);
 
 // Cuádriceps se ve de frente e isquios de espaldas (la cara posterior del muslo).
-const MAPPED_GROUPS = ['Pecho', 'Espalda', 'Hombros', 'Bíceps', 'Tríceps', 'Cuádriceps', 'Isquios', 'Glúteos', 'Gemelos', 'Core'];
+export const MAPPED_GROUPS = ['Pecho', 'Espalda', 'Hombros', 'Bíceps', 'Tríceps', 'Cuádriceps', 'Isquios', 'Glúteos', 'Gemelos', 'Core'];
 
-function muscleFigureSvg(regions, caption) {
+export function muscleFigureSvg(regions, caption) {
     return `<figure class="muscle-figure">
             <svg viewBox="0 0 100 212" role="img" aria-label="Músculos trabajados, vista de ${caption.toLowerCase()}">
                 <g class="body-base">${BODY_BASE}</g>
@@ -74,7 +80,7 @@ function muscleFigureSvg(regions, caption) {
         </figure>`;
 }
 
-function muscleMapData() {
+export function muscleMapData() {
     const select = document.getElementById('muscleMapPeriod');
     const period = MUSCLE_MAP_PERIODS[select?.value] ? select.value : 'last7';
     const range = muscleMapRange(period, new Date(), loadAppSettings().weekStart);
@@ -83,7 +89,7 @@ function muscleMapData() {
     return { byGroup, weekly, range };
 }
 
-function renderMuscleMap() {
+export function renderMuscleMap() {
     const box = document.getElementById('muscleMap');
     if (!box) return;
     const { byGroup, weekly, range } = muscleMapData();
@@ -111,7 +117,7 @@ function renderMuscleMap() {
     renderMuscleMapList(byGroup, weekly, range);
 }
 
-function renderMuscleMapList(byGroup, weekly, range) {
+export function renderMuscleMapList(byGroup, weekly, range) {
     const list = document.getElementById('muscleMapList');
     if (!list) return;
     const groups = [...MAPPED_GROUPS, ...Object.keys(byGroup).filter(g => !MAPPED_GROUPS.includes(g))];
@@ -135,7 +141,7 @@ function renderMuscleMapList(byGroup, weekly, range) {
     }).join('') + (muscleMapSelected ? '<button type="button" class="small" data-muscle-action="all">Ver todos los músculos</button>' : '');
 }
 
-function bindMuscleMap() {
+export function bindMuscleMap() {
     document.getElementById('muscleMapPeriod')?.addEventListener('change', renderMuscleMap);
     const section = document.getElementById('muscleMapSection');
     const select = g => { muscleMapSelected = muscleMapSelected === g ? null : g; renderMuscleMap(); };

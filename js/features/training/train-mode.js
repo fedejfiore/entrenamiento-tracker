@@ -1,8 +1,8 @@
 // Entrenar tiene dos modos: rutina (series con reps y peso) y Tabata / intervalos (bloques
 // de tiempo). Antes Tabata era una pantalla aparte; ahora es una pestaña dentro de Entrenar.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { db } from '../../data/repositories.js';
 
-function setTrainMode(mode) {
+export function setTrainMode(mode) {
     const m = mode === 'tabata' ? 'tabata' : 'rutina';
     document.querySelectorAll('.train-mode').forEach(el => { el.hidden = el.dataset.mode !== m; });
     document.querySelectorAll('.mode-tab').forEach(t => {
@@ -13,11 +13,11 @@ function setTrainMode(mode) {
     try { db.set('trainMode', m); } catch (e) {}
 }
 
-function currentTrainMode() {
+export function currentTrainMode() {
     return document.querySelector('.mode-tab.active')?.dataset.trainMode || 'rutina';
 }
 
-function bindTrainMode() {
+export function bindTrainMode() {
     document.querySelector('.mode-switch')?.addEventListener('click', e => {
         const tab = e.target.closest('[data-train-mode]');
         if (tab) setTrainMode(tab.dataset.trainMode);

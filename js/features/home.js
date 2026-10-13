@@ -1,7 +1,22 @@
 // Inicio: resumen, promedios recientes, calendario y estado de la semana.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { escapeHtml } from '../core/utils.js';
+import { appLocale } from '../core/i18n.js';
+import { fnAttrs } from '../ui/actions.js';
+import { formatWeight, formatWeightTotal } from '../core/units.js';
+import { ROUTINE_LABELS } from '../domain/catalog.js';
+import { formatSetsSummary } from '../domain/sets.js';
+import { calendarMonth } from '../domain/plan.js';
+import { repo } from '../data/repositories.js';
+import { customRoutineLabels } from '../data/routines-store.js';
+import { getRecentRoutineSummaries, getWeeklyVolumeStats } from '../domain/stats.js';
+import { currentSessionStartTime, updateSessionDurationDisplay } from './training/session-clock.js';
+import { updateSuggestedRoutine } from './training/routines-ui.js';
+import { renderPlanSection } from './plan-screen.js';
+import { renderGarden } from './garden.js';
+import { renderProgramsSection } from './programs.js';
+import { emptyStateHtml } from '../ui/navigation.js';
 
-const WEEK_STATUS_LABELS = {
+export const WEEK_STATUS_LABELS = {
     'sin-plan': '⚪ Configurá tus días',
     'dias-respetados': '✅ Vas al día',
     'cantidad-cumplida': '✅ Cantidad cumplida (no en los días planeados)',
@@ -9,7 +24,7 @@ const WEEK_STATUS_LABELS = {
     'incumplido': '🔴 Sin cumplir'
 };
 
-function updateSidebar() {
+export function updateSidebar() {
     const workouts = repo.workouts.all();
     document.getElementById('totalWorkouts').textContent = workouts.length;
 
@@ -48,7 +63,7 @@ function updateSidebar() {
 
 // Fecha del primer entrenamiento guardado + promedio de entrenamientos por semana
 // desde entonces (incluye Tabata: cualquier sesión cuenta como "entrenaste ese día").
-function updateStartDateAndWeeklyAverage(workouts) {
+export function updateStartDateAndWeeklyAverage(workouts) {
     const startDateEl = document.getElementById('startDate');
     const weeklyAvgEl = document.getElementById('weeklyAvgWorkouts');
     if (!startDateEl && !weeklyAvgEl) return;
@@ -70,20 +85,20 @@ function updateStartDateAndWeeklyAverage(workouts) {
     }
 }
 
-const RECENT_ROUTINES_COLLAPSED_COUNT = 5;
+export const RECENT_ROUTINES_COLLAPSED_COUNT = 5;
 
-const RECENT_ROUTINES_EXPANDED_COUNT = 15;
+export const RECENT_ROUTINES_EXPANDED_COUNT = 15;
 
-let recentRoutinesExpanded = false;
+export let recentRoutinesExpanded = false;
 
-function toggleRecentRoutinesExpanded() {
+export function toggleRecentRoutinesExpanded() {
     recentRoutinesExpanded = !recentRoutinesExpanded;
     let workouts = repo.workouts.all();
     if (!Array.isArray(workouts)) workouts = [];
     renderRecentRoutineAverages(workouts);
 }
 
-function renderRecentRoutineAverages(workouts) {
+export function renderRecentRoutineAverages(workouts) {
     const container = document.getElementById('recentRoutineAverages');
     if (!container) return;
 
@@ -121,7 +136,7 @@ function renderRecentRoutineAverages(workouts) {
 // Calendario mensual tipo "tablero de programador": un color por día según si se entrenó,
 // con intensidad según el volumen de ese día. Navegable mes a mes (no se puede ir a futuro).
 // Tocar un día muestra qué se hizo. El armado del mes está en el dominio (calendarMonth).
-class CalendarView {
+export class CalendarView {
     /**
      * @param {object} deps
      *   workouts()          sesiones guardadas
@@ -187,7 +202,7 @@ class CalendarView {
     }
 }
 
-const calendarView = new CalendarView({
+export const calendarView = new CalendarView({
     workouts: () => repo.workouts.all(),
     routineLabel: key => customRoutineLabels[key] || ROUTINE_LABELS[key] || key || 'Entreno',
     locale: () => appLocale(),
@@ -195,10 +210,10 @@ const calendarView = new CalendarView({
 });
 
 // Lo que usan los botones (data-fn-click) y otras pantallas.
-function changeCalendarMonth(delta) { calendarView.changeMonth(delta); }
-function renderMonthCalendar() { calendarView.render(); }
+export function changeCalendarMonth(delta) { calendarView.changeMonth(delta); }
+export function renderMonthCalendar() { calendarView.render(); }
 
-function calendarSessionHtml(w) {
+export function calendarSessionHtml(w) {
     if (w.type === 'tabata') {
         const blocks = Array.isArray(w.blocks) ? w.blocks : [{ name: w.name, rounds: w.rounds, roundsCompleted: w.roundsCompleted }];
         return `<div class="cal-detail-session"><div class="cal-detail-title">🔥 Tabata${w.duration ? ` · ${w.duration} min` : ''}</div>`

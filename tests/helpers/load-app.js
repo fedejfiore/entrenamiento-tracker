@@ -1,9 +1,11 @@
-// Carga los scripts clásicos de la app en un contexto aislado de Node, igual que el
-// navegador: comparten el ámbito global, así las clases y funciones se ven entre sí.
+// Carga módulos de la app (ES) en un contexto aislado de Node para probarlos sin navegador.
+// Se arman con esbuild (cada módulo con lo que importa) y lo que exportan queda a mano con
+// app('nombre') o en expresiones: app('(a) => new Store(a, STORAGE_SCHEMA)'). Los valores
+// son vivos: si un módulo reasigna una variable exportada, app() ve el valor nuevo.
 // Solo se cargan las capas sin pantalla (core, data, domain): se prueban sin navegador.
 const vm = require('node:vm');
-const fs = require('node:fs');
 const path = require('node:path');
+const esbuild = require('esbuild');
 
 const ROOT = path.resolve(__dirname, '..', '..');
 
@@ -24,8 +26,21 @@ const CORE_FILES = [
     'js/data/backup-service.js'
 ];
 
+const bundles = new Map(); // mismo conjunto de archivos → mismo código armado (más rápido)
+
+function bundle(files) {
+    const key = files.join('|');
+    if (!bundles.has(key)) {
+        const entry = files.map((f, i) => `import * as m${i} from './${f}';`).join('\n')
+            + `\nglobalThis.__modules = [${files.map((_, i) => `m${i}`).join(', ')}];`;
+        const out = esbuild.buildSync({ stdin: { contents: entry, resolveDir: ROOT, loader: 'js' }, bundle: true, format: 'iife', write: false, logLevel: 'silent' });
+        bundles.set(key, out.outputFiles[0].text);
+    }
+    return bundles.get(key);
+}
+
 /**
- * Devuelve una función `app(expr)` que evalúa una expresión dentro del contexto de la app,
+ * Devuelve una función `app(expr)` que evalúa una expresión con lo que exportan los módulos,
  * por ejemplo app('parseRepsList')('12-10') o app('db').
  */
 function loadApp(files = CORE_FILES) {
@@ -41,10 +56,16 @@ function loadApp(files = CORE_FILES) {
         URL,
         URLSearchParams
     });
-    files.forEach(file => {
-        const code = fs.readFileSync(path.join(ROOT, file), 'utf8');
-        vm.runInContext(code, context, { filename: file });
-    });
+    vm.runInContext(bundle(files), context, { filename: 'app-bundle.js' });
+    // Cada export, como propiedad viva del contexto (un getter al módulo que lo exporta).
+    vm.runInContext(`(() => {
+        for (const m of globalThis.__modules) {
+            for (const name of Object.keys(m)) {
+                if (name in globalThis) continue;
+                Object.defineProperty(globalThis, name, { get: () => m[name], enumerable: true });
+            }
+        }
+    })()`, context);
     return expr => vm.runInContext(expr, context);
 }
 

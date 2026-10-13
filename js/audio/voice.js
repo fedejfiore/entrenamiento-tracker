@@ -1,9 +1,16 @@
 // Voz del celular (speechSynthesis) y sus ajustes.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
 
 // Usa la voz del propio celular (speechSynthesis): funciona sin internet y no pesa
 // nada. Cada aviso se prende o apaga por separado en Configuración.
-const VOICE_DEFAULTS = {
+import { escapeHtml, formatNumber } from '../core/utils.js';
+import { APP_LANGUAGES, appLanguage, appLocale, tr } from '../core/i18n.js';
+import { db } from '../data/repositories.js';
+import { loadSoundSettings, unlockAudio } from './sound.js';
+import { VOICE_STYLES, currentVoiceStyle, styledCueText } from './voice-styles.js';
+import { stopCuePlayback } from './recordings.js';
+import { features } from '../features/feature-settings.js';
+
+export const VOICE_DEFAULTS = {
     enabled: true,
     restWarn: true,      // descanso: "quedan 10 segundos"
     restEnd: true,       // descanso: "¡Vamos, a la próxima serie!"
@@ -21,34 +28,34 @@ const VOICE_DEFAULTS = {
     useRecordings: true  // si hay una grabación propia para un aviso, suena esa
 };
 
-const REST_WARN_SECONDS = 10;
+export const REST_WARN_SECONDS = 10;
 
-function loadVoiceSettings() {
+export function loadVoiceSettings() {
     try { return { ...VOICE_DEFAULTS, ...(db.get('voiceSettings') || {}) }; }
     catch (e) { return { ...VOICE_DEFAULTS }; }
 }
 
-function saveVoiceSettings(patch) {
+export function saveVoiceSettings(patch) {
     const next = { ...loadVoiceSettings(), ...patch };
     db.set('voiceSettings', next);
     applyVoiceSettingsToPage(next);
     return next;
 }
 
-function voiceSupported() {
+export function voiceSupported() {
     return 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined';
 }
 
 // Voces del idioma de la app (español, inglés o portugués), con las más comunes primero.
-const PREFERRED_VOICE_LANGS = { es: /es-(AR|419|US|MX)/i, en: /en-(US|GB)/i, pt: /pt-BR/i, de: /de-DE/i, zh: /zh-CN/i };
+export const PREFERRED_VOICE_LANGS = { es: /es-(AR|419|US|MX)/i, en: /en-(US|GB)/i, pt: /pt-BR/i, de: /de-DE/i, zh: /zh-CN/i };
 
-function getAppVoices() {
+export function getAppVoices() {
     if (!voiceSupported()) return [];
     const re = new RegExp(`^${appLanguage}(-|_|$)`, 'i');
     return speechSynthesis.getVoices().filter(v => re.test(v.lang));
 }
 
-function pickVoice(settings) {
+export function pickVoice(settings) {
     const voices = getAppVoices();
     return voices.find(v => v.voiceURI === settings.voiceURI)
         || voices.find(v => (PREFERRED_VOICE_LANGS[appLanguage] || PREFERRED_VOICE_LANGS.es).test(v.lang))
@@ -59,7 +66,7 @@ function pickVoice(settings) {
 // con reps rápidas es mejor decir el número actual que quedar atrasado.
 // opts.interrupt = false: se encola detrás de lo que se está diciendo (el ánimo a mitad
 // de rep no corta el número).
-function speak(text, key, opts = {}) {
+export function speak(text, key, opts = {}) {
     const st = loadVoiceSettings();
     if (!st.enabled || (key && st[key] === false) || !voiceSupported()) return;
     if (typeof features !== 'undefined' && !features.isOn('voice')) return;
@@ -84,13 +91,13 @@ function speak(text, key, opts = {}) {
     }
 }
 
-function applyVoiceSettingsToPage(st = loadVoiceSettings()) {
+export function applyVoiceSettingsToPage(st = loadVoiceSettings()) {
     // Sin contador de reps, el botón ▶ desaparece de los bloques.
     document.body.classList.toggle('rep-counter-off', !(st.enabled && st.repCounter));
 }
 
 // ---- Pantalla de Configuración ----
-function initVoiceSettingsUI() {
+export function initVoiceSettingsUI() {
     const st = loadVoiceSettings();
     applyVoiceSettingsToPage(st);
     const box = document.getElementById('voiceSettingsBox');
@@ -112,7 +119,7 @@ function initVoiceSettingsUI() {
     if (voiceSupported()) speechSynthesis.addEventListener?.('voiceschanged', populateVoiceSelect);
 }
 
-function onVoiceSettingChange(el) {
+export function onVoiceSettingChange(el) {
     const key = el.dataset.voice;
     let value = el.type === 'checkbox' ? el.checked : el.value;
     if (['prepSeconds', 'tempo', 'rate', 'pitch'].includes(key)) value = parseFloat(value);
@@ -120,7 +127,7 @@ function onVoiceSettingChange(el) {
     updateVoiceLabels(st);
 }
 
-function updateVoiceLabels(st) {
+export function updateVoiceLabels(st) {
     const set = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
     set('voiceRateLabel', `${formatNumber(st.rate)}×`);
     const p = Number(st.pitch) || 1;
@@ -131,7 +138,7 @@ function updateVoiceLabels(st) {
     if (opts) opts.style.opacity = st.enabled ? '1' : '0.5';
 }
 
-function populateVoiceSelect() {
+export function populateVoiceSelect() {
     const sel = document.getElementById('voiceSelect');
     if (!sel) return;
     const st = loadVoiceSettings();
@@ -141,7 +148,7 @@ function populateVoiceSelect() {
     sel.value = voices.some(v => v.voiceURI === st.voiceURI) ? st.voiceURI : '';
 }
 
-function testVoice() {
+export function testVoice() {
     unlockAudio();
     speak(styledCueText(['repFive', 'repLast'], '¡Dale! Quedan cinco. ¡Última!'));
 }
@@ -149,7 +156,7 @@ function testVoice() {
 
 // Pasos para instalar o cambiar voces según el sistema. Una web no puede abrir los ajustes
 // del sistema (en la app nativa, este botón va a abrirlos directamente).
-function showVoiceInstallHelp() {
+export function showVoiceInstallHelp() {
     const box = document.getElementById('voiceInstallHelp');
     if (!box) return;
     const ua = navigator.userAgent;

@@ -1,12 +1,20 @@
 // Grabaciones propias para cada aviso: grabar, reproducir y pantalla de ajustes.
 // El guardado en IndexedDB está en js/data/recording-repository.js.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
 
 // Cada aviso puede tener una grabación propia (tu voz, la de un entrenador). Si
 // existe, suena esa; si no, la voz del celular. Los números (1, 2, 3...) siempre
 // los dice la voz del celular. Las grabaciones viven en el celular (IndexedDB) y se
 // incluyen en el backup, igual que el resto de los datos.
-const VOICE_CUES = [
+import { escapeHtml, formatNumber } from '../core/utils.js';
+import { fnAttrs } from '../ui/actions.js';
+import { recordingRepo } from '../data/recording-repository.js';
+import { showToast } from '../ui/toast.js';
+import { getAudioCtx, loadSoundSettings, unlockAudio } from './sound.js';
+import { loadVoiceSettings, speak, voiceSupported } from './voice.js';
+import { styledCueText } from './voice-styles.js';
+import { features } from '../features/feature-settings.js';
+
+export const VOICE_CUES = [
     { id: 'restWarn', group: 'Descanso', text: 'Quedan diez segundos' },
     { id: 'restEnd', group: 'Descanso', text: '¡Vamos! A la próxima serie' },
     { id: 'repPrep', group: 'Contador de reps', text: 'Preparate' },
@@ -24,14 +32,14 @@ const VOICE_CUES = [
     { id: 'record', group: 'Récords', text: '¡Nuevo récord!' }
 ];
 
-const MAX_RECORDING_MS = 5000;
+export const MAX_RECORDING_MS = 5000;
 
-const recordingMeta = {};     // id -> { mime, duration, updatedAt }
-const recordingBuffers = {};  // id -> AudioBuffer listo para sonar (sin silencios)
-let recState = null;          // grabación en curso
-let cueSources = [];          // grabaciones sonando ahora
+export const recordingMeta = {};     // id -> { mime, duration, updatedAt }
+export const recordingBuffers = {};  // id -> AudioBuffer listo para sonar (sin silencios)
+export let recState = null;          // grabación en curso
+export let cueSources = [];          // grabaciones sonando ahora
 
-function decodeAudio(arrayBuffer) {
+export function decodeAudio(arrayBuffer) {
     const ctx = getAudioCtx();
     if (!ctx) return Promise.reject(new Error('Sin audio'));
     // Copia: decodeAudioData "consume" el buffer que recibe.
@@ -44,7 +52,7 @@ function decodeAudio(arrayBuffer) {
 
 // Recorta el silencio del principio y del final (siempre hay un poco entre tocar
 // "Grabar" y empezar a hablar), así el aviso suena en el momento justo.
-function trimSilence(buffer) {
+export function trimSilence(buffer) {
     const ctx = getAudioCtx();
     const data = buffer.getChannelData(0);
     const threshold = 0.02;
@@ -63,7 +71,7 @@ function trimSilence(buffer) {
     return out;
 }
 
-async function loadRecordings() {
+export async function loadRecordings() {
     let all = [];
     try { all = await recordingRepo.all(); } catch (e) { return; }
     for (const rec of all) {
@@ -74,7 +82,7 @@ async function loadRecordings() {
     renderRecordingsUI();
 }
 
-async function saveRecordingData(id, arrayBuffer, mime) {
+export async function saveRecordingData(id, arrayBuffer, mime) {
     const decoded = await decodeAudio(arrayBuffer); // si no se puede leer, no se guarda
     const rec = { id, mime, data: arrayBuffer, duration: Math.round(decoded.duration * 10) / 10, updatedAt: Date.now() };
     await recordingRepo.put(rec);
@@ -82,7 +90,7 @@ async function saveRecordingData(id, arrayBuffer, mime) {
     recordingBuffers[id] = trimSilence(decoded);
 }
 
-async function removeRecording(id) {
+export async function removeRecording(id) {
     if (!recordingMeta[id]) return;
     const cue = VOICE_CUES.find(c => c.id === id);
     if (!confirm(`¿Borrar tu grabación de «${cue?.text || id}»? Vuelve a sonar la voz del celular.`)) return;
@@ -93,12 +101,12 @@ async function removeRecording(id) {
 }
 
 // --- Reproducir ---
-function stopCuePlayback() {
+export function stopCuePlayback() {
     cueSources.forEach(src => { try { src.stop(); } catch (e) {} });
     cueSources = [];
 }
 
-function playRecordings(ids, opts = {}) {
+export function playRecordings(ids, opts = {}) {
     const ctx = getAudioCtx();
     const buffers = ids.map(id => recordingBuffers[id]);
     if (!ctx || buffers.some(b => !b)) return false;
@@ -124,7 +132,7 @@ function playRecordings(ids, opts = {}) {
 // Aviso con posible grabación propia: ids = qué grabaciones sonarían (en orden),
 // text = lo que dice la voz del celular si falta alguna, key = interruptor del aviso,
 // opts.interrupt = false para no cortar lo que se está diciendo.
-function speakCue(ids, text, key, opts = {}) {
+export function speakCue(ids, text, key, opts = {}) {
     const st = loadVoiceSettings();
     if (!st.enabled || (key && st[key] === false)) return;
     if (typeof features !== 'undefined' && !features.isOn('voice')) return;
@@ -132,16 +140,16 @@ function speakCue(ids, text, key, opts = {}) {
     speak(styledCueText(ids, text), null, opts);
 }
 
-function previewCue(id) {
+export function previewCue(id) {
     unlockAudio();
     const cue = VOICE_CUES.find(c => c.id === id);
     if (!playRecordings([id])) speak(styledCueText([id], cue?.text || ''));
 }
 
 // --- Subir un audio (voz o sonido) desde un archivo ---
-const MAX_UPLOAD_BYTES = 1024 * 1024; // 1 MB: un aviso dura unos segundos
+export const MAX_UPLOAD_BYTES = 1024 * 1024; // 1 MB: un aviso dura unos segundos
 
-function uploadCueAudio(id) {
+export function uploadCueAudio(id) {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'audio/*';
@@ -164,16 +172,16 @@ function uploadCueAudio(id) {
 }
 
 // --- Grabar ---
-function canRecord() {
+export function canRecord() {
     return !!(navigator.mediaDevices?.getUserMedia && window.MediaRecorder && window.isSecureContext !== false);
 }
 
-function pickRecordingMime() {
+export function pickRecordingMime() {
     const options = ['audio/webm;codecs=opus', 'audio/mp4', 'audio/webm', 'audio/ogg;codecs=opus'];
     return options.find(m => { try { return MediaRecorder.isTypeSupported(m); } catch (e) { return false; } }) || '';
 }
 
-async function toggleRecording(id) {
+export async function toggleRecording(id) {
     if (recState) {
         const same = recState.id === id;
         recState.recorder.stop();
@@ -183,7 +191,7 @@ async function toggleRecording(id) {
     startRecording(id);
 }
 
-async function startRecording(id) {
+export async function startRecording(id) {
     if (!canRecord()) {
         showToast('Este navegador no permite grabar audio desde la app.', 'error', 4500);
         return;
@@ -236,14 +244,14 @@ async function startRecording(id) {
     renderRecordingsUI();
 }
 
-function updateRecordingCountdown() {
+export function updateRecordingCountdown() {
     if (!recState) return;
     const btn = document.querySelector(`.rec-row[data-cue="${recState.id}"] .rec-record`);
     const left = Math.max(0, Math.ceil((MAX_RECORDING_MS - (Date.now() - recState.startedAt)) / 1000));
     if (btn) btn.textContent = `■ Listo (${left})`;
 }
 
-function renderRecordingsUI() {
+export function renderRecordingsUI() {
     const box = document.getElementById('recordingsList');
     if (!box) return;
     let html = canRecord() ? '' : '<p style="color:var(--text-faint); font-size:13px;">Este navegador no permite grabar desde la app (hace falta abrirla desde su dirección https). Igual podés subir un audio con 📁.</p>';

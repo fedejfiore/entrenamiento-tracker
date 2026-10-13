@@ -1,9 +1,21 @@
 // Historial de sesiones: filtros, resumen y detalle.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { escapeHtml } from '../core/utils.js';
+import { appLocale } from '../core/i18n.js';
+import { formatDuration } from '../core/time.js';
+import { formatWeightTotal } from '../core/units.js';
+import { EXERCISE_TYPES, ROUTINE_LABELS } from '../domain/catalog.js';
+import { formatEffort, formatSetValue, setLabels } from '../domain/sets.js';
+import { repo } from '../data/repositories.js';
+import { customRoutineLabels } from '../data/routines-store.js';
+import { calculateSessionVolume, calculateStats } from '../domain/stats.js';
+import { showToast, showUndoToast } from '../ui/toast.js';
+import { generateProgressionAnalysis } from './progress.js';
+import { updateSidebar } from './home.js';
+import { emptyStateHtml } from '../ui/navigation.js';
 
-const HISTORY_RECENT_COUNT = 7;
+export const HISTORY_RECENT_COUNT = 7;
 
-function renderHistoryItem(w) {
+export function renderHistoryItem(w) {
     if (w.type === 'tabata') return renderTabataHistoryItem(w);
 
     const mood = ['😢','😐','🙂','😊','🔥'][w.mood-1] || '😐';
@@ -49,7 +61,7 @@ function renderHistoryItem(w) {
 }
 
 // Una línea por serie: "S1: 12×50kg · RIR 2 · 90s — nota"
-function renderHistorySets(ex) {
+export function renderHistorySets(ex) {
     const type = EXERCISE_TYPES[ex.type] ? ex.type : 'kg';
     const labels = setLabels(ex.sets);
     return `<small>${ex.sets.map((set, i) => {
@@ -61,7 +73,7 @@ function renderHistorySets(ex) {
     }).join('<br>')}</small>`;
 }
 
-function renderTabataHistoryItem(w) {
+export function renderTabataHistoryItem(w) {
     const durationChip = formatDuration(w.duration) ? `<span class="stat-chip">⏱ ${formatDuration(w.duration)}</span>` : '';
     // Formato nuevo: varios bloques por sesión. Formato viejo (compatibilidad): un solo bloque suelto en el propio objeto.
     const blocks = Array.isArray(w.blocks) ? w.blocks : [{ name: w.name, workSec: w.workSec, restSec: w.restSec, rounds: w.rounds, roundsCompleted: w.roundsCompleted, completed: w.roundsCompleted >= w.rounds }];
@@ -83,7 +95,7 @@ function renderTabataHistoryItem(w) {
 }
 
 // Todas las sesiones guardadas (sin límite), más nueva primero.
-function getAllSessions() {
+export function getAllSessions() {
     let workouts = repo.workouts.all();
     if (!Array.isArray(workouts)) workouts = [];
     return workouts
@@ -92,7 +104,7 @@ function getAllSessions() {
 }
 
 // Arma las opciones de mes/año a partir de las sesiones que realmente existen.
-function populateHistoryFilters(sessions) {
+export function populateHistoryFilters(sessions) {
     const monthSel = document.getElementById('historyMonthFilter');
     const yearSel = document.getElementById('historyYearFilter');
     if (!monthSel || !yearSel) return;
@@ -112,14 +124,14 @@ function populateHistoryFilters(sessions) {
     if (years.includes(prevYear)) yearSel.value = prevYear;
 }
 
-function onHistoryViewModeChange() {
+export function onHistoryViewModeChange() {
     const mode = document.getElementById('historyViewMode').value;
     document.getElementById('historyMonthFilter').style.display = mode === 'month' ? '' : 'none';
     document.getElementById('historyYearFilter').style.display = mode === 'year' ? '' : 'none';
     displayWorkoutHistory();
 }
 
-function displayWorkoutHistory() {
+export function displayWorkoutHistory() {
     const sessions = getAllSessions();
     populateHistoryFilters(sessions);
 
@@ -152,7 +164,7 @@ function displayWorkoutHistory() {
 }
 
 // Promedios del período seleccionado (duración y volumen), a simple vista arriba del historial.
-function renderWorkoutSummary(sessions) {
+export function renderWorkoutSummary(sessions) {
     const el = document.getElementById('workoutSummary');
     if (!el) return;
 
@@ -178,13 +190,13 @@ function renderWorkoutSummary(sessions) {
     el.innerHTML = `<div style="display:flex; gap:8px; flex-wrap:wrap;">${chips.join('')}</div>`;
 }
 
-function toggleSession(uid) {
+export function toggleSession(uid) {
     const el = document.getElementById(uid);
     if (!el) return;
     el.style.display = el.style.display === 'none' ? 'block' : 'none';
 }
 
-function editWorkoutDate(workoutId) {
+export function editWorkoutDate(workoutId) {
     let workouts = repo.workouts.all();
     const workout = workouts.find(w => w.id === workoutId);
     if (!workout) return;
@@ -209,7 +221,7 @@ function editWorkoutDate(workoutId) {
 }
 
 // Borra una sesión cargada por error (borrado lógico: ver WorkoutRepository.remove).
-function deleteWorkout(workoutId) {
+export function deleteWorkout(workoutId) {
     const w = repo.workouts.all().find(x => x.id === workoutId);
     if (!w) return;
     const routineName = customRoutineLabels[w.routine] || ROUTINE_LABELS[w.routine] || w.routine || 'entrenamiento';
@@ -230,7 +242,7 @@ function deleteWorkout(workoutId) {
 }
 
 // Acciones del historial por delegación (el HTML generado no lleva código).
-function bindHistoryList() {
+export function bindHistoryList() {
     document.getElementById('workoutHistory')?.addEventListener('click', e => {
         const el = e.target.closest('[data-action]');
         if (!el) return;

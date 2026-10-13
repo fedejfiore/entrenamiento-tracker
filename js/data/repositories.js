@@ -2,8 +2,12 @@
 // (y db.get / db.set para preferencias simples) en lugar de tocar el almacenamiento.
 // Al pasar a una base de datos real, estos métodos son los que se reimplementan (o se
 // cambia el adaptador de Store) sin tocar las pantallas.
+import { LocalStorageAdapter, MemoryAdapter, Store } from './store.js';
+import { STORAGE_SCHEMA } from './schema.js';
+import { BodyMeasurement, WorkoutSession } from '../domain/models.js';
+import { programModule } from '../domain/programs.js';
 
-class WorkoutRepository {
+export class WorkoutRepository {
     constructor(store) { this.store = store; }
 
     /** Sesiones vigentes (copia: modificarla no guarda nada hasta saveAll). */
@@ -93,7 +97,7 @@ class WorkoutRepository {
     static keyOf(w) { return w.uid || `id:${w.id}`; }
 }
 
-class BodyMetricsRepository {
+export class BodyMetricsRepository {
     constructor(store) { this.store = store; }
 
     all() { return this.store.get('bodyMetrics'); }
@@ -115,7 +119,7 @@ class BodyMetricsRepository {
  * selector, no se borra nada). Las rutinas base del código (catalog.js) se pueden
  * personalizar: la versión guardada reemplaza a la base.
  */
-class RoutineRepository {
+export class RoutineRepository {
     /**
      * @param store
      * @param {(programId: string) => string} programModule  a qué módulo pertenece un programa
@@ -247,9 +251,9 @@ class RoutineRepository {
 }
 
 /** Almacenamiento principal de la app: localStorage, o memoria si el navegador lo bloquea. */
-const db = new Store(LocalStorageAdapter.isAvailable() ? new LocalStorageAdapter() : new MemoryAdapter(), STORAGE_SCHEMA);
+export const db = new Store(LocalStorageAdapter.isAvailable() ? new LocalStorageAdapter() : new MemoryAdapter(), STORAGE_SCHEMA);
 
-const repo = {
+export const repo = {
     workouts: new WorkoutRepository(db),
     bodyMetrics: new BodyMetricsRepository(db),
     routines: new RoutineRepository(db, id => programModule(id))

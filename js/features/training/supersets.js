@@ -5,21 +5,28 @@
 // letra; en pantalla se marca con 🔗 A y un borde de color. Al tildar una serie de un
 // ejercicio que no es el último de su superserie, en vez de arrancar el descanso la app
 // lleva al siguiente ejercicio (misma serie).
+import { escapeHtml, normalizeForCompare } from '../../core/utils.js';
+import { nextInSuperset, nextSupersetLetter } from '../../domain/training-tools.js';
+import { db } from '../../data/repositories.js';
+import { showToast } from '../../ui/toast.js';
+import { getBlockName, setBlockCollapsed } from './exercise-block.js';
+import { focusCurrentExercise } from './focus.js';
+import { features } from '../feature-settings.js';
 
-function supersetMap(routine) {
+export function supersetMap(routine) {
     return (db.get('routineSupersets')[routine]) || {};
 }
 
 // Solo una letra A-Z: el mapa viene de los datos guardados (o de un backup).
 // Con la función apagada (Ajustes → Funciones) las superseries guardadas no se aplican.
-function getSupersetLetter(routine, name) {
+export function getSupersetLetter(routine, name) {
     if (typeof features !== 'undefined' && !features.isOn('supersets')) return null;
     const letter = supersetMap(routine)[normalizeForCompare(name || '')];
     return typeof letter === 'string' && /^[A-Z]$/.test(letter) ? letter : null;
 }
 
 // Guarda el mapa de la rutina quitando las superseries que quedaron con un solo ejercicio.
-function saveSupersetMap(routine, map) {
+export function saveSupersetMap(routine, map) {
     const count = {};
     Object.values(map).forEach(l => { count[l] = (count[l] || 0) + 1; });
     Object.keys(map).forEach(k => { if (count[map[k]] < 2) delete map[k]; });
@@ -32,7 +39,7 @@ function saveSupersetMap(routine, map) {
 }
 
 /** Marca en pantalla la superserie de cada bloque (sin volver a dibujar las series). */
-function refreshSupersetBadges() {
+export function refreshSupersetBadges() {
     const routine = document.getElementById('routine')?.value;
     document.querySelectorAll('#exercisesContainer .exercise-row').forEach(block => {
         const letter = getSupersetLetter(routine, getBlockName(block));
@@ -49,9 +56,9 @@ function refreshSupersetBadges() {
 
 // ---------- Elegir con qué ejercicios va ----------
 
-let supersetEditing = null; // { routine, name }
+export let supersetEditing = null; // { routine, name }
 
-function openSupersetModal(block) {
+export function openSupersetModal(block) {
     const routine = document.getElementById('routine')?.value;
     if (!routine || !block) return;
     const name = getBlockName(block);
@@ -77,12 +84,12 @@ function openSupersetModal(block) {
     document.getElementById('supersetModal').classList.add('open');
 }
 
-function closeSupersetModal() {
+export function closeSupersetModal() {
     document.getElementById('supersetModal')?.classList.remove('open');
     supersetEditing = null;
 }
 
-function saveSupersetFromModal() {
+export function saveSupersetFromModal() {
     if (!supersetEditing) return;
     const { routine, name } = supersetEditing;
     const selected = [...document.querySelectorAll('#supersetList input:checked')].map(i => i.value);
@@ -114,7 +121,7 @@ function saveSupersetFromModal() {
     showToast(letter ? `🔗 Superserie ${letter} lista: se hacen seguidos y se descansa al final de la vuelta` : 'Superserie quitada');
 }
 
-function removeFromSuperset() {
+export function removeFromSuperset() {
     if (!supersetEditing) return;
     document.querySelectorAll('#supersetList input').forEach(i => { i.checked = false; });
     saveSupersetFromModal();
@@ -124,7 +131,7 @@ function removeFromSuperset() {
  * Llamado al tildar una serie: si el ejercicio sigue en su superserie, lleva al siguiente
  * (misma serie) y devuelve true para NO arrancar el descanso todavía.
  */
-function goToNextInSuperset(block, row) {
+export function goToNextInSuperset(block, row) {
     const routine = document.getElementById('routine')?.value;
     const blocks = [...document.querySelectorAll('#exercisesContainer .exercise-row')];
     const names = blocks.map(getBlockName);
@@ -151,7 +158,7 @@ function goToNextInSuperset(block, row) {
  * Fin de una vuelta de superserie: mientras corre el descanso, la pantalla vuelve al primer
  * ejercicio de la superserie que tenga series pendientes (la próxima vuelta).
  */
-function backToSupersetStart(blocks, names, letter, letterOf) {
+export function backToSupersetStart(blocks, names, letter, letterOf) {
     if (!letter) return;
     const members = blocks.filter((b, i) => letterOf(names[i]) === letter);
     const firstPending = members.find(b => b.querySelector('.set-row:not(.done)'));
@@ -164,7 +171,7 @@ function backToSupersetStart(blocks, names, letter, letterOf) {
     showToast(`🔗 Vuelta completa: descansá y seguí con ${getBlockName(firstPending)}`, 'success', 2600);
 }
 
-function bindSupersetModal() {
+export function bindSupersetModal() {
     const modal = document.getElementById('supersetModal');
     modal?.addEventListener('click', e => {
         if (e.target === modal) closeSupersetModal();

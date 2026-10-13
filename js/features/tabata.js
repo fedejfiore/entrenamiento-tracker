@@ -1,20 +1,30 @@
 // Tabata / intervalos: bloques, fases y sesión.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
 
 // Varios bloques (ej. Burpees, Plancha, Bici) se acumulan en tabataSessionBlocks y
 // se guardan juntos como UN solo entrenamiento al tocar "Finalizar sesión Tabata".
-let tabataInterval = null;
+import { escapeHtml, getLocalDateString } from '../core/utils.js';
+import { WorkoutSession } from '../domain/models.js';
+import { db, repo } from '../data/repositories.js';
+import { showToast } from '../ui/toast.js';
+import { playRestTimerBeep } from '../audio/sound.js';
+import { speak } from '../audio/voice.js';
+import { speakCue } from '../audio/recordings.js';
+import { cancelRestTimer, hideTimerWidget } from './rest-timer.js';
+import { displayWorkoutHistory } from './history.js';
+import { updateSidebar } from './home.js';
 
-let tabataState = null; // {name, workSec, restSec, rounds, currentRound, phase, roundsCompleted}
+export let tabataInterval = null;
+
+export let tabataState = null; // {name, workSec, restSec, rounds, currentRound, phase, roundsCompleted}
 
 /** Corta el Tabata en curso (si hay uno), sin guardar nada. */
-function stopTabata() {
+export function stopTabata() {
     if (tabataInterval) { clearInterval(tabataInterval); tabataInterval = null; }
     tabataState = null;
 }
-let tabataSessionBlocks = [];
+export let tabataSessionBlocks = [];
 
-function startTabata() {
+export function startTabata() {
     const name = (document.getElementById('tabataName').value || '').trim() || 'Tabata';
     const workSec = parseInt(document.getElementById('tabataWork').value, 10);
     const restSec = parseInt(document.getElementById('tabataRest').value, 10) || 0;
@@ -34,7 +44,7 @@ function startTabata() {
     runTabataPhase(workSec, 'work');
 }
 
-function runTabataPhase(seconds, phase) {
+export function runTabataPhase(seconds, phase) {
     if (!tabataState) return;
     const widget = document.getElementById('restTimer');
     const valueEl = document.getElementById('restTimerValue');
@@ -83,7 +93,7 @@ function runTabataPhase(seconds, phase) {
     }, 1000);
 }
 
-function advanceTabata() {
+export function advanceTabata() {
     if (!tabataState) return;
     if (tabataState.phase === 'work') {
         tabataState.roundsCompleted = tabataState.currentRound;
@@ -101,7 +111,7 @@ function advanceTabata() {
     }
 }
 
-function finishTabata() {
+export function finishTabata() {
     const state = tabataState;
     tabataInterval = null;
     tabataState = null;
@@ -110,7 +120,7 @@ function finishTabata() {
     addTabataBlockToSession(state, true);
 }
 
-function cancelTabata() {
+export function cancelTabata() {
     if (!tabataState) { cancelRestTimer(); return; }
     const state = tabataState;
     cancelRestTimer();
@@ -124,7 +134,7 @@ function cancelTabata() {
 // Suma un bloque terminado (o cortado) a la sesión Tabata en curso. Todavía no se
 // guarda en el historial: eso pasa recién al tocar "Finalizar sesión Tabata", para
 // poder encadenar varios bloques (ej. Burpees + Plancha + Bici) como un solo entreno.
-function addTabataBlockToSession(state, completed) {
+export function addTabataBlockToSession(state, completed) {
     tabataSessionBlocks.push({
         name: state.name,
         workSec: state.workSec,
@@ -143,7 +153,7 @@ function addTabataBlockToSession(state, completed) {
     document.getElementById('tabataName').value = '';
 }
 
-function renderTabataSessionBlocks() {
+export function renderTabataSessionBlocks() {
     const container = document.getElementById('tabataSessionBlocks');
     const finishBtn = document.getElementById('btnFinishTabataSession');
     if (!container) return;
@@ -165,7 +175,7 @@ function renderTabataSessionBlocks() {
 }
 
 // Guarda TODOS los bloques acumulados como un único entrenamiento en el historial.
-function finishTabataSession() {
+export function finishTabataSession() {
     if (tabataSessionBlocks.length === 0) return;
 
     const totalDurationSec = tabataSessionBlocks.reduce((sum, b) => {
@@ -200,11 +210,11 @@ function finishTabataSession() {
     updateSidebar();
 }
 
-function saveTabataSessionBlocksDraft() {
+export function saveTabataSessionBlocksDraft() {
     try { db.set('activeTabataBlocks', tabataSessionBlocks); } catch (e) {}
 }
 
-function restoreTabataSessionBlocks() {
+export function restoreTabataSessionBlocks() {
     try {
         const saved = db.get('activeTabataBlocks');
         if (Array.isArray(saved) && saved.length > 0) {

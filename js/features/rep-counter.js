@@ -1,22 +1,36 @@
 // Contador de reps con cadencia, preparación y ánimo por voz.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
 
 // ▶ en un bloque cuenta la próxima serie sin tildar: primero unos segundos para
 // prepararse, después un tic por rep al ritmo elegido (con un tic más grave a mitad
 // de cada rep para marcar el cambio de dirección: ida / vuelta) y ánimo por voz. Al terminar
 // marca la serie como hecha, lo que arranca el descanso. En los unilaterales cuenta un
 // lado, da unos segundos para cambiar de lado (sin descanso) y cuenta el otro.
-const REP_TEMPO_MIN = 1;
+import { formatNumber, normalizeForCompare } from '../core/utils.js';
+import { WARMUP_LABEL } from '../domain/catalog.js';
+import { isPilatesType } from '../domain/pilates.js';
+import { pilatesExerciseInfo } from '../domain/pilates-catalog.js';
+import { loadExerciseTempos, saveExerciseTempo } from '../data/exercise-prefs.js';
+import { showToast } from '../ui/toast.js';
+import { playTick, unlockAudio } from '../audio/sound.js';
+import { loadVoiceSettings, speak, voiceSupported } from '../audio/voice.js';
+import { speakCue } from '../audio/recordings.js';
+import { cancelRestTimer } from './rest-timer.js';
+import { maybeAutoStartSessionTimer } from './training/session-clock.js';
+import { saveWorkoutDraft } from './training/draft.js';
+import { getBlockName, toggleSetDone } from './training/exercise-block.js';
+import { loadAppSettings } from './general-settings.js';
 
-const REP_TEMPO_MAX = 8;
+export const REP_TEMPO_MIN = 1;
 
-const REP_TEMPO_STEP = 0.5;
+export const REP_TEMPO_MAX = 8;
 
-let repState = null;
+export const REP_TEMPO_STEP = 0.5;
 
-let repTimer = null;
+export let repState = null;
 
-function startRepCounter(btn) {
+export let repTimer = null;
+
+export function startRepCounter(btn) {
     const block = btn.closest('.exercise-row');
     if (!block) return;
     const row = [...block.querySelectorAll('.set-row')].find(r => !r.classList.contains('done'));
@@ -63,14 +77,14 @@ function startRepCounter(btn) {
     repTimer = setInterval(repCounterTick, 50);
 }
 
-function renderRepCounterTitle() {
+export function renderRepCounterTitle() {
     const s = repState;
     const label = s.row.querySelector('.set-num')?.textContent || '';
     const side = s.unilateral ? ` · Lado ${s.side}` : '';
     document.getElementById('repCounterTitle').textContent = `${s.name} · ${label === WARMUP_LABEL ? 'Calentamiento' : 'Serie ' + label}${side}`;
 }
 
-function repCounterTick() {
+export function repCounterTick() {
     const s = repState;
     if (!s || s.pausedAt) return;
     const now = Date.now();
@@ -126,7 +140,7 @@ function repCounterTick() {
 }
 
 // Ánimo para una rep (se dice a mitad de la rep, después de su número), o null.
-function repCue(rep, target, encourage) {
+export function repCue(rep, target, encourage) {
     const left = target - rep + 1; // incluye la que empieza
     if (encourage) {
         if (rep === target && target > 1) return { ids: ['repLast'], text: '¡Última!' };
@@ -139,7 +153,7 @@ function repCue(rep, target, encourage) {
     return null;
 }
 
-function onRepStart(first) {
+export function onRepStart(first) {
     const s = repState;
     const st = loadVoiceSettings();
     playTick(1200, 0.08);
@@ -153,7 +167,7 @@ function onRepStart(first) {
     else if (st.countAloud) speak(String(s.rep));
 }
 
-function finishRepCounter() {
+export function finishRepCounter() {
     const s = repState;
     // Unilateral: terminado el primer lado, pausa corta para cambiar y se cuenta el otro.
     if (s.unilateral && s.side === 1) {
@@ -193,7 +207,7 @@ function finishRepCounter() {
     }, 1200);
 }
 
-function stopRepCounter(silent) {
+export function stopRepCounter(silent) {
     if (repTimer) { clearInterval(repTimer); repTimer = null; }
     const s = repState;
     repState = null;
@@ -204,13 +218,13 @@ function stopRepCounter(silent) {
     if (!silent && voiceSupported()) speechSynthesis.cancel();
 }
 
-function closeRepCounterPanel() {
+export function closeRepCounterPanel() {
     const panel = document.getElementById('repCounter');
     if (panel) panel.hidden = true;
     document.body.classList.remove('rep-counter-open');
 }
 
-function toggleRepCounterPause() {
+export function toggleRepCounterPause() {
     const s = repState;
     if (!s || s.phase === 'done') return;
     if (s.pausedAt) {
@@ -228,7 +242,7 @@ function toggleRepCounterPause() {
 }
 
 // Más lento / más rápido: cambia desde la próxima rep y queda guardado para ese ejercicio.
-function adjustRepTempo(delta) {
+export function adjustRepTempo(delta) {
     const s = repState;
     if (!s) return;
     s.tempo = Math.min(REP_TEMPO_MAX, Math.max(REP_TEMPO_MIN, Math.round((s.tempo + delta) * 2) / 2));
@@ -236,14 +250,14 @@ function adjustRepTempo(delta) {
     renderRepCounter();
 }
 
-function adjustRepTarget(delta) {
+export function adjustRepTarget(delta) {
     const s = repState;
     if (!s) return;
     s.target = Math.max(Math.max(1, s.rep), s.target + delta);
     renderRepCounter();
 }
 
-function renderRepCounter() {
+export function renderRepCounter() {
     const s = repState;
     if (!s) return;
     const phaseEl = document.getElementById('repCounterPhase');

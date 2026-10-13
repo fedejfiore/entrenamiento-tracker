@@ -1,7 +1,7 @@
 // Catálogo fijo: rutinas base, grupos musculares, variantes y tipos de medición.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { normalizeForCompare } from '../core/utils.js';
 
-const routines = {
+export const routines = {
     A: [
         'Press de pecho', 'Jalón al pecho', 'Press de hombros', 'Remo sentado',
         'Aperturas en mariposa', 'Curl de bíceps', 'Extensión de tríceps'
@@ -26,7 +26,7 @@ const routines = {
     D1: ['Puente de glúteos / hip thrust', 'Gemelos', 'Crunch en polea + plancha']
 };
 
-const ROUTINE_LABELS = {
+export const ROUTINE_LABELS = {
     A: 'Rutina A - Superior',
     B: 'Rutina B - Inferior',
     C: 'Rutina C - Superior',
@@ -48,7 +48,7 @@ const ROUTINE_LABELS = {
 // rest: si la serie tiene columna de descanso (y dispara el timer al tildarla).
 // calc: columna calculada (km/h a partir del tiempo y los km).
 // La unidad del tiempo (seg, m:ss, min, h:mm) se elige por ejercicio: ver TIME_UNITS.
-const EXERCISE_TYPES = {
+export const EXERCISE_TYPES = {
     kg:   { label: 'Kg + reps', cols: ['reps', 'kg'], effort: 'rir', defaultSets: 3, rest: true },
     bw:   { label: 'Solo reps', cols: ['reps'], effort: 'rir', defaultSets: 3, rest: true },
     time: { label: 'Tiempo', cols: ['time'], effort: 'rpe', defaultSets: 1, rest: true },
@@ -60,7 +60,7 @@ const EXERCISE_TYPES = {
     springs: { label: 'Resortes + reps', cols: ['reps', 'springs'], effort: 'mastery', defaultSets: 1, rest: false, discipline: 'reformer' }
 };
 
-function isCardioType(type) {
+export function isCardioType(type) {
     return type === 'time' || type === 'min' || type === 'km';
 }
 
@@ -68,7 +68,7 @@ function isCardioType(type) {
 // o "decimal" (dígitos + separador). Punto o coma da igual: la app los normaliza.
 // El tiempo m:ss se tipea como dígitos y se formatea solo ("145" → "1:45"), así
 // no hace falta buscar los dos puntos en el teclado.
-const SET_FIELDS = {
+export const SET_FIELDS = {
     reps: { head: 'Reps', inputmode: 'numeric', hint: '–' },
     kg:   { head: 'Kg', inputmode: 'decimal', hint: '–' },
     km:   { head: 'Km', inputmode: 'decimal', hint: '–' },
@@ -79,7 +79,7 @@ const SET_FIELDS = {
 
 // RIR = reps que quedaban en reserva (0 = al fallo). Para cardio/tiempo no tiene
 // sentido contar reps en reserva, así que se usa una escala de esfuerzo simple.
-const EFFORT_SCALES = {
+export const EFFORT_SCALES = {
     rir: { head: 'RIR', title: 'Reps en reserva (F = al fallo)', options: [['', '–'], ['0', 'F'], ['1', '1'], ['2', '2'], ['3', '3'], ['4', '4+']] },
     rpe: { head: 'Esfuerzo', title: 'Qué tan exigente fue', options: [['', '–'], ['suave', 'Suave'], ['media', 'Media'], ['alta', 'Alta'], ['max', 'Máx']] },
     // Pilates: cómo salió el ejercicio. Tres sesiones "Domino" → sugerir la variante siguiente.
@@ -88,7 +88,7 @@ const EFFORT_SCALES = {
 
 // Botones de ajuste rápido que aparecen bajo la serie al tocar un campo, para
 // subir/bajar sin escribir un número. Tiempo y descanso van en segundos.
-const SET_STEPS = {
+export const SET_STEPS = {
     kg:   [-5, -2.5, 2.5, 5],
     reps: [-1, 1],
     km:   [-1, -0.5, 0.5, 1],
@@ -96,15 +96,15 @@ const SET_STEPS = {
 };
 
 // El fútbol viejo guardaba la intensidad como texto en "reps".
-const LEGACY_INTENSITY_TO_EFFORT = { baja: 'suave', media: 'media', alta: 'alta' };
+export const LEGACY_INTENSITY_TO_EFFORT = { baja: 'suave', media: 'media', alta: 'alta' };
 
-const DEFAULT_REST_SECONDS = 90;
+export const DEFAULT_REST_SECONDS = 90;
 
-const WARMUP_LABEL = 'C';
+export const WARMUP_LABEL = 'C';
 
-const DEFAULT_MATCH_MINUTES = 60;
+export const DEFAULT_MATCH_MINUTES = 60;
 
-const EXERCISE_VARIANTS = {
+export const EXERCISE_VARIANTS = {
     'Press de pecho': ['Press de banca con mancuernas', 'Press inclinado con barra', 'Flexiones de brazos (push-ups)'],
     'Jalón al pecho': ['Remo en polea sentado', 'Dominadas asistidas', 'Jalón con agarre supino'],
     'Press de hombros': ['Press militar con mancuernas', 'Press Arnold', 'Elevaciones laterales'],
@@ -141,7 +141,7 @@ const EXERCISE_VARIANTS = {
 // Taxonomía por grupo muscular, para el catálogo de Variantes y para agrupar el
 // progreso por músculo. Cubre los ejercicios base + variantes que ya conoce la app;
 // uno que no aparezca acá cae en "Otro" (ej. ejercicios personalizados nuevos).
-const MUSCLE_GROUPS = {
+export const MUSCLE_GROUPS = {
     'Pecho': { icon: '🫀', exercises: ['Press de pecho', 'Press de banca con mancuernas', 'Press inclinado con barra', 'Flexiones de brazos (push-ups)', 'flexiones declinadas', 'Aperturas en mariposa', 'Mariposa', 'Cruces en polea (cable crossover)', 'Aperturas con mancuernas en banco', 'Press cerrado en máquina'] },
     'Espalda': { icon: '🔙', exercises: ['Jalón al pecho', 'Remo sentado', 'Remo con mancuerna a un brazo', 'Remo en máquina', 'Remo invertido en barra', 'Remo en polea sentado', 'Dominadas asistidas', 'Jalón con agarre supino', 'Jalón con agarre ancho', 'Face pull', 'Face pull en polea', 'Pullover en polea alta', 'Pullover unilateral en polea alta'] },
     'Hombros': { icon: '🔺', exercises: ['Press de hombros', 'Press militar con mancuernas', 'Press Arnold', 'Elevaciones laterales', 'Elevaciones laterales en polea', 'Elevaciones frontales', 'Vuelos laterales unilaterales con polea baja', 'Elevación de barra al mentón', 'Remo al mentón con mancuernas'] },
@@ -158,7 +158,7 @@ const MUSCLE_GROUPS = {
 };
 
 // Mapa inverso normalizado (nombre -> grupo), armado una sola vez.
-const EXERCISE_TO_MUSCLE_GROUP = {};
+export const EXERCISE_TO_MUSCLE_GROUP = {};
 
 Object.entries(MUSCLE_GROUPS).forEach(([group, def]) => {
     def.exercises.forEach(name => { EXERCISE_TO_MUSCLE_GROUP[normalizeForCompare(name)] = group; });
@@ -168,7 +168,7 @@ Object.entries(MUSCLE_GROUPS).forEach(([group, def]) => {
 // español y en inglés, para lo importado de otras apps). El orden importa: lo más específico
 // primero ("curl femoral" es isquios antes que "curl" sea bíceps; "remo ergómetro" es cardio
 // antes que "remo" sea espalda; "jalón al pecho" es espalda antes que "pecho"). Si nada coincide, null: la persona lo elige.
-const MUSCLE_GROUP_GUESSES = [
+export const MUSCLE_GROUP_GUESSES = [
     ['Cardio / Otro', /\b(correr|carrera|running|run|bici|bicicleta|bike|cycling|spinning|cinta|treadmill|eliptic[oa]|elliptical|ergometro|rowing machine|saltar (la )?soga|salto(s)? de soga|jump rope|futbol|partido|caminata|caminar|natacion|swim(ming)?|cardio|hiit|burpees?)\b/],
     ['Tríceps', /tricep|press frances|skull ?crusher|push ?down|extension (en polea|tras nuca|sobre la cabeza)|overhead extension|fondos en banco|bench dips?/],
     ['Isquios', /curl (femoral|de piernas|nordico)|leg curl|hamstring|isquio|femoral|peso muerto|deadlift|\brdl\b|buenos dias|good ?morning|nordic/],
@@ -182,7 +182,7 @@ const MUSCLE_GROUP_GUESSES = [
     ['Bíceps', /curl|bicep/]
 ];
 
-function guessMuscleGroup(name) {
+export function guessMuscleGroup(name) {
     const n = normalizeForCompare(name || '');
     if (!n) return null;
     const hit = MUSCLE_GROUP_GUESSES.find(([, re]) => re.test(n));
@@ -190,15 +190,15 @@ function guessMuscleGroup(name) {
 }
 
 /** Grupo de un ejercicio: catálogo primero; si no está, el probable por el nombre. */
-function catalogMuscleGroup(name) {
+export function catalogMuscleGroup(name) {
     return EXERCISE_TO_MUSCLE_GROUP[normalizeForCompare(name || '')] || guessMuscleGroup(name);
 }
 
 // "Piernas" ya no existe como grupo: lo que se había elegido a mano así pasa a cuádriceps o
 // isquios según el ejercicio (gemelos o glúteos si el nombre lo dice).
-const LEGACY_LEG_GROUP = 'Piernas';
+export const LEGACY_LEG_GROUP = 'Piernas';
 
-function splitLegacyLegGroup(name) {
+export function splitLegacyLegGroup(name) {
     const g = catalogMuscleGroup(name);
     return ['Cuádriceps', 'Isquios', 'Gemelos', 'Glúteos'].includes(g) ? g : 'Cuádriceps';
 }

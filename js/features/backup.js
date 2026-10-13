@@ -1,7 +1,12 @@
 // Backup: descargar y restaurar todos los datos en un archivo JSON.
 // Qué entra en el archivo y cómo se valida/restaura: js/data/backup-service.js.
+import { db } from '../data/repositories.js';
+import { photoRepo, recordingRepo } from '../data/recording-repository.js';
+import { decryptBackupText, encryptBackupText, isEncryptedBackup } from '../data/backup-crypto.js';
+import { backupService } from '../data/backup-service.js';
+import { showToast } from '../ui/toast.js';
 
-async function downloadData() {
+export async function downloadData() {
     let backup;
     try {
         backup = await backupService.build();
@@ -36,7 +41,7 @@ async function downloadData() {
 }
 
 // Abre el selector de archivos; al elegir uno, el listener de js/app.js llama a uploadData.
-function triggerFileInput() {
+export function triggerFileInput() {
     const fileInput = document.getElementById('fileInput');
     if (!fileInput) {
         showToast('❌ Error: no se encontró el selector de archivo', 'error');
@@ -48,7 +53,7 @@ function triggerFileInput() {
 
 // Lee, valida y (si el usuario confirma) restaura. Si el archivo tiene algún problema no
 // se escribe nada; si está bien, todos los datos se reemplazan juntos en una transacción.
-function uploadData(file) {
+export function uploadData(file) {
     if (!file) {
         showToast('❌ No se seleccionó archivo', 'error');
         return;
@@ -97,7 +102,7 @@ function uploadData(file) {
 
 // Borra TODOS los datos de este celular (también las grabaciones). Pide confirmar dos
 // veces y ofrece antes descargar un backup, porque no se puede deshacer.
-async function resetAllData() {
+export async function resetAllData() {
     if (!confirm('⚠️ ¿Borrar TODOS tus datos de este celular?\n\nSesiones, medidas, rutinas, ajustes, grabaciones y fotos. No se puede deshacer.')) return;
     if (confirm('¿Querés descargar un backup antes de borrar? (Aceptar = descargar primero)')) {
         await downloadData();
@@ -116,7 +121,7 @@ async function resetAllData() {
 
 // Pide una contraseña en un modal (campo oculto, no en un prompt que la muestra en pantalla).
 // Resuelve con la contraseña, o null si se cancela.
-function askPassword({ title, text, confirm: needConfirm = false }) {
+export function askPassword({ title, text, confirm: needConfirm = false }) {
     return new Promise(resolve => {
         const modal = document.getElementById('passwordModal');
         const input = document.getElementById('passwordInput');

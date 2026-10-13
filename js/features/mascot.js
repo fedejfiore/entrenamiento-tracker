@@ -3,9 +3,19 @@
 // js/domain/mascot.js; acá se dibuja con three.js, que se carga recién la primera vez que se
 // abre (vendor/three-mascot.min.js), junto con el modelo .glb. Si el celular no tiene WebGL, se
 // muestra el estado en texto. Con "reducir movimiento" no hay animación.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { appErrors } from '../core/errors.js';
+import { formatDateLocal, html } from '../core/utils.js';
+import { MUSCLE_GROUPS } from '../domain/catalog.js';
+import { computeGarden } from '../domain/garden.js';
+import { muscleSetsByGroup } from '../domain/training-tools.js';
+import { MASCOT_SPECIES, mascotSnapshot } from '../domain/mascot.js';
+import { db, repo } from '../data/repositories.js';
+import { getMuscleGroup } from '../data/exercise-prefs.js';
+import { loadTrainingDaysPlanHistory } from '../data/routines-store.js';
+import { showToast } from '../ui/toast.js';
+import { features } from './feature-settings.js';
 
-class MascotView {
+export class MascotView {
     /**
      * @param {object} deps
      *   data()   → { garden, byGroup } (historial ya calculado)
@@ -227,7 +237,7 @@ class MascotView {
 }
 
 /** Series por músculo de las últimas 4 semanas (28 días hasta hoy) y el estado de la flor. */
-function mascotData() {
+export function mascotData() {
     const today = new Date();
     const from = new Date(today);
     from.setDate(from.getDate() - 27);
@@ -238,17 +248,17 @@ function mascotData() {
     };
 }
 
-const mascotView = new MascotView({
+export const mascotView = new MascotView({
     data: mascotData,
     storage: { load: () => db.get('mascot'), save: state => db.set('mascot', state) },
     isOn: () => features.isOn('mascot'),
     notify: text => showToast(text, 'success', 3500)
 });
 
-function initMascot() {
+export function initMascot() {
     mascotView.bind();
 }
 
-function renderMascot() {
+export function renderMascot() {
     appErrors.run(() => mascotView.render(), 'mascota');
 }

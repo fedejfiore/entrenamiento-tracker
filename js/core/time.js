@@ -1,7 +1,8 @@
 // Tiempos: unidades de carga (seg, m:ss, min, h:mm), forma guardada y textos legibles.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { parseDecimal } from './utils.js';
+import { appLocale } from './i18n.js';
 
-function formatDuration(value) {
+export function formatDuration(value) {
     // Solo números: la duración puede venir de un backup (dato externo) y se muestra como HTML.
     const minutes = Math.round(Number(value));
     if (value == null || !Number.isFinite(minutes)) return null;
@@ -11,7 +12,7 @@ function formatDuration(value) {
     return `${h}h ${m}min`;
 }
 
-function formatTimeHM(ts) {
+export function formatTimeHM(ts) {
     return new Date(ts).toLocaleTimeString((typeof appLocale === 'function' ? appLocale() : 'es-AR'), { hour: '2-digit', minute: '2-digit' });
 }
 
@@ -22,19 +23,19 @@ function formatTimeHM(ts) {
 //   mss → minutos:segundos, tipo microondas      "145" → 1:45
 //   min → minutos, con coma o punto              "60", "32,5"
 //   hmm → horas:minutos, tipo microondas         "105" → 1:05
-const TIME_UNITS = {
+export const TIME_UNITS = {
     seg: { head: 'Seg', label: 'segundos', inputmode: 'numeric', hint: 's' },
     mss: { head: 'm:ss', label: 'minutos:segundos', inputmode: 'numeric', hint: 'm:ss' },
     min: { head: 'Min', label: 'minutos', inputmode: 'decimal', hint: 'min' },
     hmm: { head: 'h:mm', label: 'horas:minutos', inputmode: 'numeric', hint: 'h:mm' }
 };
 
-const TIME_UNIT_ORDER = ['seg', 'mss', 'min', 'hmm'];
+export const TIME_UNIT_ORDER = ['seg', 'mss', 'min', 'hmm'];
 
-const DEFAULT_TIME_UNIT_BY_TYPE = { time: 'mss', min: 'min', km: 'min' };
+export const DEFAULT_TIME_UNIT_BY_TYPE = { time: 'mss', min: 'min', km: 'min' };
 
 // Botones de ajuste rápido del tiempo, en segundos, según la unidad.
-const TIME_STEPS = {
+export const TIME_STEPS = {
     seg: [-15, -5, 5, 15],
     mss: [-60, -15, 15, 60],
     min: [-300, -60, 60, 300],
@@ -42,7 +43,7 @@ const TIME_STEPS = {
 };
 
 // Forma guardada -> segundos. Un número suelto (fútbol viejo "60") son minutos.
-function parseTimeSeconds(str) {
+export function parseTimeSeconds(str) {
     const s = String(str || '').trim();
     if (!s) return null;
     if (!s.includes(':')) {
@@ -54,7 +55,7 @@ function parseTimeSeconds(str) {
 }
 
 // Lo que se tipeó en un campo -> segundos, según la unidad de ese campo.
-function parseTimeInput(raw, unit) {
+export function parseTimeInput(raw, unit) {
     let s = String(raw ?? '').trim();
     if (!s) return null;
     if (unit === 'seg') {
@@ -72,7 +73,7 @@ function parseTimeInput(raw, unit) {
 }
 
 // Segundos -> cómo se muestra dentro del campo, según la unidad.
-function formatTimeForUnit(sec, unit) {
+export function formatTimeForUnit(sec, unit) {
     if (sec == null || isNaN(sec)) return '';
     sec = Math.max(0, Math.round(sec));
     const pad = n => String(n).padStart(2, '0');
@@ -85,11 +86,11 @@ function formatTimeForUnit(sec, unit) {
     return `${Math.floor(sec / 60)}:${pad(sec % 60)}`;
 }
 
-function timeInputValue(saved, unit) {
+export function timeInputValue(saved, unit) {
     return formatTimeForUnit(parseTimeSeconds(saved), unit);
 }
 
-function formatSecondsClock(total) {
+export function formatSecondsClock(total) {
     if (total == null || isNaN(total)) return '';
     total = Math.max(0, Math.round(total));
     const h = Math.floor(total / 3600);
@@ -100,7 +101,7 @@ function formatSecondsClock(total) {
 
 // Mientras se tipea: los dígitos entran por la derecha, como en un microondas.
 // "4" → "0:04", "45" → "0:45", "145" → "1:45". Sirve para m:ss y para h:mm.
-function formatTimeDigits(raw) {
+export function formatTimeDigits(raw) {
     const digits = String(raw || '').replace(/\D/g, '').replace(/^0+/, '').slice(0, 6);
     if (!digits) return '';
     const padded = digits.padStart(3, '0');
@@ -108,14 +109,14 @@ function formatTimeDigits(raw) {
 }
 
 // Forma guardada: siempre "m:ss" (o "h:mm:ss" desde una hora).
-function formatTimeValue(v) {
+export function formatTimeValue(v) {
     const sec = parseTimeSeconds(v);
     return sec == null ? '' : formatSecondsClock(sec);
 }
 
 // Para leer: la forma más simple, siempre con unidades.
 // "45 s", "1 min 30 s", "32 min", "1 h", "1 h 05 min", "1 h 05 min 30 s".
-function formatDurationHuman(sec) {
+export function formatDurationHuman(sec) {
     if (sec == null) return '';
     sec = Math.round(sec);
     const h = Math.floor(sec / 3600);
@@ -128,12 +129,12 @@ function formatDurationHuman(sec) {
 }
 
 // km/h a partir de segundos y km (null si falta alguno).
-function computeSpeed(sec, km) {
+export function computeSpeed(sec, km) {
     return sec > 0 && km > 0 ? km / (sec / 3600) : null;
 }
 
 // Descanso: "90" = 90 segundos (acá sí, un número suelto son segundos).
-function parseRestSeconds(str) {
+export function parseRestSeconds(str) {
     const s = String(str || '').trim();
     if (!s) return null;
     if (s.includes(':')) return parseTimeSeconds(s);
@@ -144,7 +145,7 @@ function parseRestSeconds(str) {
 // ---- Edad (antes en js/features/profile.js) ----
 
 // Edad a partir de la fecha de nacimiento (se guarda la fecha, así la edad se actualiza sola).
-function ageFrom(birthDate, today = new Date()) {
+export function ageFrom(birthDate, today = new Date()) {
     if (!birthDate) return null;
     const b = new Date(birthDate + 'T00:00:00');
     let age = today.getFullYear() - b.getFullYear();

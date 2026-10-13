@@ -1,15 +1,25 @@
 // Barra de ajuste rápido (+/-) bajo la serie activa.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
 
 // Al tocar un campo de la serie aparece debajo una barra con botones para
 // subir/bajar (±2,5 / ±5 kg, ±1 rep, ±15 s...). Se va sola al terminar de editar: cuando
 // el foco sale de la serie (Listo en el teclado, tocar afuera) o se marca como hecha.
-let setStepperEl = null;
+import { escapeHtml, parseDecimal } from '../../core/utils.js';
+import { appLocale } from '../../core/i18n.js';
+import { TIME_STEPS, formatTimeForUnit, parseRestSeconds, parseTimeInput } from '../../core/time.js';
+import { displayToKg, distanceUnitDef, weightUnitDef } from '../../core/units.js';
+import { DEFAULT_REST_SECONDS, SET_FIELDS, SET_STEPS } from '../../domain/catalog.js';
+import { parseSprings, sortSprings, springLevelLabel, springsLoad } from '../../domain/pilates.js';
+import { showUndoToast } from '../../ui/toast.js';
+import { getBlockName } from './exercise-block.js';
+import { openPlateCalculator, stackHintText } from '../plate-calculator.js';
+import { loadReformer, springColorName } from '../reformer.js';
+
+export let setStepperEl = null;
 
 // La barra ocupa lugar: al abrirse, moverse o cerrarse corre todo lo de abajo. Si eso pasa
 // justo cuando el dedo toca otra serie, el toque cae en la de más abajo. Por eso se compensa
 // el desplazamiento: lo que se está tocando queda exactamente donde estaba en la pantalla.
-function keepInPlace(el, change) {
+export function keepInPlace(el, change) {
     const before = el && el.isConnected ? el.getBoundingClientRect().top : null;
     change();
     if (before == null || !el.isConnected) return;
@@ -17,7 +27,7 @@ function keepInPlace(el, change) {
     if (Math.abs(shift) > 1) window.scrollBy(0, shift);
 }
 
-function showSetStepper(input) {
+export function showSetStepper(input) {
     const field = input.dataset.f;
     if (field === 'springs') { showSpringsStepper(input); return; }
     const timeUnit = field === 'time' ? (input.dataset.unit || 'mss') : null;
@@ -65,7 +75,7 @@ function showSetStepper(input) {
 // La barra entera (con "Usar … en las series") tiene que quedar a la vista: arriba del teclado
 // y de lo que está fijo abajo (barra de navegación, timer), sin que el campo que se está
 // editando se vaya por arriba de la barra superior.
-function ensureStepperVisible() {
+export function ensureStepperVisible() {
     if (!setStepperEl?.isConnected) return;
     const vv = window.visualViewport;
     let bottom = (vv ? vv.offsetTop + vv.height : window.innerHeight) - 8;
@@ -82,7 +92,7 @@ function ensureStepperVisible() {
     if (shift > 1) window.scrollBy(0, shift);
 }
 
-function showSpringsStepper(input) {
+export function showSpringsStepper(input) {
     const row = input.closest('.set-row');
     if (!row) return;
     if (setStepperEl && setStepperEl.parentNode === row && setStepperEl.dataset.field === 'springs') { updateStepperApply(row); return; }
@@ -124,7 +134,7 @@ function showSpringsStepper(input) {
 }
 
 /** Debajo de los colores: cuánta carga es (liviano / medio / pesado) según Mi reformer. */
-function updateSpringsLoad(row) {
+export function updateSpringsLoad(row) {
     const out = setStepperEl?.querySelector('.springs-load');
     if (!out) return;
     const el = row.querySelector('[data-f="springs"]');
@@ -134,9 +144,9 @@ function updateSpringsLoad(row) {
 
 // En Android, cerrar el teclado con "atrás" no saca el foco del campo: se detecta porque
 // la ventana visible vuelve a crecer. Tocar fuera de la serie también cierra la barra.
-let stepperViewportHeight = 0;
+export let stepperViewportHeight = 0;
 
-function initSetStepperAutoHide() {
+export function initSetStepperAutoHide() {
     const vv = window.visualViewport;
     if (vv) {
         stepperViewportHeight = vv.height;
@@ -170,7 +180,7 @@ function initSetStepperAutoHide() {
     }, true);
 }
 
-function onStepperRowFocusOut(e) {
+export function onStepperRowFocusOut(e) {
     const row = e.currentTarget;
     setTimeout(() => {
         if (!setStepperEl || setStepperEl.parentNode !== row) return;
@@ -179,7 +189,7 @@ function onStepperRowFocusOut(e) {
 }
 
 // En máquinas de placas (poleas), junto al peso se ve en qué placa va la clavija.
-function updateStepperHint(row) {
+export function updateStepperHint(row) {
     const hint = setStepperEl?.parentNode === row ? setStepperEl.querySelector('.stepper-hint') : null;
     if (!hint) return;
     const el = row.querySelector('[data-f="kg"]');
@@ -187,7 +197,7 @@ function updateStepperHint(row) {
     hint.textContent = stackHintText(getBlockName(row.closest('.exercise-row')), kg);
 }
 
-function hideSetStepper() {
+export function hideSetStepper() {
     if (!setStepperEl) return;
     setStepperEl.parentNode?.removeEventListener('focusout', onStepperRowFocusOut);
     setStepperEl.parentNode?.removeEventListener('input', onStepperRowInput);
@@ -195,7 +205,7 @@ function hideSetStepper() {
     setStepperEl = null;
 }
 
-function stepSetField(row, field, delta) {
+export function stepSetField(row, field, delta) {
     const el = row.querySelector(`[data-f="${field}"]`);
     if (!el) return;
     const current = el.value.trim() || el.dataset.prev || '';
@@ -218,17 +228,17 @@ function stepSetField(row, field, delta) {
 
 // ---- Usar el mismo peso / reps / descanso en las series siguientes ----
 
-function onStepperRowInput(e) {
+export function onStepperRowInput(e) {
     updateStepperApply(e.currentTarget);
 }
 
 /** Series siguientes que todavía no se hicieron (las tildadas ya quedaron registradas). */
-function followingPendingRows(row) {
+export function followingPendingRows(row) {
     const rows = [...row.closest('.exercise-row').querySelectorAll('.set-row')];
     return rows.slice(rows.indexOf(row) + 1).filter(r => !r.classList.contains('done') && !r.classList.contains('half'));
 }
 
-function stepperApplyPlan(row, field) {
+export function stepperApplyPlan(row, field) {
     const el = row.querySelector(`[data-f="${field}"]`);
     const value = el?.value.trim();
     if (!value) return null;
@@ -243,7 +253,7 @@ function stepperApplyPlan(row, field) {
     return { value, targets, nums };
 }
 
-function stepperValueLabel(field, value) {
+export function stepperValueLabel(field, value) {
     if (field === 'springs') return value === '0' ? 'sin resortes' : value;
     if (field === 'kg') return `${value} ${weightUnitDef().label}`;
     if (field === 'reps') return `${value} reps`;
@@ -252,7 +262,7 @@ function stepperValueLabel(field, value) {
     return value;
 }
 
-function updateStepperApply(row) {
+export function updateStepperApply(row) {
     const btn = setStepperEl?.parentNode === row ? setStepperEl.querySelector('[data-apply]') : null;
     if (!btn) return;
     const plan = stepperApplyPlan(row, setStepperEl.dataset.field);
@@ -266,7 +276,7 @@ function updateStepperApply(row) {
     btn.textContent = `⇊ Usar ${stepperValueLabel(setStepperEl.dataset.field, plan.value)} en ${which}`;
 }
 
-function applyToFollowingSets(row, field) {
+export function applyToFollowingSets(row, field) {
     const plan = stepperApplyPlan(row, field);
     if (!plan) return;
     const previous = plan.targets.map(r => [r, r.querySelector(`[data-f="${field}"]`).value]);

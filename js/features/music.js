@@ -1,19 +1,21 @@
 // Accesos a Spotify / YouTube Music y playlists guardadas.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
 
 // Una web no puede manejar la reproducción de Spotify o YouTube Music (pausar,
 // siguiente tema): eso lo controla cada app. Lo que sí se puede es abrirlas desde
 // acá, directo en una playlist guardada, y volver a la app con el botón de atrás.
-const MUSIC_APPS = {
+import { db } from '../data/repositories.js';
+import { showToast } from '../ui/toast.js';
+
+export const MUSIC_APPS = {
     spotify: { label: 'Spotify', home: 'https://open.spotify.com/', hosts: /(^|\.)spotify\.com$|^spotify\.link$/ },
     ytmusic: { label: 'YouTube Music', home: 'https://music.youtube.com/', hosts: /(^|\.)youtube\.com$|^youtu\.be$/ }
 };
 
-function loadMusicLinks() {
+export function loadMusicLinks() {
     try { return db.get('musicLinks') || {}; } catch (e) { return {}; }
 }
 
-function initMusicSettingsUI() {
+export function initMusicSettingsUI() {
     const links = loadMusicLinks();
     Object.keys(MUSIC_APPS).forEach(key => {
         const el = document.getElementById(`musicLink_${key}`);
@@ -21,7 +23,7 @@ function initMusicSettingsUI() {
     });
 }
 
-function saveMusicLink(key, input) {
+export function saveMusicLink(key, input) {
     const raw = (input.value || '').trim();
     const links = loadMusicLinks();
     if (!raw) {
@@ -39,7 +41,7 @@ function saveMusicLink(key, input) {
     showToast(raw ? `🎵 Playlist de ${MUSIC_APPS[key].label} guardada` : `Se borró la playlist de ${MUSIC_APPS[key].label}`);
 }
 
-function openMusic(key) {
+export function openMusic(key) {
     const app = MUSIC_APPS[key];
     if (!app) return;
     const url = loadMusicLinks()[key] || app.home;

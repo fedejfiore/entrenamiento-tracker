@@ -1,22 +1,46 @@
 // Bloque de ejercicio: tabla de series, check, calentamiento, notas y tipo de medición.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
 
 // Solo cuenta lo que se carga en las series: escribir en "agregar ejercicio" o
 // cambiar el tipo de medición no es "empezar a entrenar".
-function isSessionDataEvent(e) {
+import { escapeHtml, formatNumber, parseDecimal, sanitizeDecimalInput } from '../../core/utils.js';
+import { TIME_UNITS, TIME_UNIT_ORDER, computeSpeed, formatDurationHuman, formatSecondsClock, formatTimeDigits, parseRestSeconds, parseTimeInput, parseTimeSeconds, timeInputValue } from '../../core/time.js';
+import { displayStringToKg, displayStringToKm, distanceUnitDef, formatDistance, formatSpeed, formatWeight, kgStringToDisplay, kmStringToDisplay, kmToDisplay, weightUnitDef } from '../../core/units.js';
+import { DEFAULT_REST_SECONDS, EFFORT_SCALES, EXERCISE_TYPES, SET_FIELDS, WARMUP_LABEL } from '../../domain/catalog.js';
+import { gymExerciseInfo } from '../../domain/gym-catalog.js';
+import { pilatesExerciseInfo } from '../../domain/pilates-catalog.js';
+import { formatSetsSummary, setHasAnyData, setHasMetric, setLabels } from '../../domain/sets.js';
+import { getExerciseType, getTimeUnit, isUnilateral, saveExerciseType, saveTimeUnit, saveUnilateral } from '../../data/exercise-prefs.js';
+import { exerciseStats, getPrevSets } from '../../domain/stats.js';
+import { showToast, showUndoToast } from '../../ui/toast.js';
+import { playTick } from '../../audio/sound.js';
+import { speakCue } from '../../audio/recordings.js';
+import { runRestTimer } from '../rest-timer.js';
+import { maybeAutoStartSessionTimer } from './session-clock.js';
+import { saveWorkoutDraft } from './draft.js';
+import { hideSetStepper } from './set-stepper.js';
+import { isSessionComplete, openFinishPrompt } from './finish-prompt.js';
+import { getSupersetLetter, goToNextInSuperset } from './supersets.js';
+import { focusCurrentExercise, rememberManualCollapse } from './focus.js';
+import { loadAppSettings } from '../general-settings.js';
+import { features } from '../feature-settings.js';
+import { typesForModule } from '../disciplines.js';
+import { equipLevelChipHtml } from '../pilates-library.js';
+import { programPrevSets, programTargetLineHtml, stallHintHtml } from '../programs.js';
+
+export function isSessionDataEvent(e) {
     return !!e.target.closest?.('.set-row, .exercise-note');
 }
 
-const DRAG_DOTS_SVG = '<svg viewBox="0 0 12 20" aria-hidden="true"><circle cx="3" cy="4" r="1.6"/><circle cx="9" cy="4" r="1.6"/><circle cx="3" cy="10" r="1.6"/><circle cx="9" cy="10" r="1.6"/><circle cx="3" cy="16" r="1.6"/><circle cx="9" cy="16" r="1.6"/></svg>';
+export const DRAG_DOTS_SVG = '<svg viewBox="0 0 12 20" aria-hidden="true"><circle cx="3" cy="4" r="1.6"/><circle cx="9" cy="4" r="1.6"/><circle cx="3" cy="10" r="1.6"/><circle cx="9" cy="10" r="1.6"/><circle cx="3" cy="16" r="1.6"/><circle cx="9" cy="16" r="1.6"/></svg>';
 
-function buildTypeOptionsHtml(selected) {
+export function buildTypeOptionsHtml(selected) {
     return typesForModule(selected).map(key => [key, EXERCISE_TYPES[key]])
         .map(([key, def]) => `<option value="${key}"${key === selected ? ' selected' : ''}>${def.label}</option>`)
         .join('');
 }
 
 // Limpia un campo de serie mientras se tipea (o se pega), según su tipo.
-function sanitizeSetInput(el) {
+export function sanitizeSetInput(el) {
     const f = el.dataset.f;
     const unit = el.dataset.unit;
     let v = el.value;
@@ -34,7 +58,7 @@ function sanitizeSetInput(el) {
  * (Ajustes → Funciones), y la grilla que les corresponde. Lo que no se ve igual queda en la
  * fila (oculto): no se pierde lo cargado si después se activa.
  */
-function setColumnsFor(type) {
+export function setColumnsFor(type) {
     const def = EXERCISE_TYPES[type] || EXERCISE_TYPES.kg;
     const on = id => (typeof features === 'undefined' ? true : features.isOn(id));
     const showRest = !!def.rest && on('restColumn');
@@ -53,7 +77,7 @@ function setColumnsFor(type) {
 // Una fila = una serie. Los valores de la última sesión se muestran en gris
 // (placeholder) y se guardan en data-prev: al tildar una serie vacía se completan
 // solos, así repetir lo de la vez pasada es un solo toque.
-function buildSetRowHtml(type, label, set = {}, prev = {}, unit = 'mss') {
+export function buildSetRowHtml(type, label, set = {}, prev = {}, unit = 'mss') {
     const def = EXERCISE_TYPES[type] || EXERCISE_TYPES.kg;
     const scale = EFFORT_SCALES[def.effort];
     const n = set.warmup ? 'de calentamiento' : label;
@@ -102,13 +126,13 @@ function buildSetRowHtml(type, label, set = {}, prev = {}, unit = 'mss') {
 
 // Velocidad (km/h o mph) calculada del tiempo y la distancia. Si todavía no se cargó nada, se calcula con lo de
 // la última vez y se ve en gris, igual que las sugerencias de los campos.
-function buildSpeedCellHtml(set, prev) {
+export function buildSpeedCellHtml(set, prev) {
     const own = computeSpeed(parseTimeSeconds(set.time), parseDecimal(set.km));
     const speed = own || computeSpeed(parseTimeSeconds(set.time || prev.time), parseDecimal(set.km || prev.km));
     return `<span class="set-calc${own ? '' : ' is-prev'}" data-calc="speed" aria-label="Velocidad en ${distanceUnitDef().speed}">${speed ? formatNumber(Math.round(kmToDisplay(speed) * 10) / 10) : '–'}</span>`;
 }
 
-function updateSetCalc(row) {
+export function updateSetCalc(row) {
     const cell = row?.querySelector('.set-calc');
     if (!cell) return;
     const val = f => row.querySelector(`[data-f="${f}"]`);
@@ -120,7 +144,7 @@ function updateSetCalc(row) {
     cell.classList.toggle('is-prev', !own);
 }
 
-function buildSetsTableHtml(type, sets, prevSets, unit = 'mss') {
+export function buildSetsTableHtml(type, sets, prevSets, unit = 'mss') {
     const def = EXERCISE_TYPES[type] || EXERCISE_TYPES.kg;
     const scale = EFFORT_SCALES[def.effort];
     const cols = setColumnsFor(type);
@@ -143,7 +167,7 @@ function buildSetsTableHtml(type, sets, prevSets, unit = 'mss') {
 
 // Valores sugeridos de cada serie: lo de la última vez o, si la rutina es de un programa,
 // lo que toca hoy según su progresión (js/features/programs.js).
-function getBlockPrevSets(name, type, routine = document.getElementById('routine')?.value) {
+export function getBlockPrevSets(name, type, routine = document.getElementById('routine')?.value) {
     const prev = getPrevSets(name, type);
     return programPrevSets(routine, name, prev) || prev;
 }
@@ -151,7 +175,7 @@ function getBlockPrevSets(name, type, routine = document.getElementById('routine
 // Genera el bloque de un ejercicio a partir de las últimas veces que se hizo.
 // Se usa tanto al armar la lista completa como al agregar un ejercicio suelto,
 // así nunca hace falta reconstruir (y perder) los bloques que ya tenían datos cargados.
-function buildExerciseRowHtml(idx, ex, routine) {
+export function buildExerciseRowHtml(idx, ex, routine) {
     const stats = exerciseStats[ex] || {};
     const type = getExerciseType(ex, routine);
     const prevSets = getBlockPrevSets(ex, type, routine);
@@ -202,7 +226,7 @@ function buildExerciseRowHtml(idx, ex, routine) {
         </div>`;
 }
 
-function buildLastSummaryText(stats, type) {
+export function buildLastSummaryText(stats, type) {
     const summary = formatSetsSummary(stats.lastSets, type);
     let record = '';
     if (type === 'kg' && stats.maxWeight) record = `Máx ${formatWeight(stats.maxWeight)}`;
@@ -218,12 +242,12 @@ function buildLastSummaryText(stats, type) {
     return `Últ: ${escapeHtml(summary)}${record ? `<br>🏆 ${escapeHtml(record)}` : ''}`;
 }
 
-function getBlockName(block) {
+export function getBlockName(block) {
     return block?.querySelector('[id^="exname_"]')?.textContent.trim() || block?.dataset.name || '';
 }
 
 // Solo lo realmente escrito (los placeholders en gris no cuentan).
-function readSetRow(row) {
+export function readSetRow(row) {
     const set = {};
     row.querySelectorAll('[data-f]').forEach(el => {
         const v = (el.value || '').trim();
@@ -252,22 +276,22 @@ function readSetRow(row) {
     return set;
 }
 
-function readBlockSets(block) {
+export function readBlockSets(block) {
     return [...block.querySelectorAll('.set-row')].map(readSetRow);
 }
 
-function updateSetControls(block) {
+export function updateSetControls(block) {
     const minus = block.querySelector('.sets-controls button');
     if (minus) minus.disabled = block.querySelectorAll('.set-row').length <= 1;
 }
 
-function renumberSets(block) {
+export function renumberSets(block) {
     const rows = [...block.querySelectorAll('.set-row')];
     const labels = setLabels(rows.map(r => ({ warmup: r.classList.contains('warmup') })));
     rows.forEach((r, i) => { r.querySelector('.set-num').textContent = labels[i]; });
 }
 
-function renderBlockSets(block, type, sets) {
+export function renderBlockSets(block, type, sets) {
     const prevSets = getBlockPrevSets(getBlockName(block), type);
     const table = block.querySelector('.sets-table');
     if (!table) return;
@@ -278,7 +302,7 @@ function renderBlockSets(block, type, sets) {
     updateSetControls(block);
 }
 
-function applySetsToBlock(block, sets, note) {
+export function applySetsToBlock(block, sets, note) {
     if (Array.isArray(sets) && sets.length > 0) renderBlockSets(block, block.dataset.type, sets);
     const noteEl = block.querySelector('.exercise-note');
     if (noteEl && note) noteEl.value = note;
@@ -287,7 +311,7 @@ function applySetsToBlock(block, sets, note) {
 
 // Serie de calentamiento / aproximación: se registra igual, pero no cuenta para
 // volumen, PRs, 1RM ni récords. Se marca tocando el número de la serie.
-function toggleWarmup(btn) {
+export function toggleWarmup(btn) {
     if (typeof features !== 'undefined' && !features.isOn('warmup')) return;
     const row = btn.closest('.set-row');
     const block = btn.closest('.exercise-row');
@@ -304,9 +328,9 @@ function toggleWarmup(btn) {
     }
 }
 
-let warmupHintShown = false;
+export let warmupHintShown = false;
 
-function toggleSetDone(btn) {
+export function toggleSetDone(btn) {
     const row = btn.closest('.set-row');
     const block = btn.closest('.exercise-row');
     if (!row || !block) return;
@@ -374,11 +398,11 @@ function toggleSetDone(btn) {
 }
 
 // ---- Unilaterales: pausa corta para cambiar de lado (no es descanso) ----
-let sideSwitchTimer = null;
+export let sideSwitchTimer = null;
 
-let sideSwitchToast = null;
+export let sideSwitchToast = null;
 
-function runSideSwitch(seconds) {
+export function runSideSwitch(seconds) {
     cancelSideSwitch();
     speakCue(['repSwitch'], 'Cambiá de lado');
     if (!seconds) return;
@@ -390,13 +414,13 @@ function runSideSwitch(seconds) {
     }, seconds * 1000);
 }
 
-function cancelSideSwitch() {
+export function cancelSideSwitch() {
     if (sideSwitchTimer) { clearTimeout(sideSwitchTimer); sideSwitchTimer = null; }
     sideSwitchToast?.remove();
     sideSwitchToast = null;
 }
 
-function toggleUnilateral(btn) {
+export function toggleUnilateral(btn) {
     const block = btn.closest('.exercise-row');
     if (!block) return;
     const name = getBlockName(block);
@@ -420,12 +444,12 @@ function toggleUnilateral(btn) {
 }
 
 // ---- Contraer un bloque terminado ----
-function isBlockComplete(block) {
+export function isBlockComplete(block) {
     const rows = [...block.querySelectorAll('.set-row')];
     return rows.length > 0 && rows.every(r => r.classList.contains('done'));
 }
 
-function setBlockCollapsed(block, collapsed) {
+export function setBlockCollapsed(block, collapsed) {
     if (!block) return;
     block.classList.toggle('collapsed', collapsed);
     const btn = block.querySelector('.collapse-btn');
@@ -448,7 +472,7 @@ function setBlockCollapsed(block, collapsed) {
     if (collapsed && block.contains(document.activeElement)) document.activeElement.blur();
 }
 
-function toggleBlockCollapsed(btn) {
+export function toggleBlockCollapsed(btn) {
     const block = btn.closest('.exercise-row');
     if (!block) return;
     const collapsed = !block.classList.contains('collapsed');
@@ -456,7 +480,7 @@ function toggleBlockCollapsed(btn) {
     rememberManualCollapse(block, collapsed);
 }
 
-function toggleSetNote(btn) {
+export function toggleSetNote(btn) {
     const input = btn.closest('.set-row')?.querySelector('.set-note');
     if (!input) return;
     // Si queda vacía, se vuelve a esconder sola al salir del campo (listener focusout).
@@ -464,7 +488,7 @@ function toggleSetNote(btn) {
     input.focus();
 }
 
-function addSet(btn) {
+export function addSet(btn) {
     const block = btn.closest('.exercise-row');
     const table = block?.querySelector('.sets-table');
     if (!table) return;
@@ -493,7 +517,7 @@ function addSet(btn) {
     saveWorkoutDraft();
 }
 
-function removeLastSet(btn) {
+export function removeLastSet(btn) {
     const block = btn.closest('.exercise-row');
     const rows = block?.querySelectorAll('.set-row') || [];
     if (rows.length <= 1) return;
@@ -515,7 +539,7 @@ function removeLastSet(btn) {
     }
 }
 
-function changeExerciseType(select) {
+export function changeExerciseType(select) {
     const block = select.closest('.exercise-row');
     const newType = select.value;
     if (!block || !EXERCISE_TYPES[newType]) return;
@@ -535,7 +559,7 @@ function changeExerciseType(select) {
 
 // Tocar el encabezado del tiempo pasa por segundos → m:ss → minutos → h:mm. Los
 // valores ya cargados se convierten (no se pierden) y la elección queda guardada.
-function cycleTimeUnit(btn) {
+export function cycleTimeUnit(btn) {
     const block = btn.closest('.exercise-row');
     if (!block) return;
     const name = getBlockName(block);
@@ -550,7 +574,7 @@ function cycleTimeUnit(btn) {
 
 // Texto para los avisos antes de perder datos de un bloque ("2 series completadas", etc.)
 // o '' si el bloque no tiene nada cargado en esta sesión.
-function describeBlockSessionData(block) {
+export function describeBlockSessionData(block) {
     if (!block) return '';
     const sets = readBlockSets(block);
     const done = sets.filter(s => s.done).length;

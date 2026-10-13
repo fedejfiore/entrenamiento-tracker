@@ -2,19 +2,22 @@
 // (1080×1920, Instagram y estados de WhatsApp) o publicación (1080×1350), con vista previa.
 // Se dibujan en un canvas con las tipografías de la app; no salen del celular hasta que la
 // persona elige compartirlas.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { normalizeForCompare } from '../core/utils.js';
+import { tr } from '../core/i18n.js';
+import { APP_BRAND } from '../core/brand.js';
+import { showToast } from '../ui/toast.js';
 
-const SHARE_FORMATS = {
+export const SHARE_FORMATS = {
     story: { w: 1080, h: 1920, label: 'Historia (9:16)' },
     post: { w: 1080, h: 1350, label: 'Publicación (4:5)' }
 };
-const SHARE_FONT_HEAD = '"Oswald", "Arial Narrow", sans-serif';
-const SHARE_FONT_BODY = '"Inter", system-ui, sans-serif';
+export const SHARE_FONT_HEAD = '"Oswald", "Arial Narrow", sans-serif';
+export const SHARE_FONT_BODY = '"Inter", system-ui, sans-serif';
 
-let shareSheetSpec = null;
-let shareSheetFormat = 'story';
+export let shareSheetSpec = null;
+export let shareSheetFormat = 'story';
 
-async function loadShareFonts() {
+export async function loadShareFonts() {
     try {
         await Promise.all(['700 80px Oswald', '500 80px Oswald', '400 40px Inter', '700 40px Inter'].map(f => document.fonts.load(f)));
     } catch (e) { /* sin las fuentes se usan las del sistema */ }
@@ -22,26 +25,26 @@ async function loadShareFonts() {
 
 // ---------- Colores ----------
 
-function shadeHex(hex, amount) {
+export function shadeHex(hex, amount) {
     const n = parseInt(hex.replace('#', ''), 16);
     const f = c => Math.max(0, Math.min(255, Math.round(c + (amount > 0 ? (255 - c) * amount : c * amount))));
     return `rgb(${f(n >> 16)}, ${f((n >> 8) & 255)}, ${f(n & 255)})`;
 }
 
-function hexAlpha(hex, a) {
+export function hexAlpha(hex, a) {
     const n = parseInt(hex.replace('#', ''), 16);
     return `rgba(${n >> 16}, ${(n >> 8) & 255}, ${n & 255}, ${a})`;
 }
 
 // Números "al azar" pero siempre iguales para la misma imagen (brillos de fondo).
-function seededRandom(seed) {
+export function seededRandom(seed) {
     let s = seed % 2147483647 || 1;
     return () => (s = s * 16807 % 2147483647) / 2147483647;
 }
 
 // ---------- Piezas ----------
 
-function drawShareBackground(g, W, H, color, seed) {
+export function drawShareBackground(g, W, H, color, seed) {
     const bg = g.createLinearGradient(0, 0, W * 0.3, H);
     bg.addColorStop(0, '#0b0d12');
     bg.addColorStop(0.55, '#151925');
@@ -82,7 +85,7 @@ function drawShareBackground(g, W, H, color, seed) {
     }
 }
 
-function drawMedalDisc(g, cx, cy, r, color, icon) {
+export function drawMedalDisc(g, cx, cy, r, color, icon) {
     // Cinta: dos tiras cruzadas con franja central del color del nivel
     const ribbon = (dir) => {
         g.save();
@@ -139,11 +142,11 @@ function drawMedalDisc(g, cx, cy, r, color, icon) {
     g.shadowColor = 'transparent'; g.shadowBlur = 0; g.shadowOffsetY = 0;
 }
 
-function hexAlphaFromRgb(rgb, a) {
+export function hexAlphaFromRgb(rgb, a) {
     return rgb.replace('rgb(', 'rgba(').replace(')', `, ${a})`);
 }
 
-function drawTrophyCup(g, cx, cy, s, color) {
+export function drawTrophyCup(g, cx, cy, s, color) {
     const gold = g.createLinearGradient(cx - s, 0, cx + s, 0);
     gold.addColorStop(0, shadeHex(color, -0.45));
     gold.addColorStop(0.3, shadeHex(color, 0.55));
@@ -185,7 +188,7 @@ function drawTrophyCup(g, cx, cy, s, color) {
     g.fillText(tr('RÉCORD'), cx, cy + s * 0.975);
 }
 
-function drawStars(g, cx, y, filled, total, size, color) {
+export function drawStars(g, cx, y, filled, total, size, color) {
     const gap = size * 1.25;
     const x0 = cx - (total - 1) * gap / 2;
     for (let i = 0; i < total; i++) {
@@ -203,7 +206,7 @@ function drawStars(g, cx, y, filled, total, size, color) {
 }
 
 /** Texto centrado que se achica hasta entrar en el ancho; devuelve el alto usado. */
-function fitText(g, text, x, y, maxWidth, size, weight, family, color, minSize = 28) {
+export function fitText(g, text, x, y, maxWidth, size, weight, family, color, minSize = 28) {
     let s = size;
     g.font = `${weight} ${s}px ${family}`;
     while (g.measureText(text).width > maxWidth && s > minSize) { s -= 2; g.font = `${weight} ${s}px ${family}`; }
@@ -215,7 +218,7 @@ function fitText(g, text, x, y, maxWidth, size, weight, family, color, minSize =
 }
 
 /** Hasta dos líneas (la primera en y): corta por palabras; si sobra, achica. Devuelve el alto extra de la 2.ª línea. */
-function fitTwoLines(g, text, x, y, maxWidth, size, weight, family, color) {
+export function fitTwoLines(g, text, x, y, maxWidth, size, weight, family, color) {
     g.font = `${weight} ${size}px ${family}`;
     if (g.measureText(text).width <= maxWidth) { fitText(g, text, x, y, maxWidth, size, weight, family, color); return 0; }
     const words = text.split(' ');
@@ -231,7 +234,7 @@ function fitTwoLines(g, text, x, y, maxWidth, size, weight, family, color) {
     return s * 1.05;
 }
 
-function drawShareFooter(g, W, H, name, date) {
+export function drawShareFooter(g, W, H, name, date) {
     const y = H - 110;
     g.strokeStyle = 'rgba(255,255,255,0.12)'; g.lineWidth = 2;
     g.beginPath(); g.moveTo(W * 0.2, y - 70); g.lineTo(W * 0.8, y - 70); g.stroke();
@@ -252,7 +255,7 @@ function drawShareFooter(g, W, H, name, date) {
  * spec: { kind: 'medal', title, tierName, color, icon, level, levels, valueText, nextText, name, date }
  *     | { kind: 'trophy', exercise, valueText, beforeText, deltaText, color, name, date }
  */
-function drawShareCard(spec, formatId = 'story') {
+export function drawShareCard(spec, formatId = 'story') {
     const { w: W, h: H } = SHARE_FORMATS[formatId] || SHARE_FORMATS.story;
     const c = document.createElement('canvas');
     c.width = W; c.height = H;
@@ -293,14 +296,14 @@ function drawShareCard(spec, formatId = 'story') {
 
 // ---------- Ventana para elegir el formato y compartir ----------
 
-async function openShareSheet(spec) {
+export async function openShareSheet(spec) {
     shareSheetSpec = spec;
     await loadShareFonts();
     renderShareSheet();
     document.getElementById('shareSheet')?.classList.add('open');
 }
 
-function renderShareSheet() {
+export function renderShareSheet() {
     const modal = document.getElementById('shareSheet');
     if (!modal || !shareSheetSpec) return;
     const canvas = drawShareCard(shareSheetSpec, shareSheetFormat);
@@ -310,11 +313,11 @@ function renderShareSheet() {
     modal.querySelectorAll('[data-share-format]').forEach(b => b.classList.toggle('active', b.dataset.shareFormat === shareSheetFormat));
 }
 
-function closeShareSheet() {
+export function closeShareSheet() {
     document.getElementById('shareSheet')?.classList.remove('open');
 }
 
-async function shareSheetSend(download) {
+export async function shareSheetSend(download) {
     if (!shareSheetSpec) return;
     const canvas = drawShareCard(shareSheetSpec, shareSheetFormat);
     const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
@@ -337,7 +340,7 @@ async function shareSheetSend(download) {
     showToast('🖼️ Imagen guardada: compartila en tus redes', 'success', 3000);
 }
 
-function bindShareSheet() {
+export function bindShareSheet() {
     const modal = document.getElementById('shareSheet');
     if (!modal) return;
     modal.addEventListener('click', e => {

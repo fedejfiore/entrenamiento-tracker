@@ -3,11 +3,13 @@
 // errores y las precauciones que se repiten están una sola vez y cada ejercicio dice cuáles le
 // tocan. Inspirado en la forma de buscar de MuscleWiki (por músculo y por equipo), con
 // contenido propio. Orientativo: no reemplaza a un profesional.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { normalizeForCompare } from '../core/utils.js';
+import { appLanguage } from '../core/i18n.js';
+import { EXERCISE_TO_MUSCLE_GROUP, MUSCLE_GROUPS } from './catalog.js';
 
-const GYM_LEVELS = { 1: 'Principiante', 2: 'Intermedio', 3: 'Avanzado' };
+export const GYM_LEVELS = { 1: 'Principiante', 2: 'Intermedio', 3: 'Avanzado' };
 
-const GYM_EQUIPMENT = {
+export const GYM_EQUIPMENT = {
     barbell: ['🏋️', 'Barra'],
     dumbbell: ['💪', 'Mancuernas'],
     machine: ['⚙️', 'Máquina'],
@@ -18,7 +20,7 @@ const GYM_EQUIPMENT = {
 };
 
 // [error, cómo corregirlo]
-const GYM_ERRORS = {
+export const GYM_ERRORS = {
     back: ['La espalda se redondea', 'Pecho alto y columna neutra; si no podés mantenerla, bajá el peso.'],
     arch: ['La zona lumbar se arquea de más', 'Apretá abdomen y glúteos y llevá las costillas hacia abajo.'],
     knees: ['Las rodillas se van hacia adentro', 'Empujá las rodillas en la dirección de la punta de los pies.'],
@@ -38,7 +40,7 @@ const GYM_ERRORS = {
     pull: ['Se tira con los brazos y no con la espalda', 'Empezá llevando los omóplatos atrás y abajo; después doblá los codos.']
 };
 
-const GYM_CAUTIONS = {
+export const GYM_CAUTIONS = {
     lowback: 'Con dolor lumbar, empezá liviano y priorizá la técnica; si duele, cambiá por una variante con apoyo.',
     shoulder: 'Con molestias de hombro, achicá el rango y evitá llevar los brazos por detrás de la línea del cuerpo.',
     knee: 'Con dolor de rodilla, limitá la profundidad a un rango sin dolor.',
@@ -47,7 +49,7 @@ const GYM_CAUTIONS = {
     wrist: 'Con dolor de muñecas, usá un agarre neutro o apoyá los puños.'
 };
 
-const GYM_EXERCISES = [];
+export const GYM_EXERCISES = [];
 
 /**
  * Agrega un ejercicio al catálogo.
@@ -56,7 +58,7 @@ const GYM_EXERCISES = [];
  * caution (claves de GYM_CAUTIONS), alt (alternativas: nombres de otros ejercicios),
  * aliases (otros nombres con los que aparece en las rutinas).
  */
-function gymEx(name, en, lvl, muscle, equip, type, opts) {
+export function gymEx(name, en, lvl, muscle, equip, type, opts) {
     GYM_EXERCISES.push({ name, en, lvl, muscle, equip, type, also: [], steps: [], err: [], caution: [], alt: [], aliases: [], ...opts });
 }
 
@@ -511,15 +513,15 @@ gymEx('Rueda abdominal', 'ab wheel rollout', 3, 'Core', 'bodyweight', 'bw', {
 
 // ---- Consultas ----
 
-const GYM_BY_NAME = new Map();
+export const GYM_BY_NAME = new Map();
 GYM_EXERCISES.forEach(e => [e.name, ...e.aliases].forEach(n => GYM_BY_NAME.set(normalizeForCompare(n), e)));
 
 /** Ficha de un ejercicio de gimnasio (por su nombre o por uno de sus alias), o null. */
-function gymExerciseInfo(name) {
+export function gymExerciseInfo(name) {
     return GYM_BY_NAME.get(normalizeForCompare(name || '')) || null;
 }
 
-function gymVideoUrl(ex) {
+export function gymVideoUrl(ex) {
     const lang = typeof appLanguage === 'string' ? appLanguage : 'es';
     return 'https://www.youtube.com/results?search_query=' + encodeURIComponent(`${ex.en} ${lang === 'es' ? 'técnica' : 'proper form'}`);
 }
@@ -528,7 +530,7 @@ function gymVideoUrl(ex) {
  * Los ejercicios nuevos del catálogo suman su grupo muscular al mapa y a la biblioteca. Los
  * que ya estaban clasificados conservan su grupo (así el historial no cambia de músculo).
  */
-function registerGymMuscles() {
+export function registerGymMuscles() {
     GYM_EXERCISES.forEach(ex => {
         const group = MUSCLE_GROUPS[ex.muscle];
         [ex.name, ...ex.aliases].forEach(n => {

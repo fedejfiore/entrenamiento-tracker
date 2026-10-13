@@ -1,16 +1,33 @@
 // Inicio → "Mi plan semanal": días y horarios de entrenamiento, estado de la semana,
 // aviso de "hoy toca" y recordatorios en el calendario del celular.
+import { escapeHtml, formatDateLocal, getLocalDateString, getMonday } from '../core/utils.js';
+import { DEFAULT_PLAN_TIME, REMIND_OPTIONS, TrainingPlan, WEEKDAYS, buildPlanIcs, describeNext, getWeekStatus, planGoogleCalendarLinks, routineLabelMatchesWeekday } from '../domain/plan.js';
+import { findProgram } from '../domain/programs.js';
+import { db, repo } from '../data/repositories.js';
+import { loadTrainingDaysPlanHistory } from '../data/routines-store.js';
+import { showToast } from '../ui/toast.js';
+import { syncNativePlanReminders } from './native.js';
+import { currentSessionStartTime } from './training/session-clock.js';
+import { saveWorkoutDraft } from './training/draft.js';
+import { suggestedRoutineKey } from './training/routines-ui.js';
+import { loadRoutineExercises } from './training/workout.js';
+import { routineLabelOf } from './progress.js';
+import { WEEK_STATUS_LABELS } from './home.js';
+import { ensureModuleForRoutine } from './disciplines.js';
+import { currentProgram, nextProgramDay } from './programs.js';
+import { lastDoneOf, routineExercisesOf } from './library.js';
+import { showScreen } from '../ui/navigation.js';
 
-function currentWeekStartStr() {
+export function currentWeekStartStr() {
     return formatDateLocal(getMonday(new Date()));
 }
 
-function getCurrentPlan() {
+export function getCurrentPlan() {
     return TrainingPlan.forWeek(loadTrainingDaysPlanHistory(), currentWeekStartStr());
 }
 
 // El cambio rige desde la semana en curso: no reescribe cómo se evaluaron semanas pasadas.
-function saveCurrentPlan(plan) {
+export function saveCurrentPlan(plan) {
     const history = loadTrainingDaysPlanHistory();
     const mondayStr = currentWeekStartStr();
     const entry = { date: mondayStr, ...plan.toJSON() };
@@ -22,12 +39,12 @@ function saveCurrentPlan(plan) {
 }
 
 /** Duración típica de una sesión (promedio de las últimas 10 con duración), para el calendario. */
-function typicalSessionMinutes() {
+export function typicalSessionMinutes() {
     const durations = repo.workouts.all().map(w => w.duration).filter(d => typeof d === 'number' && d > 0).slice(-10);
     return durations.length ? Math.round(durations.reduce((a, b) => a + b, 0) / durations.length) : 60;
 }
 
-function planCalendarOptions() {
+export function planCalendarOptions() {
     const appUrl = location.href.split(/[?#]/)[0];
     return {
         title: '🏋️ Entrenar',
@@ -37,14 +54,14 @@ function planCalendarOptions() {
     };
 }
 
-function trainedToday() {
+export function trainedToday() {
     const today = getLocalDateString();
     return repo.workouts.all().some(w => w.date === today);
 }
 
 // ---------- Dibujo ----------
 
-function renderPlanSection() {
+export function renderPlanSection() {
     const plan = getCurrentPlan();
     renderPlanEditor(plan);
     renderPlanStatus(plan);
@@ -54,7 +71,7 @@ function renderPlanSection() {
 
 // Hora y minutos con dos selectores (cada 5 minutos). El reloj nativo de Android abría un
 // diálogo que no entraba en pantallas chicas.
-function planTimeSelectsHtml(w, value, on) {
+export function planTimeSelectsHtml(w, value, on) {
     const [hh, mm] = String(value).split(':');
     const pad = n => String(n).padStart(2, '0');
     const minutes = Array.from({ length: 12 }, (_, i) => pad(i * 5));
@@ -69,7 +86,7 @@ function planTimeSelectsHtml(w, value, on) {
 }
 
 // Qué rutina toca ese día (opcional): "Automática" deja que la app la elija.
-function planRoutineSelectHtml(w, plan, on) {
+export function planRoutineSelectHtml(w, plan, on) {
     const current = plan.routineFor(w.n) || '';
     const options = [...document.querySelectorAll('#routine option')].filter(o => o.value)
         .map(o => `<option value="${escapeHtml(o.value)}"${o.value === current ? ' selected' : ''}>${escapeHtml(o.textContent)}</option>`).join('');
@@ -77,7 +94,7 @@ function planRoutineSelectHtml(w, plan, on) {
             <option value="">Rutina: automática</option>${options}</select>`;
 }
 
-function renderPlanEditor(plan) {
+export function renderPlanEditor(plan) {
     const editor = document.getElementById('planEditor');
     if (!editor) return;
     editor.innerHTML = WEEKDAYS.map(w => {
@@ -97,7 +114,7 @@ function renderPlanEditor(plan) {
     }
 }
 
-function renderPlanStatus(plan) {
+export function renderPlanStatus(plan) {
     const status = document.getElementById('weekStatus');
     if (status) {
         status.textContent = WEEK_STATUS_LABELS[getWeekStatus(repo.workouts.all(), plan.days, getMonday(new Date()))];
@@ -108,7 +125,7 @@ function renderPlanStatus(plan) {
     }
 }
 
-function renderPlanCalendar(plan) {
+export function renderPlanCalendar(plan) {
     const box = document.getElementById('planGoogleLinks');
     const icsBtn = document.querySelector('[data-plan-action="ics"]');
     if (icsBtn) icsBtn.disabled = plan.isEmpty;
@@ -124,9 +141,9 @@ function renderPlanCalendar(plan) {
 // más que no hacés. Se puede cambiar desde la misma tarjeta. Si hay una sesión empezada,
 // ofrece seguirla; los días de descanso o ya entrenados lo dice, y deja entrenar igual.
 
-let todayCardChoice = null; // rutina elegida a mano en la tarjeta (solo por hoy)
+export let todayCardChoice = null; // rutina elegida a mano en la tarjeta (solo por hoy)
 
-function todayRoutineKey(weekday = new Date().getDay()) {
+export function todayRoutineKey(weekday = new Date().getDay()) {
     const keys = [...document.querySelectorAll('#routine option')].map(o => o.value).filter(Boolean);
     if (todayCardChoice && keys.includes(todayCardChoice)) return todayCardChoice;
     const planned = getCurrentPlan().routineFor(weekday);
@@ -142,7 +159,7 @@ function todayRoutineKey(weekday = new Date().getDay()) {
     return suggestedRoutineKey && keys.includes(suggestedRoutineKey) ? suggestedRoutineKey : (keys[0] || null);
 }
 
-function todayRoutinePreviewHtml(key) {
+export function todayRoutinePreviewHtml(key) {
     const names = routineExercisesOf(key);
     const shown = names.slice(0, 5).map(escapeHtml).join(' · ');
     const last = lastDoneOf(key);
@@ -152,7 +169,7 @@ function todayRoutinePreviewHtml(key) {
         <small class="today-when">${names.length} ${names.length === 1 ? 'ejercicio' : 'ejercicios'} · ${when}</small>`;
 }
 
-function renderTodayCard(plan) {
+export function renderTodayCard(plan) {
     const card = document.getElementById('todayPlanBanner');
     if (!card) return;
     card.hidden = false;
@@ -207,7 +224,7 @@ function renderTodayCard(plan) {
         </div>`;
 }
 
-function startTodayRoutine() {
+export function startTodayRoutine() {
     const key = document.querySelector('#todayPlanBanner .today-pick')?.value || todayRoutineKey();
     if (!key) return;
     ensureModuleForRoutine(key);
@@ -221,7 +238,7 @@ function startTodayRoutine() {
 }
 
 /** Al abrir la app un día de entrenamiento (sin haber entrenado): un aviso, una vez por día. */
-function maybeRemindTodayPlan() {
+export function maybeRemindTodayPlan() {
     const plan = getCurrentPlan();
     const today = getLocalDateString();
     if (plan.isEmpty || !plan.includes(new Date().getDay()) || trainedToday()) return;
@@ -234,7 +251,7 @@ function maybeRemindTodayPlan() {
 
 // ---------- Acciones ----------
 
-function readPlanFromEditor() {
+export function readPlanFromEditor() {
     const days = [...document.querySelectorAll('#planEditor .day-plan-checkbox:checked')].map(cb => parseInt(cb.value, 10));
     const times = {};
     document.querySelectorAll('#planEditor .plan-time').forEach(el => { times[el.dataset.day] = `${el.querySelector('.plan-hh').value}:${el.querySelector('.plan-mm').value}`; });
@@ -244,7 +261,7 @@ function readPlanFromEditor() {
     return new TrainingPlan({ days, times, remind, routines });
 }
 
-function savePlanFromEditor() {
+export function savePlanFromEditor() {
     const plan = readPlanFromEditor();
     if (plan.sameAs(getCurrentPlan())) {
         showToast('El plan ya estaba así', 'success', 1800);
@@ -263,7 +280,7 @@ function savePlanFromEditor() {
 }
 
 // El .ics se comparte (el celular ofrece abrirlo con el calendario) o, si no se puede, se descarga.
-async function exportPlanIcs() {
+export async function exportPlanIcs() {
     const plan = getCurrentPlan();
     if (plan.isEmpty) return;
     const ics = buildPlanIcs(plan, planCalendarOptions());
@@ -286,7 +303,7 @@ async function exportPlanIcs() {
     showToast('📥 Abrí el archivo descargado para agregarlo a tu calendario', 'success', 4500);
 }
 
-function bindPlanSection() {
+export function bindPlanSection() {
     const section = document.getElementById('planSection');
     section?.addEventListener('change', e => {
         if (!e.target.classList.contains('day-plan-checkbox')) return;

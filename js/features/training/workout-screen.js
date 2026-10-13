@@ -4,8 +4,22 @@
 //   data-change="…"     al cambiar        data-input="…"      al escribir
 // Así el HTML generado no lleva código (onclick=…), los datos viajan escapados en
 // atributos data-* y todo lo que hace la pantalla está listado en un solo lugar.
+import { formatTimeForUnit, parseTimeInput } from '../../core/time.js';
+import { startRepCounter } from '../rep-counter.js';
+import { maybeAutoStartSessionTimer } from './session-clock.js';
+import { saveWorkoutDraft } from './draft.js';
+import { deleteCustomRoutineForever, restoreRoutine } from './routines-ui.js';
+import { addSet, changeExerciseType, cycleTimeUnit, getBlockName, isSessionDataEvent, removeLastSet, sanitizeSetInput, toggleBlockCollapsed, toggleSetDone, toggleSetNote, toggleUnilateral, toggleWarmup, updateSetCalc } from './exercise-block.js';
+import { showSetStepper, updateStepperHint } from './set-stepper.js';
+import { reorderController } from './reorder.js';
+import { archiveExerciseFromRow, deleteRowQuick, editExerciseName, onQuickAddNameInput, quickAddExercise, restoreArchivedExercise } from './workout.js';
+import { bindSetSwipe } from './set-swipe.js';
+import { openSupersetModal } from './supersets.js';
+import { toggleVariantGroup } from '../exercises.js';
+import { openExerciseDetailFromRow } from '../progress.js';
+import { saveEquipLevel } from '../pilates-library.js';
 
-class WorkoutScreen {
+export class WorkoutScreen {
     constructor(containerId) {
         this.containerId = containerId;
     }
@@ -123,10 +137,10 @@ class WorkoutScreen {
     }
 }
 
-const workoutScreen = new WorkoutScreen('exercisesContainer');
+export const workoutScreen = new WorkoutScreen('exercisesContainer');
 
 // Lista de rutinas archivadas (Ajustes): mismas reglas, sin código en el HTML.
-function bindArchivedRoutinesList() {
+export function bindArchivedRoutinesList() {
     document.getElementById('archivedRoutinesList')?.addEventListener('click', e => {
         const el = e.target.closest('[data-action]');
         if (!el) return;

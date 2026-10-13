@@ -10,10 +10,11 @@
 //   validate (opcional) valida el valor completo antes de guardarlo
 //
 // Es también el mapa para una base de datos real: ver docs/MODELO-DE-DATOS.md.
+import { BodyMeasurement, WorkoutSession } from '../domain/models.js';
 
-const SCHEMA_VERSION = 3;
+export const SCHEMA_VERSION = 3;
 
-const STORAGE_SCHEMA = {
+export const STORAGE_SCHEMA = {
     // ---- Datos del usuario ----
     workouts: {
         group: 'data', type: 'array', default: [],
@@ -86,4 +87,4 @@ const STORAGE_SCHEMA = {
     workoutSessions: { group: 'legacy', type: 'array', default: [], description: 'Formato de sesiones de una versión muy vieja.' }
 };
 
-const BACKUP_GROUPS = ['data', 'prefs'];
+export const BACKUP_GROUPS = ['data', 'prefs'];

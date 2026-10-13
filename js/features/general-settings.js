@@ -1,14 +1,25 @@
 // Ajustes generales: día en que empieza la semana, tiempo para cambiar de lado en los
 // unilaterales, unidad de distancia (km / millas) y color de la app.
 // Script clásico (no módulo): comparte el ámbito global.
+import { APP_LANGUAGES, setAppLanguage } from '../core/i18n.js';
+import { DISTANCE_UNITS, WEIGHT_UNITS, setDistanceUnit, setWeightUnit, weightUnitDef } from '../core/units.js';
+import { db } from '../data/repositories.js';
+import { exerciseStats } from '../domain/stats.js';
+import { showToast } from '../ui/toast.js';
+import { buildLastSummaryText, getBlockName, readBlockSets, renderBlockSets } from './training/exercise-block.js';
+import { hideSetStepper } from './training/set-stepper.js';
+import { displayWorkoutHistory } from './history.js';
+import { updateBodyChart } from './body-metrics.js';
+import { updateSidebar } from './home.js';
+import { renderMuscleMap } from './muscle-map.js';
 
-const WEEK_START_OPTIONS = [[1, 'Lunes'], [0, 'Domingo'], [6, 'Sábado']];
+export const WEEK_START_OPTIONS = [[1, 'Lunes'], [0, 'Domingo'], [6, 'Sábado']];
 
-const SIDE_SWITCH_DEFAULT = 5;
+export const SIDE_SWITCH_DEFAULT = 5;
 
 // Color de acento: botones, destacados y el mapa de músculos. [clave, nombre, muestra]
 // [clave, nombre, muestra en tema oscuro, muestra en tema claro] (los mismos tonos de css/tokens.css)
-const ACCENT_OPTIONS = [
+export const ACCENT_OPTIONS = [
     ['naranja', 'Naranja', '#ff6b35', '#c2410c'],
     ['turquesa', 'Turquesa', '#2dd4bf', '#0f766e'],
     ['azul', 'Azul', '#60a5fa', '#1d4ed8'],
@@ -17,17 +28,17 @@ const ACCENT_OPTIONS = [
     ['violeta', 'Violeta', '#a78bfa', '#6d28d9']
 ];
 
-function currentAccent() {
+export function currentAccent() {
     const saved = db.get('accentColor');
     return ACCENT_OPTIONS.some(([k]) => k === saved) ? saved : 'naranja';
 }
 
-function applyAccent(key) {
+export function applyAccent(key) {
     if (key === 'naranja') document.documentElement.removeAttribute('data-accent');
     else document.documentElement.setAttribute('data-accent', key);
 }
 
-function loadAppSettings() {
+export function loadAppSettings() {
     const saved = db.get('appSettings') || {};
     const weekStart = WEEK_START_OPTIONS.some(([v]) => v === saved.weekStart) ? saved.weekStart : 1;
     const side = Number(saved.sideSwitchSeconds);
@@ -42,7 +53,7 @@ function loadAppSettings() {
     };
 }
 
-function saveAppSettings(patch) {
+export function saveAppSettings(patch) {
     try {
         db.set('appSettings', { ...loadAppSettings(), ...patch });
     } catch (e) {
@@ -51,7 +62,7 @@ function saveAppSettings(patch) {
 }
 
 // Cambiar la unidad con series cargadas: se leen en la unidad vieja y se redibujan en la nueva.
-function changeDistanceUnit(unit) {
+export function changeDistanceUnit(unit) {
     const blocks = [...document.querySelectorAll('.exercise-row[data-type="km"]')];
     const sets = blocks.map(b => readBlockSets(b));
     setDistanceUnit(unit);
@@ -65,7 +76,7 @@ function changeDistanceUnit(unit) {
 }
 
 // Idioma: se guarda y se recarga la app (ver setAppLanguage en js/core/i18n.js).
-function bindLanguageSelect() {
+export function bindLanguageSelect() {
     const sel = document.getElementById('languageSelect');
     if (!sel) return;
     let saved = 'auto';
@@ -76,7 +87,7 @@ function bindLanguageSelect() {
 
 // Cambiar kg / lb con series cargadas: se leen en la unidad vieja, se redibujan en la nueva y
 // se refrescan las pantallas que muestran pesos.
-function changeWeightUnit(unit) {
+export function changeWeightUnit(unit) {
     const blocks = [...document.querySelectorAll('#exercisesContainer .exercise-row')];
     const sets = blocks.map(b => readBlockSets(b));
     setWeightUnit(unit);
@@ -91,12 +102,12 @@ function changeWeightUnit(unit) {
     try { updateSidebar(); displayWorkoutHistory(); updateBodyChart(); } catch (e) {}
 }
 
-function updateWeightPlaceholders() {
+export function updateWeightPlaceholders() {
     const bw = document.getElementById('bodyWeight');
     if (bw) bw.placeholder = `Peso (${weightUnitDef().label})`;
 }
 
-function bindGeneralSettings() {
+export function bindGeneralSettings() {
     const week = document.getElementById('weekStartSelect');
     const side = document.getElementById('sideSwitchSelect');
     const st = loadAppSettings();

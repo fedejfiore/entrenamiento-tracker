@@ -8,12 +8,36 @@
 //   data-fn-prevent  evita la acción por defecto (links)
 //   data-fn-stop     corta la búsqueda: lo de adentro no dispara la acción del contenedor
 // Solo se pueden llamar las funciones de esta lista.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
 
 // Mapa explícito nombre → función (no se busca nada por nombre en window). Se arma al primer
 // uso: algunas de estas funciones se definen en archivos que cargan después.
-let declaredActionsCache = null;
-function declaredActions() {
+import { appErrors } from '../core/errors.js';
+import { escapeHtml } from '../core/utils.js';
+import { toggleWakeLock } from './wake-lock.js';
+import { onSoundVolumeInput, saveSoundSettings, testSound } from '../audio/sound.js';
+import { onVoiceSettingChange, showVoiceInstallHelp, testVoice } from '../audio/voice.js';
+import { previewCue, removeRecording, renderRecordingsUI, toggleRecording, uploadCueAudio } from '../audio/recordings.js';
+import { adjustRestTimer, cancelRestTimer, onTimerWidgetClick } from '../features/rest-timer.js';
+import { finishTabataSession, startTabata } from '../features/tabata.js';
+import { adjustRepTarget, adjustRepTempo, stopRepCounter, toggleRepCounterPause } from '../features/rep-counter.js';
+import { openMusic, saveMusicLink } from '../features/music.js';
+import { finishRoutineManually, resetRoutineTimer, startRoutineManually } from '../features/training/session-clock.js';
+import { saveWorkoutDraft } from '../features/training/draft.js';
+import { archiveCurrentRoutine, createNewRoutine, renameRoutine } from '../features/training/routines-ui.js';
+import { loadRoutineExercises, saveWorkoutSession } from '../features/training/workout.js';
+import { finishSession } from '../features/training/finish-prompt.js';
+import { toggleVariantGroup, unifyFromSelectors } from '../features/exercises.js';
+import { displayWorkoutHistory, onHistoryViewModeChange } from '../features/history.js';
+import { closeExerciseDetail, generateProgressionAnalysis, renderExerciseDetailChart } from '../features/progress.js';
+import { saveBodyMetrics, updateBodyChart } from '../features/body-metrics.js';
+import { changeCalendarMonth, toggleRecentRoutinesExpanded } from '../features/home.js';
+import { downloadData, resetAllData, triggerFileInput } from '../features/backup.js';
+import { openLegal } from '../features/help.js';
+import { openFeedback } from '../features/feedback.js';
+import { closeDrawer, showScreen, toggleDrawer } from './navigation.js';
+
+export let declaredActionsCache = null;
+export function declaredActions() {
     declaredActionsCache ||= {
         adjustRepTarget, adjustRepTempo, adjustRestTimer, archiveCurrentRoutine, cancelRestTimer,
         changeCalendarMonth, closeDrawer, closeExerciseDetail, createNewRoutine,
@@ -32,11 +56,11 @@ function declaredActions() {
 }
 
 /** Atributos para el HTML generado: `<button ${fnAttrs('previewCue', id)}>`. */
-function fnAttrs(fn, ...args) {
+export function fnAttrs(fn, ...args) {
     return `data-fn-click="${escapeHtml(fn)}"${args.length ? ` data-fn-args="${escapeHtml(JSON.stringify(args))}"` : ''}`;
 }
 
-function runDeclaredAction(event) {
+export function runDeclaredAction(event) {
     const attr = 'data-fn-' + event.type;
     const start = event.target instanceof Element ? event.target : event.target?.parentElement;
     const el = start?.closest(`[${attr}], [data-fn-stop]`);

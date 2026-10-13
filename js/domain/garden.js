@@ -8,23 +8,23 @@
 //   queda alguna, se usa sola. Se empieza con 2 y se suma 1 por mes, hasta 3.
 // - Si no quedan semanas libres, la flor se marchita un poco (pierde color y pétalos) pero
 //   no retrocede: vuelve a estar bien con la próxima semana cumplida. Nunca vuelve a cero.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { TrainingPlan } from './plan.js';
 
-const GARDEN_STAGES = [
+export const GARDEN_STAGES = [
     { id: 'seed', label: 'Semilla', weeks: 0 },
     { id: 'sprout', label: 'Brote', weeks: 1 },
     { id: 'bud', label: 'Capullo', weeks: 3 },
     { id: 'flower', label: 'Flor', weeks: 6 },
     { id: 'fruit', label: 'Flor con frutos', weeks: 10 }
 ];
-const GARDEN_FRUIT_EVERY = 4;
-const GARDEN_FREE_WEEKS = { initial: 2, perMonth: 1, max: 3 };
+export const GARDEN_FRUIT_EVERY = 4;
+export const GARDEN_FREE_WEEKS = { initial: 2, perMonth: 1, max: 3 };
 
-function gardenDateStr(d) {
+export function gardenDateStr(d) {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
-function gardenMonday(date) {
+export function gardenMonday(date) {
     const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
     d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
     return d;
@@ -39,7 +39,7 @@ function gardenMonday(date) {
  *            current: { start, planned, trained, done }, weeks: [{ start, planned, trained, status }] }
  *          status: 'cumplida' | 'libre' | 'no' | 'sin-plan' | 'en-curso'
  */
-function computeGarden({ workouts = [], planHistory = [], today = new Date() } = {}) {
+export function computeGarden({ workouts = [], planHistory = [], today = new Date() } = {}) {
     const trainedDays = new Set((workouts || []).filter(w => w && w.date && !w.deletedAt).map(w => w.date));
     const plans = (planHistory || []).filter(p => p && p.date && Array.isArray(p.days) && p.days.length);
     const thisMonday = gardenMonday(today);

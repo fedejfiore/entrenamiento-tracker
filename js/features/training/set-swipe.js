@@ -1,11 +1,11 @@
 // Deslizar una serie con el pulgar: hacia la derecha la marca como hecha (como tocar ✓) y
 // hacia la izquierda la desmarca. Solo con el dedo (no con el mouse) y solo si el gesto es
 // claramente horizontal: el desplazamiento vertical de la pantalla sigue igual.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { toggleSetDone } from './exercise-block.js';
 
-const SET_SWIPE = { decide: 12, trigger: 64, max: 90 };
+export const SET_SWIPE = { decide: 12, trigger: 64, max: 90 };
 
-function bindSetSwipe(container) {
+export function bindSetSwipe(container) {
     let s = null;
     const reset = () => {
         if (!s) return;

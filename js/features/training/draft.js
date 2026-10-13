@@ -1,9 +1,18 @@
 // Borrador del entrenamiento en curso (se recupera si se cierra la app).
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
 
 // Auto-guarda lo que se va tipeando (reps/peso/pausa/notas/series tildadas) para
 // no perderlo si la app se cierra o se recarga a mitad de un entrenamiento.
-function saveWorkoutDraft() {
+import { getLocalDateString } from '../../core/utils.js';
+import { setsFromLegacy } from '../../domain/legacy-format.js';
+import { db } from '../../data/repositories.js';
+import { showToast } from '../../ui/toast.js';
+import { selectedMood, setSelectedMood } from './routines-ui.js';
+import { applySetsToBlock, getBlockName, readBlockSets } from './exercise-block.js';
+import { loadRoutineExercises } from './workout.js';
+import { focusCurrentExercise } from './focus.js';
+import { ensureModuleForRoutine } from '../disciplines.js';
+
+export function saveWorkoutDraft() {
     const routine = document.getElementById('routine')?.value;
     if (!routine) { clearWorkoutDraft(); return; }
 
@@ -30,11 +39,11 @@ function saveWorkoutDraft() {
     try { db.set('workoutDraft', draft); } catch (e) {}
 }
 
-function clearWorkoutDraft() {
+export function clearWorkoutDraft() {
     try { db.remove('workoutDraft'); } catch (e) {}
 }
 
-function restoreWorkoutDraft() {
+export function restoreWorkoutDraft() {
     let draft;
     try { draft = db.get('workoutDraft'); } catch (e) { return; }
     if (!draft || !draft.routine) return;

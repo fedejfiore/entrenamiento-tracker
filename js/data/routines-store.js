@@ -1,65 +1,69 @@
 // Rutinas del usuario: estado en memoria de las pantallas (customRoutines, archivedRoutines…).
 // Se lee y guarda a través de repo.routines (RoutineRepository, js/data/repositories.js).
 // Las cargas iniciales las hace app.js DESPUÉS de correr las migraciones.
+import { normalizeForCompare } from '../core/utils.js';
+import { SCHEMA_VERSION } from './schema.js';
+import { routines } from '../domain/catalog.js';
+import { db, repo } from './repositories.js';
 
-let customRoutines = {};
+export let customRoutines = {};
 
-let customRoutineLabels = {};
+export let customRoutineLabels = {};
 
 // Reservorio de rutinas: claves (base o personalizadas) que el usuario archivó.
 // No se borra ningún dato — ni ejercicios, ni entrenamientos guardados, ni progreso
 // por músculo — solo se dejan de ofrecer en el selector. Sirve tanto para esconder
 // rutinas que no se están usando ahora como para ir preparando rutinas futuras sin
 // que aparezcan en la lista actual.
-function loadArchivedRoutines() {
+export function loadArchivedRoutines() {
     return repo.routines.archived();
 }
 
-let archivedRoutines = new Set();
+export let archivedRoutines = new Set();
 
 /** Vuelve a leer las rutinas archivadas de lo guardado. */
-function reloadArchivedRoutines() {
+export function reloadArchivedRoutines() {
     archivedRoutines = loadArchivedRoutines();
 }
 
-function saveArchivedRoutines() {
+export function saveArchivedRoutines() {
     repo.routines.saveArchived(archivedRoutines);
 }
 
-function isRoutineVisible(key) {
+export function isRoutineVisible(key) {
     return !archivedRoutines.has(key);
 }
 
 // Reservorio de ejercicios: por cada rutina, nombres de ejercicios archivados.
 // Igual idea que el reservorio de rutinas pero a nivel ejercicio individual: se
 // dejan de mostrar en la lista activa de esa rutina sin perder su historial.
-let archivedExercises = {};
+export let archivedExercises = {};
 
-function loadArchivedExercises() {
+export function loadArchivedExercises() {
     archivedExercises = repo.routines.archivedExercises();
 }
 
-function saveArchivedExercises() {
+export function saveArchivedExercises() {
     repo.routines.saveArchivedExercises(archivedExercises);
 }
 
-function loadCustomRoutines() {
+export function loadCustomRoutines() {
     customRoutines = repo.routines.custom();
 }
 
-function loadCustomRoutineLabels() {
+export function loadCustomRoutineLabels() {
     customRoutineLabels = repo.routines.labels();
 }
 
-function saveCustomRoutineLabels() {
+export function saveCustomRoutineLabels() {
     repo.routines.saveLabels(customRoutineLabels);
 }
 
-function saveCustomRoutines() {
+export function saveCustomRoutines() {
     repo.routines.saveCustom(customRoutines);
 }
 
-function getLastRoutineNote(routine) {
+export function getLastRoutineNote(routine) {
     const workouts = repo.workouts.all();
     for (let i = workouts.length - 1; i >= 0; i--) {
         if (workouts[i] && workouts[i].routine === routine && workouts[i].notes) {
@@ -69,7 +73,7 @@ function getLastRoutineNote(routine) {
     return '';
 }
 
-function getAllKnownExerciseNames() {
+export function getAllKnownExerciseNames() {
     const names = new Set();
     // Si una rutina tiene versión personalizada, esa reemplaza a la base
     // (no se combinan), para que un nombre ya unificado no siga reapareciendo.
@@ -83,7 +87,7 @@ function getAllKnownExerciseNames() {
 
 // Genera una clave única (ej. "Yoga" -> "YOGA") que no choque con las rutinas
 // base ni con otras ya creadas, para poder guardarla en customRoutines.
-function slugifyRoutineKey(name) {
+export function slugifyRoutineKey(name) {
     let base = normalizeForCompare(name)
         .toUpperCase()
         .replace(/[^A-Z0-9]+/g, '_')
@@ -100,7 +104,7 @@ function slugifyRoutineKey(name) {
     return key;
 }
 
-function initializeData() {
+export function initializeData() {
     // Primera vez: arrancar sin historial, solo con las rutinas base del código
     db.transaction(tx => {
         if (!db.has('workouts')) {
@@ -117,7 +121,7 @@ function initializeData() {
 // Historial de planes semanales: cada entrada dice desde qué lunes rige esa
 // cantidad/selección de días. Así, cambiar el plan hoy no reescribe cómo se
 // evaluaron semanas que ya pasaron con el plan anterior.
-function loadTrainingDaysPlanHistory() {
+export function loadTrainingDaysPlanHistory() {
     if (repo.routines.hasPlanHistory()) return repo.routines.planHistory();
 
     // Migración desde el formato viejo (un solo plan global): se asume vigente

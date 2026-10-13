@@ -8,8 +8,9 @@
 // Entrada guardada en trainingDaysPlanHistory (una por semana en que se cambió el plan):
 //   { date: "2026-09-28", days: [1, 3, 5], times: { "1": "19:00", "3": "19:00", "5": "08:30" }, remind: 30 }
 //   days: getDay() de JS (0 = domingo … 6 = sábado)   remind: minutos de aviso previo
+import { getMonday, normalizeForCompare } from '../core/utils.js';
 
-const WEEKDAYS = [
+export const WEEKDAYS = [
     { n: 1, short: 'Lun', long: 'lunes', ics: 'MO' },
     { n: 2, short: 'Mar', long: 'martes', ics: 'TU' },
     { n: 3, short: 'Mié', long: 'miércoles', ics: 'WE' },
@@ -18,13 +19,13 @@ const WEEKDAYS = [
     { n: 6, short: 'Sáb', long: 'sábado', ics: 'SA' },
     { n: 0, short: 'Dom', long: 'domingo', ics: 'SU' }
 ];
-const DEFAULT_PLAN_TIME = '19:00';
-const DEFAULT_REMIND_MINUTES = 30;
-const REMIND_OPTIONS = [[0, 'A la hora'], [15, '15 min antes'], [30, '30 min antes'], [60, '1 h antes'], [120, '2 h antes']];
+export const DEFAULT_PLAN_TIME = '19:00';
+export const DEFAULT_REMIND_MINUTES = 30;
+export const REMIND_OPTIONS = [[0, 'A la hora'], [15, '15 min antes'], [30, '30 min antes'], [60, '1 h antes'], [120, '2 h antes']];
 
-const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
+export const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
 
-class TrainingPlan {
+export class TrainingPlan {
     constructor({ days = [], times = {}, remind = DEFAULT_REMIND_MINUTES, routines = {} } = {}) {
         this.days = [...new Set(days.map(Number).filter(d => d >= 0 && d <= 6))].sort((a, b) => a - b);
         this.times = {};
@@ -99,7 +100,7 @@ class TrainingPlan {
  * ¿El nombre de la rutina dice el día? "Torso C (jue)", "Pierna sábado", "Lunes - pecho".
  * Sirve para proponerla ese día cuando el plan no tiene una rutina asignada.
  */
-function routineLabelMatchesWeekday(label, weekday) {
+export function routineLabelMatchesWeekday(label, weekday) {
     const w = WEEKDAYS.find(x => x.n === weekday);
     if (!w || !label) return false;
     const n = normalizeForCompare(label);
@@ -110,19 +111,19 @@ function routineLabelMatchesWeekday(label, weekday) {
 
 // ---------- Calendario ----------
 
-const pad2 = n => String(n).padStart(2, '0');
+export const pad2 = n => String(n).padStart(2, '0');
 
 /** Fecha y hora "flotante" (sin zona): el calendario la toma en la hora local del usuario. */
-function formatCalendarLocal(date) {
+export function formatCalendarLocal(date) {
     return `${date.getFullYear()}${pad2(date.getMonth() + 1)}${pad2(date.getDate())}T${pad2(date.getHours())}${pad2(date.getMinutes())}00`;
 }
 
-function formatCalendarUtc(date) {
+export function formatCalendarUtc(date) {
     return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
 }
 
 /** Primera fecha (desde hoy) que cae en alguno de los días del grupo, a su hora. */
-function firstOccurrence(group, from = new Date()) {
+export function firstOccurrence(group, from = new Date()) {
     const [h, m] = group.time.split(':').map(Number);
     for (let i = 0; i < 7; i++) {
         const d = new Date(from.getFullYear(), from.getMonth(), from.getDate() + i, h, m);
@@ -131,12 +132,12 @@ function firstOccurrence(group, from = new Date()) {
     return null;
 }
 
-function icsEscape(text) {
+export function icsEscape(text) {
     return String(text).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\n/g, '\\n');
 }
 
 // Las líneas de un .ics no deben pasar de 75 bytes: se cortan y siguen con un espacio.
-function icsFold(line) {
+export function icsFold(line) {
     const bytes = new TextEncoder().encode(line);
     if (bytes.length <= 75) return line;
     const out = [];
@@ -157,7 +158,7 @@ function icsFold(line) {
  * Archivo .ics con un evento semanal por horario y una alarma `plan.remind` minutos antes.
  * @param opts { title, description, durationMin, now }
  */
-function buildPlanIcs(plan, { title = '🏋️ Entrenar', description = '', durationMin = 60, now = new Date() } = {}) {
+export function buildPlanIcs(plan, { title = '🏋️ Entrenar', description = '', durationMin = 60, now = new Date() } = {}) {
     const lines = [
         'BEGIN:VCALENDAR',
         'VERSION:2.0',
@@ -189,7 +190,7 @@ function buildPlanIcs(plan, { title = '🏋️ Entrenar', description = '', dura
 }
 
 /** Un link de Google Calendar por horario (Google no importa varios eventos juntos). */
-function planGoogleCalendarLinks(plan, { title = '🏋️ Entrenar', description = '', durationMin = 60, now = new Date() } = {}) {
+export function planGoogleCalendarLinks(plan, { title = '🏋️ Entrenar', description = '', durationMin = 60, now = new Date() } = {}) {
     return plan.groups().map(group => {
         const start = firstOccurrence(group, now);
         const end = new Date(start.getTime() + Math.max(15, Math.round(durationMin)) * 60000);
@@ -214,7 +215,7 @@ function planGoogleCalendarLinks(plan, { title = '🏋️ Entrenar', description
 // semana): si el plan pide 5 días y llevás 2, todavía no está cumplida aunque esos
 // 2 hayan sido los correctos. Mientras la semana en curso no llegue al total, queda
 // "en-curso" (ni verde todavía, ni roja porque todavía hay tiempo).
-function getWeekStatus(workouts, plan, weekStart, today = new Date()) {
+export function getWeekStatus(workouts, plan, weekStart, today = new Date()) {
     if (!plan || plan.length === 0) return 'sin-plan';
 
     const weekEnd = new Date(weekStart.getTime() + 6 * 86400000);
@@ -242,7 +243,7 @@ function getWeekStatus(workouts, plan, weekStart, today = new Date()) {
     return 'incumplido';
 }
 
-function describeNext(next) {
+export function describeNext(next) {
     if (!next) return '';
     const day = WEEKDAYS.find(w => w.n === next.weekday);
     if (next.isToday) return `hoy a las ${next.time}`;
@@ -255,7 +256,7 @@ function describeNext(next) {
  * el volumen del día), y cuántas celdas vacías van antes del día 1 (la semana empieza el lunes).
  * @param offset  0 = el mes de hoy, -1 = el anterior…
  */
-function calendarMonth(workouts, offset = 0, today = new Date()) {
+export function calendarMonth(workouts, offset = 0, today = new Date()) {
     const base = new Date(today.getFullYear(), today.getMonth() + offset, 1);
     const year = base.getFullYear();
     const month = base.getMonth();

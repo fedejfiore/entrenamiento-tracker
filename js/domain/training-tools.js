@@ -2,28 +2,30 @@
 // (para el mapa de músculos) y orden dentro de una superserie.
 
 // ---------- Calculadora de discos ----------
+import { formatDateLocal, formatNumber, getWeekStart, normalizeForCompare, parseDecimal } from '../core/utils.js';
+import { parseRepsList, parseWeightList } from './legacy-format.js';
 
-const BAR_OPTIONS = [
+export const BAR_OPTIONS = [
     [20, 'Barra olímpica · 20 kg'],
     [15, 'Barra olímpica corta · 15 kg'],
     [10, 'Barra técnica · 10 kg'],
     [7, 'Barra Z (EZ) · 7 kg'],
     [0, 'Sin barra (máquina o solo discos)']
 ];
-const ALL_PLATES = [25, 20, 15, 10, 5, 2.5, 2, 1.25, 1, 0.5];
-const DEFAULT_PLATES = [25, 20, 15, 10, 5, 2.5, 1.25];
+export const ALL_PLATES = [25, 20, 15, 10, 5, 2.5, 2, 1.25, 1, 0.5];
+export const DEFAULT_PLATES = [25, 20, 15, 10, 5, 2.5, 1.25];
 
 // En libras (gimnasios de Estados Unidos): barra de 45 lb y discos de 45, 35, 25, 10, 5 y 2,5.
-const BAR_OPTIONS_LB = [
+export const BAR_OPTIONS_LB = [
     [45, 'Barra olímpica · 45 lb'],
     [35, 'Barra olímpica corta · 35 lb'],
     [25, 'Barra técnica · 25 lb'],
     [20, 'Barra Z (EZ) · 20 lb'],
     [0, 'Sin barra (máquina o solo discos)']
 ];
-const ALL_PLATES_LB = [55, 45, 35, 25, 10, 5, 2.5, 1.25];
-const DEFAULT_PLATES_LB = [45, 35, 25, 10, 5, 2.5];
-const PLATE_UNIT = 0.05; // kg: todo se calcula en enteros de 50 g para evitar errores de coma
+export const ALL_PLATES_LB = [55, 45, 35, 25, 10, 5, 2.5, 1.25];
+export const DEFAULT_PLATES_LB = [45, 35, 25, 10, 5, 2.5];
+export const PLATE_UNIT = 0.05; // kg: todo se calcula en enteros de 50 g para evitar errores de coma
 
 /**
  * Discos por lado para llegar a `target` con una barra de `bar` kg y los discos disponibles
@@ -32,7 +34,7 @@ const PLATE_UNIT = 0.05; // kg: todo se calcula en enteros de 50 g para evitar e
  * (ej. sin el de 5: 30 por lado = 20 + 10, y 40 = 20 + 20 aunque falte el de 25).
  * Si no se puede exacto, devuelve además el peso posible más cercano por debajo y por encima.
  */
-function calculatePlates(target, bar, plates) {
+export function calculatePlates(target, bar, plates) {
     const unit = kg => Math.round(kg / PLATE_UNIT);
     const sizes = [...new Set(plates.filter(p => p > 0))].sort((a, b) => b - a);
     const perSide = (target - bar) / 2;
@@ -76,7 +78,7 @@ function calculatePlates(target, bar, plates) {
 
 // Series efectivas de un ejercicio guardado: sin calentamiento. Las sesiones viejas (sin
 // `sets`) cuentan una serie por cada rep anotada ("12-10-8" = 3 series).
-function effectiveSetCount(ex) {
+export function effectiveSetCount(ex) {
     if (Array.isArray(ex.sets) && ex.sets.length) return ex.sets.filter(s => s && !s.warmup).length;
     const reps = parseRepsList(ex.reps).length;
     return reps || parseWeightList(ex.weight, ex.reps).length;
@@ -86,7 +88,7 @@ function effectiveSetCount(ex) {
 // tríceps en un press de pecho). Siguiendo a Pelland et al. (Sports Medicine, 2025: 67
 // estudios), cada serie indirecta cuenta como media serie ("conteo fraccionado"), que es lo
 // que mejor predice el crecimiento muscular. Reglas por nombre (sin tildes, en minúscula).
-const SECONDARY_MUSCLE_RULES = [
+export const SECONDARY_MUSCLE_RULES = [
     { re: /press (de )?(pecho|banca|inclinado|declinado|plano)|press cerrado|flexiones|push-?ups?|fondos(?! en banco)/, adds: { 'Tríceps': 0.5, 'Hombros': 0.5 } },
     { re: /press (de )?hombros?|press militar|press arnold/, adds: { 'Tríceps': 0.5 } },
     { re: /jalon (al pecho|con agarre)|dominadas|\bremo\b(?! al menton)/, adds: { 'Bíceps': 0.5 } },
@@ -96,7 +98,7 @@ const SECONDARY_MUSCLE_RULES = [
 ];
 
 /** Músculos secundarios de un ejercicio: { grupo: fracción } (sin el grupo principal). */
-function secondaryMusclesFor(name, primaryGroup) {
+export function secondaryMusclesFor(name, primaryGroup) {
     const n = normalizeForCompare(name || '');
     const out = {};
     SECONDARY_MUSCLE_RULES.forEach(r => {
@@ -112,7 +114,7 @@ function secondaryMusclesFor(name, primaryGroup) {
  * @param groupOf nombre de ejercicio → grupo muscular (getMuscleGroup en la app)
  * @returns { [grupo]: { sets, direct, indirect, exercises: { [nombre]: series } } }
  */
-function muscleSetsByGroup(workouts, fromStr, toStr, groupOf, secondaryOf = secondaryMusclesFor) {
+export function muscleSetsByGroup(workouts, fromStr, toStr, groupOf, secondaryOf = secondaryMusclesFor) {
     const out = {};
     const entry = g => (out[g] ||= { sets: 0, direct: 0, indirect: 0, exercises: {} });
     (workouts || []).forEach(w => {
@@ -140,7 +142,7 @@ function muscleSetsByGroup(workouts, fromStr, toStr, groupOf, secondaryOf = seco
 // Nivel según series por semana (el rango habitual para ganar músculo es 10-20). Pocos
 // niveles y con nombre, para que se distingan de un vistazo: la intensidad del color sube
 // con el trabajo y "alto" lleva rayas (no depende solo del color).
-const MUSCLE_LEVELS = [
+export const MUSCLE_LEVELS = [
     { min: 0, label: 'Sin trabajo', short: 'Sin trabajo' },
     { min: 0.5, label: 'Bajo (1 a 5)', short: 'Bajo' },
     { min: 6, label: 'Moderado (6 a 9)', short: 'Moderado' },
@@ -148,7 +150,7 @@ const MUSCLE_LEVELS = [
     { min: 20.5, label: 'Alto (más de 20)', short: 'Alto' }
 ];
 
-const MUSCLE_IDEAL_RANGE = { min: 10, max: 20 };
+export const MUSCLE_IDEAL_RANGE = { min: 10, max: 20 };
 
 /**
  * Rango de fechas de cada período del mapa.
@@ -157,7 +159,7 @@ const MUSCLE_IDEAL_RANGE = { min: 10, max: 20 };
  * semanas completas anteriores a la actual, respetando el día en que empieza la semana.
  * weeks = por cuánto dividir para el promedio semanal.
  */
-function muscleMapRange(period, today, weekStartDay = 1) {
+export function muscleMapRange(period, today, weekStartDay = 1) {
     const start = getWeekStart(today, weekStartDay);
     const shift = (d, days) => { const x = new Date(d); x.setDate(x.getDate() + days); return x; };
     if (period === 'last7') {
@@ -171,7 +173,7 @@ function muscleMapRange(period, today, weekStartDay = 1) {
     return { from: formatDateLocal(shift(start, -7 * weeks)), to: formatDateLocal(shift(start, -1)), weeks, inProgress: false, daysLeft: 0 };
 }
 
-function muscleLevel(weeklySets) {
+export function muscleLevel(weeklySets) {
     let level = 0;
     MUSCLE_LEVELS.forEach((l, i) => { if (weeklySets >= l.min) level = i; });
     return level;
@@ -181,10 +183,10 @@ function muscleLevel(weeklySets) {
 
 // Valores típicos de una polea o máquina de placas: sin clavija pesa unos 5 kg (el carro y
 // el cable), con la clavija en la primera placa unos 10 kg, y cada placa suma 5 kg.
-const DEFAULT_STACK = { empty: 5, first: 10, step: 5, count: 20 };
+export const DEFAULT_STACK = { empty: 5, first: 10, step: 5, count: 20 };
 
 // Nombres que suelen ser de polea o máquina de placas (se puede cambiar a mano).
-function isLikelyStackMachine(name) {
+export function isLikelyStackMachine(name) {
     const n = normalizeForCompare(name || '');
     return /polea|cable|maquina|jalon|pec ?deck|cruce|crossover|face ?pull|extension de (cuadriceps|piernas)|curl femoral|aductor|abductor|remo sentado|remo bajo|tricep(s)? (en )?polea|pullover en polea/.test(n);
 }
@@ -194,7 +196,7 @@ function isLikelyStackMachine(name) {
  * Peso con la clavija en la placa n (1 = la primera): first + (n - 1) * step; sin clavija, empty.
  * Devuelve la placa del peso exacto o, si no hay, las dos más cercanas (abajo y arriba).
  */
-function calculateStack(target, stack = DEFAULT_STACK) {
+export function calculateStack(target, stack = DEFAULT_STACK) {
     const { empty, first, step } = { ...DEFAULT_STACK, ...stack };
     const count = Math.max(1, Math.round(stack.count || DEFAULT_STACK.count));
     const weightAt = n => Math.round((n === 0 ? empty : first + (n - 1) * step) * 100) / 100;
@@ -210,7 +212,7 @@ function calculateStack(target, stack = DEFAULT_STACK) {
 // ---------- Superseries ----------
 
 /** Letra de la próxima superserie libre en una rutina: A, B, C… */
-function nextSupersetLetter(usedLetters) {
+export function nextSupersetLetter(usedLetters) {
     for (let i = 0; i < 26; i++) {
         const letter = String.fromCharCode(65 + i);
         if (!usedLetters.includes(letter)) return letter;
@@ -223,7 +225,7 @@ function nextSupersetLetter(usedLetters) {
  * al terminar la vuelta. Dado el orden en pantalla y la letra de cada ejercicio, devuelve
  * el ejercicio que sigue al actual en su superserie, o null si es el último (→ descanso).
  */
-function nextInSuperset(orderedNames, letterOf, currentName) {
+export function nextInSuperset(orderedNames, letterOf, currentName) {
     const letter = letterOf(currentName);
     if (!letter) return null;
     const members = orderedNames.filter(n => letterOf(n) === letter);
@@ -235,10 +237,10 @@ function nextInSuperset(orderedNames, letterOf, currentName) {
 // Si un ejercicio lleva varias semanas sin mejorar (ni más peso ni más reps con ese peso),
 // se sugiere qué cambiar. No es "sumar por sumar": se mira la mejor serie de cada sesión.
 
-const STALL_RULES = { minWeeks: 3, minSessions: 3, variantWeeks: 6, defaultRepsMax: 12, bodyweightRepsMax: 20 };
+export const STALL_RULES = { minWeeks: 3, minSessions: 3, variantWeeks: 6, defaultRepsMax: 12, bodyweightRepsMax: 20 };
 
 /** Mejor serie de una sesión: más peso y, con ese peso, más reps (las de calentamiento no cuentan). */
-function topSetOf(sets, type) {
+export function topSetOf(sets, type) {
     const work = (sets || [])
         .filter(s => s && !s.warmup)
         .map(s => ({ reps: parseInt(s.reps, 10) || 0, kg: parseDecimal(s.kg) || 0 }))
@@ -249,7 +251,7 @@ function topSetOf(sets, type) {
     return { kg, reps: Math.max(...atTop.map(s => s.reps)), totalReps: atTop.reduce((a, s) => a + s.reps, 0) };
 }
 
-function topSetBetter(a, b) {
+export function topSetBetter(a, b) {
     if (a.kg !== b.kg) return a.kg > b.kg;
     return a.reps > b.reps || a.totalReps > b.totalReps;
 }
@@ -259,7 +261,7 @@ function topSetBetter(a, b) {
  * @param opts { type: 'kg'|'bw', today: Date, repsMax }
  * @returns null si no hay estancamiento, o { weeks, sessions, kg, reps, action: 'weight'|'reps'|'harder', variant: bool }
  */
-function detectStall(sessions, { type = 'kg', today = new Date(), repsMax } = {}) {
+export function detectStall(sessions, { type = 'kg', today = new Date(), repsMax } = {}) {
     if (type !== 'kg' && type !== 'bw') return null;
     const list = (sessions || [])
         .map(s => ({ date: s.date, top: topSetOf(s.sets, type) }))
@@ -287,7 +289,7 @@ function detectStall(sessions, { type = 'kg', today = new Date(), repsMax } = {}
 // ---- Nota del mapa muscular (antes en js/features/muscle-map.js) ----
 
 // Texto de cada músculo respecto del rango ideal (en la semana en curso, lo que falta).
-function muscleRangeNote(w, range) {
+export function muscleRangeNote(w, range) {
     const { min, max } = MUSCLE_IDEAL_RANGE;
     if (w > max) return 'por encima del rango';
     if (w >= min) return 'en rango ✓';

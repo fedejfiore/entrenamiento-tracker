@@ -1,23 +1,34 @@
 // Progreso → "Análisis de Progresión": cada ejercicio comparado contra una sesión anterior,
 // agrupado como se elija (todo, última sesión, por rutina o por grupo muscular). Tocar un
 // ejercicio abre su detalle con los gráficos (peso, 1RM, reps, volumen) y el grupo muscular.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { cssVar, escapeHtml } from '../core/utils.js';
+import { tr } from '../core/i18n.js';
+import { formatWeight, formatWeightTotal, kgToDisplay, weightUnitDef } from '../core/units.js';
+import { MUSCLE_GROUPS, ROUTINE_LABELS } from '../domain/catalog.js';
+import { repo } from '../data/repositories.js';
+import { getMuscleGroup, saveGroupOverride } from '../data/exercise-prefs.js';
+import { customRoutineLabels } from '../data/routines-store.js';
+import { buildProgressionHistory, findClosestSession, getExerciseHistoryData } from '../domain/stats.js';
+import { showToast } from '../ui/toast.js';
+import { muscleGroupOptionsHtml } from './exercises.js';
+import { renderMuscleMap } from './muscle-map.js';
+import { emptyStateHtml } from '../ui/navigation.js';
 
-let exerciseDetailChart = null;
+export let exerciseDetailChart = null;
 
-let currentExerciseDetailData = null;
+export let currentExerciseDetailData = null;
 
-let currentExerciseDetailName = null;
+export let currentExerciseDetailName = null;
 
 // Tocar el nombre de un ejercicio mientras se está entrenando abre directamente
 // su gráfico de progreso (sin tener que ir a la pantalla Progreso a buscarlo).
-function openExerciseDetailFromRow(idx) {
+export function openExerciseDetailFromRow(idx) {
     const el = document.getElementById(`exname_${idx}`);
     if (!el) return;
     openExerciseDetail(el.textContent.trim());
 }
 
-function openExerciseDetail(exName) {
+export function openExerciseDetail(exName) {
     const modal = document.getElementById('exerciseDetailModal');
     const titleEl = document.getElementById('exerciseDetailTitle');
     if (!modal || !titleEl) return;
@@ -40,7 +51,7 @@ function openExerciseDetail(exName) {
     renderExerciseDetailChart();
 }
 
-function changeExerciseDetailGroup(group) {
+export function changeExerciseDetailGroup(group) {
     if (!currentExerciseDetailName) return;
     saveGroupOverride(currentExerciseDetailName, group);
     showToast(`${currentExerciseDetailName} → ${group}`, 'success', 1800);
@@ -52,20 +63,20 @@ function changeExerciseDetailGroup(group) {
 // en kg pero con números mucho más grandes) — mezclarlas en un solo eje Y aplastaría
 // las líneas más chicas. Cada una se prende/apaga con su checkbox y arma su propio
 // eje sólo si está tildada, así el gráfico no queda con ejes vacíos de más.
-const EXERCISE_CHART_METRICS = [
+export const EXERCISE_CHART_METRICS = [
     { checkboxId: 'exmetric_weight', field: 'weight', label: () => `${tr('Peso promedio')} (${weightUnitDef().label})`, color: () => cssVar('--brand'), axis: 'kg', weight: true },
     { checkboxId: 'exmetric_1rm', field: 'oneRM', label: () => `${tr('1RM estimado')} (${weightUnitDef().label})`, weight: true, color: () => cssVar('--danger'), axis: 'kg', dash: [5, 5] },
     { checkboxId: 'exmetric_reps', field: 'totalReps', label: () => tr('Reps totales'), color: () => '#3498db', axis: 'reps' },
     { checkboxId: 'exmetric_volume', field: 'volume', label: () => `${tr('Volumen total')} (${weightUnitDef().label})`, color: () => '#8b5cf6', axis: 'volume', weight: true }
 ];
 
-const EXERCISE_CHART_AXIS_META = {
+export const EXERCISE_CHART_AXIS_META = {
     kg: { position: 'left', title: () => weightUnitDef().label },
     reps: { position: 'right', title: () => 'reps' },
     volume: { position: 'right', title: () => `${tr('volumen')} (${weightUnitDef().label})` }
 };
 
-function renderExerciseDetailChart() {
+export function renderExerciseDetailChart() {
     const canvas = document.getElementById('exerciseDetailChart');
     if (exerciseDetailChart) { exerciseDetailChart.destroy(); exerciseDetailChart = null; }
     if (!canvas || !currentExerciseDetailData || !currentExerciseDetailData.length || typeof Chart === 'undefined') return;
@@ -116,7 +127,7 @@ function renderExerciseDetailChart() {
     });
 }
 
-function closeExerciseDetail() {
+export function closeExerciseDetail() {
     const modal = document.getElementById('exerciseDetailModal');
     if (modal) modal.classList.remove('open');
 }
@@ -125,21 +136,21 @@ function closeExerciseDetail() {
 
 // Umbral para considerar el volumen "igual" entre dos sesiones (evita que un
 // redondeo mínimo se lea como mejora o retroceso).
-const VOLUME_FLAT_THRESHOLD_PCT = 2;
+export const VOLUME_FLAT_THRESHOLD_PCT = 2;
 
-const PROGRESSION_GROUPINGS = {
+export const PROGRESSION_GROUPINGS = {
     all: 'Todos los ejercicios',
     last: 'Última sesión',
     routine: 'Por rutina',
     muscle: 'Por grupo muscular'
 };
 
-function routineLabelOf(key) {
+export function routineLabelOf(key) {
     if (!key) return 'Sin rutina';
     return customRoutineLabels[key] || ROUTINE_LABELS[key] || `Rutina ${key}`;
 }
 
-function progressionRowHtml(exName, history, timeframe) {
+export function progressionRowHtml(exName, history, timeframe) {
     const last = history[history.length - 1];
     const candidates = history.slice(0, history.length - 1);
     let baseline;
@@ -167,7 +178,7 @@ function progressionRowHtml(exName, history, timeframe) {
         </button>`;
 }
 
-function generateProgressionAnalysis() {
+export function generateProgressionAnalysis() {
     const box = document.getElementById('progressionData');
     if (!box) return;
     const workouts = repo.workouts.all();
@@ -206,7 +217,7 @@ function generateProgressionAnalysis() {
     }).join('');
 }
 
-function bindProgression() {
+export function bindProgression() {
     const box = document.getElementById('progressionData');
     box?.addEventListener('click', e => {
         const row = e.target.closest('.progression-row');

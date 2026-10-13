@@ -2,14 +2,22 @@
 // pregunta si guardar: resumen, cómo te sentiste y "Guardar sesión" o "Seguir entrenando".
 // Así no hace falta bajar hasta el final de Entrenar. Si quedó algún ejercicio sin hacer, no
 // pregunta: se guarda como siempre desde "Finalizar Sesión".
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { EXERCISE_TYPES } from '../../domain/catalog.js';
+import { setHasMetric } from '../../domain/sets.js';
+import { showToast } from '../../ui/toast.js';
+import { speakCue } from '../../audio/recordings.js';
+import { currentSessionStartTime } from './session-clock.js';
+import { saveWorkoutDraft } from './draft.js';
+import { selectedMood, setSelectedMood } from './routines-ui.js';
+import { isBlockComplete, readSetRow } from './exercise-block.js';
+import { saveWorkoutSession } from './workout.js';
 
-function isSessionComplete() {
+export function isSessionComplete() {
     const blocks = [...document.querySelectorAll('#exercisesContainer .exercise-row')];
     return blocks.length > 0 && blocks.every(isBlockComplete);
 }
 
-function finishPromptSummary() {
+export function finishPromptSummary() {
     const blocks = [...document.querySelectorAll('#exercisesContainer .exercise-row')];
     const sets = blocks.reduce((n, b) => n + b.querySelectorAll('.set-row.done').length, 0);
     const minutes = currentSessionStartTime ? Math.max(1, Math.round((Date.now() - currentSessionStartTime) / 60000)) : null;
@@ -18,7 +26,7 @@ function finishPromptSummary() {
     return parts.join(' · ');
 }
 
-function openFinishPrompt() {
+export function openFinishPrompt() {
     const modal = document.getElementById('finishPrompt');
     if (!modal) return;
     document.getElementById('finishPromptSummary').textContent = finishPromptSummary();
@@ -28,11 +36,11 @@ function openFinishPrompt() {
     modal.querySelector('[data-finish="save"]')?.focus();
 }
 
-function closeFinishPrompt() {
+export function closeFinishPrompt() {
     document.getElementById('finishPrompt')?.classList.remove('open');
 }
 
-function bindFinishPrompt() {
+export function bindFinishPrompt() {
     bindPendingSetsPrompt();
     const modal = document.getElementById('finishPrompt');
     if (!modal) return;
@@ -54,12 +62,12 @@ function bindFinishPrompt() {
 // Solo cuentan las series tildadas (✓). Si al terminar quedan series sin marcar, se pregunta:
 // marcarlas todas como hechas, guardar sin ellas (no cuentan como realizadas) o seguir.
 
-function pendingSetRows() {
+export function pendingSetRows() {
     return [...document.querySelectorAll('#exercisesContainer .exercise-row .set-row:not(.done)')];
 }
 
 /** Marca una serie como hecha sin descanso ni avisos: completa lo que se ve en gris. */
-function markSetRowDone(row) {
+export function markSetRowDone(row) {
     const block = row.closest('.exercise-row');
     const type = block?.dataset.type;
     (EXERCISE_TYPES[type] || EXERCISE_TYPES.kg).cols.forEach(f => {
@@ -74,7 +82,7 @@ function markSetRowDone(row) {
     return true;
 }
 
-function finishSession() {
+export function finishSession() {
     const pending = pendingSetRows();
     if (pending.length === 0) { saveWorkoutSession(); return; }
     const modal = document.getElementById('pendingSetsPrompt');
@@ -86,7 +94,7 @@ function finishSession() {
     modal.querySelector('[data-pending="mark"]')?.focus();
 }
 
-function bindPendingSetsPrompt() {
+export function bindPendingSetsPrompt() {
     const modal = document.getElementById('pendingSetsPrompt');
     if (!modal) return;
     modal.addEventListener('click', e => {

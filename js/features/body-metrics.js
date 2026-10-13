@@ -1,7 +1,13 @@
 // Medidas corporales y su gráfico.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { cssVar } from '../core/utils.js';
+import { tr } from '../core/i18n.js';
+import { displayToKg, kgToDisplay, weightUnitDef } from '../core/units.js';
+import { BodyMeasurement } from '../domain/models.js';
+import { db, repo } from '../data/repositories.js';
+import { showToast } from '../ui/toast.js';
+import { saveMeasurementPhoto } from './profile.js';
 
-function saveBodyMetrics() {
+export function saveBodyMetrics() {
     const body = BodyMeasurement.create({
         date: document.getElementById('bodyDate').value,
         // El peso se tipea en la unidad elegida (kg o lb) y se guarda en kg.
@@ -29,17 +35,17 @@ function saveBodyMetrics() {
     updateBodyChart();
 }
 
-let bodyChart;
+export let bodyChart;
 
 // Guarda/recupera la escala manual del eje Y del gráfico corporal, para que no
 // se pierda al recargar la página.
-function saveBodyChartScale() {
+export function saveBodyChartScale() {
     const min = document.getElementById('bodyChartYMin')?.value || '';
     const max = document.getElementById('bodyChartYMax')?.value || '';
     db.set('bodyChartScale', { min, max });
 }
 
-function loadBodyChartScale() {
+export function loadBodyChartScale() {
     const saved = db.get('bodyChartScale');
     const minEl = document.getElementById('bodyChartYMin');
     const maxEl = document.getElementById('bodyChartYMax');
@@ -47,7 +53,7 @@ function loadBodyChartScale() {
     if (maxEl && saved.max !== undefined) maxEl.value = saved.max;
 }
 
-function updateBodyChart() {
+export function updateBodyChart() {
     saveBodyChartScale();
 
     let metrics = repo.bodyMetrics.all();

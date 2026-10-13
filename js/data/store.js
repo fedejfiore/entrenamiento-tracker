@@ -14,8 +14,7 @@
 //   Durabilidad  localStorage persiste al cerrar; requestPersistence() le pide al navegador
 //                que no lo borre por falta de espacio, y las migraciones guardan una copia
 //                antes de tocar nada (js/data/migrations.js).
-
-class ValidationError extends Error {
+export class ValidationError extends Error {
     constructor(message, details) {
         super(message);
         this.name = 'ValidationError';
@@ -23,7 +22,7 @@ class ValidationError extends Error {
     }
 }
 
-class StorageError extends Error {
+export class StorageError extends Error {
     constructor(message, cause) {
         super(message);
         this.name = 'StorageError';
@@ -36,7 +35,7 @@ class StorageError extends Error {
  * Interfaz que debe cumplir cualquier adaptador:
  *   get(key) → string | null     set(key, string)     remove(key)     keys() → string[]
  */
-class LocalStorageAdapter {
+export class LocalStorageAdapter {
     get(key) { return window.localStorage.getItem(key); }
     set(key, value) { window.localStorage.setItem(key, value); }
     remove(key) { window.localStorage.removeItem(key); }
@@ -55,7 +54,7 @@ class LocalStorageAdapter {
 }
 
 /** Adaptador en memoria: para pruebas y como respaldo si el navegador bloquea localStorage. */
-class MemoryAdapter {
+export class MemoryAdapter {
     constructor(initial = {}) { this.map = new Map(Object.entries(initial)); }
     get(key) { return this.map.has(key) ? this.map.get(key) : null; }
     set(key, value) { this.map.set(key, String(value)); }
@@ -64,7 +63,7 @@ class MemoryAdapter {
 }
 
 /** Escrituras preparadas de una transacción (todavía no aplicadas). */
-class Transaction {
+export class Transaction {
     constructor(store) {
         this.store = store;
         this.staged = new Map(); // clave -> texto a guardar, o null para borrar
@@ -110,7 +109,7 @@ class Transaction {
     }
 }
 
-class Store {
+export class Store {
     /**
      * @param adapter  ver LocalStorageAdapter
      * @param schema   { [clave]: { type, format, default, validate?, ... } } — js/data/schema.js

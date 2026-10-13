@@ -1,9 +1,9 @@
 // Estilos de voz: cambian las frases de cada aviso y el tono / velocidad de la voz del
 // celular. Si hay una grabación o un audio subido para un aviso, suena ese (así se pueden
 // armar packs de voces reales: un entrenador, un actor "militar", etc.).
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { loadVoiceSettings } from './voice.js';
 
-const VOICE_STYLES = {
+export const VOICE_STYLES = {
     neutro: { label: 'Neutro', pitch: 1, rate: 1, texts: {} },
     tierno: {
         label: 'Tierno', pitch: 1.25, rate: 0.95,
@@ -51,12 +51,12 @@ const VOICE_STYLES = {
     }
 };
 
-function currentVoiceStyle() {
+export function currentVoiceStyle() {
     return VOICE_STYLES[loadVoiceSettings().style] || VOICE_STYLES.neutro;
 }
 
 /** Frase del estilo elegido para esos avisos, o la frase por defecto si el estilo no la tiene. */
-function styledCueText(ids, fallback) {
+export function styledCueText(ids, fallback) {
     const texts = currentVoiceStyle().texts;
     if (!ids || !ids.length || !ids.every(id => texts[id])) return fallback;
     return ids.map(id => texts[id]).join(' ');

@@ -7,8 +7,7 @@
     "test:e2e": "node tests/e2e/smoke.e2e.js",
     "build:web": "node scripts/build-web.js",
     "build:www": "node scripts/build-www.js",
-    "lint": "node scripts/lint.js",
-    "globals:update": "node scripts/globals.js --write"
+    "lint": "node scripts/lint.js"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.5.2",

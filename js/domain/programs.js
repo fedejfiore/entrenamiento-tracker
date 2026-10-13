@@ -1,5 +1,4 @@
 // Programas prearmados y progresión doble. Sin pantalla: se prueba en tests/programs.test.js.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
 //
 // Progresión doble: cada ejercicio tiene un rango de reps (ej. 8-12). Con el mismo peso se
 // suben reps sesión a sesión; cuando TODAS las series llegan al tope del rango, se sube el
@@ -8,9 +7,11 @@
 
 // Exercise spec: [nombre, series, repsMin, repsMax, descanso s, opciones]
 //   opciones: { inc: kg a sumar, type: 'bw' (peso corporal) }
-const programExercise = (name, sets, repsMin, repsMax, rest, opts = {}) => ({ name, sets, repsMin, repsMax, rest, inc: 2.5, ...opts });
+import { formatNumber, parseDecimal } from '../core/utils.js';
 
-const PROGRAMS = [
+export const programExercise = (name, sets, repsMin, repsMax, rest, opts = {}) => ({ name, sets, repsMin, repsMax, rest, inc: 2.5, ...opts });
+
+export const PROGRAMS = [
     {
         id: 'full3',
         name: 'Cuerpo completo 3 días',
@@ -182,17 +183,17 @@ const PROGRAMS = [
     }
 ];
 
-function findProgram(id) {
+export function findProgram(id) {
     return PROGRAMS.find(p => p.id === id) || null;
 }
 
 /** Módulo de un programa: 'pilates' si es de una disciplina de pilates, si no 'gym'. */
-function programModule(id) {
+export function programModule(id) {
     return findProgram(id)?.discipline ? 'pilates' : 'gym';
 }
 
 /** Clave de rutina para un día de un programa (no choca con las rutinas del usuario). */
-function programRoutineKey(programId, dayKey) {
+export function programRoutineKey(programId, dayKey) {
     return `PRG_${programId}_${dayKey}`.toUpperCase();
 }
 
@@ -207,7 +208,7 @@ function programRoutineKey(programId, dayKey) {
  *   'repeat' no se llegó al mínimo: repetir el peso apuntando al mínimo
  *   'level'  (peso corporal) todas al tope: pasar a una variante más difícil o sumar lastre
  */
-function suggestDoubleProgression(lastSets, target) {
+export function suggestDoubleProgression(lastSets, target) {
     const { sets, repsMin, repsMax } = target;
     const inc = target.inc > 0 ? target.inc : 2.5;
     const unit = target.unit || 'kg'; // unidad de los pesos que se reciben y se devuelven

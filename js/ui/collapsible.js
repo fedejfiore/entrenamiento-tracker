@@ -1,9 +1,10 @@
 // Secciones plegables (acordeón): el título pasa a ser un botón que abre o cierra la
 // sección, con una línea que resume qué hay adentro (data-hint). Se usa en Ajustes para
 // que la pantalla no sea una lista larga: se abre solo lo que se necesita.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { escapeHtml } from '../core/utils.js';
+import { db } from '../data/repositories.js';
 
-function initCollapsibleSections(root) {
+export function initCollapsibleSections(root) {
     if (!root) return;
     root.querySelectorAll(':scope > .section:not([data-collapsible="no"])').forEach((section, i) => {
         if (section.classList.contains('collapsible')) return;
@@ -33,16 +34,16 @@ function initCollapsibleSections(root) {
 
 // Qué secciones estaban abiertas: se recuerda durante la sesión, así al recargar la página
 // vuelve igual (y a la misma altura).
-function openSectionsBeforeReload() {
+export function openSectionsBeforeReload() {
     try { return JSON.parse(db.get('openSections') || '[]'); } catch (e) { return []; }
 }
 
-function rememberOpenSections() {
+export function rememberOpenSections() {
     const ids = [...document.querySelectorAll('.section.collapsible.open')].map(s => s.dataset.collapsibleId).filter(Boolean);
     try { db.set('openSections', JSON.stringify(ids)); } catch (e) {}
 }
 
-function setSectionOpen(section, open, scroll = true) {
+export function setSectionOpen(section, open, scroll = true) {
     const body = section.querySelector(':scope > .section-body');
     const btn = section.querySelector('.section-toggle');
     if (!body || !btn) return;

@@ -1,7 +1,6 @@
 // Mensajes flotantes (reemplazan a los alert() informativos).
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
-
-function showToast(message, type = 'success', duration = 3200) {
+import { appErrors } from '../core/errors.js';
+export function showToast(message, type = 'success', duration = 3200) {
     const container = document.getElementById('toastContainer');
     if (!container) { alert(message); return; }
 
@@ -19,7 +18,7 @@ function showToast(message, type = 'success', duration = 3200) {
 
 
 /** Aviso con un botón de acción (ej. "Compartir"); el botón funciona una sola vez. */
-function showActionToast(message, type, duration, label, onClick) {
+export function showActionToast(message, type, duration, label, onClick) {
     const toast = showToast(message, type, duration);
     if (!toast || !toast.classList) return toast;
     toast.classList.add('has-action');
@@ -41,6 +40,9 @@ function showActionToast(message, type, duration, label, onClick) {
  * Aviso con "Deshacer": la acción ya se hizo (sin pedir confirmación antes) y se puede
  * revertir unos segundos. Más rápido entre series que un diálogo de "¿Seguro?".
  */
-function showUndoToast(message, onUndo, duration = 6000) {
+export function showUndoToast(message, onUndo, duration = 6000) {
     return showActionToast(message, 'undo', duration, 'Deshacer', onUndo);
 }
+
+// Los errores no previstos se avisan con un toast (una vez cada tanto: ver ErrorReporter).
+appErrors.setNotify(message => showToast(message, 'error', 5000));

@@ -5,9 +5,8 @@
 //    guarda los últimos errores para el reporte de fallas (Ajustes → Ayuda).
 // Los errores esperables (validación, guardado) se siguen manejando donde ocurren, con su
 // mensaje propio; esto es la red de seguridad para lo inesperado.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
 
-class ErrorReporter {
+export class ErrorReporter {
     /**
      * @param {object} opts
      * @param {(message: string) => void} [opts.notify] cómo avisar a la persona
@@ -82,6 +81,12 @@ class ErrorReporter {
         return this;
     }
 
+    /** Cómo avisar en pantalla (lo conecta la interfaz al cargarse). */
+    setNotify(notify) {
+        this.notify = notify;
+        return this;
+    }
+
     static messageOf(error) {
         if (!error) return 'Error desconocido';
         if (typeof error === 'string') return error.slice(0, 300);
@@ -89,7 +94,6 @@ class ErrorReporter {
     }
 }
 
-const appErrors = new ErrorReporter({
-    notify: message => { if (typeof showToast === 'function') showToast(message, 'error', 5000); }
-});
+// El aviso en pantalla lo conecta la capa de interfaz (js/ui/toast.js) con setNotify.
+export const appErrors = new ErrorReporter();
 if (typeof window !== 'undefined') appErrors.install(window);

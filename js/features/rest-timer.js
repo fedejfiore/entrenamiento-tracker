@@ -1,9 +1,12 @@
 // Timer de descanso entre series (widget flotante, ±15 s, avisos).
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { playRestTimerBeep, playTick } from '../audio/sound.js';
+import { REST_WARN_SECONDS } from '../audio/voice.js';
+import { speakCue } from '../audio/recordings.js';
+import { cancelTabata, stopTabata, tabataInterval, tabataState } from './tabata.js';
 
-let restTimerInterval = null;
+export let restTimerInterval = null;
 
-function runRestTimer(totalSeconds) {
+export function runRestTimer(totalSeconds) {
     if (tabataInterval) stopTabata();
     if (restTimerInterval) clearInterval(restTimerInterval);
 
@@ -28,15 +31,15 @@ function runRestTimer(totalSeconds) {
     restTimerInterval = setInterval(tickRestTimer, 250);
 }
 
-let restTimerEndsAt = null;
+export let restTimerEndsAt = null;
 
-let restTimerWarned = false;
+export let restTimerWarned = false;
 
-function restTimerRemainingSeconds() {
+export function restTimerRemainingSeconds() {
     return restTimerEndsAt == null ? 0 : Math.max(0, Math.ceil((restTimerEndsAt - Date.now()) / 1000));
 }
 
-function tickRestTimer() {
+export function tickRestTimer() {
     const valueEl = document.getElementById('restTimerValue');
     const remaining = restTimerRemainingSeconds();
     if (valueEl) {
@@ -64,7 +67,7 @@ function tickRestTimer() {
 }
 
 // ±15 s al descanso en curso. Bajar de cero lo termina (suena el aviso).
-function adjustRestTimer(deltaSeconds) {
+export function adjustRestTimer(deltaSeconds) {
     if (!restTimerInterval || restTimerEndsAt == null) return;
     restTimerEndsAt += deltaSeconds * 1000;
     if (restTimerEndsAt < Date.now()) restTimerEndsAt = Date.now();
@@ -73,7 +76,7 @@ function adjustRestTimer(deltaSeconds) {
     tickRestTimer();
 }
 
-function hideTimerWidget() {
+export function hideTimerWidget() {
     const widget = document.getElementById('restTimer');
     if (widget) {
         widget.style.display = 'none';
@@ -84,7 +87,7 @@ function hideTimerWidget() {
 
 // Corta cualquier timer activo (descanso de serie o Tabata) sin guardar nada.
 // Es la red de seguridad que se llama, por ejemplo, al guardar la sesión.
-function cancelRestTimer() {
+export function cancelRestTimer() {
     if (restTimerInterval) {
         clearInterval(restTimerInterval);
         restTimerInterval = null;
@@ -97,7 +100,7 @@ function cancelRestTimer() {
 // Lo que se ejecuta al tocar el widget flotante: si hay un Tabata en curso, lo
 // corta y guarda el progreso parcial. En un descanso de serie no hace nada: ahí
 // están los botones ±15s y Saltar (así un toque sin querer no lo cancela).
-function onTimerWidgetClick() {
+export function onTimerWidgetClick() {
     if (tabataState) {
         cancelTabata();
     } else if (!restTimerInterval) {

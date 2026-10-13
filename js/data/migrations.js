@@ -4,8 +4,11 @@
 //
 // Para agregar una: subir SCHEMA_VERSION en schema.js y sumar { to, description, run }.
 // run(tx) recibe la transacción: leer con tx.get(clave), escribir con tx.set(clave, valor).
+import { generateId } from '../core/utils.js';
+import { SCHEMA_VERSION } from './schema.js';
+import { WorkoutSession } from '../domain/models.js';
 
-const MIGRATIONS = [
+export const MIGRATIONS = [
     {
         to: 2,
         description: 'Cada sesión recibe un id único universal (uid) y su fecha de modificación (updatedAt), necesarios para sincronizar con una base de datos real.',
@@ -45,7 +48,7 @@ const MIGRATIONS = [
  * Lleva los datos guardados a SCHEMA_VERSION. Devuelve { from, to, ran[] } o { error }.
  * Si algo falla, los datos quedan exactamente como estaban y la app sigue funcionando.
  */
-function runMigrations(store) {
+export function runMigrations(store) {
     const from = parseInt(store.get('schemaVersion') || '1', 10) || 1;
     const pending = MIGRATIONS.filter(m => m.to > from && m.to <= SCHEMA_VERSION).sort((a, b) => a.to - b.to);
     if (pending.length === 0) return { from, to: from, ran: [] };

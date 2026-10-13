@@ -60,9 +60,9 @@ const SCREENS = ['inicio', 'entrenar', 'historial', 'progreso', 'medidas', 'bibl
 
 async function visitAll(page) {
     for (const s of SCREENS) {
-        await page.evaluate(id => showScreen(id, true), s);
+        await page.evaluate(id => gym.showScreen(id, true), s);
         // Abre todas las secciones plegables de la pantalla (lo de adentro también se dibuja).
-        await page.evaluate(id => document.querySelectorAll(`[data-screen="${id}"] .section.collapsible`).forEach(sec => setSectionOpen(sec, true, false)), s);
+        await page.evaluate(id => document.querySelectorAll(`[data-screen="${id}"] .section.collapsible`).forEach(sec => gym.setSectionOpen(sec, true, false)), s);
         await page.waitForTimeout(80);
     }
 }
@@ -85,7 +85,7 @@ server.listen(0, '127.0.0.1', async () => {
             await page.click('[data-today="start"]').catch(() => {});
             const res = await page.evaluate(async () => {
                 const wait = ms => new Promise(r => setTimeout(r, ms));
-                showScreen('entrenar', true);
+                gym.showScreen('entrenar', true);
                 const sel = document.getElementById('routine');
                 sel.value = 'T'; sel.dispatchEvent(new Event('change'));
                 await wait(100);
@@ -93,14 +93,14 @@ server.listen(0, '127.0.0.1', async () => {
                     row.querySelector('[data-f=reps]').value = '10';
                     row.querySelector('[data-f=kg]').value = '40';
                     row.querySelector('.set-check').click();
-                    cancelRestTimer();
+                    gym.cancelRestTimer();
                     await wait(20);
                 }
                 await wait(600);
                 const asked = document.getElementById('finishPrompt').classList.contains('open');
                 document.querySelector('#finishPrompt [data-finish="save"]').click();
                 await wait(300);
-                return { asked, saved: repo.workouts.all().length };
+                return { asked, saved: gym.repo.workouts.all().length };
             });
             check('al tildar la última serie pregunta si guardar', res.asked);
             check('la sesión se guarda', res.saved === 1, `sesiones: ${res.saved}`);
@@ -111,13 +111,13 @@ server.listen(0, '127.0.0.1', async () => {
         {
             const { page, errors } = await newPage(browser, evilSeed);
             await visitAll(page);
-            await page.evaluate(() => { openHelp(); openFeedback(); });
+            await page.evaluate(() => { gym.openHelp(); gym.openFeedback(); });
             // Abrir todo lo que muestra los datos en detalle: historial y día del calendario.
             await page.evaluate(() => {
-                showScreen('historial');
+                gym.showScreen('historial');
                 document.querySelectorAll('[data-screen="historial"] [data-uid]').forEach(x => x.click());
                 document.querySelectorAll('details').forEach(d => { d.open = true; });
-                showScreen('inicio');
+                gym.showScreen('inicio');
                 document.querySelector('[data-cal-date].trained')?.click();
             });
             const res = await page.evaluate(() => ({ pwn: window.__pwn === 1, imgs: document.querySelectorAll('img[src="x"]').length, scripts: [...document.querySelectorAll('script')].filter(s => !s.src).length }));
@@ -133,12 +133,12 @@ server.listen(0, '127.0.0.1', async () => {
                 const csv = ['"title","start_time","end_time","description","exercise_title","superset_id","exercise_notes","set_index","set_type","weight_kg","reps","distance_km","duration_seconds","rpe"',
                     '"Push","30 Sep 2024, 18:00","30 Sep 2024, 19:00","","Bench Press (Barbell)",,"",0,"normal",80,8,,,',
                     '"Legs","2 Oct 2024, 18:00","2 Oct 2024, 19:00","","Squat (Barbell)",,"",0,"normal",100,5,,,'].join(String.fromCharCode(10));
-                showScreen('ajustes', true);
-                await onImportHistoryFile(new File([csv], 'hevy.csv'));
+                gym.showScreen('ajustes', true);
+                await gym.onImportHistoryFile(new File([csv], 'hevy.csv'));
                 document.querySelector('[data-import="confirm"]').click();
                 await new Promise(r => setTimeout(r, 200));
-                const imported = repo.workouts.all().length;
-                openFeedback();
+                const imported = gym.repo.workouts.all().length;
+                gym.openFeedback();
                 document.querySelector('#feedbackModal [data-feedback="send"]').click();
                 await new Promise(r => setTimeout(r, 100));
                 const fbErrors = [...document.querySelectorAll('#feedbackModal [data-error-for]')].filter(e => !e.hidden).length;
@@ -184,7 +184,7 @@ server.listen(0, '127.0.0.1', async () => {
         // 7. Textos legales: el link de Ajustes abre la versión del idioma de la app
         for (const [language, expected] of [['es', 'privacidad.html'], ['en', 'privacy.html']]) {
             const { page, errors } = await newPage(browser, { language });
-            await page.evaluate(() => showScreen('ajustes'));
+            await page.evaluate(() => gym.showScreen('ajustes'));
             await Promise.all([page.waitForURL(`**/legal/${expected}`), page.click('.legal-links [data-fn-args=\'["privacy"]\']')]);
             const h1 = await page.textContent('h1');
             const css = await page.evaluate(() => getComputedStyle(document.querySelector('.summary')).borderLeftStyle);

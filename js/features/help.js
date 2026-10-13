@@ -1,7 +1,10 @@
 // Tutorial de la app: se abre desde Ajustes → Ayuda. Secciones desplegables con buscador.
 // Mantener este contenido al día cuando cambie cómo funciona algo (ver docs/ARQUITECTURA.md).
+import { escapeHtml, normalizeForCompare } from '../core/utils.js';
+import { appLanguage } from '../core/i18n.js';
+import { anyFeatureOn } from './feature-settings.js';
 
-const HELP_SECTIONS = [
+export const HELP_SECTIONS = [
     {
         id: 'ventajas', icon: '✨', title: 'Lo que tiene esta app',
         html: `
@@ -344,7 +347,7 @@ const HELP_SECTIONS = [
     }
 ];
 
-const HELP_FAQ = [
+export const HELP_FAQ = [
     ['¿Cómo le paso una rutina a un alumno (o a un amigo)?', 'En Biblioteca → Rutinas, tocá 🔗 en la rutina y mandá el link por WhatsApp. Quien lo abre la agrega a su Biblioteca con un toque, con los objetivos de cada ejercicio. No hace falta cuenta.'],
     ['Olvidé la contraseña de un backup protegido.', 'No se puede recuperar: la contraseña no se guarda en ningún lado (así nadie más puede abrirlo). Si todavía tenés los datos en el celular, descargá un backup nuevo.'],
     ['¿Puedo traer mi historial de Hevy, Strong o Fitbod?', 'Sí. En la otra app buscá "Exportar datos" y guardá el CSV. Después, en Ajustes → 📥 Traer historial de otra app, elegí el archivo: te muestra cuántas sesiones, series y fechas trae antes de guardar. Si lo importás dos veces, no se duplica. Los ejercicios quedan con su nombre original; el grupo muscular se reconoce solo en la mayoría (también en inglés). Para llevar tu historial a una planilla, usá Ajustes → Datos → 📄 Exportar historial (CSV).'],
@@ -371,19 +374,19 @@ const HELP_FAQ = [
 
 // La ayuda no abruma: primero lo básico y después solo lo que la persona activó (Ajustes →
 // Funciones). "Ver toda la ayuda" muestra también lo de las funciones apagadas.
-const HELP_SECTION_FEATURES = {
+export const HELP_SECTION_FEATURES = {
     superseries: 'supersets', unilaterales: 'unilateral', discos: 'plates', programas: 'programs',
     contador: 'repCounter', voz: 'voice', tabata: 'tabata', musica: 'music', medidas: 'body',
     progreso: 'progression muscleMap'
 };
 // Orden de "Lo básico": lo que necesita alguien que recién empieza.
-const HELP_BASICS_ORDER = ['inicio-rapido', 'entrenar', 'series', 'descanso', 'rutinas', 'plan', 'historial', 'datos', 'ajuste-rapido', 'tipos', 'tiempo', 'organizar', 'inicio', 'biblioteca', 'perfil', 'privacidad', 'ventajas', 'creditos'];
+export const HELP_BASICS_ORDER = ['inicio-rapido', 'entrenar', 'series', 'descanso', 'rutinas', 'plan', 'historial', 'datos', 'ajuste-rapido', 'tipos', 'tiempo', 'organizar', 'inicio', 'biblioteca', 'perfil', 'privacidad', 'ventajas', 'creditos'];
 /**
  * Pantalla de ayuda: arma el contenido (lo básico + lo activado), lo abre y cierra (el botón
  * "atrás" del celular la cierra), y filtra con el buscador. Recibe lo que necesita por
  * constructor: los textos y cómo saber si una función está activa.
  */
-class HelpView {
+export class HelpView {
     /**
      * @param {object} deps
      *   sections, faq        contenido (HELP_SECTIONS, HELP_FAQ)
@@ -501,7 +504,7 @@ class HelpView {
     }
 }
 
-const helpView = new HelpView({
+export const helpView = new HelpView({
     sections: HELP_SECTIONS,
     faq: HELP_FAQ,
     sectionFeatures: HELP_SECTION_FEATURES,
@@ -510,13 +513,13 @@ const helpView = new HelpView({
 });
 
 // Lo que usan los botones (data-fn-click) y otras pantallas.
-function renderHelpContent() { helpView.render(); }
-function openHelp(sectionId) { helpView.open(sectionId); }
-function closeHelp(fromHistory) { helpView.close(fromHistory); }
-function bindHelp() { helpView.bind(); }
+export function renderHelpContent() { helpView.render(); }
+export function openHelp(sectionId) { helpView.open(sectionId); }
+export function closeHelp(fromHistory) { helpView.close(fromHistory); }
+export function bindHelp() { helpView.bind(); }
 
 // Textos legales (carpeta legal/): en castellano o en inglés según el idioma de la app.
-function openLegal(kind) {
+export function openLegal(kind) {
     const es = appLanguage === 'es';
     const file = kind === 'terms' ? (es ? 'terminos' : 'terms') : (es ? 'privacidad' : 'privacy');
     location.href = `legal/${file}.html`;

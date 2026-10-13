@@ -5,22 +5,31 @@
 // módulo con el selector de la barra superior. El historial, el progreso y el plan semanal
 // son uno solo (se entrena una sola persona).
 // Más adelante, con cuentas, los módulos habilitados también dependerán del plan contratado.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { EXERCISE_TYPES } from '../domain/catalog.js';
+import { db } from '../data/repositories.js';
+import { ExercisePreferences } from '../data/exercise-prefs.js';
+import { showToast } from '../ui/toast.js';
+import { populateRoutineOptions } from './training/routines-ui.js';
+import { renderTodayCard } from './plan-screen.js';
+import { saveAppSettings } from './general-settings.js';
+import { renderReformerSettings } from './reformer.js';
+import { renderPilatesCatalog } from './pilates-library.js';
+import { renderLibrary } from './library.js';
 
-const DISCIPLINES = [
+export const DISCIPLINES = [
     ['gym', '🏋️', 'Gimnasio'],
     ['mat', '🧘', 'Pilates mat'],
     ['reformer', '🛏️', 'Pilates reformer']
 ];
-const MODULES = { gym: { icon: '🏋️', label: 'Gym' }, pilates: { icon: '🧘', label: 'Pilates' } };
+export const MODULES = { gym: { icon: '🏋️', label: 'Gym' }, pilates: { icon: '🧘', label: 'Pilates' } };
 
-function loadDisciplines() {
+export function loadDisciplines() {
     const saved = (db.get('appSettings') || {}).disciplines;
     const list = Array.isArray(saved) ? saved.filter(d => DISCIPLINES.some(([k]) => k === d)) : [];
     return list.length ? list : ['gym'];
 }
 
-function saveDisciplines(list) {
+export function saveDisciplines(list) {
     const clean = DISCIPLINES.map(([k]) => k).filter(k => list.includes(k));
     if (!clean.length) return false;
     saveAppSettings({ disciplines: clean });
@@ -28,23 +37,23 @@ function saveDisciplines(list) {
     return true;
 }
 
-function hasDiscipline(d) { return loadDisciplines().includes(d); }
-function hasPilates() { return hasDiscipline('mat') || hasDiscipline('reformer'); }
+export function hasDiscipline(d) { return loadDisciplines().includes(d); }
+export function hasPilates() { return hasDiscipline('mat') || hasDiscipline('reformer'); }
 
-function availableModules() {
+export function availableModules() {
     const list = [];
     if (hasDiscipline('gym')) list.push('gym');
     if (hasPilates()) list.push('pilates');
     return list;
 }
 
-function activeModule() {
+export function activeModule() {
     const mods = availableModules();
     const saved = (db.get('appSettings') || {}).module;
     return mods.includes(saved) ? saved : mods[0];
 }
 
-function setActiveModule(module) {
+export function setActiveModule(module) {
     if (!availableModules().includes(module) || module === activeModule()) return;
     saveAppSettings({ module });
     applyModule();
@@ -53,35 +62,35 @@ function setActiveModule(module) {
 // ---- Rutinas de cada módulo ----
 // Las rutinas existentes y las básicas son de gimnasio. Las que se crean (o vienen de un
 // programa) quedan en el módulo donde se crearon.
-function loadRoutineDisciplines() {
+export function loadRoutineDisciplines() {
     return db.get('routineDisciplines') || {};
 }
 
-function routineModule(key) {
+export function routineModule(key) {
     return loadRoutineDisciplines()[key] === 'pilates' ? 'pilates' : 'gym';
 }
 
-function tagRoutineModule(key, module = activeModule()) {
+export function tagRoutineModule(key, module = activeModule()) {
     const map = loadRoutineDisciplines();
     if (module === 'pilates') map[key] = 'pilates'; else delete map[key];
     try { db.set('routineDisciplines', map); } catch (e) { /* no crítico */ }
 }
 
 /** ¿La rutina se ve en el módulo activo? Con un solo módulo se ven todas. */
-function routineInActiveModule(key) {
+export function routineInActiveModule(key) {
     if (availableModules().length < 2) return true;
     return routineModule(key) === activeModule();
 }
 
 /** Si una rutina es de otro módulo (ej. la del plan de hoy), se pasa a ese módulo. */
-function ensureModuleForRoutine(key) {
+export function ensureModuleForRoutine(key) {
     const m = routineModule(key);
     if (key && m !== activeModule() && availableModules().includes(m)) setActiveModule(m);
 }
 
 // ---- Tipos de medición del módulo ----
 /** Tipos que se ofrecen al elegir cómo se mide un ejercicio (siempre incluye el actual). */
-function typesForModule(current) {
+export function typesForModule(current) {
     const pilates = hasPilates();
     return Object.keys(EXERCISE_TYPES).filter(t => {
         if (t === current) return true;
@@ -95,7 +104,7 @@ function typesForModule(current) {
 // ---- Pantalla ----
 // Arriba de todo: en la barra superior (computadora) o arriba del contenido (celular, donde
 // la barra superior no está). Solo si se entrena más de un módulo.
-function renderModuleSwitch() {
+export function renderModuleSwitch() {
     const mods = availableModules();
     const current = activeModule();
     document.querySelectorAll('.module-switch').forEach(box => {
@@ -104,7 +113,7 @@ function renderModuleSwitch() {
     });
 }
 
-function applyModule() {
+export function applyModule() {
     document.documentElement.dataset.module = activeModule();
     renderModuleSwitch();
     renderDisciplineSettings();
@@ -116,21 +125,21 @@ function applyModule() {
 }
 
 /** Ajustes → General: qué entrenás (una o varias). */
-function renderDisciplineSettings() {
+export function renderDisciplineSettings() {
     const box = document.getElementById('disciplineSettings');
     if (!box) return;
     const on = loadDisciplines();
     box.innerHTML = DISCIPLINES.map(([k, icon, label]) => `<button type="button" class="discipline-chip${on.includes(k) ? ' on' : ''}" data-discipline="${k}" aria-pressed="${on.includes(k)}">${icon} ${label}</button>`).join('');
 }
 
-function toggleDiscipline(key) {
+export function toggleDiscipline(key) {
     const on = loadDisciplines();
     const next = on.includes(key) ? on.filter(k => k !== key) : [...on, key];
     if (!next.length) { showToast('Elegí al menos una disciplina', 'error'); return; }
     saveDisciplines(next);
 }
 
-function initDisciplines() {
+export function initDisciplines() {
     document.querySelectorAll('.module-switch').forEach(box => box.addEventListener('click', e => {
         const b = e.target.closest('[data-module]');
         if (b) setActiveModule(b.dataset.module);
@@ -143,3 +152,6 @@ function initDisciplines() {
     renderModuleSwitch();
     renderDisciplineSettings();
 }
+
+// Sugerir el tipo de un ejercicio: un nombre ambiguo ("Natación") es pilates solo en una rutina de pilates.
+ExercisePreferences.isPilatesRoutine = routine => (routine ? routineModule(routine) === 'pilates' : activeModule() === 'pilates');

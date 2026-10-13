@@ -3,18 +3,19 @@
 // hace sin buscar. Los demás quedan plegados en una línea ("4 series por hacer"). Al
 // terminar el grupo se abre solo el siguiente. Lo que la persona abre a mano se respeta.
 // Se apaga en Ajustes → Funciones ("Un ejercicio a la vez").
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { setBlockCollapsed } from './exercise-block.js';
+import { features } from '../feature-settings.js';
 
-function exerciseBlocks() {
+export function exerciseBlocks() {
     return [...document.querySelectorAll('#exercisesContainer .exercise-row')];
 }
 
-function blockHasPending(block) {
+export function blockHasPending(block) {
     return !!block.querySelector('.set-row:not(.done)');
 }
 
 /** El grupo que toca: el primer ejercicio con series pendientes y su superserie. */
-function currentFocusGroup(blocks) {
+export function currentFocusGroup(blocks) {
     const first = blocks.find(blockHasPending);
     if (!first) return [];
     const letter = first.dataset.superset;
@@ -25,7 +26,7 @@ function currentFocusGroup(blocks) {
  * Abre el grupo que toca y pliega el resto (los terminados ya se pliegan solos).
  * @param {{ scroll?: boolean }} opts  scroll: lleva la pantalla al grupo (al pasar de uno a otro)
  */
-function focusCurrentExercise(opts = {}) {
+export function focusCurrentExercise(opts = {}) {
     if (typeof features !== 'undefined' && !features.isOn('focus')) return;
     const blocks = exerciseBlocks();
     const group = currentFocusGroup(blocks);
@@ -41,7 +42,7 @@ function focusCurrentExercise(opts = {}) {
 }
 
 /** Al abrir o cerrar un ejercicio a mano, el modo enfocado no lo vuelve a tocar. */
-function rememberManualCollapse(block, collapsed) {
+export function rememberManualCollapse(block, collapsed) {
     if (collapsed) delete block.dataset.userOpen;
     else block.dataset.userOpen = '1';
 }

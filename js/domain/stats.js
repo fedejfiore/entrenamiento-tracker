@@ -1,9 +1,21 @@
 // Estadísticas: últimas series, máximos, volumen, 1RM, récords y resúmenes.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { getMonday, normalizeForCompare, parseDecimal } from '../core/utils.js';
+import { computeSpeed, formatDurationHuman, formatSecondsClock, parseTimeSeconds } from '../core/time.js';
+import { formatDistance, formatSpeed, formatWeight, formatWeightTotal } from '../core/units.js';
+import { DEFAULT_MATCH_MINUTES, ROUTINE_LABELS, isCardioType } from './catalog.js';
+import { detectPilatesPRs, isPilatesType, updatePilatesStats } from './pilates.js';
+import { parsePauseList, parseRepsList, parseWeightList, setsFromLegacy } from './legacy-format.js';
+import { repo } from '../data/repositories.js';
+import { getExerciseType } from '../data/exercise-prefs.js';
+import { customRoutineLabels } from '../data/routines-store.js';
 
-let exerciseStats = {};
+export let exerciseStats = {};
 
-function calculateStats() {
+// Cómo leer "Mi reformer" (lo inyecta la pantalla del reformer: el dominio no conoce la interfaz).
+let reformerSettings = () => undefined;
+export function useReformerSettings(read) { reformerSettings = read; }
+
+export function calculateStats() {
     exerciseStats = {};
     let workouts = repo.workouts.all();
     if (!Array.isArray(workouts)) workouts = [];
@@ -45,7 +57,7 @@ function calculateStats() {
                 if (c.bestSpeed && (!st.bestSpeed || c.bestSpeed > st.bestSpeed)) st.bestSpeed = c.bestSpeed;
             }
             if (typeof isPilatesType === 'function' && isPilatesType(exType)) {
-                updatePilatesStats(exerciseStats[ex.name], lastSets, exType, ex.name, typeof loadReformer === 'function' ? loadReformer() : undefined);
+                updatePilatesStats(exerciseStats[ex.name], lastSets, exType, ex.name, reformerSettings());
             }
 
             const weightStr = ex.weight || '';
@@ -73,7 +85,7 @@ function calculateStats() {
     });
 }
 
-function calculateExerciseVolume(ex) {
+export function calculateExerciseVolume(ex) {
     const weights = parseWeightList(ex.weight, ex.reps);
     const reps = parseRepsList(ex.reps);
     const len = Math.min(weights.length, reps.length);
@@ -84,19 +96,19 @@ function calculateExerciseVolume(ex) {
     return volume;
 }
 
-function calculateSessionVolume(exercises) {
+export function calculateSessionVolume(exercises) {
     if (!Array.isArray(exercises)) return 0;
     return exercises.reduce((sum, ex) => sum + calculateExerciseVolume(ex), 0);
 }
 
 // Suma de reps de todas las series (a diferencia de maxReps, que solo mira la serie más alta)
-function calculateExerciseTotalReps(ex) {
+export function calculateExerciseTotalReps(ex) {
     const reps = parseRepsList(ex.reps);
     return reps.reduce((sum, r) => sum + r, 0);
 }
 
 // Fórmula de Epley: 1RM = peso × (1 + reps/30)
-function estimate1RMForExercise(ex) {
+export function estimate1RMForExercise(ex) {
     const weights = parseWeightList(ex.weight, ex.reps);
     const reps = parseRepsList(ex.reps);
     const len = Math.min(weights.length, reps.length);
@@ -109,7 +121,7 @@ function estimate1RMForExercise(ex) {
 }
 
 // Promedio del descanso entre series (string tipo "90-90-120" -> segundos promedio).
-function averagePauseSeconds(pauseStr) {
+export function averagePauseSeconds(pauseStr) {
     const parts = parsePauseList(pauseStr);
     if (parts.length === 0) return null;
     return parts.reduce((a, b) => a + b, 0) / parts.length;
@@ -123,7 +135,7 @@ function averagePauseSeconds(pauseStr) {
 // Devuelve { prs, notes }: `prs` son logros claros; `notes` son señales mixtas (ej.
 // bajó el descanso pero también bajó el peso o las reps) que no son un logro pero
 // tampoco conviene que pasen desapercibidas.
-function detectPRs(exercises, previousStats) {
+export function detectPRs(exercises, previousStats) {
     const prs = [];
     const notes = [];
 
@@ -137,7 +149,7 @@ function detectPRs(exercises, previousStats) {
         }
         // Pilates: resortes según el sentido de dificultad del ejercicio, reps y dominio.
         if (typeof isPilatesType === 'function' && isPilatesType(ex.type)) {
-            prs.push(...detectPilatesPRs(ex, prev, typeof loadReformer === 'function' ? loadReformer() : undefined));
+            prs.push(...detectPilatesPRs(ex, prev, reformerSettings()));
             return;
         }
 
@@ -204,7 +216,7 @@ function detectPRs(exercises, previousStats) {
 // llevaba la semana pasada EN EL MISMO PUNTO (mismo día de la semana), no contra
 // la semana pasada completa — si no, mitad de semana siempre "pierde" contra una
 // semana entera ya cerrada, aunque hayas mejorado sesión a sesión.
-function getWeeklyVolumeStats(workouts) {
+export function getWeeklyVolumeStats(workouts) {
     const monday = getMonday(new Date());
     const prevMonday = new Date(monday.getTime() - 7 * 86400000);
     const nextMonday = new Date(monday.getTime() + 7 * 86400000);
@@ -230,7 +242,7 @@ function getWeeklyVolumeStats(workouts) {
 
 // Por sesión: distancia total, tiempo total, serie más larga y mejor velocidad
 // (de la mejor serie con km y tiempo). Las series de calentamiento no cuentan.
-function cardioMetrics(sets) {
+export function cardioMetrics(sets) {
     let totalKm = 0, totalSec = 0, maxSetSec = 0, bestSpeed = null;
     (sets || []).filter(s => s && !s.warmup).forEach(s => {
         const km = parseDecimal(s.km);
@@ -246,7 +258,7 @@ function cardioMetrics(sets) {
     return { totalKm: Math.round(totalKm * 100) / 100, totalSec, maxSetSec, bestSpeed };
 }
 
-function detectCardioPRs(ex, prev) {
+export function detectCardioPRs(ex, prev) {
     const prs = [];
     const c = cardioMetrics(ex.sets);
     if (ex.type === 'km') {
@@ -266,7 +278,7 @@ function detectCardioPRs(ex, prev) {
 }
 
 // Lo que se sugiere en gris: la última sesión o, si nunca se hizo, un valor típico.
-function getPrevSets(name, type) {
+export function getPrevSets(name, type) {
     const last = (exerciseStats[name] || {}).lastSets || [];
     if (last.length > 0) return last;
     if (type === 'min' && /futbol|partido/.test(normalizeForCompare(name || ''))) {
@@ -276,7 +288,7 @@ function getPrevSets(name, type) {
 }
 
 // Historial de peso promedio + 1RM estimado de un ejercicio, sesión a sesión.
-function getExerciseHistoryData(exName) {
+export function getExerciseHistoryData(exName) {
     let workouts = repo.workouts.all();
     if (!Array.isArray(workouts)) workouts = [];
 
@@ -305,7 +317,7 @@ function getExerciseHistoryData(exName) {
 // Entre las sesiones anteriores a la última, busca la más cercana a una fecha de
 // referencia (ej. "hace 3 meses"). No exige una coincidencia exacta: con pocos datos,
 // agarra la disponible más próxima y se lo dejamos explícito al usuario mostrando su fecha.
-function findClosestSession(candidates, refDate) {
+export function findClosestSession(candidates, refDate) {
     return candidates.reduce((best, c) => {
         const cDiff = Math.abs(new Date(c.date + 'T00:00:00') - refDate);
         const bestDiff = Math.abs(new Date(best.date + 'T00:00:00') - refDate);
@@ -315,7 +327,7 @@ function findClosestSession(candidates, refDate) {
 
 // Promedio de peso y reps (de todas las series cargadas) en las últimas sesiones de fuerza,
 // para ver de un vistazo si las últimas rutinas vienen subiendo o bajando en conjunto.
-function getRecentRoutineSummaries(workouts, count = 5) {
+export function getRecentRoutineSummaries(workouts, count = 5) {
     const strengthWorkouts = workouts.filter(w => w && w.date && Array.isArray(w.exercises) && w.exercises.length > 0);
     // Por fecha, no por orden de carga — si cargás una sesión de otro día después
     // (backfill, o editaste la fecha), tiene que ubicarse donde corresponde, no
@@ -343,7 +355,7 @@ function getRecentRoutineSummaries(workouts, count = 5) {
 // ---- Historial de progresión (antes en js/features/progress.js) ----
 
 /** Historial por ejercicio (volumen, reps y peso máximo por sesión) y la rutina más reciente de cada uno. */
-function buildProgressionHistory(workouts) {
+export function buildProgressionHistory(workouts) {
     const history = {};
     const lastRoutine = {};
     [...workouts].sort((a, b) => (a.date || '').localeCompare(b.date || '')).forEach(w => {

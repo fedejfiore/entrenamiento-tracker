@@ -2,9 +2,9 @@
 // load: carga sugerida (100 = un resorte completo); la app la traduce a los resortes de
 // Mi reformer. dir: hacia dónde va la dificultad (up: más resorte es más difícil; down:
 // menos resorte es más difícil; control: el resorte no es la meta).
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { pilatesEx, registerPilatesMuscles } from './pilates-catalog.js';
 
-const pilatesRf = (name, en, lvl, muscle, opts) => pilatesEx('reformer', name, en, lvl, muscle, 'springs', opts);
+export const pilatesRf = (name, en, lvl, muscle, opts) => pilatesEx('reformer', name, en, lvl, muscle, 'springs', opts);
 
 // ===================== FOOTWORK =====================
 pilatesRf('Footwork: dedos', 'footwork toes', 1, 'Cuádriceps', {

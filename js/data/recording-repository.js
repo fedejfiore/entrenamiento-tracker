@@ -3,8 +3,10 @@
 // Se guarda ArrayBuffer + tipo (no Blob): es lo más compatible, incluido iPhone.
 //
 // Registro guardado: { id, mime, duration (s), updatedAt (ms), data: ArrayBuffer }
+import { arrayBufferToBase64, base64ToArrayBuffer } from '../core/utils.js';
+import { StorageError } from './store.js';
 
-class RecordingRepository {
+export class RecordingRepository {
     constructor(dbName = 'entrenamientoAudio', storeName = 'recordings') {
         this.dbName = dbName;
         this.storeName = storeName;
@@ -64,8 +66,8 @@ class RecordingRepository {
     }
 }
 
-const recordingRepo = new RecordingRepository();
+export const recordingRepo = new RecordingRepository();
 
 // Fotos (perfil y progreso): mismo mecanismo, en su propia base.
 // Registro: { id: 'avatar' | 'progress-AAAA-MM-DD-xxx', kind, date, mime, updatedAt, data }
-const photoRepo = new RecordingRepository('entrenamientoFotos', 'photos');
+export const photoRepo = new RecordingRepository('entrenamientoFotos', 'photos');

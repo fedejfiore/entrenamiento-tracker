@@ -1,8 +1,9 @@
 // Medallas (Perfil): se calculan con el historial, no se guardan aparte. Así un backup o una
 // restauración nunca las "rompen" y no se pueden inventar editando un archivo de logros.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { formatDateLocal, formatNumber, getWeekStart, parseDecimal } from '../core/utils.js';
+import { calculateExerciseVolume } from './stats.js';
 
-const MEDAL_TIERS = [
+export const MEDAL_TIERS = [
     { name: 'Bronce', color: '#cd7f32' },
     { name: 'Plata', color: '#c0c0c0' },
     { name: 'Oro', color: '#ffc83d' },
@@ -12,7 +13,7 @@ const MEDAL_TIERS = [
 ];
 
 // Cada familia de medallas: umbrales por nivel (Bronce, Plata, Oro…).
-const ACHIEVEMENTS = [
+export const ACHIEVEMENTS = [
     { id: 'sessions', icon: '🏋️', title: 'Constancia', unit: 'sesiones', tiers: [1, 10, 50, 100, 250, 500], value: s => s.sessions },
     { id: 'streak', icon: '🔥', title: 'Semanas seguidas', unit: 'semanas', tiers: [2, 4, 12, 26, 52, 104], value: s => s.bestWeekStreak },
     { id: 'volume', icon: '🏗️', title: 'Peso levantado', unit: 'kg', tiers: [1000, 10000, 50000, 100000, 500000, 1000000], value: s => s.totalVolume },
@@ -25,7 +26,7 @@ const ACHIEVEMENTS = [
  * Estadísticas de uso a partir de las sesiones guardadas.
  * weekStartDay: día en que empieza la semana (para las rachas).
  */
-function computeUsageStats(workouts, weekStartDay = 1) {
+export function computeUsageStats(workouts, weekStartDay = 1) {
     const list = (workouts || []).filter(w => w && w.date && !w.deletedAt);
     const stats = {
         sessions: list.length, totalVolume: 0, records: 0, totalKm: 0, hours: 0,
@@ -80,7 +81,7 @@ function computeUsageStats(workouts, weekStartDay = 1) {
 }
 
 /** Nivel alcanzado en cada familia y cuánto falta para el siguiente. */
-function evaluateAchievements(stats) {
+export function evaluateAchievements(stats) {
     return ACHIEVEMENTS.map(a => {
         const value = a.value(stats) || 0;
         let level = 0;
@@ -101,7 +102,7 @@ function evaluateAchievements(stats) {
 // en la unidad que se usaba al guardar. Se leen de ahí; el más importante de cada ejercicio
 // y día (peso > reps > distancia > velocidad > duración > volumen) es su trofeo.
 
-const RECORD_KINDS = [
+export const RECORD_KINDS = [
     { kind: 'weight', re: /^(\d[\d.,]*\s?(?:kg|lb))$/, label: 'Peso máximo' },
     { kind: 'reps', re: /^(\d+) reps$/, label: 'Más reps' },
     { kind: 'distance', re: /^distancia (.+)$/, label: 'Distancia' },
@@ -111,7 +112,7 @@ const RECORD_KINDS = [
 ];
 
 /** "Press de pecho: 81kg (antes 75kg)" → { exercise, kind, label, valueText, beforeText } o null. */
-function parseRecordText(text) {
+export function parseRecordText(text) {
     const m = String(text || '').match(/^(.+?): (.+?)(?: \(antes ([^)]+)\))?$/);
     if (!m) return null;
     const def = RECORD_KINDS.find(k => k.re.test(m[2]));
@@ -120,7 +121,7 @@ function parseRecordText(text) {
 }
 
 /** Diferencia legible para peso y reps: "+6 kg", "+2 reps". */
-function recordDelta(rec) {
+export function recordDelta(rec) {
     if (!rec.beforeText || !['weight', 'reps'].includes(rec.kind)) return null;
     const num = s => parseDecimal(String(s).replace(/[^\d,.]/g, '').replace(/\.(?=\d{3}\b)/g, ''));
     const a = num(rec.valueText), b = num(rec.beforeText);
@@ -130,7 +131,7 @@ function recordDelta(rec) {
 }
 
 /** Trofeos más recientes primero: [{ date, exercise, kind, label, valueText, beforeText, deltaText }]. */
-function recentRecords(workouts, limit = 30) {
+export function recentRecords(workouts, limit = 30) {
     const order = RECORD_KINDS.map(k => k.kind);
     const best = new Map();
     (workouts || []).filter(w => w && !w.deletedAt && Array.isArray(w.prs)).forEach(w => {

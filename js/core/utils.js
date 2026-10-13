@@ -1,13 +1,14 @@
 // Utilidades generales sin estado: HTML seguro, texto, fechas y números.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
 
 // Lee el valor actual de una variable CSS del tema activo, para que los colores
 // generados por JS (gráficos de Chart.js, principalmente) se adapten a oscuro/claro.
-function cssVar(name) {
+import { appLocale } from './i18n.js';
+
+export function cssVar(name) {
     return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 }
 
-function getLocalDateString() {
+export function getLocalDateString() {
     const d = new Date();
     const year = d.getFullYear();
     const month = String(d.getMonth() + 1).padStart(2, '0');
@@ -15,12 +16,12 @@ function getLocalDateString() {
     return `${year}-${month}-${day}`;
 }
 
-function escapeHtml(str) {
+export function escapeHtml(str) {
     return String(str ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
 }
 
 /** HTML ya armado y seguro (sale de la plantilla html`…`): no se vuelve a escapar. */
-class SafeHtml {
+export class SafeHtml {
     constructor(value) { this.value = value; }
     toString() { return this.value; }
 }
@@ -30,7 +31,7 @@ class SafeHtml {
  * plantilla html) va tal cual; una lista se une; null, undefined y false no muestran nada.
  * Es la forma de armar HTML con datos: ESLint la reconoce como segura para innerHTML.
  */
-function html(strings, ...values) {
+export function html(strings, ...values) {
     const part = v => {
         if (v instanceof SafeHtml) return v.value;
         if (Array.isArray(v)) return v.map(part).join('');
@@ -41,35 +42,35 @@ function html(strings, ...values) {
 }
 
 // "22,5", "22.5" → 22.5. Punto o coma, lo que traiga el teclado.
-function parseDecimal(v) {
+export function parseDecimal(v) {
     const n = parseFloat(String(v ?? '').trim().replace(',', '.'));
     return isNaN(n) ? null : n;
 }
 
 // Normaliza para guardar: coma → punto, sin separador colgando ("22," → "22").
-function normalizeDecimalString(v) {
+export function normalizeDecimalString(v) {
     const n = parseDecimal(v);
     return n == null ? '' : String(n);
 }
 
 // Filtra lo que se tipea en un campo decimal: dígitos y UN separador (. o ,).
-function sanitizeDecimalInput(v) {
+export function sanitizeDecimalInput(v) {
     const s = String(v || '').replace(/[^\d.,]/g, '');
     const i = s.search(/[.,]/);
     return i < 0 ? s : s.slice(0, i + 1) + s.slice(i + 1).replace(/[.,]/g, '');
 }
 
-function formatNumber(n) {
+export function formatNumber(n) {
     return (Math.round(n * 100) / 100).toLocaleString((typeof appLocale === 'function' ? appLocale() : 'es-AR'));
 }
 
-function youtubeSearchUrl(query) {
+export function youtubeSearchUrl(query) {
     return 'https://www.youtube.com/results?search_query=' + encodeURIComponent(query + ' técnica ejercicio');
 }
 
-const ACCENT_MAP = { 'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u', 'ü': 'u', 'ñ': 'n' };
+export const ACCENT_MAP = { 'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u', 'ü': 'u', 'ñ': 'n' };
 
-function normalizeForCompare(name) {
+export function normalizeForCompare(name) {
     return name
         .trim()
         .toLowerCase()
@@ -77,7 +78,7 @@ function normalizeForCompare(name) {
         .replace(/\s+/g, ' ');
 }
 
-function formatDateLocal(d) {
+export function formatDateLocal(d) {
     const year = d.getFullYear();
     const month = String(d.getMonth() + 1).padStart(2, '0');
     const day = String(d.getDate()).padStart(2, '0');
@@ -85,14 +86,14 @@ function formatDateLocal(d) {
 }
 
 // Primer día de la semana que contiene a date. startDay: 0 = domingo, 1 = lunes, 6 = sábado.
-function getWeekStart(date, startDay = 1) {
+export function getWeekStart(date, startDay = 1) {
     const d = new Date(date);
     d.setHours(0, 0, 0, 0);
     d.setDate(d.getDate() - ((d.getDay() - startDay + 7) % 7));
     return d;
 }
 
-function getMonday(date) {
+export function getMonday(date) {
     const d = new Date(date);
     d.setHours(0, 0, 0, 0);
     const day = d.getDay();
@@ -103,7 +104,7 @@ function getMonday(date) {
 
 // Id único universal (UUID v4) para identificar registros entre dispositivos y una base
 // de datos. crypto.randomUUID solo existe en contexto seguro (https); si no, se arma a mano.
-function generateId() {
+export function generateId() {
     if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
     const bytes = new Uint8Array(16);
     if (typeof crypto !== 'undefined' && crypto.getRandomValues) crypto.getRandomValues(bytes);
@@ -115,14 +116,14 @@ function generateId() {
 }
 
 // Binario <-> texto base64 (el audio viaja así dentro del backup JSON).
-function arrayBufferToBase64(buf) {
+export function arrayBufferToBase64(buf) {
     const bytes = new Uint8Array(buf);
     let bin = '';
     for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
     return btoa(bin);
 }
 
-function base64ToArrayBuffer(b64) {
+export function base64ToArrayBuffer(b64) {
     const bin = atob(b64);
     const bytes = new Uint8Array(bin.length);
     for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);

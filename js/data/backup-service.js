@@ -16,11 +16,15 @@
 //
 // Se aceptan también los backups viejos (workouts/bodyMetrics/customRoutines sueltos): en
 // ese caso solo se restauran esas claves y lo demás queda como está.
+import { ValidationError } from './store.js';
+import { BACKUP_GROUPS } from './schema.js';
+import { db } from './repositories.js';
+import { photoRepo, recordingRepo } from './recording-repository.js';
 
-const BACKUP_FORMAT = 'entrenamiento-tracker-backup';
-const BACKUP_FORMAT_VERSION = 3;
+export const BACKUP_FORMAT = 'entrenamiento-tracker-backup';
+export const BACKUP_FORMAT_VERSION = 3;
 
-class BackupService {
+export class BackupService {
     /**
      * Límites de un backup al importarlo (un archivo puede venir de cualquier lado: se revisa
      * todo antes de escribir). Holgados para un uso real de años; lo que los pasa no es un
@@ -188,4 +192,4 @@ class BackupService {
     }
 }
 
-const backupService = new BackupService(db, recordingRepo, photoRepo);
+export const backupService = new BackupService(db, recordingRepo, photoRepo);

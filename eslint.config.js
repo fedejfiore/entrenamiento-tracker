@@ -1,46 +1,45 @@
 // Reglas automáticas del código (npm run lint).
-//  - La app son scripts clásicos que comparten el ámbito global: los nombres válidos salen del
-//    registro scripts/globals.json (ver scripts/globals.js). Un nombre que no existe es un error.
+//  - La app son módulos ES: cada archivo importa lo que usa. Un nombre que no se importa ni
+//    existe en el navegador es un error (no-undef), y un import no se puede reasignar
+//    (no-import-assign): cada módulo cambia su propio estado.
 //  - innerHTML / insertAdjacentHTML con datos: lo que se interpola tiene que pasar por escapeHtml
-//    (o ser una de las funciones que ya devuelven HTML seguro). Lo que hoy no cumple está anotado
-//    en scripts/lint-baseline.json y no puede crecer (ver scripts/lint.js).
+//    o armarse con la plantilla html`…`. Lo que hoy no cumple está anotado en
+//    scripts/lint-baseline.json y no puede crecer (ver scripts/lint.js).
 const js = require('@eslint/js');
 const globals = require('globals');
 const noUnsanitized = require('eslint-plugin-no-unsanitized');
-const appGlobals = require('./scripts/globals.json');
 
-// Todas de solo lectura: un archivo no puede reasignar el estado de otro (lo cambia con una
-// función del archivo dueño). Así el código ya respeta la regla de los módulos ES.
-const appNames = Object.fromEntries(Object.keys(appGlobals).map(name => [name, 'readonly']));
+const unsanitized = { escape: { methods: ['escapeHtml'], taggedTemplates: ['html'] } };
 
 module.exports = [
     { ignores: ['dist/**', 'www/**', 'android/**', 'node_modules/**', 'vendor/**', 'js/app.min.js', 'docs/**', 'tools/**', 'control/**'] },
     js.configs.recommended,
-    // Las funciones globales se usan desde otros archivos: solo se avisa de lo local sin usar.
     { rules: { 'no-unused-vars': ['error', { vars: 'local', args: 'none', caughtErrors: 'none', ignoreRestSiblings: true }] } },
     {
         files: ['js/**/*.js'],
+        ignores: ['js/boot.js', 'js/i18n/**'],
         plugins: { 'no-unsanitized': noUnsanitized },
         languageOptions: {
             ecmaVersion: 'latest',
-            sourceType: 'script',
-            globals: { ...globals.browser, ...appNames, Capacitor: 'readonly', Chart: 'readonly' }
+            sourceType: 'module',
+            globals: { ...globals.browser, Capacitor: 'readonly', Chart: 'readonly' }
         },
         rules: {
-            'no-redeclare': ['error', { builtinGlobals: false }],
             'no-empty': ['error', { allowEmptyCatch: true }],
             'no-eval': 'error',
             'no-implied-eval': 'error',
             'no-new-func': 'error',
-            'no-unsanitized/method': ['error', { escape: { methods: ['escapeHtml'], taggedTemplates: ['html'] } }],
-            'no-unsanitized/property': ['error', { escape: { methods: ['escapeHtml'], taggedTemplates: ['html'] } }]
+            'no-import-assign': 'error',
+            'no-unsanitized/method': ['error', unsanitized],
+            'no-unsanitized/property': ['error', unsanitized]
         }
     },
-    // Cada archivo ve las globales de los demás como de solo lectura (las suyas, no: son su estado).
-    ...[...new Set(Object.values(appGlobals).map(g => g.file))].map(file => ({
-        files: [file],
-        languageOptions: { globals: Object.fromEntries(Object.entries(appGlobals).filter(([, g]) => g.file === file).map(([name]) => [name, 'off'])) }
-    })),
+    {
+        // Scripts clásicos a propósito: boot.js (en <head>, antes de pintar) y los diccionarios.
+        files: ['js/boot.js', 'js/i18n/**/*.js'],
+        languageOptions: { ecmaVersion: 'latest', sourceType: 'script', globals: { ...globals.browser, I18N_DICTIONARIES: 'readonly' } },
+        rules: { 'no-empty': ['error', { allowEmptyCatch: true }] }
+    },
     {
         files: ['service-worker.js'],
         languageOptions: { ecmaVersion: 'latest', sourceType: 'script', globals: { ...globals.serviceworker } }
@@ -56,9 +55,10 @@ module.exports = [
         languageOptions: { ecmaVersion: 'latest', sourceType: 'commonjs', globals: { ...globals.node } }
     },
     {
-        // Las pruebas en el navegador corren funciones dentro de la página (page.evaluate).
+        // Las pruebas en el navegador corren funciones dentro de la página (page.evaluate) y
+        // usan la app por window.gym.
         files: ['tests/e2e/**/*.js', 'scripts/landing-shots.js'],
-        languageOptions: { globals: { ...globals.node, ...globals.browser, ...appNames } }
+        languageOptions: { globals: { ...globals.node, ...globals.browser, gym: 'readonly' } }
     },
     {
         files: ['tests/routine-share.test.js'],

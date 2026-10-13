@@ -10,16 +10,17 @@
 //   guarda. Si se olvida, el backup no se puede recuperar (no hay "puerta trasera").
 //
 // Formato: { format, formatVersion, kdf: { name, hash, iterations, salt }, cipher: { name, iv }, data }
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { arrayBufferToBase64, base64ToArrayBuffer } from '../core/utils.js';
+import { ValidationError } from './store.js';
 
-const ENCRYPTED_BACKUP_FORMAT = 'entrenamiento-tracker-backup-encrypted';
-const BACKUP_KDF_ITERATIONS = 600000;
+export const ENCRYPTED_BACKUP_FORMAT = 'entrenamiento-tracker-backup-encrypted';
+export const BACKUP_KDF_ITERATIONS = 600000;
 
-function isEncryptedBackup(obj) {
+export function isEncryptedBackup(obj) {
     return !!obj && typeof obj === 'object' && obj.format === ENCRYPTED_BACKUP_FORMAT;
 }
 
-async function deriveBackupKey(password, salt, iterations) {
+export async function deriveBackupKey(password, salt, iterations) {
     const material = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey']);
     return crypto.subtle.deriveKey(
         { name: 'PBKDF2', hash: 'SHA-256', salt, iterations },
@@ -31,7 +32,7 @@ async function deriveBackupKey(password, salt, iterations) {
 }
 
 /** Texto del backup → texto JSON cifrado con la contraseña. */
-async function encryptBackupText(text, password, iterations = BACKUP_KDF_ITERATIONS) {
+export async function encryptBackupText(text, password, iterations = BACKUP_KDF_ITERATIONS) {
     if (!password || password.length < 8) throw new ValidationError('La contraseña tiene que tener al menos 8 caracteres.');
     const salt = crypto.getRandomValues(new Uint8Array(16));
     const iv = crypto.getRandomValues(new Uint8Array(12));
@@ -47,7 +48,7 @@ async function encryptBackupText(text, password, iterations = BACKUP_KDF_ITERATI
 }
 
 /** Backup cifrado (objeto ya parseado) → texto original, o ValidationError si la contraseña no es la correcta. */
-async function decryptBackupText(obj, password) {
+export async function decryptBackupText(obj, password) {
     if (!isEncryptedBackup(obj) || obj.formatVersion !== 1 || !obj.kdf || !obj.cipher || typeof obj.data !== 'string') {
         throw new ValidationError('El archivo cifrado no tiene un formato válido.');
     }

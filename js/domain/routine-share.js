@@ -2,19 +2,21 @@
 // link (no se envía a ningún servidor). Sirve para que un entrenador le pase una rutina a
 // sus alumnos por WhatsApp. Lo que llega de un link es dato externo: se valida y se limpia
 // todo antes de usarlo, y nunca se guarda sin que el usuario lo confirme.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { normalizeForCompare } from '../core/utils.js';
+import { ValidationError } from '../data/store.js';
+import { EXERCISE_TYPES, LEGACY_LEG_GROUP, MUSCLE_GROUPS, splitLegacyLegGroup } from './catalog.js';
 
-const ROUTINE_SHARE_VERSION = 1;
-const ROUTINE_SHARE_LIMITS = { maxChars: 12000, maxExercises: 40, maxName: 80 };
+export const ROUTINE_SHARE_VERSION = 1;
+export const ROUTINE_SHARE_LIMITS = { maxChars: 12000, maxExercises: 40, maxName: 80 };
 
-function toBase64Url(text) {
+export function toBase64Url(text) {
     const bytes = new TextEncoder().encode(text);
     let bin = '';
     bytes.forEach(b => { bin += String.fromCharCode(b); });
     return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
-function fromBase64Url(code) {
+export function fromBase64Url(code) {
     const b64 = code.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((code.length + 3) % 4);
     const bin = atob(b64);
     return new TextDecoder().decode(Uint8Array.from(bin, c => c.charCodeAt(0)));
@@ -23,7 +25,7 @@ function fromBase64Url(code) {
 // Texto seguro: sin caracteres de control, espacios normalizados y largo acotado.
 // También se sacan < y > (ningún nombre de rutina o ejercicio los necesita): defensa extra
 // contra código escondido en un link, además de que todo se escapa al mostrarse.
-function cleanShareText(value, max) {
+export function cleanShareText(value, max) {
     return String(value ?? '')
         // Caracteres de control e invisibles que cambian el sentido del texto (a propósito).
         // eslint-disable-next-line no-control-regex
@@ -32,7 +34,7 @@ function cleanShareText(value, max) {
 }
 
 /** Rutina → código para el link. exercises: [{ name, type?, target?, group? }] */
-function encodeRoutineShare({ label, exercises }) {
+export function encodeRoutineShare({ label, exercises }) {
     const payload = {
         v: ROUTINE_SHARE_VERSION,
         n: cleanShareText(label, ROUTINE_SHARE_LIMITS.maxName),
@@ -56,7 +58,7 @@ function encodeRoutineShare({ label, exercises }) {
  * Código del link → rutina validada, o lanza ValidationError con un mensaje para el usuario.
  * Devuelve { label, exercises: [{ name, type, target, group }] }.
  */
-function decodeRoutineShare(code) {
+export function decodeRoutineShare(code) {
     const fail = msg => { throw new ValidationError(msg); };
     if (typeof code !== 'string' || !code || code.length > ROUTINE_SHARE_LIMITS.maxChars) fail('El link de la rutina está incompleto o es demasiado largo.');
     if (!/^[A-Za-z0-9_-]+$/.test(code)) fail('El link de la rutina no es válido.');
@@ -94,7 +96,7 @@ function decodeRoutineShare(code) {
 // ---- Códigos de rutina en un texto pegado (antes en js/features/library.js) ----
 
 /** Todos los códigos de un texto: se pueden pegar varios links juntos (uno por rutina). */
-function routineShareCodesFrom(text) {
+export function routineShareCodesFrom(text) {
     const s = String(text || '');
     const links = [...s.matchAll(/#rutina=([A-Za-z0-9_-]+)/g)].map(m => m[1]);
     if (links.length) return links;
@@ -102,6 +104,6 @@ function routineShareCodesFrom(text) {
     return bare ? [bare[1]] : [];
 }
 
-function routineShareCodeFrom(text) {
+export function routineShareCodeFrom(text) {
     return routineShareCodesFrom(text)[0] || null;
 }

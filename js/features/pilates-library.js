@@ -2,17 +2,29 @@
 // (clase, nivel, músculo, elemento, búsqueda) agrupado por nivel o por músculo, la ficha de
 // cada ejercicio (pasos, respiración, errores y corrección, variantes, precauciones, resortes
 // sugeridos, video) y "Aprender el método". La ficha también se abre desde Entrenar (📖).
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { escapeHtml, normalizeForCompare } from '../core/utils.js';
+import { MUSCLE_GROUPS } from '../domain/catalog.js';
+import { springLevelLabel, springsLoad } from '../domain/pilates.js';
+import { EQUIPMENT_LEVELS, EQUIPMENT_WITH_LEVEL, PILATES_BREATH, PILATES_CAUTIONS, PILATES_EQUIPMENT, PILATES_ERRORS, PILATES_EXERCISES, PILATES_LEVELS, pilatesExerciseInfo, pilatesVideoUrl } from '../domain/pilates-catalog.js';
+import { db } from '../data/repositories.js';
+import { exercisePrefs, saveExerciseType } from '../data/exercise-prefs.js';
+import { customRoutines, isRoutineVisible, loadCustomRoutines, saveCustomRoutines } from '../data/routines-store.js';
+import { showToast } from '../ui/toast.js';
+import { loadRoutineExercises } from './training/workout.js';
+import { routineLabelOf } from './progress.js';
+import { hasDiscipline, routineInActiveModule } from './disciplines.js';
+import { loadReformer, suggestedSpringsFor } from './reformer.js';
+import { renderLibrary } from './library.js';
 
-const pilatesFilters = { kind: 'all', lvl: 'all', muscle: 'all', equip: 'all', q: '', group: 'lvl' };
+export const pilatesFilters = { kind: 'all', lvl: 'all', muscle: 'all', equip: 'all', q: '', group: 'lvl' };
 
-const PILATES_DIR_TEXT = {
+export const PILATES_DIR_TEXT = {
     up: 'Más resorte = más difícil',
     down: 'Menos resorte = más difícil (más control)',
     control: 'El resorte no es la meta: progresá en control y repeticiones'
 };
 
-const PILATES_LEARN = [
+export const PILATES_LEARN = [
     ['🎯 Centro (powerhouse)', 'Todo movimiento nace del centro: abdomen profundo, suelo pélvico, multífidos (músculos chiquitos de la columna) y diafragma. No es "meter la panza": es un cinturón que sostiene la columna mientras brazos y piernas se mueven.'],
     ['🧠 Concentración', 'La atención está en cómo te movés, no en cuántas veces. Pocas repeticiones bien hechas valen más que muchas apuradas.'],
     ['🎛️ Control', 'Joseph Pilates llamó a su método "contrología". Nada se hace por impulso: subir, sostener y volver tienen la misma calidad.'],
@@ -25,11 +37,11 @@ const PILATES_LEARN = [
     ['💪 Por qué fortalece', 'El músculo se adapta a la tensión y al tiempo bajo tensión. En pilates se suman las dos cosas con movimientos lentos y controlados, y además se entrena la coordinación entre músculos (control motor), que mejora la postura.']
 ];
 
-function pilatesKindsAvailable() {
+export function pilatesKindsAvailable() {
     return ['mat', 'reformer'].filter(k => hasDiscipline(k));
 }
 
-function filteredPilatesExercises() {
+export function filteredPilatesExercises() {
     const kinds = pilatesKindsAvailable();
     const f = pilatesFilters;
     const q = normalizeForCompare(f.q || '');
@@ -41,11 +53,11 @@ function filteredPilatesExercises() {
         && (!q || normalizeForCompare(`${e.name} ${e.en}`).includes(q)));
 }
 
-function pilatesChip(label, cls = '') {
+export function pilatesChip(label, cls = '') {
     return `<span class="pl-chip ${cls}">${escapeHtml(label)}</span>`;
 }
 
-function pilatesItemHtml(e) {
+export function pilatesItemHtml(e) {
     const springs = e.kind === 'reformer' ? suggestedSpringsFor(e) : '';
     return `<button type="button" class="pl-item" data-pilates-info="${escapeHtml(e.name)}">
             <strong translate="no">${escapeHtml(e.name)}</strong>
@@ -53,7 +65,7 @@ function pilatesItemHtml(e) {
         </button>`;
 }
 
-function renderPilatesCatalog() {
+export function renderPilatesCatalog() {
     const box = document.getElementById('pilatesCatalog');
     if (!box) return;
     const kinds = pilatesKindsAvailable();
@@ -84,7 +96,7 @@ function renderPilatesCatalog() {
         }).join('') || '<p class="lib-empty">No hay ejercicios con esos filtros.</p>'}`;
 }
 
-function renderPilatesLearn() {
+export function renderPilatesLearn() {
     const box = document.getElementById('pilatesLearn');
     if (!box || box.dataset.ready) return;
     box.dataset.ready = '1';
@@ -92,11 +104,11 @@ function renderPilatesLearn() {
 }
 
 // ---- Ficha ----
-function pilatesErrorPair(x) {
+export function pilatesErrorPair(x) {
     return typeof x === 'string' ? PILATES_ERRORS[x] : x;
 }
 
-function openPilatesInfo(name) {
+export function openPilatesInfo(name) {
     const e = pilatesExerciseInfo(name);
     const modal = document.getElementById('pilatesInfoModal');
     if (!e || !modal) return;
@@ -129,11 +141,11 @@ function openPilatesInfo(name) {
     modal.classList.add('open');
 }
 
-function closePilatesInfo() {
+export function closePilatesInfo() {
     document.getElementById('pilatesInfoModal')?.classList.remove('open');
 }
 
-function addPilatesExerciseToRoutine(key, name) {
+export function addPilatesExerciseToRoutine(key, name) {
     loadCustomRoutines();
     if (!customRoutines[key]) return;
     if (customRoutines[key].some(n => normalizeForCompare(n) === normalizeForCompare(name))) {
@@ -148,7 +160,7 @@ function addPilatesExerciseToRoutine(key, name) {
     showToast(`➕ "${name}" agregado a ${routineLabelOf(key)}`, 'success');
 }
 
-function initPilatesLibrary() {
+export function initPilatesLibrary() {
     const box = document.getElementById('pilatesCatalog');
     box?.addEventListener('change', e => {
         const key = e.target.dataset.plFilter;
@@ -180,11 +192,11 @@ function initPilatesLibrary() {
 }
 
 // ---- Nivel del elemento (banda, pelota, aro…) ----
-function equipLevelOf(name) {
+export function equipLevelOf(name) {
     return (db.get('exerciseEquipLevels') || {})[normalizeForCompare(name || '')] || '';
 }
 
-function saveEquipLevel(name, level) {
+export function saveEquipLevel(name, level) {
     const map = db.get('exerciseEquipLevels') || {};
     const key = normalizeForCompare(name || '');
     if (level) map[key] = level; else delete map[key];
@@ -192,7 +204,7 @@ function saveEquipLevel(name, level) {
 }
 
 /** Chip del elemento en Entrenar, solo para ejercicios del catálogo que usan uno. */
-function equipLevelChipHtml(name) {
+export function equipLevelChipHtml(name) {
     const info = typeof pilatesExerciseInfo === 'function' ? pilatesExerciseInfo(name) : null;
     if (!info || !EQUIPMENT_WITH_LEVEL.includes(info.equip)) return '';
     const [icon, label] = PILATES_EQUIPMENT[info.equip];

@@ -1,7 +1,6 @@
 // Arma una copia optimizada de la app para publicar (web) o para meter en la app nativa.
-//  - Los ~76 scripts de la página se unen, en el mismo orden, en js/app.min.js (minificado).
-//    Son scripts clásicos que comparten el ámbito global: unirlos no cambia cómo se ven entre
-//    sí, y esbuild no renombra los nombres globales (las acciones data-fn-* los llaman por nombre).
+//  - La app (módulos ES desde js/main.js) se empaqueta con esbuild en js/app.min.js
+//    (minificado). Los módulos ya no van sueltos.
 //  - Las hojas de estilo de la página se unen en css/app.min.css.
 //  - boot.js y los diccionarios de idiomas (se cargan aparte) se minifican en su lugar.
 //  - El service worker precachea exactamente lo que quedó.
@@ -29,19 +28,18 @@ function build(outDir, { extraFiles = [], extraDirs = [], indexHtml = null } = {
 
     let html = fs.readFileSync(path.join(ROOT, PAGE), 'utf8');
 
-    // ---- JS: todos los <script src="js/..."> menos boot.js (va en <head>, antes de pintar) ----
-    const scriptRe = /^[ \t]*<script src="(js\/[^"]+)"><\/script>\r?\n/gm;
-    const scripts = [...html.matchAll(scriptRe)].map(m => m[1]).filter(s => s !== 'js/boot.js');
-    const jsSource = scripts.map(s => `// ${s}\n${fs.readFileSync(path.join(ROOT, s), 'utf8')}\n;`).join('\n');
-    const jsMin = esbuild.transformSync(jsSource, { minify: true, target: TARGET, legalComments: 'none', charset: 'utf8' }).code;
-    fs.writeFileSync(path.join(OUT, 'js/app.min.js'), jsMin);
-    let firstScript = true;
-    html = html.replace(scriptRe, (line, src) => {
-        if (src === 'js/boot.js') return line;
-        if (!firstScript) return '';
-        firstScript = false;
-        return '    <script src="js/app.min.js"></script>\n';
+    // ---- JS: la app es un módulo ES (js/main.js con sus imports): esbuild arma un solo archivo ----
+    const entry = 'js/main.js';
+    if (!html.includes(`<script type="module" src="${entry}"></script>`)) throw new Error('La página no carga js/main.js');
+    const result = esbuild.buildSync({
+        entryPoints: [path.join(ROOT, entry)], bundle: true, format: 'iife', minify: true, target: TARGET,
+        legalComments: 'none', charset: 'utf8', write: false, metafile: true
     });
+    const jsMin = result.outputFiles[0].text;
+    const scripts = Object.keys(result.metafile.inputs).map(f => f.split(path.sep).join('/'));
+    const jsSource = scripts.map(f => fs.readFileSync(path.join(ROOT, f), 'utf8')).join('\n');
+    fs.writeFileSync(path.join(OUT, 'js/app.min.js'), jsMin);
+    html = html.replace(`<script type="module" src="${entry}"></script>`, '<script src="js/app.min.js"></script>');
 
     // ---- CSS: las hojas de la página, en el mismo orden ----
     const linkRe = /^[ \t]*<link rel="stylesheet" href="(css\/[^"]+)">\r?\n/gm;

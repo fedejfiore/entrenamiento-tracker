@@ -3,9 +3,9 @@
 // La progresión es la doble de siempre, como en peso corporal: primero reps y, al llegar al
 // tope en todas las series, pasar a la versión más difícil (ver la ficha) o ajustar el
 // resorte según el sentido de dificultad del ejercicio.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { PROGRAMS, programExercise } from './programs.js';
 
-const pilatesProgramEx = (name, sets, repsMin, repsMax, type = 'pilates') => programExercise(name, sets, repsMin, repsMax, 0, { type });
+export const pilatesProgramEx = (name, sets, repsMin, repsMax, type = 'pilates') => programExercise(name, sets, repsMin, repsMax, 0, { type });
 
 PROGRAMS.push(
     {

@@ -2,8 +2,13 @@
 // y si es unilateral (de a un lado).
 // Todas se guardan por nombre normalizado (sin mayúsculas ni tildes), así "Plancha" y
 // "plancha" comparten la misma preferencia en cualquier rutina.
+import { normalizeForCompare } from '../core/utils.js';
+import { DEFAULT_TIME_UNIT_BY_TYPE, TIME_UNITS } from '../core/time.js';
+import { EXERCISE_TYPES, LEGACY_LEG_GROUP, catalogMuscleGroup, splitLegacyLegGroup } from '../domain/catalog.js';
+import { pilatesExerciseInfo } from '../domain/pilates-catalog.js';
+import { db } from './repositories.js';
 
-class ExercisePreferences {
+export class ExercisePreferences {
     constructor(store) {
         this.store = store;
         this.reload();
@@ -34,12 +39,17 @@ class ExercisePreferences {
     }
 
     // Sugerencia automática para ejercicios que todavía no tienen un tipo elegido.
+    // ¿La rutina es de pilates? Lo decide la pantalla de disciplinas (js/features/disciplines.js).
+    static isPilatesRoutine = () => false;
+
     static inferType(name, routine) {
         const info = typeof pilatesExerciseInfo === 'function' ? pilatesExerciseInfo(name) : null;
-        if (info) return info.type;
         const n = normalizeForCompare(name || '');
         // Palabras completas: "nado" no tiene que encontrarse adentro de "inclinado".
-        if (/\bkm\b|\dkm|\b(bici\w*|correr|corrida|trote|running|caminata|cinta|spinning|natacion|nado|nadar)\b/.test(n)) return 'km';
+        const cardio = /\bkm\b|\dkm|\b(bici\w*|correr|corrida|trote|running|caminata|cinta|spinning|natacion|nado|nadar)\b/.test(n);
+        // Un nombre de pilates que también es cardio ("Natación"): pilates solo en una rutina de pilates.
+        if (info && (!cardio || ExercisePreferences.isPilatesRoutine(routine))) return info.type;
+        if (cardio) return 'km';
         if (routine === 'FUT' || /futbol|partido|clase|yoga|pilates|estiramiento/.test(n)) return 'min';
         if (/plancha|plank|tabata|soga|isometric/.test(n)) return 'time';
         if (/flexiones|push-?ups?|burpee|dominadas(?! asistidas)/.test(n)) return 'bw';
@@ -110,17 +120,17 @@ class ExercisePreferences {
     }
 }
 
-const exercisePrefs = new ExercisePreferences(db);
+export const exercisePrefs = new ExercisePreferences(db);
 
 // API usada por las pantallas (y por las acciones escritas en el HTML).
-function saveExerciseType(name, type) { exercisePrefs.setType(name, type); }
-function inferExerciseType(name, routine) { return ExercisePreferences.inferType(name, routine); }
-function getExerciseType(name, routine) { return exercisePrefs.type(name, routine); }
-function getTimeUnit(name, type) { return exercisePrefs.timeUnit(name, type); }
-function saveTimeUnit(name, unit) { exercisePrefs.setTimeUnit(name, unit); }
-function saveGroupOverride(exerciseName, group) { exercisePrefs.setMuscleGroup(exerciseName, group); }
-function getMuscleGroup(exerciseName) { return exercisePrefs.muscleGroup(exerciseName); }
-function loadExerciseTempos() { return db.get('exerciseTempos'); }
-function saveExerciseTempo(name, tempo) { exercisePrefs.setTempo(name, tempo); }
-function isUnilateral(name) { return exercisePrefs.unilateral(name); }
-function saveUnilateral(name, on) { exercisePrefs.setUnilateral(name, on); }
+export function saveExerciseType(name, type) { exercisePrefs.setType(name, type); }
+export function inferExerciseType(name, routine) { return ExercisePreferences.inferType(name, routine); }
+export function getExerciseType(name, routine) { return exercisePrefs.type(name, routine); }
+export function getTimeUnit(name, type) { return exercisePrefs.timeUnit(name, type); }
+export function saveTimeUnit(name, unit) { exercisePrefs.setTimeUnit(name, unit); }
+export function saveGroupOverride(exerciseName, group) { exercisePrefs.setMuscleGroup(exerciseName, group); }
+export function getMuscleGroup(exerciseName) { return exercisePrefs.muscleGroup(exerciseName); }
+export function loadExerciseTempos() { return db.get('exerciseTempos'); }
+export function saveExerciseTempo(name, tempo) { exercisePrefs.setTempo(name, tempo); }
+export function isUnilateral(name) { return exercisePrefs.unilateral(name); }
+export function saveUnilateral(name, on) { exercisePrefs.setUnilateral(name, on); }

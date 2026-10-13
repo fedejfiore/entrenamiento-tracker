@@ -1,19 +1,31 @@
 // Ajustes → Funciones: activar o desactivar partes de la app (ver js/core/feature-registry.js).
 // También aplica lo oculto en pantalla y sugiere, una sola vez y en el momento justo, alguna
 // función que puede servir ("Ya registraste 5 sesiones: ¿querés ver qué músculos trabajaste?").
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { appErrors } from '../core/errors.js';
+import { FEATURE_DEFINITIONS, FEATURE_GROUPS, FeatureRegistry } from '../core/feature-registry.js';
+import { escapeHtml } from '../core/utils.js';
+import { db, repo } from '../data/repositories.js';
+import { showToast } from '../ui/toast.js';
+import { readBlockSets, renderBlockSets, setBlockCollapsed } from './training/exercise-block.js';
+import { setsLegendHtml } from './training/workout.js';
+import { setTrainMode } from './training/train-mode.js';
+import { refreshSupersetBadges } from './training/supersets.js';
+import { focusCurrentExercise } from './training/focus.js';
+import { renderMascot } from './mascot.js';
+import { renderHelpContent } from './help.js';
+import { renderDrawerNav } from '../ui/navigation.js';
 
-const features = new FeatureRegistry(FEATURE_DEFINITIONS, {
+export const features = new FeatureRegistry(FEATURE_DEFINITIONS, {
     load: () => db.get('features'),
     save: state => db.set('features', state)
 });
 
 /** Pantallas y elementos que dependen de varias funciones: se ven si alguna está activa. */
-function anyFeatureOn(list) {
+export function anyFeatureOn(list) {
     return String(list || '').split(/\s+/).filter(Boolean).some(id => features.isOn(id));
 }
 
-class FeatureView {
+export class FeatureView {
     constructor(registry) {
         this.registry = registry;
         this.styleReady = false;
@@ -78,10 +90,10 @@ class FeatureView {
     }
 }
 
-const featureView = new FeatureView(features);
+export const featureView = new FeatureView(features);
 
 /** Lo que hay que redibujar cuando cambia alguna función. */
-function onFeaturesChanged() {
+export function onFeaturesChanged() {
     featureView.apply();
     featureView.render();
     if (typeof renderDrawerNav === 'function') renderDrawerNav();
@@ -103,7 +115,7 @@ function onFeaturesChanged() {
 }
 
 // ---- Sugerencias en contexto (una sola vez cada una) ----
-const FEATURE_HINTS = [
+export const FEATURE_HINTS = [
     { feature: 'supersets', when: () => Object.keys(db.get('routineSupersets') || {}).length > 0, text: 'Tenés superseries armadas en tus rutinas. ¿Las activás para que la app te lleve de un ejercicio al otro?' },
     { feature: 'muscleMap', when: n => n >= 5, text: 'Ya registraste 5 sesiones. ¿Querés ver qué músculos trabajaste y si estás en el rango ideal?' },
     { feature: 'mascot', when: n => n >= 8, text: 'Tu entrenamiento ya se nota: ¿querés conocer a tu compañero 3D, que crece y se pone musculoso con lo que entrenás? (vista previa de Pro)' },
@@ -112,11 +124,11 @@ const FEATURE_HINTS = [
 ];
 
 /** El primer aviso que corresponde (y que no se mostró antes), o null. */
-function nextFeatureHint(sessions, shown) {
+export function nextFeatureHint(sessions, shown) {
     return FEATURE_HINTS.find(h => !features.isOn(h.feature) && !shown.includes(h.feature) && h.when(sessions)) || null;
 }
 
-function renderFeatureHint() {
+export function renderFeatureHint() {
     const box = document.getElementById('featureHint');
     if (!box) return;
     const shown = db.get('featureHintsShown') || [];
@@ -132,14 +144,14 @@ function renderFeatureHint() {
 }
 
 /** Una sugerencia respondida (activar o "ahora no") no vuelve a aparecer. */
-function markFeatureHintShown(id) {
+export function markFeatureHintShown(id) {
     try {
         const shown = db.get('featureHintsShown') || [];
         if (!shown.includes(id)) db.set('featureHintsShown', [...shown, id]);
     } catch (e) { /* no crítico */ }
 }
 
-function initFeatures() {
+export function initFeatures() {
     featureView.apply();
     featureView.render();
     featureView.bind();

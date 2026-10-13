@@ -1,27 +1,34 @@
 // Ajustes → Mi reformer: la marca y los resortes de tu máquina (color, carga y cuántos tiene).
 // Con eso la app muestra cuánta carga es cada combinación y traduce lo que sugieren los
 // ejercicios ("medio", "pesado") a los resortes de tu equipo. Solo se ve si entrenás reformer.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { escapeHtml } from '../core/utils.js';
+import { REFORMER_PRESETS, SPRING_COLORS, SPRING_LOADS, normalizeReformer, suggestSprings } from '../domain/pilates.js';
+import { db } from '../data/repositories.js';
+import { showToast } from '../ui/toast.js';
+import { saveAppSettings } from './general-settings.js';
+import { hasDiscipline } from './disciplines.js';
+import { renderPilatesCatalog } from './pilates-library.js';
+import { useReformerSettings } from '../domain/stats.js';
 
-function loadReformer() {
+export function loadReformer() {
     return normalizeReformer((db.get('appSettings') || {}).reformer);
 }
 
-function saveReformer(reformer) {
+export function saveReformer(reformer) {
     saveAppSettings({ reformer: normalizeReformer(reformer) });
 }
 
-function springColorName(color) {
+export function springColorName(color) {
     return (SPRING_COLORS.find(([c]) => c === color) || [])[1] || '';
 }
 
 /** Resortes sugeridos para un ejercicio del catálogo, con tu reformer. */
-function suggestedSpringsFor(info) {
+export function suggestedSpringsFor(info) {
     if (!info || !(info.load > 0)) return '';
     return suggestSprings(info.load, loadReformer());
 }
 
-function renderReformerSettings() {
+export function renderReformerSettings() {
     const section = document.getElementById('reformerSection');
     if (!section) return;
     section.style.display = hasDiscipline('reformer') ? '' : 'none';
@@ -43,7 +50,7 @@ function renderReformerSettings() {
     if (add) add.disabled = reformer.springs.length >= SPRING_COLORS.length;
 }
 
-function initReformerSettings() {
+export function initReformerSettings() {
     const section = document.getElementById('reformerSection');
     if (!section) return;
     section.addEventListener('change', e => {
@@ -83,3 +90,6 @@ function initReformerSettings() {
     });
     renderReformerSettings();
 }
+
+// Las estadísticas (récords de resortes) leen Mi reformer con esta función.
+useReformerSettings(loadReformer);

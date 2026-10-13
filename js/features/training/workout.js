@@ -1,9 +1,33 @@
 // Pantalla Entrenar: armar la rutina, agregar / quitar ejercicios y guardar la sesión.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
 
 // Reservorio de ejercicios de la rutina actual: los archivados no se muestran en
 // la lista activa de arriba, pero quedan a mano acá para restaurarlos con un clic.
-function buildArchivedExercisesHtml(routine, archivedNames) {
+import { escapeHtml, formatDateLocal, normalizeForCompare } from '../../core/utils.js';
+import { EXERCISE_TO_MUSCLE_GROUP, EXERCISE_TYPES, routines } from '../../domain/catalog.js';
+import { cleanSetForSave, setHasMetric } from '../../domain/sets.js';
+import { ExerciseLog, WorkoutSession } from '../../domain/models.js';
+import { db, repo } from '../../data/repositories.js';
+import { exercisePrefs, getExerciseType, getMuscleGroup, saveExerciseType, saveGroupOverride } from '../../data/exercise-prefs.js';
+import { archivedExercises, customRoutines, getAllKnownExerciseNames, getLastRoutineNote, loadCustomRoutines, saveArchivedExercises, saveCustomRoutines } from '../../data/routines-store.js';
+import { calculateSessionVolume, calculateStats, detectPRs, exerciseStats } from '../../domain/stats.js';
+import { showToast, showUndoToast } from '../../ui/toast.js';
+import { speakCue } from '../../audio/recordings.js';
+import { cancelRestTimer } from '../rest-timer.js';
+import { stopRepCounter } from '../rep-counter.js';
+import { currentSessionEndTime, currentSessionStartTime, stopSessionTimer } from './session-clock.js';
+import { clearWorkoutDraft, saveWorkoutDraft } from './draft.js';
+import { selectedMood, updateDeleteRoutineButtonVisibility } from './routines-ui.js';
+import { buildExerciseRowHtml, buildTypeOptionsHtml, describeBlockSessionData, getBlockName, readBlockSets } from './exercise-block.js';
+import { reorderController } from './reorder.js';
+import { openSessionSummary } from './session-summary.js';
+import { focusCurrentExercise } from './focus.js';
+import { muscleGroupOptionsHtml, populateUnifySelectors, unifyExerciseName } from '../exercises.js';
+import { displayWorkoutHistory } from '../history.js';
+import { updateSidebar } from '../home.js';
+import { features } from '../feature-settings.js';
+import { equipLevelOf } from '../pilates-library.js';
+
+export function buildArchivedExercisesHtml(routine, archivedNames) {
     if (!archivedNames || archivedNames.length === 0) return '';
 
     const uid = `archivedExercises_${normalizeForCompare(routine).replace(/[^a-z0-9]+/g, '_')}`;
@@ -18,7 +42,7 @@ function buildArchivedExercisesHtml(routine, archivedNames) {
         <div class="collapsible-content" id="${uid}">${items}</div>`;
 }
 
-function archiveExerciseFromRow(idx, routine) {
+export function archiveExerciseFromRow(idx, routine) {
     const nameEl = document.getElementById(`exname_${idx}`);
     const exerciseName = nameEl ? nameEl.textContent : null;
     if (!exerciseName) return;
@@ -39,7 +63,7 @@ function archiveExerciseFromRow(idx, routine) {
     showToast(`📥 "${exerciseName}" archivado en esta rutina`);
 }
 
-function restoreArchivedExercise(routine, name) {
+export function restoreArchivedExercise(routine, name) {
     if (!archivedExercises[routine]) return;
     archivedExercises[routine] = archivedExercises[routine].filter(n => normalizeForCompare(n) !== normalizeForCompare(name));
     saveArchivedExercises();
@@ -49,7 +73,7 @@ function restoreArchivedExercise(routine, name) {
 }
 
 /** La ayuda de arriba de los ejercicios: solo lo de las funciones activas (cada parte se traduce sola). */
-function setsLegendHtml() {
+export function setsLegendHtml() {
     const on = id => typeof features === 'undefined' || features.isOn(id);
     return [
         'Mantené apretados los puntos ⠿ y arrastrá para reordenar',
@@ -59,7 +83,7 @@ function setsLegendHtml() {
     ].filter(Boolean).map(t => `<span>${t}</span>`).join(' · ');
 }
 
-function loadRoutineExercises() {
+export function loadRoutineExercises() {
     reorderController.finish(); // si quedó un arrastre a medias, se cierra y la vista vuelve a la normalidad
     const routine = document.getElementById('routine').value;
     const container = document.getElementById('exercisesContainer');
@@ -117,7 +141,7 @@ function loadRoutineExercises() {
     }
 }
 
-function populateExerciseDatalist() {
+export function populateExerciseDatalist() {
     const datalist = document.getElementById('exerciseNamesList');
     if (datalist) {
         datalist.innerHTML = getAllKnownExerciseNames().map(n => `<option value="${escapeHtml(n)}"></option>`).join('');
@@ -128,7 +152,7 @@ function populateExerciseDatalist() {
 // Dado un nombre recién tipeado, devuelve el nombre "canónico" a usar:
 // reutiliza uno existente si coincide (ignorando mayúsculas/acentos/espacios),
 // avisa si se parece a uno existente, o lo deja pasar como ejercicio nuevo.
-function resolveExerciseName(rawName) {
+export function resolveExerciseName(rawName) {
     const trimmed = rawName.trim().replace(/\s+/g, ' ');
     if (!trimmed) return null;
 
@@ -150,7 +174,7 @@ function resolveExerciseName(rawName) {
     return trimmed;
 }
 
-function editExerciseName(idx, routine) {
+export function editExerciseName(idx, routine) {
     const elem = document.getElementById(`exname_${idx}`);
     const currentName = elem.textContent;
     const newNameRaw = prompt('Editar nombre (si escribís uno que ya existe en otra rutina, se puede unificar y fusionar sus estadísticas):', currentName);
@@ -188,7 +212,7 @@ function editExerciseName(idx, routine) {
     populateExerciseDatalist();
 }
 
-function deleteRowQuick(idx, routine) {
+export function deleteRowQuick(idx, routine) {
     const exerciseName = document.getElementById(`exname_${idx}`)?.textContent || 'Ejercicio';
     const block = document.getElementById(`row_${idx}`);
     if (!block) return;
@@ -209,7 +233,7 @@ function deleteRowQuick(idx, routine) {
 // Mientras se escribe el nombre, el selector de tipo sugiere cómo medirlo (el tipo
 // ya guardado si el ejercicio existe, o uno deducido del nombre: "Plancha" → Tiempo,
 // "Bici" → Km). Si el usuario lo cambió a mano, se respeta su elección.
-function onQuickAddNameInput(routine) {
+export function onQuickAddNameInput(routine) {
     const select = document.getElementById('quickAddType');
     const name = document.getElementById('quickAddExercise')?.value || '';
     if (select && !select.dataset.touched) select.value = name.trim() ? getExerciseType(name, routine) : 'kg';
@@ -221,7 +245,7 @@ function onQuickAddNameInput(routine) {
     }
 }
 
-function quickAddExercise(routine) {
+export function quickAddExercise(routine) {
     const input = document.getElementById('quickAddExercise');
     const rawName = input.value;
 
@@ -290,7 +314,7 @@ function quickAddExercise(routine) {
     showToast('✅ Ejercicio agregado');
 }
 
-function saveWorkoutSession() {
+export function saveWorkoutSession() {
     const routine = document.getElementById('routine').value;
     const date = document.getElementById('workoutDate').value;
     

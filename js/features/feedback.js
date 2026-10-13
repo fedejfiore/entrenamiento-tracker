@@ -2,10 +2,14 @@
 // la app, descripción y contacto. Sin servidor todavía: arma un mail con todo cargado hacia
 // APP_BRAND.feedbackEmail, o se copia el texto. Suma datos técnicos (versión, navegador,
 // pantalla, último error) para poder reproducir el problema; nunca datos de entrenamiento.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { appErrors } from '../core/errors.js';
+import { escapeHtml } from '../core/utils.js';
+import { APP_BRAND } from '../core/brand.js';
+import { FEEDBACK_AREAS, FEEDBACK_TYPES, feedbackMessage, validateFeedback } from '../domain/feedback.js';
+import { db } from '../data/repositories.js';
+import { showToast } from '../ui/toast.js';
 
-
-async function appVersionLabel() {
+export async function appVersionLabel() {
     try {
         const names = await caches.keys();
         const v = names.map(n => (n.match(/-(v\d+)$/) || [])[1]).filter(Boolean).sort((a, b) => parseInt(b.slice(1)) - parseInt(a.slice(1)))[0];
@@ -15,7 +19,7 @@ async function appVersionLabel() {
     }
 }
 
-async function feedbackTechnicalInfo() {
+export async function feedbackTechnicalInfo() {
     const standalone = window.matchMedia?.('(display-mode: standalone)').matches;
     const lines = [
         `Versión: ${await appVersionLabel()}`,
@@ -30,7 +34,7 @@ async function feedbackTechnicalInfo() {
     return lines.join('\n');
 }
 
-function readFeedbackForm() {
+export function readFeedbackForm() {
     const modal = document.getElementById('feedbackModal');
     return {
         type: modal.querySelector('input[name="feedbackType"]:checked')?.value || '',
@@ -42,16 +46,16 @@ function readFeedbackForm() {
     };
 }
 
-async function composeFeedback(form) {
+export async function composeFeedback(form) {
     return feedbackMessage(form, APP_BRAND.name, form.includeTech ? await feedbackTechnicalInfo() : '');
 }
 
 // Aparte, para poder reemplazarla en las pruebas.
-function openMailto(url) {
+export function openMailto(url) {
     window.location.href = url;
 }
 
-function showFeedbackErrors(errors) {
+export function showFeedbackErrors(errors) {
     document.querySelectorAll('#feedbackModal [data-error-for]').forEach(el => {
         const msg = errors[el.dataset.errorFor] || '';
         el.textContent = msg;
@@ -64,7 +68,7 @@ function showFeedbackErrors(errors) {
     }
 }
 
-async function submitFeedback(via) {
+export async function submitFeedback(via) {
     const form = readFeedbackForm();
     const { ok, errors } = validateFeedback(form);
     showFeedbackErrors(errors);
@@ -85,7 +89,7 @@ async function submitFeedback(via) {
     closeFeedback();
 }
 
-function renderFeedbackTypes() {
+export function renderFeedbackTypes() {
     const box = document.getElementById('feedbackTypes');
     if (!box || box.childElementCount) return;
     box.innerHTML = FEEDBACK_TYPES.map(t => `
@@ -97,12 +101,12 @@ function renderFeedbackTypes() {
     document.getElementById('feedbackArea').innerHTML = FEEDBACK_AREAS.map(a => `<option>${escapeHtml(a)}</option>`).join('');
 }
 
-async function updateFeedbackTechPreview() {
+export async function updateFeedbackTechPreview() {
     const pre = document.getElementById('feedbackTechPreview');
     if (pre && !pre.hidden) pre.textContent = await feedbackTechnicalInfo();
 }
 
-function openFeedback(type) {
+export function openFeedback(type) {
     renderFeedbackTypes();
     const modal = document.getElementById('feedbackModal');
     if (type) { const r = modal.querySelector(`input[name="feedbackType"][value="${type}"]`); if (r) r.checked = true; }
@@ -120,11 +124,11 @@ function openFeedback(type) {
     modal.classList.add('open');
 }
 
-function closeFeedback() {
+export function closeFeedback() {
     document.getElementById('feedbackModal')?.classList.remove('open');
 }
 
-function bindFeedback() {
+export function bindFeedback() {
     const modal = document.getElementById('feedbackModal');
     if (!modal) return;
     modal.addEventListener('click', e => {

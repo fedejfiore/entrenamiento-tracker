@@ -4,11 +4,13 @@
 // Los errores, las precauciones y los patrones de respiración que se repiten están una sola
 // vez (abajo) y cada ejercicio dice cuáles le tocan. El reformer está en pilates-reformer.js.
 // Contenido orientativo: revisarlo con un instructor certificado (ver docs/PILATES.md).
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { normalizeForCompare } from '../core/utils.js';
+import { appLanguage } from '../core/i18n.js';
+import { EXERCISE_TO_MUSCLE_GROUP, MUSCLE_GROUPS } from './catalog.js';
 
-const PILATES_LEVELS = { 1: 'Principiante', 2: 'Intermedio', 3: 'Avanzado' };
+export const PILATES_LEVELS = { 1: 'Principiante', 2: 'Intermedio', 3: 'Avanzado' };
 
-const PILATES_EQUIPMENT = {
+export const PILATES_EQUIPMENT = {
     mat: ['🧘', 'Colchoneta'],
     ball: ['⚽', 'Pelota'],
     band: ['🎗️', 'Banda elástica'],
@@ -20,7 +22,7 @@ const PILATES_EQUIPMENT = {
 };
 
 // [error, cómo corregirlo]
-const PILATES_ERRORS = {
+export const PILATES_ERRORS = {
     ribs: ['Las costillas se abren y la espalda se arquea', 'Llevá las costillas hacia la pelvis y exhalá antes de moverte.'],
     neck: ['El cuello hace la fuerza', 'Mirada hacia los muslos y espacio entre el mentón y el pecho; si cansa, apoyá la cabeza.'],
     pelvis: ['La pelvis se mueve o se despega', 'Achicá el rango hasta poder mantenerla quieta.'],
@@ -37,7 +39,7 @@ const PILATES_ERRORS = {
     collapse: ['La columna se desploma al sentarte', 'Crecé desde la coronilla, como si un hilo tirara hacia arriba.']
 };
 
-const PILATES_CAUTIONS = {
+export const PILATES_CAUTIONS = {
     flexion: 'Con osteoporosis o hernia de disco, evitá flexionar la columna con carga: hacé la versión con la cabeza apoyada o consultá.',
     extension: 'Si te duele la zona lumbar al arquear, achicá el rango o evitá el ejercicio.',
     inversion: 'Evitalo con problemas de cuello, presión alta, glaucoma o embarazo: se rueda sobre la espalda alta.',
@@ -48,7 +50,7 @@ const PILATES_CAUTIONS = {
     balance: 'Exige equilibrio: hacelo con supervisión si estás empezando.'
 };
 
-const PILATES_BREATH = {
+export const PILATES_BREATH = {
     effort: 'Inhalá para preparar y exhalá en el esfuerzo.',
     lateral: 'Respiración lateral: el aire va a los costados y la espalda de las costillas, sin soltar el abdomen.',
     hundred: 'Inhalá durante cinco bombeos de brazos y exhalá durante cinco (diez ciclos son cien).',
@@ -59,10 +61,10 @@ const PILATES_BREATH = {
 };
 
 // Nivel de resistencia de un elemento: se elige una vez por ejercicio y queda en cada sesión.
-const EQUIPMENT_LEVELS = [['liviana', 'Liviana'], ['media', 'Media'], ['fuerte', 'Fuerte']];
-const EQUIPMENT_WITH_LEVEL = ['band', 'ball', 'ring', 'weights', 'roller'];
+export const EQUIPMENT_LEVELS = [['liviana', 'Liviana'], ['media', 'Media'], ['fuerte', 'Fuerte']];
+export const EQUIPMENT_WITH_LEVEL = ['band', 'ball', 'ring', 'weights', 'roller'];
 
-const PILATES_EXERCISES = [];
+export const PILATES_EXERCISES = [];
 
 /**
  * Agrega un ejercicio al catálogo.
@@ -71,7 +73,7 @@ const PILATES_EXERCISES = [];
  * completo), dir ('up' | 'down' | 'control'), breath (clave de PILATES_BREATH o texto), steps,
  * err (claves de PILATES_ERRORS o [error, corrección]), easier, harder, caution (claves).
  */
-function pilatesEx(kind, name, en, lvl, muscle, type, opts) {
+export function pilatesEx(kind, name, en, lvl, muscle, type, opts) {
     PILATES_EXERCISES.push({ kind, name, en, lvl, muscle, type, equip: kind === 'reformer' ? 'reformer' : 'mat', dir: 'control', breath: 'effort', also: [], err: [], caution: [], ...opts });
 }
 
@@ -568,19 +570,19 @@ pilatesEx('mat', 'Sentadilla en la pared', 'wall squat', 1, 'Cuádriceps', 'time
 });
 
 // ---- Consultas ----
-function pilatesExerciseInfo(name) {
+export function pilatesExerciseInfo(name) {
     const key = normalizeForCompare(name || '');
     return PILATES_EXERCISES.find(e => normalizeForCompare(e.name) === key) || null;
 }
 
-function pilatesVideoUrl(ex) {
+export function pilatesVideoUrl(ex) {
     const lang = typeof appLanguage === 'string' ? appLanguage : 'es';
     const query = `pilates ${ex.kind === 'reformer' ? 'reformer ' : ''}${ex.en} ${lang === 'es' ? 'técnica' : 'tutorial'}`;
     return 'https://www.youtube.com/results?search_query=' + encodeURIComponent(query);
 }
 
 /** El grupo muscular de los ejercicios de pilates sale del catálogo (para el mapa y la biblioteca). */
-function registerPilatesMuscles() {
+export function registerPilatesMuscles() {
     PILATES_EXERCISES.forEach(ex => {
         const group = MUSCLE_GROUPS[ex.muscle];
         if (group && !group.exercises.includes(ex.name)) group.exercises.push(ex.name);

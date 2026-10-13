@@ -2,18 +2,30 @@
 // sus ejercicios, filtrados por equipo y nivel, con la ficha de cada uno (cómo se hace,
 // errores comunes, precauciones, alternativas y video). "Mi equipo" deja ver solo lo que se
 // puede hacer en tu gimnasio o en tu casa. La ficha también se abre desde Entrenar (📖).
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { escapeHtml, normalizeForCompare } from '../core/utils.js';
+import { MUSCLE_GROUPS } from '../domain/catalog.js';
+import { GYM_CAUTIONS, GYM_EQUIPMENT, GYM_ERRORS, GYM_EXERCISES, GYM_LEVELS, gymExerciseInfo, gymVideoUrl } from '../domain/gym-catalog.js';
+import { exercisePrefs, saveExerciseType } from '../data/exercise-prefs.js';
+import { customRoutines, isRoutineVisible, loadCustomRoutines, saveCustomRoutines } from '../data/routines-store.js';
+import { showToast } from '../ui/toast.js';
+import { loadRoutineExercises } from './training/workout.js';
+import { routineLabelOf } from './progress.js';
+import { BODY_BACK, BODY_FRONT, MAPPED_GROUPS, muscleFigureSvg } from './muscle-map.js';
+import { loadAppSettings, saveAppSettings } from './general-settings.js';
+import { routineInActiveModule } from './disciplines.js';
+import { closePilatesInfo, pilatesChip } from './pilates-library.js';
+import { renderLibrary } from './library.js';
 
-const gymFilters = { muscle: 'all', equip: 'all', lvl: 'all', q: '', mine: true };
+export const gymFilters = { muscle: 'all', equip: 'all', lvl: 'all', q: '', mine: true };
 
 /** El equipo que tenés (se elige acá, en "Mi equipo"). Sin elegir, todo. */
-function loadGymEquipment() {
+export function loadGymEquipment() {
     const saved = loadAppSettings().gymEquipment;
     const valid = Array.isArray(saved) ? saved.filter(k => GYM_EQUIPMENT[k]) : [];
     return valid.length ? valid : Object.keys(GYM_EQUIPMENT);
 }
 
-function toggleGymEquipment(key) {
+export function toggleGymEquipment(key) {
     if (!GYM_EQUIPMENT[key]) return;
     const mine = new Set(loadGymEquipment());
     if (mine.has(key)) mine.delete(key); else mine.add(key);
@@ -22,7 +34,7 @@ function toggleGymEquipment(key) {
     renderGymCatalog();
 }
 
-function filteredGymExercises() {
+export function filteredGymExercises() {
     const f = gymFilters;
     const mine = new Set(loadGymEquipment());
     const q = normalizeForCompare(f.q || '');
@@ -33,7 +45,7 @@ function filteredGymExercises() {
         && (!q || normalizeForCompare(`${e.name} ${e.en} ${e.aliases.join(' ')}`).includes(q)));
 }
 
-function gymItemHtml(e) {
+export function gymItemHtml(e) {
     const [icon, label] = GYM_EQUIPMENT[e.equip];
     const main = e.muscle === gymFilters.muscle || gymFilters.muscle === 'all';
     return `<button type="button" class="pl-item" data-gym-info="${escapeHtml(e.name)}">
@@ -43,13 +55,13 @@ function gymItemHtml(e) {
 }
 
 /** Figura de frente y espalda: tocar un músculo lo elige (y tocarlo de nuevo lo suelta). */
-function gymBodyPickerHtml() {
+export function gymBodyPickerHtml() {
     const selected = gymFilters.muscle;
     const mark = svg => svg.replace(/data-group="([^"]+)"/g, (all, g) => `${all} class="pick${g === selected ? ' on' : ''}" data-gym-muscle="${g}"`);
     return `<div class="gym-body">${muscleFigureSvg(mark(BODY_FRONT), 'Frente')}${muscleFigureSvg(mark(BODY_BACK), 'Espalda')}</div>`;
 }
 
-function renderGymCatalog() {
+export function renderGymCatalog() {
     const box = document.getElementById('gymCatalog');
     if (!box) return;
     const f = gymFilters;
@@ -81,11 +93,11 @@ function renderGymCatalog() {
 }
 
 // ---- Ficha ----
-function gymErrorPair(x) {
+export function gymErrorPair(x) {
     return typeof x === 'string' ? GYM_ERRORS[x] : x;
 }
 
-function openGymInfo(name) {
+export function openGymInfo(name) {
     const e = gymExerciseInfo(name);
     const modal = document.getElementById('pilatesInfoModal');
     if (!e || !modal) return;
@@ -111,7 +123,7 @@ function openGymInfo(name) {
     modal.classList.add('open');
 }
 
-function addGymExerciseToRoutine(key, name) {
+export function addGymExerciseToRoutine(key, name) {
     loadCustomRoutines();
     if (!customRoutines[key]) return;
     if (customRoutines[key].some(n => normalizeForCompare(n) === normalizeForCompare(name))) {
@@ -126,7 +138,7 @@ function addGymExerciseToRoutine(key, name) {
     showToast(`➕ "${name}" agregado a ${routineLabelOf(key)}`, 'success');
 }
 
-function initGymLibrary() {
+export function initGymLibrary() {
     const box = document.getElementById('gymCatalog');
     box?.addEventListener('change', e => {
         const key = e.target.dataset.gymFilter;

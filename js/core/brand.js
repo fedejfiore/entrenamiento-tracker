@@ -3,7 +3,7 @@
 //
 // Gymnastés (en griego, γυμναστής): en la antigua Grecia, el entrenador de los atletas, el que
 // sabía qué ejercicios hacía falta y cuánto. Es lo que la app quiere ser: tu entrenador personal.
-const APP_BRAND = {
+export const APP_BRAND = {
     name: 'Gymnastés',
     by: 'by Inquieto',
     company: 'Inquieto',
@@ -14,6 +14,6 @@ const APP_BRAND = {
     feedbackEmail: 'federicojfiore@gmail.com'
 };
 
-function appBrandLine() {
+export function appBrandLine() {
     return `${APP_BRAND.name} ${APP_BRAND.by}`;
 }

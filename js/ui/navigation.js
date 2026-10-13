@@ -1,7 +1,20 @@
 // Pantallas, menú lateral y tema claro / oscuro.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { fnAttrs } from './actions.js';
+import { db } from '../data/repositories.js';
+import { setTrainMode } from '../features/training/train-mode.js';
+import { generateProgressionAnalysis } from '../features/progress.js';
+import { updateBodyChart } from '../features/body-metrics.js';
+import { getCurrentPlan, renderTodayCard, startTodayRoutine } from '../features/plan-screen.js';
+import { renderGarden } from '../features/garden.js';
+import { renderMascot } from '../features/mascot.js';
+import { renderMuscleMap } from '../features/muscle-map.js';
+import { anyFeatureOn, renderFeatureHint } from '../features/feature-settings.js';
+import { openProgramsModal } from '../features/programs.js';
+import { renderLibrary } from '../features/library.js';
+import { renderProfile } from '../features/profile.js';
+import { setSectionOpen } from './collapsible.js';
 
-const APP_SCREENS = [
+export const APP_SCREENS = [
     { id: 'inicio', icon: '🏠', label: 'Inicio' },
     { id: 'entrenar', icon: '🏋️', label: 'Entrenar' },
     { id: 'historial', icon: '📋', label: 'Historial' },
@@ -14,7 +27,7 @@ const APP_SCREENS = [
 
 // Qué refrescar al entrar a cada pantalla (los gráficos de Chart.js necesitan
 // que su canvas ya esté visible, si no renderizan a tamaño cero).
-const SCREEN_ON_SHOW = {
+export const SCREEN_ON_SHOW = {
     inicio: () => { renderTodayCard(getCurrentPlan()); renderGarden(); if (typeof renderFeatureHint === 'function') renderFeatureHint(); },
     progreso: () => {
         renderMuscleMap();
@@ -25,7 +38,7 @@ const SCREEN_ON_SHOW = {
     perfil: () => { renderProfile(); renderMascot(); }
 };
 
-function renderDrawerNav() {
+export function renderDrawerNav() {
     const container = document.getElementById('drawerNav');
     if (!container) return;
     container.innerHTML = APP_SCREENS.filter(s => !s.features || typeof anyFeatureOn !== 'function' || anyFeatureOn(s.features)).map(s =>
@@ -35,7 +48,7 @@ function renderDrawerNav() {
     ).join('');
 }
 
-function showScreen(screenId, fromClick) {
+export function showScreen(screenId, fromClick) {
     if (screenId === 'tabata') { screenId = 'entrenar'; setTimeout(() => setTrainMode('tabata'), 0); }
     if (screenId === 'variantes') screenId = 'biblioteca';
     if (!APP_SCREENS.some(s => s.id === screenId)) screenId = 'inicio';
@@ -63,7 +76,7 @@ function showScreen(screenId, fromClick) {
 }
 
 // Al recargar vuelve a la pantalla (y a la altura) en la que estaba, no siempre a Inicio.
-function initScreens() {
+export function initScreens() {
     renderDrawerNav();
     let screen = 'inicio', scrollY = 0;
     try {
@@ -80,51 +93,51 @@ function initScreens() {
     window.addEventListener('scroll', () => { clearTimeout(t); t = setTimeout(saveScroll, 400); }, { passive: true });
 }
 
-function openDrawer() {
+export function openDrawer() {
     document.getElementById('drawer').classList.add('open');
     document.getElementById('drawerOverlay').classList.add('visible');
 }
 
-function closeDrawer() {
+export function closeDrawer() {
     document.getElementById('drawer').classList.remove('open');
     document.getElementById('drawerOverlay').classList.remove('visible');
 }
 
-function toggleDrawer() {
+export function toggleDrawer() {
     const drawer = document.getElementById('drawer');
     if (drawer.classList.contains('open')) closeDrawer();
     else openDrawer();
 }
 
 // Tema: 'auto' sigue al celular (claro u oscuro según el sistema), o fijo 'dark' / 'light'.
-const systemLight = window.matchMedia ? window.matchMedia('(prefers-color-scheme: light)') : null;
+export const systemLight = window.matchMedia ? window.matchMedia('(prefers-color-scheme: light)') : null;
 
-function resolveTheme(pref) {
+export function resolveTheme(pref) {
     if (pref === 'light' || pref === 'dark') return pref;
     return systemLight && systemLight.matches ? 'light' : 'dark';
 }
 
-function applyTheme(pref) {
+export function applyTheme(pref) {
     if (resolveTheme(pref) === 'light') document.documentElement.setAttribute('data-theme', 'light');
     else document.documentElement.removeAttribute('data-theme');
     if (typeof renderMuscleMap === 'function') { try { renderMuscleMap(); } catch (e) {} }
 }
 
-function currentThemePref() {
+export function currentThemePref() {
     try { return db.get('theme') || 'auto'; } catch (e) { return 'auto'; }
 }
 
-function setThemePref(pref) {
+export function setThemePref(pref) {
     try { db.set('theme', pref); } catch (e) {}
     applyTheme(pref);
 }
 
 // Se mantiene para quien lo llame (atajos viejos): alterna entre claro y oscuro fijos.
-function toggleTheme() {
+export function toggleTheme() {
     setThemePref(document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
 }
 
-function initTheme() {
+export function initTheme() {
     applyTheme(currentThemePref());
     systemLight?.addEventListener?.('change', () => { if (currentThemePref() === 'auto') applyTheme('auto'); });
     const sel = document.getElementById('themeSelect');
@@ -137,7 +150,7 @@ function initTheme() {
 
 // Con el teclado abierto la barra de abajo estorba (tapa el campo que se edita): se oculta
 // mientras la ventana visible es mucho más baja que la pantalla.
-function initBottomNavKeyboardHide() {
+export function initBottomNavKeyboardHide() {
     const vv = window.visualViewport;
     if (!vv) return;
     const update = () => document.body.classList.toggle('keyboard-open', vv.height < window.innerHeight * 0.75);
@@ -148,21 +161,21 @@ function initBottomNavKeyboardHide() {
 // ---------- Estados vacíos con acción ----------
 // Cuando una lista está vacía no alcanza con decirlo: se ofrece el paso siguiente.
 
-const EMPTY_STATE_ACTIONS = {
+export const EMPTY_STATE_ACTIONS = {
     train: { label: '▶ Empezar a entrenar', run: () => (typeof startTodayRoutine === 'function' ? startTodayRoutine() : showScreen('entrenar', true)) },
     import: { label: '📥 Traer historial de otra app', run: () => goToSection('ajustes', 'importHistorySection') },
     'create-routine': { label: '➕ Crear una rutina', run: () => { showScreen('entrenar', true); setTimeout(() => document.getElementById('newRoutineName')?.focus(), 100); } },
     programs: { label: '📚 Ver programas', run: () => openProgramsModal() }
 };
 
-function emptyStateHtml(text, actions = []) {
+export function emptyStateHtml(text, actions = []) {
     const buttons = actions.filter(a => EMPTY_STATE_ACTIONS[a])
         .map(a => `<button type="button" class="small" data-empty-go="${a}">${EMPTY_STATE_ACTIONS[a].label}</button>`).join('');
     return `<div class="empty-state"><p>${text}</p>${buttons ? `<div class="empty-state-actions">${buttons}</div>` : ''}</div>`;
 }
 
 /** Va a una pantalla y abre una sección plegable puntual. */
-function goToSection(screenId, sectionId) {
+export function goToSection(screenId, sectionId) {
     showScreen(screenId, true);
     const section = document.getElementById(sectionId);
     if (section && typeof setSectionOpen === 'function') setSectionOpen(section, true, true);

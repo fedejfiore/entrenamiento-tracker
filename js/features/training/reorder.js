@@ -10,11 +10,16 @@
 //   página el navegador pierde el seguimiento del dedo sobre la manija.
 // - Cualquier final (soltar, cancelar, salir de la app, volver a cargar la rutina) pasa
 //   por finish(), que SIEMPRE devuelve la vista a la normalidad.
+import { normalizeForCompare } from '../../core/utils.js';
+import { routines } from '../../domain/catalog.js';
+import { customRoutines, loadCustomRoutines, saveCustomRoutines } from '../../data/routines-store.js';
+import { saveWorkoutDraft } from './draft.js';
+import { getBlockName } from './exercise-block.js';
 
-const REORDER_HOLD_MS = { touch: 700, mouse: 300 };
-const REORDER_HOLD_TOLERANCE_PX = 10; // moverse más que esto durante el "mantener" lo cancela
+export const REORDER_HOLD_MS = { touch: 700, mouse: 300 };
+export const REORDER_HOLD_TOLERANCE_PX = 10; // moverse más que esto durante el "mantener" lo cancela
 
-class ReorderController {
+export class ReorderController {
     // Autoscroll al arrastrar cerca del borde de la pantalla: franja (px) y velocidad máxima (px por cuadro).
     static EDGE_ZONE_PX = 80;
     static EDGE_MAX_SPEED = 16;
@@ -207,20 +212,20 @@ class ReorderController {
     }
 }
 
-const reorderController = new ReorderController('exercisesContainer');
+export const reorderController = new ReorderController('exercisesContainer');
 
-function exerciseBlockSiblings(block, dir) {
+export function exerciseBlockSiblings(block, dir) {
     let el = dir < 0 ? block.previousElementSibling : block.nextElementSibling;
     while (el && !el.classList.contains('exercise-row')) el = dir < 0 ? el.previousElementSibling : el.nextElementSibling;
     return el;
 }
 
-function getExerciseOrder() {
+export function getExerciseOrder() {
     return [...document.querySelectorAll('#exercisesContainer .exercise-row')].map(getBlockName).join('\n');
 }
 
 // Anima al vecino desde donde estaba hasta su lugar nuevo (FLIP).
-function flipFrom(el, oldTop) {
+export function flipFrom(el, oldTop) {
     const delta = oldTop - el.offsetTop;
     if (!delta) return;
     el.style.transition = 'none';
@@ -233,7 +238,7 @@ function flipFrom(el, oldTop) {
 // El orden nuevo queda guardado en la rutina (la próxima vez aparece igual).
 // Los ejercicios que no están en pantalla (archivados o quitados solo por hoy)
 // conservan su lugar; los visibles se reacomodan en los lugares que ocupaban.
-function persistExerciseOrder() {
+export function persistExerciseOrder() {
     const routine = document.getElementById('routine')?.value;
     if (!routine) return;
     loadCustomRoutines();

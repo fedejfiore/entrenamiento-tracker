@@ -1,7 +1,11 @@
 // Series: textos, etiquetas (calentamiento) y normalización para guardar.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { normalizeDecimalString, parseDecimal } from '../core/utils.js';
+import { computeSpeed, formatDurationHuman, formatTimeValue, parseTimeSeconds } from '../core/time.js';
+import { formatDistance, formatSpeed, formatWeight } from '../core/units.js';
+import { EFFORT_SCALES, EXERCISE_TYPES, WARMUP_LABEL } from './catalog.js';
+import { parseSprings } from './pilates.js';
 
-function formatSetValue(set, type) {
+export function formatSetValue(set, type) {
     const v = f => String(set?.[f] || '').trim();
     const dur = formatDurationHuman(parseTimeSeconds(v('time')));
     if (type === 'kg') return v('kg') ? `${v('reps') || '?'}×${formatWeight(parseDecimal(v('kg')))}` : v('reps');
@@ -16,7 +20,7 @@ function formatSetValue(set, type) {
 }
 
 // Resumen de las series efectivas; las de calentamiento solo se cuentan al final.
-function formatSetsSummary(sets, type) {
+export function formatSetsSummary(sets, type) {
     const list = sets || [];
     const work = list.filter(s => !s.warmup).map(s => formatSetValue(s, type)).filter(Boolean).join(' · ');
     const warmups = list.filter(s => s.warmup).length;
@@ -24,7 +28,7 @@ function formatSetsSummary(sets, type) {
     return warmups ? `${work} (+${warmups} calent.)` : work;
 }
 
-function formatEffort(effort, type) {
+export function formatEffort(effort, type) {
     if (!effort) return '';
     const scale = EFFORT_SCALES[(EXERCISE_TYPES[type] || EXERCISE_TYPES.kg).effort];
     // Solo valores de la escala: un dato raro (ej. un backup editado a mano) no se muestra.
@@ -36,22 +40,22 @@ function formatEffort(effort, type) {
 }
 
 // Las de calentamiento se muestran como "C" y no consumen número: C, C, 1, 2, 3.
-function setLabels(sets) {
+export function setLabels(sets) {
     let k = 0;
     return sets.map(s => (s && s.warmup) ? WARMUP_LABEL : String(++k));
 }
 
 // "Tiene datos": algo escrito o tildado (ser de calentamiento solo, no cuenta).
-function setHasAnyData(set) {
+export function setHasAnyData(set) {
     return Object.keys(set).some(k => k !== 'warmup');
 }
 
-function setHasMetric(set, type) {
+export function setHasMetric(set, type) {
     return (EXERCISE_TYPES[type] || EXERCISE_TYPES.kg).cols.some(f => set[f]);
 }
 
 // Normaliza una serie para guardarla: solo los campos del tipo, coma decimal -> punto.
-function cleanSetForSave(set, type) {
+export function cleanSetForSave(set, type) {
     const clean = {};
     (EXERCISE_TYPES[type] || EXERCISE_TYPES.kg).cols.forEach(f => {
         if (!set[f]) return;

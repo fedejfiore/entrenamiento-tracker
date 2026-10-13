@@ -3,7 +3,7 @@
 // se vuelve a activar, está todo). Las pantallas preguntan features.isOn('rir') al dibujar,
 // y lo que está en el HTML lleva data-feature="rir": se oculta con una regla de CSS que se
 // arma sola a partir de esta lista.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { appErrors } from './errors.js';
 
 /**
  * Definición de cada función.
@@ -11,7 +11,7 @@
  *   simple     ¿viene activada en el modo simple? (el núcleo no está acá: siempre se ve)
  *   requires   otras funciones que tienen que estar activas para que esta tenga sentido
  */
-const FEATURE_GROUPS = [
+export const FEATURE_GROUPS = [
     ['log', '📝', 'Registro'],
     ['tools', '🧰', 'Herramientas'],
     ['plan', '🗓️', 'Plan y programas'],
@@ -21,7 +21,7 @@ const FEATURE_GROUPS = [
     ['data', '💾', 'Datos']
 ];
 
-const FEATURE_DEFINITIONS = [
+export const FEATURE_DEFINITIONS = [
     { id: 'focus', group: 'log', simple: true, label: 'Un ejercicio a la vez', description: 'En Entrenar se ve abierto solo el ejercicio que toca (o toda su superserie); los demás quedan plegados en una línea.' },
     { id: 'restColumn', group: 'log', simple: true, label: 'Descanso por serie', description: 'Una columna para elegir el descanso de cada serie. Sin ella, el descanso usa el de la última vez (o 90 s).' },
     { id: 'effort', group: 'log', simple: false, label: 'RIR / esfuerzo', description: 'Cuántas reps te quedaban (RIR) o qué tan exigente fue cada serie.' },
@@ -51,7 +51,7 @@ const FEATURE_DEFINITIONS = [
     { id: 'unify', group: 'data', simple: false, label: 'Unificar ejercicios', description: 'Juntá un ejercicio que quedó con dos nombres.' }
 ];
 
-class FeatureRegistry {
+export class FeatureRegistry {
     /**
      * @param {object[]} definitions  lista de funciones (FEATURE_DEFINITIONS)
      * @param {{ load: () => object|null, save: (state: object) => void }} storage

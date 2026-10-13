@@ -1,25 +1,36 @@
 // Perfil: nombre, foto, contacto, tu actividad, medallas (con imagen para compartir) y
 // fotos de progreso. Las fotos quedan en el celular (IndexedDB) y entran en el backup.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { escapeHtml, formatNumber, getLocalDateString } from '../core/utils.js';
+import { appLocale } from '../core/i18n.js';
+import { ageFrom, formatDurationHuman } from '../core/time.js';
+import { formatWeightTotal, weightUnit } from '../core/units.js';
+import { ValidationError } from '../data/store.js';
+import { MEDAL_TIERS, computeUsageStats, evaluateAchievements, recentRecords } from '../domain/achievements.js';
+import { db, repo } from '../data/repositories.js';
+import { photoRepo } from '../data/recording-repository.js';
+import { showToast } from '../ui/toast.js';
+import { loadAppSettings } from './general-settings.js';
+import { openShareSheet } from './share-cards.js';
+import { emptyStateHtml } from '../ui/navigation.js';
 
-const PHOTO_MAX_SIDE = 1280;
-const PHOTO_QUALITY = 0.82;
-let profilePhotoUrls = [];
+export const PHOTO_MAX_SIDE = 1280;
+export const PHOTO_QUALITY = 0.82;
+export let profilePhotoUrls = [];
 
-function loadProfile() {
+export function loadProfile() {
     const p = db.get('userProfile') || {};
     const clean = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
     const birth = typeof p.birthDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(p.birthDate) ? p.birthDate : '';
     return { name: clean(p.name, 60), email: clean(p.email, 120), phone: clean(p.phone, 30), birthDate: birth };
 }
 
-function saveProfile(patch) {
+export function saveProfile(patch) {
     try { db.set('userProfile', { ...loadProfile(), ...patch }); } catch (e) { showToast('No se pudo guardar el perfil', 'error'); }
 }
 
 // Achica la foto antes de guardarla (lado mayor 1280 px, JPEG): una foto de celular pasa de
 // varios MB a unos 150-300 KB, así entran muchas en el celular y en el backup.
-function compressImage(file) {
+export function compressImage(file) {
     return new Promise((resolve, reject) => {
         if (!file || !/^image\//.test(file.type)) { reject(new ValidationError('Elegí una imagen.')); return; }
         const img = new Image();
@@ -38,7 +49,7 @@ function compressImage(file) {
     });
 }
 
-async function savePhoto(file, kind, date) {
+export async function savePhoto(file, kind, date) {
     const data = await compressImage(file);
     const id = kind === 'avatar' ? 'avatar' : `progress-${date}-${Date.now().toString(36)}`;
     await photoRepo.put({ id, kind, date: date || getLocalDateString(), mime: 'image/jpeg', updatedAt: Date.now(), data });
@@ -47,7 +58,7 @@ async function savePhoto(file, kind, date) {
 
 // ---------- Pantalla ----------
 
-async function renderProfile() {
+export async function renderProfile() {
     const profile = loadProfile();
     const nameEl = document.getElementById('profileName');
     if (nameEl && document.activeElement !== nameEl) nameEl.value = profile.name;
@@ -69,7 +80,7 @@ async function renderProfile() {
     await renderPhotos();
 }
 
-function renderProfileStats(s) {
+export function renderProfileStats(s) {
     const box = document.getElementById('profileStats');
     if (!box) return;
     const items = [
@@ -84,7 +95,7 @@ function renderProfileStats(s) {
         <p class="lib-note">${s.bestWeekStreak ? `Mejor racha: ${s.bestWeekStreak} ${s.bestWeekStreak === 1 ? 'semana seguida' : 'semanas seguidas'}. ` : ''}${s.avgMinutes ? `Sesión promedio: ${formatDurationHuman(s.avgMinutes * 60)}. ` : ''}${s.favoriteExercise ? `Tu ejercicio más hecho: ${escapeHtml(s.favoriteExercise)}.` : ''}</p>`;
 }
 
-function renderMedals(stats) {
+export function renderMedals(stats) {
     const box = document.getElementById('profileMedals');
     if (!box) return;
     box.innerHTML = evaluateAchievements(stats).map(a => {
@@ -105,7 +116,7 @@ function renderMedals(stats) {
     }).join('');
 }
 
-async function renderPhotos() {
+export async function renderPhotos() {
     profilePhotoUrls.forEach(u => URL.revokeObjectURL(u));
     profilePhotoUrls = [];
     let photos = [];
@@ -130,7 +141,7 @@ async function renderPhotos() {
         : '<p class="lib-empty">Sacate una foto cada 2 a 4 semanas (misma luz y misma pose) para ver tu cambio. También podés sumar una foto al cargar tus medidas.</p>';
 }
 
-async function openPhoto(id) {
+export async function openPhoto(id) {
     const rec = (await photoRepo.all()).find(p => p.id === id);
     if (!rec) return;
     const modal = document.getElementById('photoModal');
@@ -144,11 +155,11 @@ async function openPhoto(id) {
 
 // ---------- Medallas y trofeos para compartir (ver js/features/share-cards.js) ----------
 
-function shareDateText(dateStr) {
+export function shareDateText(dateStr) {
     return new Date((dateStr || getLocalDateString()) + 'T00:00:00').toLocaleDateString(appLocale(), { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
-function medalShareSpec(a) {
+export function medalShareSpec(a) {
     const qty = n => a.id === 'volume' ? formatWeightTotal(n) : `${formatNumber(n)} ${a.unit}`;
     return {
         kind: 'medal', title: a.title, tierName: a.tier.name, color: a.tier.color, icon: a.icon,
@@ -159,11 +170,11 @@ function medalShareSpec(a) {
     };
 }
 
-function recordValueText(r) {
+export function recordValueText(r) {
     return r.kind === 'reps' ? `${r.valueText} reps` : r.valueText;
 }
 
-function trophyShareSpec(r) {
+export function trophyShareSpec(r) {
     return {
         kind: 'trophy', exercise: r.exercise, title: r.exercise, color: '#ffc83d',
         valueText: recordValueText(r), beforeText: r.kind === 'reps' && r.beforeText ? `${r.beforeText} reps` : r.beforeText,
@@ -172,14 +183,14 @@ function trophyShareSpec(r) {
     };
 }
 
-function shareMedal(id) {
+export function shareMedal(id) {
     const a = evaluateAchievements(computeUsageStats(repo.workouts.all(), loadAppSettings().weekStart)).find(x => x.id === id);
     if (a && a.tier) openShareSheet(medalShareSpec(a));
 }
 
-let profileTrophies = [];
+export let profileTrophies = [];
 
-function renderTrophies() {
+export function renderTrophies() {
     const box = document.getElementById('profileTrophies');
     if (!box) return;
     profileTrophies = recentRecords(repo.workouts.all(), 12);
@@ -195,7 +206,7 @@ function renderTrophies() {
 
 // ---------- Eventos ----------
 
-function bindProfile() {
+export function bindProfile() {
     const screen = document.querySelector('[data-screen="perfil"]');
     if (!screen) return;
     const bindText = (id, field) => document.getElementById(id)?.addEventListener('change', e => { saveProfile({ [field]: e.target.value }); renderProfile(); });
@@ -234,7 +245,7 @@ function bindProfile() {
 }
 
 // Foto opcional al cargar una medición (Medidas corporales): queda como foto de progreso de esa fecha.
-async function saveMeasurementPhoto(date) {
+export async function saveMeasurementPhoto(date) {
     const input = document.getElementById('bodyPhoto');
     const file = input && input.files && input.files[0];
     if (!file) return;

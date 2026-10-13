@@ -9,14 +9,18 @@
 //   validate()      estricta: para lo que se crea o se edita ahora.
 //   validateStored() liviana: para lo que ya estaba guardado. Un dato viejo con una forma
 //                   rara nunca debe impedir seguir usando la app ni guardar sesiones nuevas.
+import { generateId } from '../core/utils.js';
+import { ValidationError } from '../data/store.js';
+import { EXERCISE_TYPES } from './catalog.js';
+import { legacyStringsFromSets } from './legacy-format.js';
 
-const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+export const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
-function assertValid(condition, message, details) {
+export function assertValid(condition, message, details) {
     if (!condition) throw new ValidationError(message, details);
 }
 
-class SetEntry {
+export class SetEntry {
     static get FIELDS() { return ['reps', 'kg', 'km', 'time', 'springs', 'rest', 'effort', 'note', 'warmup', 'done']; }
 
     constructor(data = {}) {
@@ -41,7 +45,7 @@ class SetEntry {
     }
 }
 
-class ExerciseLog {
+export class ExerciseLog {
     /**
      * @param name   nombre del ejercicio
      * @param type   'kg' | 'bw' | 'time' | 'min' | 'km' (EXERCISE_TYPES)
@@ -84,7 +88,7 @@ class ExerciseLog {
     }
 }
 
-class WorkoutSession {
+export class WorkoutSession {
     /** Sesión nueva con identidad y fecha de modificación. */
     static create(fields) {
         const now = new Date().toISOString();
@@ -141,7 +145,7 @@ class WorkoutSession {
     }
 }
 
-class BodyMeasurement {
+export class BodyMeasurement {
     static get FIELDS() { return ['weight', 'fat', 'muscle', 'water', 'waist']; }
 
     static create(fields) {

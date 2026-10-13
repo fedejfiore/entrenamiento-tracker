@@ -1,5 +1,4 @@
 // Formato viejo de las sesiones ("12-10-8"): lectura tolerante y escritura compatible.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
 
 // Las sesiones viejas guardan cada columna como texto ("12-10-8", "50-55-60",
 // "90s"). Cada usuario pudo haber tipeado distinto, así que se acepta cualquier
@@ -7,7 +6,11 @@
 
 // Reps (siempre enteras): cualquier cosa que no sea un número separa series.
 // "12-10-8" = "12,10,8" = "12 10 8" = "12/10/8"; "4x12" = 4 series de 12.
-function parseRepsList(str) {
+import { normalizeForCompare, parseDecimal } from '../core/utils.js';
+import { formatTimeValue, parseTimeSeconds } from '../core/time.js';
+import { LEGACY_INTENSITY_TO_EFFORT, isCardioType } from './catalog.js';
+
+export function parseRepsList(str) {
     const s = String(str ?? '').trim().toLowerCase();
     if (!s) return [];
     const nx = s.match(/^(\d+)\s*[x×*]\s*(\d+)$/);
@@ -19,7 +22,7 @@ function parseRepsList(str) {
 // Caso ambiguo sin otro separador ("50,55"): son dos series solo si hay esa misma
 // cantidad de series en reps, la parte decimal tiene 2+ dígitos y los dos números
 // se parecen (50 y 55 sí; 22 y 5 no → 22,5 kg). Varias comas = lista ("50,55,60").
-function parseWeightList(str, repsStr) {
+export function parseWeightList(str, repsStr) {
     const s = String(str ?? '').trim().toLowerCase().replace(/kgs?|kilos?/g, ' ').trim();
     if (!s) return [];
     let parts;
@@ -43,7 +46,7 @@ function parseWeightList(str, repsStr) {
 }
 
 // Pausas en segundos: "90", "90s", "1:30", "2m" / "2min"; separadas igual que las reps.
-function parsePauseList(str) {
+export function parsePauseList(str) {
     const s = String(str ?? '').trim().toLowerCase();
     if (!s) return [];
     return s.split(/[-;/|+,\s]+/).filter(Boolean).map(p => {
@@ -56,7 +59,7 @@ function parsePauseList(str) {
 
 // Convierte el formato viejo ("15-15-15" en reps, "50-50" en peso, "90-90" en pausa)
 // a una lista de series. Si hay menos pesos que reps, el último peso se repite.
-function setsFromLegacy(ex, type) {
+export function setsFromLegacy(ex, type) {
     const reps = parseRepsList(ex.reps).map(String);
     const weights = parseWeightList(ex.weight, ex.reps).map(String);
     const pauses = parsePauseList(ex.pause).map(String);
@@ -86,7 +89,7 @@ function setsFromLegacy(ex, type) {
 // Además de `sets`, se guardan los strings viejos ("12-10-8") para ejercicios de
 // fuerza: PRs, volumen, 1RM, gráficos y el historial anterior siguen leyendo eso.
 // Las series de calentamiento quedan afuera, así no inflan volumen ni récords.
-function legacyStringsFromSets(sets, type) {
+export function legacyStringsFromSets(sets, type) {
     const work = sets.filter(s => !s.warmup);
     const pause = work.map(s => s.rest).filter(Boolean).join('-');
     if (type !== 'kg' && type !== 'bw' && type !== 'pilates' && type !== 'springs') return { reps: '', weight: '', pause };

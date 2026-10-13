@@ -1,19 +1,39 @@
 // Biblioteca: todas las rutinas (tuyas, programas, básicas y archivadas) y todos los
 // ejercicios (los tuyos y el catálogo de variantes con videos). También compartir una
 // rutina por link e importar una que te pasaron.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { escapeHtml, normalizeForCompare } from '../core/utils.js';
+import { appLocale } from '../core/i18n.js';
+import { APP_BRAND } from '../core/brand.js';
+import { ValidationError } from '../data/store.js';
+import { MUSCLE_GROUPS, catalogMuscleGroup, routines } from '../domain/catalog.js';
+import { findProgram } from '../domain/programs.js';
+import { decodeRoutineShare, encodeRoutineShare, routineShareCodeFrom, routineShareCodesFrom } from '../domain/routine-share.js';
+import { repo } from '../data/repositories.js';
+import { exercisePrefs, getExerciseType, getMuscleGroup, saveExerciseType, saveGroupOverride } from '../data/exercise-prefs.js';
+import { archivedRoutines, customRoutines, loadCustomRoutineLabels, loadCustomRoutines, saveArchivedRoutines } from '../data/routines-store.js';
+import { calculateStats, exerciseStats } from '../domain/stats.js';
+import { showToast, showUndoToast } from '../ui/toast.js';
+import { saveWorkoutDraft } from './training/draft.js';
+import { populateRoutineOptions, renderArchivedRoutinesList, restoreRoutine } from './training/routines-ui.js';
+import { buildLastSummaryText } from './training/exercise-block.js';
+import { loadRoutineExercises } from './training/workout.js';
+import { setTrainMode } from './training/train-mode.js';
+import { openExerciseDetail, routineLabelOf } from './progress.js';
+import { ensureModuleForRoutine, routineInActiveModule } from './disciplines.js';
+import { currentProgram, openProgramsModal } from './programs.js';
+import { emptyStateHtml, showScreen } from '../ui/navigation.js';
 
-function routineExercisesOf(key) {
+export function routineExercisesOf(key) {
     return (customRoutines[key] || routines[key] || []).filter(Boolean);
 }
 
-function lastDoneOf(key) {
+export function lastDoneOf(key) {
     let last = null;
     repo.workouts.all().forEach(w => { if (w && w.routine === key && (!last || w.date > last)) last = w.date; });
     return last;
 }
 
-function libRoutineItemHtml(key, { archived = false } = {}) {
+export function libRoutineItemHtml(key, { archived = false } = {}) {
     const label = routineLabelOf(key);
     const exercises = routineExercisesOf(key);
     const last = lastDoneOf(key);
@@ -35,7 +55,7 @@ function libRoutineItemHtml(key, { archived = false } = {}) {
         </div>`;
 }
 
-function renderLibrary() {
+export function renderLibrary() {
     loadCustomRoutines();
     loadCustomRoutineLabels();
     const visible = k => !archivedRoutines.has(k) && routineInActiveModule(k);
@@ -56,7 +76,7 @@ function renderLibrary() {
     renderLibraryExercises();
 }
 
-function renderLibraryExercises() {
+export function renderLibraryExercises() {
     const box = document.getElementById('libMyExercises');
     if (!box) return;
     calculateStats();
@@ -76,7 +96,7 @@ function renderLibraryExercises() {
         </details>`).join('');
 }
 
-function trainRoutine(key) {
+export function trainRoutine(key) {
     ensureModuleForRoutine(key);
     showScreen('entrenar', true);
     setTrainMode('rutina');
@@ -88,7 +108,7 @@ function trainRoutine(key) {
     saveWorkoutDraft();
 }
 
-function archiveRoutineFromLibrary(key) {
+export function archiveRoutineFromLibrary(key) {
     const label = routineLabelOf(key);
     archivedRoutines.add(key);
     saveArchivedRoutines();
@@ -104,7 +124,7 @@ function archiveRoutineFromLibrary(key) {
 
 // ---------- Compartir e importar por link ----------
 
-async function shareRoutine(key) {
+export async function shareRoutine(key) {
     const label = routineLabelOf(key);
     const targets = repo.routines.targets(key);
     const exercises = routineExercisesOf(key).map(name => ({
@@ -125,9 +145,9 @@ async function shareRoutine(key) {
     }
 }
 
-let importRoutineSeq = 0;
+export let importRoutineSeq = 0;
 
-function importRoutineFromCode(code) {
+export function importRoutineFromCode(code) {
     let shared;
     try {
         shared = decodeRoutineShare(code);
@@ -161,7 +181,7 @@ function importRoutineFromCode(code) {
 }
 
 // Al abrir la app con un link de rutina (#rutina=...), se ofrece importarla.
-function checkRoutineLinkOnStart() {
+export function checkRoutineLinkOnStart() {
     const code = routineShareCodeFrom(location.hash);
     if (!code) return;
     try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
@@ -172,7 +192,7 @@ function checkRoutineLinkOnStart() {
 
 // ---------- Pestañas y eventos ----------
 
-function setLibraryTab(tab) {
+export function setLibraryTab(tab) {
     const t = tab === 'ejercicios' ? 'ejercicios' : 'rutinas';
     document.querySelectorAll('.lib-tab').forEach(el => { el.hidden = el.dataset.tab !== t; });
     document.querySelectorAll('[data-lib-tab]').forEach(b => {
@@ -182,7 +202,7 @@ function setLibraryTab(tab) {
     });
 }
 
-function bindLibrary() {
+export function bindLibrary() {
     const screen = document.querySelector('[data-screen="biblioteca"]');
     if (!screen) return;
     screen.addEventListener('click', e => {

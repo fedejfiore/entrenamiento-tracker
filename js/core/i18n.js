@@ -8,9 +8,7 @@
 // en el diccionario queda en español (nunca se rompe nada).
 // Lo que es dato (nombres de ejercicios y rutinas) va dentro de translate="no" y no se toca.
 // En español no se carga ni se ejecuta nada de esto.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
-
-const APP_LANGUAGES = {
+export const APP_LANGUAGES = {
     es: { name: 'Español', locale: 'es-AR' },
     en: { name: 'English', locale: 'en-US' },
     pt: { name: 'Português (Brasil)', locale: 'pt-BR' },
@@ -18,10 +16,10 @@ const APP_LANGUAGES = {
     zh: { name: '简体中文', locale: 'zh-CN' }
 };
 // Global a propósito: los diccionarios (js/i18n/*.js) se cargan aparte y se agregan acá.
-const I18N_DICTIONARIES = (globalThis.I18N_DICTIONARIES ||= {});
+export const I18N_DICTIONARIES = (globalThis.I18N_DICTIONARIES ||= {});
 
 /** Idioma elegido en Ajustes, o el del celular si está en "automático". */
-function resolveLanguage(saved, navigatorLanguage) {
+export function resolveLanguage(saved, navigatorLanguage) {
     if (saved && saved !== 'auto' && APP_LANGUAGES[saved]) return saved;
     const nav = String(navigatorLanguage || '').toLowerCase();
     if (nav.startsWith('es')) return 'es';
@@ -32,17 +30,17 @@ function resolveLanguage(saved, navigatorLanguage) {
     return 'es';
 }
 
-let appLanguage = 'es';
+export let appLanguage = 'es';
 try { appLanguage = resolveLanguage(localStorage.getItem('language'), navigator.language); } catch (e) { appLanguage = 'es'; }
 
 /** Configuración regional para fechas y números (es-AR, en-US, pt-BR, de-DE, zh-CN). */
-function appLocale() {
+export function appLocale() {
     return (APP_LANGUAGES[appLanguage] || APP_LANGUAGES.es).locale;
 }
 
 // ---------- Motor (sin DOM: se prueba en Node) ----------
 
-class Translator {
+export class Translator {
     constructor(dict) {
         this.text = new Map(Object.entries(dict?.text || {}));
         this.html = new Map(Object.entries(dict?.html || {}));
@@ -115,25 +113,25 @@ class Translator {
     }
 }
 
-let appTranslator = null;
+export let appTranslator = null;
 
 /** Traduce un texto al idioma de la app (en español lo devuelve igual). */
-function tr(text) {
+export function tr(text) {
     return appTranslator ? appTranslator.tr(text) : text;
 }
 
 // ---------- Pantalla ----------
 
-const I18N_ATTRS = ['placeholder', 'title', 'aria-label', 'alt'];
-const I18N_INLINE = new Set(['B', 'STRONG', 'I', 'EM', 'SMALL', 'CODE', 'BR', 'A', 'KBD', 'SPAN']);
-const i18nDone = new WeakMap(); // nodo → último texto que puso la traducción (para no repetir)
-let i18nMissing = null;         // con ?i18n-debug en la URL: lo que faltó traducir
+export const I18N_ATTRS = ['placeholder', 'title', 'aria-label', 'alt'];
+export const I18N_INLINE = new Set(['B', 'STRONG', 'I', 'EM', 'SMALL', 'CODE', 'BR', 'A', 'KBD', 'SPAN']);
+export const i18nDone = new WeakMap(); // nodo → último texto que puso la traducción (para no repetir)
+export let i18nMissing = null;         // con ?i18n-debug en la URL: lo que faltó traducir
 
-function i18nSkip(el) {
+export function i18nSkip(el) {
     return !el || el.closest('[translate="no"], script, style, textarea, svg') !== null;
 }
 
-function i18nTranslateText(node) {
+export function i18nTranslateText(node) {
     const value = node.nodeValue;
     if (!value || !/[A-Za-zÁÉÍÓÚáéíóúñÑ]/.test(value) || i18nDone.get(node) === value) return;
     if (i18nSkip(node.parentElement)) return;
@@ -142,7 +140,7 @@ function i18nTranslateText(node) {
     else if (i18nMissing) i18nMissing.add(Translator.normalize(value));
 }
 
-function i18nTranslateAttrs(el) {
+export function i18nTranslateAttrs(el) {
     I18N_ATTRS.forEach(a => {
         const v = el.getAttribute(a);
         if (!v || !/[A-Za-z]/.test(v)) return;
@@ -153,7 +151,7 @@ function i18nTranslateAttrs(el) {
 
 // Un bloque con formato (texto + <b>, <small>…) se traduce entero, así el orden de las
 // palabras puede cambiar entre idiomas.
-function i18nTranslateBlock(el) {
+export function i18nTranslateBlock(el) {
     const kids = el.childNodes;
     let hasElement = false;
     for (const k of kids) {
@@ -174,7 +172,7 @@ function i18nTranslateBlock(el) {
     return true;
 }
 
-function i18nTranslateTree(root) {
+export function i18nTranslateTree(root) {
     if (!appTranslator || !root) return;
     if (root.nodeType === 3) { i18nTranslateText(root); return; }
     if (root.nodeType !== 1 && root.nodeType !== 9 && root.nodeType !== 11) return;
@@ -197,9 +195,9 @@ function i18nTranslateTree(root) {
     }
 }
 
-let i18nObserver = null;
+export let i18nObserver = null;
 
-function i18nObserve() {
+export function i18nObserve() {
     i18nObserver = new MutationObserver(records => {
         i18nObserver.disconnect();
         records.forEach(r => {
@@ -217,7 +215,7 @@ function i18nObserve() {
 }
 
 // Ventanas del sistema: el mensaje también se traduce.
-function i18nWrapDialogs() {
+export function i18nWrapDialogs() {
     ['alert', 'confirm', 'prompt'].forEach(fn => {
         const native = window[fn];
         if (typeof native !== 'function') return;
@@ -230,7 +228,7 @@ function i18nWrapDialogs() {
  * traduce la página, queda atento a los cambios y vuelve a mostrar la página (boot.js la
  * ocultó para que no se vea el español un instante).
  */
-function initI18n() {
+export function initI18n() {
     document.documentElement.lang = appLanguage;
     const reveal = () => document.documentElement.classList.remove('i18n-pending');
     if (appLanguage === 'es') { reveal(); return; }
@@ -252,7 +250,7 @@ function initI18n() {
 }
 
 /** Cambiar el idioma: se guarda y se recarga (así todo se dibuja de nuevo en ese idioma). */
-function setAppLanguage(lang) {
+export function setAppLanguage(lang) {
     try { localStorage.setItem('language', lang); } catch (e) {}
     location.reload();
 }

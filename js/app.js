@@ -5,8 +5,63 @@
 //   3. Primer dibujado de cada pantalla.
 //   4. Cambios hechos desde otra pestaña (aislamiento): se recargan y se redibuja.
 // Cada paso corre protegido (ErrorReporter): si uno falla, los demás siguen y la app se puede usar.
+import { appErrors } from './core/errors.js';
+import { getLocalDateString } from './core/utils.js';
+import { appLocale, initI18n } from './core/i18n.js';
+import { LocalStorageAdapter } from './data/store.js';
+import { STORAGE_SCHEMA } from './data/schema.js';
+import { runMigrations } from './data/migrations.js';
+import { db } from './data/repositories.js';
+import { exercisePrefs } from './data/exercise-prefs.js';
+import { initializeData, loadArchivedExercises, loadCustomRoutineLabels, loadCustomRoutines, reloadArchivedRoutines } from './data/routines-store.js';
+import { calculateStats } from './domain/stats.js';
+import { showToast } from './ui/toast.js';
+import { disableWakeLock, initWakeLock, noSleepVideoEl, requestWakeLock, updateWakeLockBtn, wakeLock, wakeLockEnabled, wakeLockMode } from './ui/wake-lock.js';
+import { initSoundSettingsUI, unlockAudio } from './audio/sound.js';
+import { initVoiceSettingsUI } from './audio/voice.js';
+import { loadRecordings, renderRecordingsUI } from './audio/recordings.js';
+import { initNativeFeatures } from './features/native.js';
+import { restoreTabataSessionBlocks } from './features/tabata.js';
+import { initMusicSettingsUI } from './features/music.js';
+import { restoreSessionTimer } from './features/training/session-clock.js';
+import { restoreWorkoutDraft, saveWorkoutDraft } from './features/training/draft.js';
+import { populateRoutineOptions, setSelectedMood } from './features/training/routines-ui.js';
+import { initSetStepperAutoHide } from './features/training/set-stepper.js';
+import { bindArchivedRoutinesList, workoutScreen } from './features/training/workout-screen.js';
+import { bindFinishPrompt } from './features/training/finish-prompt.js';
+import { bindSessionSummary } from './features/training/session-summary.js';
+import { bindTrainMode } from './features/training/train-mode.js';
+import { bindSupersetModal } from './features/training/supersets.js';
+import { populateUnifySelectors, renderVariantsCatalog } from './features/exercises.js';
+import { bindHistoryList, displayWorkoutHistory } from './features/history.js';
+import { bindProgression } from './features/progress.js';
+import { loadBodyChartScale, updateBodyChart } from './features/body-metrics.js';
+import { updateSidebar } from './features/home.js';
+import { bindPlanSection, maybeRemindTodayPlan } from './features/plan-screen.js';
+import { bindGarden } from './features/garden.js';
+import { initMascot } from './features/mascot.js';
+import { bindMuscleMap } from './features/muscle-map.js';
+import { bindPlateCalculator } from './features/plate-calculator.js';
+import { bindGeneralSettings, bindLanguageSelect } from './features/general-settings.js';
+import { initFeatures } from './features/feature-settings.js';
+import { initDisciplines } from './features/disciplines.js';
+import { initReformerSettings } from './features/reformer.js';
+import { initPilatesLibrary } from './features/pilates-library.js';
+import { initGymLibrary } from './features/gym-library.js';
+import { bindPrograms } from './features/programs.js';
+import { bindLibrary } from './features/library.js';
+import { bindShareSheet } from './features/share-cards.js';
+import { bindProfile } from './features/profile.js';
+import { uploadData } from './features/backup.js';
+import { bindImportHistory } from './features/import-history.js';
+import { bindOnboarding, maybeStartOnboarding } from './features/onboarding.js';
+import { bindHelp } from './features/help.js';
+import { bindFeedback } from './features/feedback.js';
+import { initCollapsibleSections } from './ui/collapsible.js';
+import { bindAccessibilitySettings } from './ui/accessibility.js';
+import { initBottomNavKeyboardHide, initScreens, initTheme } from './ui/navigation.js';
 
-class App {
+export class App {
     constructor(errors) {
         this.errors = errors;
     }

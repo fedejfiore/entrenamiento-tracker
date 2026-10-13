@@ -6,22 +6,28 @@
 // entiende se cuenta como error (no se inventa) y nada se guarda sin que la persona lo
 // confirme. Las sesiones importadas llevan `importKey`, así importar dos veces el mismo
 // archivo no las duplica.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { generateId, normalizeForCompare, parseDecimal } from '../core/utils.js';
+import { formatSecondsClock, parseTimeSeconds } from '../core/time.js';
+import { ValidationError } from '../data/store.js';
+import { setsFromLegacy } from './legacy-format.js';
+import { ExerciseLog, WorkoutSession } from './models.js';
+import { cleanShareText } from './routine-share.js';
+import { calculateSessionVolume } from './stats.js';
 
-const IMPORT_SOURCES = {
+export const IMPORT_SOURCES = {
     hevy: 'Hevy',
     strong: 'Strong',
     fitbod: 'Fitbod',
     esoagon: 'Gymnastés (CSV)'
 };
-const IMPORT_LIMITS = { maxBytes: 20 * 1024 * 1024, maxRows: 200000, maxName: 80 };
-const LB_TO_KG = 0.45359237;
-const MILE_TO_KM = 1.609344;
+export const IMPORT_LIMITS = { maxBytes: 20 * 1024 * 1024, maxRows: 200000, maxName: 80 };
+export const LB_TO_KG = 0.45359237;
+export const MILE_TO_KM = 1.609344;
 
 // ---------- CSV ----------
 
 /** Texto CSV → { headers, rows: [{ encabezado normalizado: valor }] }. Detecta , ; o tabulador. */
-function parseCsv(text) {
+export function parseCsv(text) {
     const s = String(text || '').replace(/^\uFEFF/, '');
     const firstLine = s.slice(0, s.search(/\r?\n|$/));
     const counts = { ',': 0, ';': 0, '\t': 0 };
@@ -65,13 +71,13 @@ function parseCsv(text) {
 }
 
 /** Celda CSV: entre comillas si hace falta. */
-function csvCell(v) {
+export function csvCell(v) {
     const s = String(v ?? '');
     return /[",\n\r;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
 /** ¿De qué app es el archivo? Por los encabezados. */
-function detectCsvSource(headers) {
+export function detectCsvSource(headers) {
     const has = h => headers.includes(h);
     if (has('exercise_title') && has('start_time')) return 'hevy';
     if (has('exercise name') && has('set order')) return 'strong';
@@ -82,14 +88,14 @@ function detectCsvSource(headers) {
 
 // ---------- Fechas y números ----------
 
-const IMPORT_MONTHS = { jan: 1, ene: 1, feb: 2, mar: 3, apr: 4, abr: 4, may: 5, jun: 6, jul: 7, aug: 8, ago: 8, sep: 9, set: 9, oct: 10, nov: 11, dec: 12, dic: 12 };
+export const IMPORT_MONTHS = { jan: 1, ene: 1, feb: 2, mar: 3, apr: 4, abr: 4, may: 5, jun: 6, jul: 7, aug: 8, ago: 8, sep: 9, set: 9, oct: 10, nov: 11, dec: 12, dic: 12 };
 
 /**
  * "2024-09-30 18:05:00", "30 Sep 2024, 18:05", "30/9/2024" → { date: 'AAAA-MM-DD', time: 'HH:MM' | null } o null.
  * Con barras, si el primer número pasa de 12 es el día; si no, se toma día/mes (como en Argentina)
  * salvo que `monthFirst` diga lo contrario.
  */
-function parseImportDate(str, { monthFirst = false } = {}) {
+export function parseImportDate(str, { monthFirst = false } = {}) {
     const s = String(str || '').trim();
     const pad = n => String(n).padStart(2, '0');
     const ok = (y, m, d) => y >= 1990 && y <= 2100 && m >= 1 && m <= 12 && d >= 1 && d <= 31;
@@ -116,20 +122,20 @@ function parseImportDate(str, { monthFirst = false } = {}) {
     return null;
 }
 
-function importNumber(v) {
+export function importNumber(v) {
     const n = parseDecimal(String(v ?? '').replace(/[^\d.,-]/g, ''));
     return n != null && isFinite(n) && n >= 0 ? n : null;
 }
 
 /** RPE (6 a 10) → reps en reserva (F, 1, 2, 3, 4+) como las guarda la app. */
-function rpeToRir(rpe) {
+export function rpeToRir(rpe) {
     const n = importNumber(rpe);
     if (n == null || n < 1 || n > 10) return '';
     return String(Math.max(0, Math.min(4, Math.round(10 - n))));
 }
 
 /** "1h 5m", "45m", "3600" (segundos) → minutos, o null. */
-function importDurationMinutes(v) {
+export function importDurationMinutes(v) {
     const s = String(v || '').trim().toLowerCase();
     if (!s) return null;
     if (/^\d+$/.test(s)) return Math.round(+s / 60);
@@ -142,7 +148,7 @@ function importDurationMinutes(v) {
 // ---------- Filas de cada app → filas comunes ----------
 // Fila común: { date, time, title, key, exercise, warmup, kg, reps, seconds, km, rir, note, workoutNote, durationMin }
 
-function importRowsFrom(source, rows, { weightUnit = 'kg', monthFirst = false } = {}) {
+export function importRowsFrom(source, rows, { weightUnit = 'kg', monthFirst = false } = {}) {
     const out = [];
     const errors = [];
     rows.forEach((r, i) => {
@@ -195,9 +201,9 @@ function importRowsFrom(source, rows, { weightUnit = 'kg', monthFirst = false } 
 
 // ---------- Filas comunes → sesiones de la app ----------
 
-const roundStr = (n, d = 3) => String(Math.round(n * 10 ** d) / 10 ** d);
+export const roundStr = (n, d = 3) => String(Math.round(n * 10 ** d) / 10 ** d);
 
-function importExerciseType(sets) {
+export function importExerciseType(sets) {
     if (sets.some(s => s.kg > 0)) return 'kg';
     if (sets.some(s => s.km > 0)) return 'km';
     if (sets.some(s => s.reps > 0)) return 'bw';
@@ -208,7 +214,7 @@ function importExerciseType(sets) {
  * Agrupa las filas en sesiones con el mismo formato que guarda la app (series, textos viejos
  * para récords y gráficos, volumen). existingKeys: importKey ya importados (no se repiten).
  */
-function buildImportedWorkouts(source, rows, existingKeys = new Set()) {
+export function buildImportedWorkouts(source, rows, existingKeys = new Set()) {
     const bySession = new Map();
     rows.forEach(r => {
         const key = `${source}|${r.key}`;
@@ -262,7 +268,7 @@ function buildImportedWorkouts(source, rows, existingKeys = new Set()) {
 }
 
 /** Archivo CSV de otra app → resumen para confirmar y las sesiones listas para guardar. */
-function prepareCsvImport(text, { weightUnit = 'kg', monthFirst = false, existingKeys = new Set() } = {}) {
+export function prepareCsvImport(text, { weightUnit = 'kg', monthFirst = false, existingKeys = new Set() } = {}) {
     if (String(text || '').length > IMPORT_LIMITS.maxBytes) throw new ValidationError('El archivo es demasiado grande (más de 20 MB).');
     const { headers, rows } = parseCsv(text);
     const source = detectCsvSource(headers);
@@ -278,10 +284,10 @@ function prepareCsvImport(text, { weightUnit = 'kg', monthFirst = false, existin
 
 // ---------- Exportar ----------
 
-const EXPORT_CSV_HEADERS = ['Fecha', 'Hora', 'Sesión', 'Ejercicio', 'Serie', 'Calentamiento', 'Reps', 'Peso (kg)', 'Tiempo (s)', 'Distancia (km)', 'RIR', 'Nota', 'Duración (min)'];
+export const EXPORT_CSV_HEADERS = ['Fecha', 'Hora', 'Sesión', 'Ejercicio', 'Serie', 'Calentamiento', 'Reps', 'Peso (kg)', 'Tiempo (s)', 'Distancia (km)', 'RIR', 'Nota', 'Duración (min)'];
 
 /** Historial → CSV (para planillas u otras apps; esta app también lo importa). */
-function workoutsToCsv(workouts, labelOf = key => key) {
+export function workoutsToCsv(workouts, labelOf = key => key) {
     const lines = [EXPORT_CSV_HEADERS.join(',')];
     (workouts || []).filter(w => w && !w.deletedAt && w.type !== 'tabata' && Array.isArray(w.exercises))
         .slice().sort((a, b) => (a.date || '').localeCompare(b.date || ''))

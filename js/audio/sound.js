@@ -1,9 +1,10 @@
 // Sonidos: beeps configurables, tics y desbloqueo de audio tras el primer toque.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { db } from '../data/repositories.js';
+import { voiceSupported } from './voice.js';
 
-let restTimerAudioCtx = null;
+export let restTimerAudioCtx = null;
 
-function loadSoundSettings() {
+export function loadSoundSettings() {
     let volume = 100;
     try {
         const saved = db.get('soundVolume');
@@ -13,7 +14,7 @@ function loadSoundSettings() {
     return { type, volume };
 }
 
-function initSoundSettingsUI() {
+export function initSoundSettingsUI() {
     const { type, volume } = loadSoundSettings();
     const typeEl = document.getElementById('soundType');
     const volEl = document.getElementById('soundVolume');
@@ -23,24 +24,24 @@ function initSoundSettingsUI() {
     if (labelEl) labelEl.textContent = volume + '%';
 }
 
-function saveSoundSettings() {
+export function saveSoundSettings() {
     const type = document.getElementById('soundType')?.value || 'classic';
     db.set('soundType', type);
 }
 
-function onSoundVolumeInput() {
+export function onSoundVolumeInput() {
     const vol = document.getElementById('soundVolume')?.value ?? '100';
     document.getElementById('soundVolumeLabel').textContent = vol + '%';
     db.set('soundVolume', vol);
 }
 
-function testSound() {
+export function testSound() {
     playRestTimerBeep();
 }
 
 // Un tono simple: frecuencia, forma de onda y volumen pico (0-1, ya multiplicado
 // por el volumen configurado por el usuario).
-function playTone(ctx, startTime, freq, type, peakGain, dur) {
+export function playTone(ctx, startTime, freq, type, peakGain, dur) {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain);
@@ -53,7 +54,7 @@ function playTone(ctx, startTime, freq, type, peakGain, dur) {
     osc.stop(startTime + dur);
 }
 
-function playRestTimerBeep() {
+export function playRestTimerBeep() {
     try {
         const { type, volume } = loadSoundSettings();
         if (type === 'silent' || volume === 0) return;
@@ -87,9 +88,9 @@ function playRestTimerBeep() {
 
 // iPhone/Android solo dejan sonar audio después de un toque del usuario: la primera
 // vez que se toca algo, se "despierta" la voz y el audio con un sonido mudo.
-let audioUnlocked = false;
+export let audioUnlocked = false;
 
-function unlockAudio() {
+export function unlockAudio() {
     if (audioUnlocked) return;
     audioUnlocked = true;
     try {
@@ -103,7 +104,7 @@ function unlockAudio() {
     } catch (e) {}
 }
 
-function getAudioCtx() {
+export function getAudioCtx() {
     try {
         if (!restTimerAudioCtx) restTimerAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
         if (restTimerAudioCtx.state === 'suspended') restTimerAudioCtx.resume();
@@ -112,7 +113,7 @@ function getAudioCtx() {
 }
 
 // Tic corto (cadencia, cuenta regresiva). Respeta "Silencio" y el volumen.
-function playTick(freq = 1000, dur = 0.07, gain = 0.6) {
+export function playTick(freq = 1000, dur = 0.07, gain = 0.6) {
     const { type, volume } = loadSoundSettings();
     if (type === 'silent' || volume === 0) return;
     const ctx = getAudioCtx();

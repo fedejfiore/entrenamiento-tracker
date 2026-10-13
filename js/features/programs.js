@@ -1,24 +1,43 @@
 // Inicio → "Programas": elegir un programa prearmado, ver cuál es el próximo día y, en
 // Entrenar, el objetivo de cada ejercicio con progresión doble (primero reps, después peso).
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { escapeHtml, formatNumber, getLocalDateString, normalizeForCompare } from '../core/utils.js';
+import { appLocale } from '../core/i18n.js';
+import { displayIncrement, displayToKg, formatWeight, kgStringToDisplay, kgToDisplay, weightUnitDef } from '../core/units.js';
+import { EXERCISE_VARIANTS } from '../domain/catalog.js';
+import { pilatesExerciseInfo } from '../domain/pilates-catalog.js';
+import { setsFromLegacy } from '../domain/legacy-format.js';
+import { TrainingPlan, WEEKDAYS } from '../domain/plan.js';
+import { detectStall } from '../domain/training-tools.js';
+import { PROGRAMS, findProgram, programModule, programRoutineKey, suggestDoubleProgression } from '../domain/programs.js';
+import { repo } from '../data/repositories.js';
+import { exercisePrefs, saveExerciseType } from '../data/exercise-prefs.js';
+import { archivedRoutines, loadCustomRoutineLabels, loadCustomRoutines, saveArchivedRoutines } from '../data/routines-store.js';
+import { exerciseStats } from '../domain/stats.js';
+import { showToast } from '../ui/toast.js';
+import { populateRoutineOptions } from './training/routines-ui.js';
+import { getCurrentPlan, renderPlanSection, saveCurrentPlan } from './plan-screen.js';
+import { plateModeFor, stackFor } from './plate-calculator.js';
+import { activeModule, hasDiscipline, tagRoutineModule } from './disciplines.js';
+import { suggestedSpringsFor } from './reformer.js';
+import { showScreen } from '../ui/navigation.js';
 
-const PROGRAM_TIER_LABEL = { free: 'Gratis', pro: 'Pro' };
+export const PROGRAM_TIER_LABEL = { free: 'Gratis', pro: 'Pro' };
 
-function programTargetsFor(routineKey) {
+export function programTargetsFor(routineKey) {
     return routineKey ? repo.routines.targets(routineKey) : {};
 }
 
-function getExerciseTarget(routineKey, name) {
+export function getExerciseTarget(routineKey, name) {
     return programTargetsFor(routineKey)[normalizeForCompare(name || '')] || null;
 }
 
 // En máquinas de placas el salto de peso es el de una placa.
-function targetIncrement(name, target) {
+export function targetIncrement(name, target) {
     return plateModeFor(name) === 'stack' ? stackFor(name).step : target.inc;
 }
 
 /** Sugerencia de hoy para un ejercicio con objetivo, a partir de su última sesión. */
-function programSuggestion(routineKey, name) {
+export function programSuggestion(routineKey, name) {
     const target = getExerciseTarget(routineKey, name);
     if (!target) return null;
     // Se calcula en la unidad elegida (kg o lb) y el peso sugerido vuelve a kg para guardarse.
@@ -32,7 +51,7 @@ function programSuggestion(routineKey, name) {
  * calentamiento de la última vez y, después, las series del objetivo con el peso y las reps
  * que tocan hoy. Tildar una serie sin tocar la completa con esto, igual que con la última vez.
  */
-function programPrevSets(routineKey, name, prevSets) {
+export function programPrevSets(routineKey, name, prevSets) {
     const s = programSuggestion(routineKey, name);
     if (!s) return null;
     const lastWork = prevSets.filter(p => p && !p.warmup);
@@ -47,7 +66,7 @@ function programPrevSets(routineKey, name, prevSets) {
     return [...warmups, ...work];
 }
 
-function programTargetLineHtml(routineKey, name) {
+export function programTargetLineHtml(routineKey, name) {
     const s = programSuggestion(routineKey, name);
     if (!s) return '';
     const { sets, repsMin, repsMax } = s.target;
@@ -58,7 +77,7 @@ function programTargetLineHtml(routineKey, name) {
 // ---- Estancamiento (con o sin programa) ----
 
 /** Sesiones anteriores de un ejercicio, medidas igual que ahora: [{ date, sets }]. */
-function exerciseSessionsFor(name, type) {
+export function exerciseSessionsFor(name, type) {
     const key = normalizeForCompare(name);
     const out = [];
     repo.workouts.all().forEach(w => {
@@ -74,7 +93,7 @@ function exerciseSessionsFor(name, type) {
 }
 
 /** Aviso en Entrenar cuando un ejercicio lleva semanas sin mejorar, con qué cambiar. */
-function stallHintHtml(routineKey, name, type) {
+export function stallHintHtml(routineKey, name, type) {
     const target = getExerciseTarget(routineKey, name);
     const stall = detectStall(exerciseSessionsFor(name, type), { type, today: new Date(), repsMax: target?.repsMax });
     if (!stall) return '';
@@ -98,17 +117,17 @@ function stallHintHtml(routineKey, name, type) {
 
 // ---- Programa en curso ----
 
-function programDayKeys(program) {
+export function programDayKeys(program) {
     return program.days.map(d => programRoutineKey(program.id, d.key));
 }
 
 /** El programa en curso del módulo que se está viendo (gimnasio o pilates). */
-function currentProgram() {
+export function currentProgram() {
     return repo.routines.activeProgram(typeof activeModule === 'function' ? activeModule() : 'gym');
 }
 
 /** Próximo día del programa: el que sigue al último que se entrenó. */
-function nextProgramDay(program) {
+export function nextProgramDay(program) {
     const keys = programDayKeys(program);
     const last = repo.workouts.all()
         .filter(w => w && keys.includes(w.routine))
@@ -118,7 +137,7 @@ function nextProgramDay(program) {
     return { day: program.days[idx], key: keys[idx], sessions: repo.workouts.all().filter(w => w && keys.includes(w.routine)).length };
 }
 
-function renderProgramsSection() {
+export function renderProgramsSection() {
     const box = document.getElementById('programStatus');
     if (!box) return;
     const active = currentProgram();
@@ -143,7 +162,7 @@ function renderProgramsSection() {
         </div>`;
 }
 
-function programCardHtml(p, activeId) {
+export function programCardHtml(p, activeId) {
     const days = p.days.map(d => `<li><b>${escapeHtml(d.name)}:</b> ${d.exercises.map(e => `${escapeHtml(e.name)} ${e.sets}×${e.repsMin === e.repsMax ? e.repsMin : e.repsMin + '–' + e.repsMax}`).join(' · ')}</li>`).join('');
     const weekdays = p.weekdays.map(n => WEEKDAYS.find(w => w.n === n)?.short || '').join(' ');
     return `<div class="program-card${p.id === activeId ? ' current' : ''}">
@@ -159,22 +178,22 @@ function programCardHtml(p, activeId) {
 }
 
 /** Programas del módulo activo (los de pilates, solo de las disciplinas que se entrenan). */
-function programsForActiveModule() {
+export function programsForActiveModule() {
     const module = typeof activeModule === 'function' ? activeModule() : 'gym';
     return PROGRAMS.filter(p => (p.discipline ? module === 'pilates' && hasDiscipline(p.discipline) : module === 'gym'));
 }
 
-function openProgramsModal() {
+export function openProgramsModal() {
     const active = currentProgram();
     document.getElementById('programList').innerHTML = programsForActiveModule().map(p => programCardHtml(p, active?.id)).join('');
     document.getElementById('programsModal').classList.add('open');
 }
 
-function closeProgramsModal() {
+export function closeProgramsModal() {
     document.getElementById('programsModal')?.classList.remove('open');
 }
 
-function startProgram(id) {
+export function startProgram(id) {
     const program = findProgram(id);
     if (!program) return;
     const module = programModule(program.id);
@@ -221,7 +240,7 @@ function startProgram(id) {
     showToast(`📚 ${program.name}: listo. Empezá por "${days[0].label}".`, 'success', 3500);
 }
 
-function endProgram() {
+export function endProgram() {
     const active = currentProgram();
     if (!active) return;
     if (!confirm('¿Terminar el programa?\n\nSus rutinas y todo lo que entrenaste quedan; solo se dejan de mostrar los objetivos de cada ejercicio.')) return;
@@ -230,7 +249,7 @@ function endProgram() {
     showToast('Programa terminado');
 }
 
-function trainProgramDay(routineKey) {
+export function trainProgramDay(routineKey) {
     const select = document.getElementById('routine');
     if (!select) return;
     showScreen('entrenar');
@@ -238,7 +257,7 @@ function trainProgramDay(routineKey) {
     select.dispatchEvent(new Event('change', { bubbles: true }));
 }
 
-function bindPrograms() {
+export function bindPrograms() {
     const onClick = e => {
         const btn = e.target.closest('[data-program-action]');
         if (!btn) return;

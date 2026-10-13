@@ -1,15 +1,18 @@
 // Reloj de la sesión: inicio / fin manual o automático.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { formatDateLocal, getLocalDateString } from '../../core/utils.js';
+import { formatDuration, formatTimeHM } from '../../core/time.js';
+import { db, repo } from '../../data/repositories.js';
+import { showToast } from '../../ui/toast.js';
 
-let currentSessionStartTime = null;
+export let currentSessionStartTime = null;
 
-let currentSessionEndTime = null;
+export let currentSessionEndTime = null;
 
-let sessionDurationInterval = null;
+export let sessionDurationInterval = null;
 
 // Si no hay sesión corriendo ahora, mostrar la duración de la última sesión
 // guardada hoy (en vez de dejar el dato en blanco aunque ya hayas entrenado).
-function getTodaysLastSessionDurationLabel() {
+export function getTodaysLastSessionDurationLabel() {
     const today = getLocalDateString();
     let workouts = repo.workouts.all();
     if (!Array.isArray(workouts)) workouts = [];
@@ -18,7 +21,7 @@ function getTodaysLastSessionDurationLabel() {
     return `${formatDuration(todays[todays.length - 1].duration)} (hoy)`;
 }
 
-function updateSessionDurationDisplay() {
+export function updateSessionDurationDisplay() {
     const el = document.getElementById('currentSessionDuration');
     if (!el) return;
     if (!currentSessionStartTime) {
@@ -33,7 +36,7 @@ function updateSessionDurationDisplay() {
     el.textContent = `${m}:${s}`;
 }
 
-function updateRoutineTimeStatusUI() {
+export function updateRoutineTimeStatusUI() {
     const btnStart = document.getElementById('btnStartRoutine');
     const btnFinish = document.getElementById('btnFinishRoutine');
     const btnReset = document.getElementById('btnResetRoutineTimer');
@@ -56,12 +59,12 @@ function updateRoutineTimeStatusUI() {
         : `Iniciada ${formatTimeHM(currentSessionStartTime)}`;
 }
 
-function resetRoutineTimer() {
+export function resetRoutineTimer() {
     if (currentSessionStartTime && !confirm('¿Reiniciar el marcado de tiempo? Se perderá la hora de inicio/fin actual (no afecta ejercicios ya cargados).')) return;
     stopSessionTimer();
 }
 
-function startRoutineManually() {
+export function startRoutineManually() {
     if (!document.getElementById('routine').value) {
         showToast('Seleccioná una rutina primero', 'error');
         return;
@@ -83,13 +86,13 @@ function startRoutineManually() {
 // El reloj de la sesión arranca solo recién con la PRIMERA interacción real con
 // los datos (tipear reps/peso, tildar una serie) — elegir una rutina solo para
 // mirar qué tiene no cuenta como "empezaste a entrenar".
-function maybeAutoStartSessionTimer() {
+export function maybeAutoStartSessionTimer() {
     if (!currentSessionStartTime && document.getElementById('routine').value) {
         startRoutineManually();
     }
 }
 
-function finishRoutineManually() {
+export function finishRoutineManually() {
     if (!currentSessionStartTime) {
         showToast('Primero iniciá la rutina', 'error');
         return;
@@ -105,7 +108,7 @@ function finishRoutineManually() {
     updateRoutineTimeStatusUI();
 }
 
-function stopSessionTimer() {
+export function stopSessionTimer() {
     currentSessionStartTime = null;
     currentSessionEndTime = null;
     clearStoredSessionTimes();
@@ -117,7 +120,7 @@ function stopSessionTimer() {
     updateRoutineTimeStatusUI();
 }
 
-function restoreSessionTimer() {
+export function restoreSessionTimer() {
     const savedStart = db.get('activeSessionStart');
     if (!savedStart) return;
     currentSessionStartTime = parseInt(savedStart, 10);
@@ -147,7 +150,7 @@ function restoreSessionTimer() {
 }
 
 // Inicio y fin de la sesión en curso se borran juntos (nunca queda uno sin el otro).
-function clearStoredSessionTimes() {
+export function clearStoredSessionTimes() {
     db.transaction(tx => {
         tx.remove('activeSessionStart');
         tx.remove('activeSessionEnd');

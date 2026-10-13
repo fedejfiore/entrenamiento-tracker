@@ -3,11 +3,20 @@
 // semana del plan (la flor). Reemplaza el aviso largo de "Sesión guardada".
 // El lugar del anuncio (plan gratis) queda reservado y oculto: se activa recién en la app
 // nativa con AdMob, nunca en la web (ver docs/PUBLICIDAD.md).
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { escapeHtml } from '../../core/utils.js';
+import { formatDurationHuman } from '../../core/time.js';
+import { formatWeightTotal } from '../../core/units.js';
+import { computeGarden } from '../../domain/garden.js';
+import { recentRecords } from '../../domain/achievements.js';
+import { repo } from '../../data/repositories.js';
+import { loadTrainingDaysPlanHistory } from '../../data/routines-store.js';
+import { routineLabelOf } from '../progress.js';
+import { openShareSheet } from '../share-cards.js';
+import { recordValueText, trophyShareSpec } from '../profile.js';
 
-let summaryRecords = [];
+export let summaryRecords = [];
 
-function openSessionSummary({ routine, date, exercises, duration, volume, prs, progressNotes }) {
+export function openSessionSummary({ routine, date, exercises, duration, volume, prs, progressNotes }) {
     const modal = document.getElementById('sessionSummary');
     if (!modal) return;
     const sets = exercises.reduce((n, e) => n + (e.sets || []).filter(s => !s.warmup).length, 0);
@@ -46,11 +55,11 @@ function openSessionSummary({ routine, date, exercises, duration, volume, prs, p
     modal.querySelector('[data-summary="close"]')?.focus();
 }
 
-function closeSessionSummary() {
+export function closeSessionSummary() {
     document.getElementById('sessionSummary')?.classList.remove('open');
 }
 
-function bindSessionSummary() {
+export function bindSessionSummary() {
     const modal = document.getElementById('sessionSummary');
     if (!modal) return;
     modal.addEventListener('click', e => {

@@ -1,15 +1,23 @@
 // Catálogo de variantes y unificación de ejercicios duplicados.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { escapeHtml, normalizeForCompare, youtubeSearchUrl } from '../core/utils.js';
+import { fnAttrs } from '../ui/actions.js';
+import { EXERCISE_VARIANTS, MUSCLE_GROUPS, routines } from '../domain/catalog.js';
+import { db, repo } from '../data/repositories.js';
+import { getMuscleGroup } from '../data/exercise-prefs.js';
+import { customRoutines, getAllKnownExerciseNames, loadCustomRoutines, saveCustomRoutines } from '../data/routines-store.js';
+import { showToast } from '../ui/toast.js';
+import { loadRoutineExercises, populateExerciseDatalist } from './training/workout.js';
+import { displayWorkoutHistory } from './history.js';
 
 /** Opciones de grupo muscular para un <select> (con un "Elegí…" si no hay ninguno elegido). */
-function muscleGroupOptionsHtml(selected, placeholder) {
+export function muscleGroupOptionsHtml(selected, placeholder) {
     const groups = [...Object.keys(MUSCLE_GROUPS), 'Otro'];
     const first = placeholder ? `<option value=""${selected ? '' : ' selected'}>${escapeHtml(placeholder)}</option>` : '';
     return first + groups.map(g => `<option value="${escapeHtml(g)}"${g === selected ? ' selected' : ''}>${escapeHtml(((MUSCLE_GROUPS[g] || {}).icon || '📌') + ' ' + g)}</option>`).join('');
 }
 
 // Catálogo de Variantes, agrupado por músculo (independiente de la rutina elegida).
-function renderVariantsCatalog() {
+export function renderVariantsCatalog() {
     const container = document.getElementById('variantsContainer');
     if (!container) return;
 
@@ -49,13 +57,13 @@ function renderVariantsCatalog() {
     container.innerHTML = html || '<p style="color:var(--text-faint);">Sin datos.</p>';
 }
 
-function toggleVariantGroup(uid) {
+export function toggleVariantGroup(uid) {
     const el = document.getElementById(uid);
     if (!el) return;
     el.classList.toggle('active');
 }
 
-function populateUnifySelectors() {
+export function populateUnifySelectors() {
     const source = document.getElementById('unifySource');
     const target = document.getElementById('unifyTarget');
     if (!source || !target) return;
@@ -72,7 +80,7 @@ function populateUnifySelectors() {
     if (names.includes(prevTarget)) target.value = prevTarget;
 }
 
-function unifyFromSelectors() {
+export function unifyFromSelectors() {
     const source = document.getElementById('unifySource').value;
     const target = document.getElementById('unifyTarget').value;
 
@@ -94,7 +102,7 @@ function unifyFromSelectors() {
 // el historial de sesiones ya guardadas, para fusionar sus estadísticas.
 // Renombra en rutinas e historial en UNA transacción: o queda unificado en todos lados,
 // o (si algo falla) no cambia nada.
-function unifyExerciseName(oldName, newName) {
+export function unifyExerciseName(oldName, newName) {
     loadCustomRoutines();
     let changed = 0;
     try {

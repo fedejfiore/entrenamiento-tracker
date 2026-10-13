@@ -83,24 +83,24 @@ function buildData() {
 
 const openSection = (page, selector) => page.evaluate(sel => {
     const s = document.querySelector(sel)?.closest('.section');
-    if (s) { setSectionOpen(s, true, false); window.scrollTo(0, s.getBoundingClientRect().top + scrollY - 12); }
+    if (s) { gym.setSectionOpen(s, true, false); window.scrollTo(0, s.getBoundingClientRect().top + scrollY - 12); }
 }, selector);
 
 const SHOTS = [
-    { name: 'inicio', go: async page => { await page.evaluate(() => showScreen('inicio')); } },
+    { name: 'inicio', go: async page => { await page.evaluate(() => gym.showScreen('inicio')); } },
     {
         name: 'entrenar', go: async page => {
-            await page.evaluate(() => { startTodayRoutine(); });
+            await page.evaluate(() => { gym.startTodayRoutine(); });
             const checks = await page.$$('.exercise-row:not(.collapsed) .set-check');
             await checks[0].click(); await page.waitForTimeout(300); await checks[1].click(); await page.waitForTimeout(2500);
             await page.evaluate(() => { const ex = document.querySelector('.exercises-section'); window.scrollTo(0, ex.getBoundingClientRect().top + scrollY + 40); });
         }
     },
-    { name: 'progreso', go: async page => { await page.evaluate(() => { showScreen('progreso'); setSectionOpen(document.getElementById('muscleMapSection'), true, false); }); } },
-    { name: 'medidas', go: async page => { await page.evaluate(() => { showScreen('medidas'); const secs = document.querySelectorAll('[data-screen="medidas"] .section.collapsible'); setSectionOpen(secs[0], false, false); setSectionOpen(secs[1], true, false); }); } },
+    { name: 'progreso', go: async page => { await page.evaluate(() => { gym.showScreen('progreso'); gym.setSectionOpen(document.getElementById('muscleMapSection'), true, false); }); } },
+    { name: 'medidas', go: async page => { await page.evaluate(() => { gym.showScreen('medidas'); const secs = document.querySelectorAll('[data-screen="medidas"] .section.collapsible'); gym.setSectionOpen(secs[0], false, false); gym.setSectionOpen(secs[1], true, false); }); } },
     {
         name: 'perfil', go: async page => {
-            await page.evaluate(() => showScreen('perfil'));
+            await page.evaluate(() => gym.showScreen('perfil'));
             await openSection(page, '#mascotSection');
             await page.waitForFunction(() => document.querySelector('#mascotCanvas canvas'), null, { timeout: 20000 }).catch(() => {});
             await page.waitForTimeout(1500);
@@ -108,7 +108,7 @@ const SHOTS = [
     },
     {
         name: 'ejercicios', go: async page => {
-            await page.evaluate(() => { showScreen('biblioteca'); document.querySelector('[data-lib-tab="ejercicios"]').click(); });
+            await page.evaluate(() => { gym.showScreen('biblioteca'); document.querySelector('[data-lib-tab="ejercicios"]').click(); });
             await openSection(page, '#gymCatalog');
             await page.click('#gymCatalog [data-gym-muscle="Pecho"]');
             await page.waitForTimeout(300);
@@ -116,7 +116,7 @@ const SHOTS = [
     },
     {
         name: 'pilates', go: async page => {
-            await page.evaluate(() => { setActiveModule('pilates'); showScreen('biblioteca'); document.querySelector('[data-lib-tab="ejercicios"]').click(); });
+            await page.evaluate(() => { gym.setActiveModule('pilates'); gym.showScreen('biblioteca'); document.querySelector('[data-lib-tab="ejercicios"]').click(); });
             await openSection(page, '#pilatesCatalog');
             await page.evaluate(() => { const c = document.getElementById('pilatesCatalog'); window.scrollTo(0, c.getBoundingClientRect().top + scrollY - 70); });
         }
@@ -144,7 +144,7 @@ server.listen(0, '127.0.0.1', async () => {
             }, [data, lang]);
             await page.goto(url);
             await page.waitForFunction(() => !document.documentElement.classList.contains('i18n-pending'));
-            await page.evaluate(() => features.useAll()); // la landing muestra la app completa
+            await page.evaluate(() => gym.features.useAll()); // la landing muestra la app completa
             await page.waitForTimeout(500);
             await shot.go(page);
             await page.waitForTimeout(900);

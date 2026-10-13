@@ -3,23 +3,23 @@
 // refleja constancia y no un día suelto) y tiene ánimo: contenta si cumplís la semana, con
 // sueño si faltás. Nunca triste ni enferma (ver docs/GAMIFICACION.md).
 // Todo se calcula a partir del historial: no se guarda nada (salvo la mascota elegida).
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { muscleLevel } from './training-tools.js';
 
-const MASCOT_STAGES = [
+export const MASCOT_STAGES = [
     { id: 'baby', label: 'Cachorro', weeks: 0, scale: 0.7 },
     { id: 'young', label: 'Joven', weeks: 4, scale: 0.85 },
     { id: 'adult', label: 'Adulto', weeks: 12, scale: 1 }
 ];
 
 // Músculos que se ven en la mascota (los del mapa).
-const MASCOT_MUSCLES = ['Pecho', 'Espalda', 'Hombros', 'Bíceps', 'Tríceps', 'Core', 'Cuádriceps', 'Isquios', 'Glúteos', 'Gemelos'];
+export const MASCOT_MUSCLES = ['Pecho', 'Espalda', 'Hombros', 'Bíceps', 'Tríceps', 'Core', 'Cuádriceps', 'Isquios', 'Glúteos', 'Gemelos'];
 
 /**
  * Cada animal: su modelo, las animaciones de cada ánimo y qué huesos engrosa cada músculo.
  * Los nombres de huesos dependen del modelo (los de Meshy se cargan cuando estén).
  * clips: idle (quieto), happy (festejo), sleepy (con sueño; si no hay, idle más lento).
  */
-const MASCOT_SPECIES = {
+export const MASCOT_SPECIES = {
     fox: {
         label: 'Zorro', icon: '🦊', model: 'assets/models/fox.glb', height: 1,
         credit: 'Zorro: modelo de PixelMannen (CC0), rigging y animación de tomkranis (CC BY 4.0), conversión a glTF de AsoboStudio y scurest (CC BY 4.0).',
@@ -40,7 +40,7 @@ const MASCOT_SPECIES = {
 };
 
 /** Etapa según las semanas cumplidas (la misma cuenta que la flor). */
-function mascotStage(grownWeeks) {
+export function mascotStage(grownWeeks) {
     let stage = MASCOT_STAGES[0];
     MASCOT_STAGES.forEach(s => { if (grownWeeks >= s.weeks) stage = s; });
     const next = MASCOT_STAGES[MASCOT_STAGES.indexOf(stage) + 1] || null;
@@ -51,7 +51,7 @@ function mascotStage(grownWeeks) {
  * Ánimo: contenta si la semana en curso ya está cumplida (o la anterior lo estuvo y la actual
  * recién empieza), con sueño si la última semana terminada no se cumplió (sin semana libre).
  */
-function mascotMood(garden) {
+export function mascotMood(garden) {
     if (!garden || !garden.hasPlan) return 'normal';
     if (garden.current && garden.current.done) return 'happy';
     const last = (garden.weeks || []).filter(w => w.status !== 'en-curso').slice(-1)[0];
@@ -61,7 +61,7 @@ function mascotMood(garden) {
 }
 
 /** Nivel (0 a 4) de cada músculo con el promedio semanal de las últimas 4 semanas. */
-function mascotMuscleLevels(byGroup, weeks = 4) {
+export function mascotMuscleLevels(byGroup, weeks = 4) {
     const out = {};
     MASCOT_MUSCLES.forEach(m => { out[m] = muscleLevel((byGroup[m]?.sets || 0) / weeks); });
     return out;
@@ -72,7 +72,7 @@ function mascotMuscleLevels(byGroup, weeks = 4) {
  * (sin trabajo) a 1 + 0,08 × 4 = 1,32 (alto). Así un hueso compartido (la cadera: core y
  * glúteos) refleja los dos.
  */
-function mascotBoneScales(species, levels, perLevel = 0.08) {
+export function mascotBoneScales(species, levels, perLevel = 0.08) {
     const sums = {};
     Object.entries(species.bones || {}).forEach(([muscle, bones]) => bones.forEach(b => {
         (sums[b] ||= []).push(levels[muscle] || 0);
@@ -85,7 +85,7 @@ function mascotBoneScales(species, levels, perLevel = 0.08) {
 }
 
 /** Todo lo que la pantalla necesita para dibujar la mascota. */
-function mascotSnapshot({ speciesId = 'fox', garden, byGroup }) {
+export function mascotSnapshot({ speciesId = 'fox', garden, byGroup }) {
     const species = MASCOT_SPECIES[speciesId] || MASCOT_SPECIES.fox;
     const grown = garden?.grown || 0;
     const levels = mascotMuscleLevels(byGroup || {});

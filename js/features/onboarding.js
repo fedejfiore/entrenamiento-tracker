@@ -3,9 +3,24 @@
 // Todo se puede saltar y después cambiar en Ajustes. Si se cambia el idioma, la app se
 // recarga y la guía sigue en el paso siguiente.
 // El estado del recorrido (paso, días, hora, modo) vive en la instancia de OnboardingFlow.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { FEATURE_GROUPS } from '../core/feature-registry.js';
+import { escapeHtml } from '../core/utils.js';
+import { setAppLanguage } from '../core/i18n.js';
+import { fnAttrs } from '../ui/actions.js';
+import { APP_BRAND } from '../core/brand.js';
+import { DEFAULT_PLAN_TIME, TrainingPlan, WEEKDAYS } from '../domain/plan.js';
+import { db, repo } from '../data/repositories.js';
+import { loadTrainingDaysPlanHistory } from '../data/routines-store.js';
+import { showToast } from '../ui/toast.js';
+import { loadRoutineExercises } from './training/workout.js';
+import { renderPlanSection, saveCurrentPlan } from './plan-screen.js';
+import { changeDistanceUnit, changeWeightUnit, loadAppSettings } from './general-settings.js';
+import { features } from './feature-settings.js';
+import { DISCIPLINES, loadDisciplines, toggleDiscipline } from './disciplines.js';
+import { openProgramsModal } from './programs.js';
+import { goToSection, showScreen } from '../ui/navigation.js';
 
-class OnboardingFlow {
+export class OnboardingFlow {
     static STEPS = 5;
 
     constructor() {
@@ -211,9 +226,9 @@ class OnboardingFlow {
     }
 }
 
-const onboardingFlow = new OnboardingFlow();
+export const onboardingFlow = new OnboardingFlow();
 
 // Lo que usa el arranque de la app.
-function maybeStartOnboarding() { onboardingFlow.maybeStart(); }
-function bindOnboarding() { onboardingFlow.bind(); }
-function openOnboarding(step) { onboardingFlow.open(step); }
+export function maybeStartOnboarding() { onboardingFlow.maybeStart(); }
+export function bindOnboarding() { onboardingFlow.bind(); }
+export function openOnboarding(step) { onboardingFlow.open(step); }

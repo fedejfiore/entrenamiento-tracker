@@ -1,14 +1,23 @@
 // Selector de rutinas, sugerencia del día y alta / baja / archivo de rutinas.
-// Script clásico (no módulo): comparte el ámbito global con el resto de la app.
+import { escapeHtml } from '../../core/utils.js';
+import { ROUTINE_LABELS, routines } from '../../domain/catalog.js';
+import { repo } from '../../data/repositories.js';
+import { archivedRoutines, customRoutineLabels, customRoutines, isRoutineVisible, loadArchivedExercises, loadCustomRoutineLabels, loadCustomRoutines, reloadArchivedRoutines, saveArchivedRoutines, saveCustomRoutineLabels, slugifyRoutineKey } from '../../data/routines-store.js';
+import { showToast, showUndoToast } from '../../ui/toast.js';
+import { saveWorkoutDraft } from './draft.js';
+import { loadRoutineExercises } from './workout.js';
+import { routineInActiveModule, tagRoutineModule } from '../disciplines.js';
+import { renderLibrary } from '../library.js';
+import { showScreen } from '../../ui/navigation.js';
 
-let selectedMood = 3;
+export let selectedMood = 3;
 
 /** Ánimo elegido para la sesión (1 a 5). */
-function setSelectedMood(mood) {
+export function setSelectedMood(mood) {
     selectedMood = mood;
 }
 
-function populateRoutineOptions() {
+export function populateRoutineOptions() {
     const select = document.getElementById('routine');
     if (!select) return;
     const currentValue = select.value;
@@ -30,9 +39,9 @@ function populateRoutineOptions() {
 // Rutinas que no cuentan para la sugerencia de "qué entrenar hoy":
 // fútbol y bici no son rutinas de gimnasio con grupos musculares que
 // rotar, así que no tiene sentido "sugerirlas" por antigüedad.
-let suggestedRoutineKey = null;
+export let suggestedRoutineKey = null;
 
-function getRoutineSuggestionRanking() {
+export function getRoutineSuggestionRanking() {
     const EXCLUDE_RE = /f[uú]tbol|bici/i;
     const keys = Array.from(new Set([...Object.keys(routines), ...Object.keys(customRoutines)]))
         .filter(isRoutineVisible)
@@ -76,12 +85,12 @@ function getRoutineSuggestionRanking() {
 }
 
 // La rutina que hace más que no hacés: la usa la tarjeta "Hoy toca" de Inicio.
-function updateSuggestedRoutine() {
+export function updateSuggestedRoutine() {
     const ranking = getRoutineSuggestionRanking();
     suggestedRoutineKey = ranking.length ? ranking[0].key : null;
 }
 
-function createNewRoutine() {
+export function createNewRoutine() {
     const input = document.getElementById('newRoutineName');
     const name = (input.value || '').trim().replace(/\s+/g, ' ');
 
@@ -107,7 +116,7 @@ function createNewRoutine() {
     showToast(`✅ Rutina "${name}" creada. Agregá tu primer ejercicio con "+ Agregar" abajo.`);
 }
 
-function updateDeleteRoutineButtonVisibility(routine) {
+export function updateDeleteRoutineButtonVisibility(routine) {
     const deleteBtn = document.getElementById('btnDeleteRoutine');
     const renameBtn = document.getElementById('btnRenameRoutine');
     if (deleteBtn) deleteBtn.style.display = routine ? '' : 'none';
@@ -117,7 +126,7 @@ function updateDeleteRoutineButtonVisibility(routine) {
 // Renombra cualquier rutina (base o personalizada). Para las base, esto es solo
 // una etiqueta pisando a ROUTINE_LABELS — el código detrás (clave, ejercicios) no
 // cambia, así que el historial y las estadísticas no se ven afectados.
-function renameRoutine() {
+export function renameRoutine() {
     const routine = document.getElementById('routine').value;
     if (!routine) return;
 
@@ -141,7 +150,7 @@ function renameRoutine() {
 // del selector pero nada se borra. Sirve tanto para rutinas base como personalizadas,
 // y también para ir preparando una rutina futura: se crea, se carga con ejercicios y
 // se archiva hasta que llegue el momento de usarla.
-function archiveCurrentRoutine() {
+export function archiveCurrentRoutine() {
     const routine = document.getElementById('routine').value;
     if (!routine) return;
 
@@ -161,7 +170,7 @@ function archiveCurrentRoutine() {
     });
 }
 
-function renderArchivedRoutinesList() {
+export function renderArchivedRoutinesList() {
     const section = document.getElementById('section-archived-routines');
     const list = document.getElementById('archivedRoutinesList');
     if (!section || !list) return;
@@ -183,7 +192,7 @@ function renderArchivedRoutinesList() {
     }).join('');
 }
 
-function restoreRoutine(key) {
+export function restoreRoutine(key) {
     archivedRoutines.delete(key);
     saveArchivedRoutines();
     renderArchivedRoutinesList();
@@ -202,7 +211,7 @@ function restoreRoutine(key) {
 
 // Borrado definitivo: solo para rutinas personalizadas (las base viven en el código
 // y no se pueden borrar de verdad). No tiene vuelta atrás, a diferencia de archivar.
-function deleteCustomRoutineForever(key) {
+export function deleteCustomRoutineForever(key) {
     const label = customRoutineLabels[key] || key;
     if (!confirm(`¿Eliminar DEFINITIVAMENTE la rutina "${label}"?\n\nEsto no se puede deshacer: se pierden la plantilla y su lista de ejercicios. Los entrenamientos ya guardados con esta rutina siguen en el historial.`)) {
         return;
