@@ -17,6 +17,8 @@ jobs:
           node-version: 22
       - name: Instalar dependencias
         run: npm install --no-audit --no-fund
+      - name: Reglas del código (ESLint)
+        run: npm run lint
       - name: Pruebas de la lógica
         run: npm test
       - name: Instalar el navegador

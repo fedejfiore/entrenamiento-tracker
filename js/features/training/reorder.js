@@ -15,6 +15,10 @@ const REORDER_HOLD_MS = { touch: 700, mouse: 300 };
 const REORDER_HOLD_TOLERANCE_PX = 10; // moverse más que esto durante el "mantener" lo cancela
 
 class ReorderController {
+    // Autoscroll al arrastrar cerca del borde de la pantalla: franja (px) y velocidad máxima (px por cuadro).
+    static EDGE_ZONE_PX = 80;
+    static EDGE_MAX_SPEED = 16;
+
     constructor(containerId) {
         this.containerId = containerId;
         this.state = null;
@@ -135,11 +139,13 @@ class ReorderController {
         if (!st || !st.active) return;
         const y = st.lastClientY;
         const vh = window.innerHeight;
+        const zone = ReorderController.EDGE_ZONE_PX;
+        const speed = ReorderController.EDGE_MAX_SPEED;
         let delta = 0;
-        if (y < DRAG_EDGE_SCROLL_ZONE_PX) {
-            delta = -Math.ceil((DRAG_EDGE_SCROLL_ZONE_PX - y) / DRAG_EDGE_SCROLL_ZONE_PX * DRAG_EDGE_SCROLL_MAX_SPEED);
-        } else if (y > vh - DRAG_EDGE_SCROLL_ZONE_PX) {
-            delta = Math.ceil((y - (vh - DRAG_EDGE_SCROLL_ZONE_PX)) / DRAG_EDGE_SCROLL_ZONE_PX * DRAG_EDGE_SCROLL_MAX_SPEED);
+        if (y < zone) {
+            delta = -Math.ceil((zone - y) / zone * speed);
+        } else if (y > vh - zone) {
+            delta = Math.ceil((y - (vh - zone)) / zone * speed);
         }
         if (delta !== 0) {
             const before = window.scrollY;

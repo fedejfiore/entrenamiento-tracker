@@ -23,8 +23,8 @@ function parseWeightList(str, repsStr) {
     const s = String(str ?? '').trim().toLowerCase().replace(/kgs?|kilos?/g, ' ').trim();
     if (!s) return [];
     let parts;
-    if (/[-;\/|+]/.test(s) || /\d\s+\d/.test(s)) {
-        parts = s.split(/[-;\/|+]|\s+/);
+    if (/[-;/|+]/.test(s) || /\d\s+\d/.test(s)) {
+        parts = s.split(/[-;/|+]|\s+/);
     } else {
         const seps = s.match(/[.,]/g) || [];
         if (seps.length > 1) {
@@ -46,7 +46,7 @@ function parseWeightList(str, repsStr) {
 function parsePauseList(str) {
     const s = String(str ?? '').trim().toLowerCase();
     if (!s) return [];
-    return s.split(/[-;\/|+,\s]+/).filter(Boolean).map(p => {
+    return s.split(/[-;/|+,\s]+/).filter(Boolean).map(p => {
         if (p.includes(':')) return parseTimeSeconds(p);
         const n = parseDecimal(p.replace(/[^\d.]/g, ''));
         if (n == null) return null;

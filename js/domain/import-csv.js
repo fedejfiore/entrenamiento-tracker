@@ -22,7 +22,7 @@ const MILE_TO_KM = 1.609344;
 
 /** Texto CSV → { headers, rows: [{ encabezado normalizado: valor }] }. Detecta , ; o tabulador. */
 function parseCsv(text) {
-    const s = String(text || '').replace(/^﻿/, '');
+    const s = String(text || '').replace(/^\uFEFF/, '');
     const firstLine = s.slice(0, s.search(/\r?\n|$/));
     const counts = { ',': 0, ';': 0, '\t': 0 };
     let quoted = false;

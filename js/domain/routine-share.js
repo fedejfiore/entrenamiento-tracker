@@ -25,7 +25,9 @@ function fromBase64Url(code) {
 // contra código escondido en un link, además de que todo se escapa al mostrarse.
 function cleanShareText(value, max) {
     return String(value ?? '')
-        .replace(/[\u0000-\u001f\u007f-\u009f‪-‮⁦-⁩<>]/g, '')
+        // Caracteres de control e invisibles que cambian el sentido del texto (a propósito).
+        // eslint-disable-next-line no-control-regex
+        .replace(/[\u0000-\u001f\u007f-\u009f\u202a-\u202e\u2066-\u2069<>]/g, '')
         .replace(/\s+/g, ' ').trim().slice(0, max);
 }
 
