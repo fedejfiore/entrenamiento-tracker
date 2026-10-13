@@ -51,7 +51,7 @@
             <button type="button" class="bottom-nav-item" data-nav-target="inicio" data-fn-click="showScreen" data-fn-args='["inicio",true]'><span class="nav-icon" aria-hidden="true">🏠</span><span>Inicio</span></button>
             <button type="button" class="bottom-nav-item" data-nav-target="entrenar" data-fn-click="showScreen" data-fn-args='["entrenar",true]'><span class="nav-icon" aria-hidden="true">🏋️</span><span>Entrenar</span></button>
             <button type="button" class="bottom-nav-item" data-nav-target="historial" data-fn-click="showScreen" data-fn-args='["historial",true]'><span class="nav-icon" aria-hidden="true">📋</span><span>Historial</span></button>
-            <button type="button" class="bottom-nav-item" data-nav-target="progreso" data-fn-click="showScreen" data-fn-args='["progreso",true]'><span class="nav-icon" aria-hidden="true">📊</span><span>Progreso</span></button>
+            <button type="button" class="bottom-nav-item" data-feature-any="muscleMap progression" data-nav-target="progreso" data-fn-click="showScreen" data-fn-args='["progreso",true]'><span class="nav-icon" aria-hidden="true">📊</span><span>Progreso</span></button>
             <button type="button" class="bottom-nav-item" data-nav-more data-fn-click="toggleDrawer" aria-label="Más secciones"><span class="nav-icon" aria-hidden="true">☰</span><span>Más</span></button>
         </nav>
 
@@ -77,7 +77,7 @@
                     </div>
                 </div>
 
-                <div class="section" data-hint="Entrenamientos totales, desde cuándo y promedio semanal">
+                <div data-feature="homeStats" class="section" data-hint="Entrenamientos totales, desde cuándo y promedio semanal">
                     <h2>📊 Estadísticas</h2>
                     <div class="stat-box">
                         <div class="stat-label">Entrenamientos totales</div>
@@ -93,7 +93,7 @@
                     </div>
                 </div>
 
-                <div class="section" id="programsSection" data-hint="Tu programa en curso y qué día te toca">
+                <div data-feature="programs" class="section" id="programsSection" data-hint="Tu programa en curso y qué día te toca">
                     <h2>📚 Programa</h2>
                     <div id="programStatus"></div>
                 </div>
@@ -112,7 +112,8 @@
                     <button type="button" data-plan-action="ics">📥 Agregar al calendario del celular (iPhone y otros)</button>
                 </div>
 
-                <div class="section" data-hint="Los días que entrenaste, mes a mes: tocá uno para ver qué hiciste" data-open="1">
+                <div id="featureHint"></div>
+                <div data-feature="calendar" class="section" data-hint="Los días que entrenaste, mes a mes: tocá uno para ver qué hiciste" data-open="1">
                     <h2>📆 Calendario de Entrenamientos</h2>
                     <div class="calendar-nav">
                         <button type="button" class="small" style="width:auto;" data-fn-click="changeCalendarMonth" data-fn-args='[-1]'>◀</button>
@@ -123,7 +124,7 @@
                     <div id="calendarDayDetail" class="calendar-day-detail" hidden aria-live="polite"></div>
                 </div>
 
-                <div class="section" data-hint="Peso y reps promedio de tus últimas sesiones">
+                <div data-feature="homeStats" class="section" data-hint="Peso y reps promedio de tus últimas sesiones">
                     <h2>📈 Últimas Rutinas</h2>
                     <div style="font-size: 11px; color: var(--text-faint); margin-bottom: 8px;">Peso y reps promedio (de todas las series) en tus últimas sesiones de fuerza.</div>
                     <div id="recentRoutineAverages"></div>
@@ -134,7 +135,7 @@
             <div data-screen="entrenar">
                 <div class="mode-switch" role="tablist" aria-label="Tipo de entrenamiento">
                     <button type="button" role="tab" class="mode-tab" data-train-mode="rutina" aria-selected="true">🏋️ Rutina</button>
-                    <button type="button" role="tab" class="mode-tab" data-train-mode="tabata" aria-selected="false">⏱️ Tabata / Intervalos</button>
+                    <button type="button" role="tab" data-feature="tabata" class="mode-tab" data-train-mode="tabata" aria-selected="false">⏱️ Tabata / Intervalos</button>
                 </div>
                 <button type="button" class="wake-lock-btn" data-wake-lock data-fn-click="toggleWakeLock">🔅 Mantener la pantalla encendida</button>
                 <div class="train-mode" data-mode="rutina">
@@ -161,7 +162,7 @@
                         </div>
                         <div id="routineTimeStatus" style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;"></div>
                         <a href="#" id="btnResetRoutineTimer" data-fn-click="resetRoutineTimer" data-fn-prevent style="display:none; font-size: 12px; color: var(--danger);">↺ Reiniciar marcado de tiempo</a>
-                        <div class="music-row">
+                        <div class="music-row" data-feature="music">
                             <span class="music-row-label">🎵 Música</span>
                             <button type="button" class="small" data-fn-click="openMusic" data-fn-args='["spotify"]'>Spotify</button>
                             <button type="button" class="small" data-fn-click="openMusic" data-fn-args='["ytmusic"]'>YouTube Music</button>
@@ -189,7 +190,7 @@
                     </div>
                 </div>
                 <div class="train-mode" data-mode="tabata" hidden>
-                    <div class="section" id="section-tabata">
+                    <div class="section" id="section-tabata" data-feature="tabata">
                         <h2>⏱️ Tabata / Intervalos</h2>
                         <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Para bloques de tiempo (HIIT, plancha, bici, etc.) en vez de reps y peso.</div>
                         <input type="text" id="tabataName" placeholder="Nombre del bloque (ej: Burpees, Bici, Plancha)">
@@ -234,7 +235,7 @@
 
             <!-- PROGRESO -->
             <div data-screen="progreso">
-                <div class="section" id="muscleMapSection" data-hint="Series por músculo y si estás en el rango ideal">
+                <div data-feature="muscleMap" class="section" id="muscleMapSection" data-hint="Series por músculo y si estás en el rango ideal">
                     <h2>🗺️ Músculos trabajados</h2>
                     <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Series efectivas por músculo (sin calentamiento). Las directas cuentan 1 y las indirectas media serie (el tríceps en un press de pecho, el bíceps en un remo), como en la evidencia científica. Entre 10 y 20 por semana es el rango habitual para ganar músculo: cuanto más intenso el color, más trabajado. Tocá un músculo para ver sus ejercicios. El día en que empieza la semana se elige en Ajustes.</div>
                     <select id="muscleMapPeriod" aria-label="Período del mapa de músculos">
@@ -250,7 +251,7 @@
                     <div id="muscleMapList" class="muscle-list"></div>
                 </div>
 
-                <div class="section" data-hint="Cada ejercicio contra una sesión anterior; tocalo para ver sus gráficos">
+                <div data-feature="progression" class="section" data-hint="Cada ejercicio contra una sesión anterior; tocalo para ver sus gráficos">
                     <h2>📊 Análisis de Progresión</h2>
                     <div class="progression-controls">
                         <label for="progressionGrouping">Ver:</label>
@@ -327,7 +328,7 @@
                         <h2>🗂️ Tus rutinas</h2>
                         <div id="libMyRoutines"></div>
                     </div>
-                    <div class="section" data-hint="Programas armados con progresión automática">
+                    <div data-feature="programs" class="section" data-hint="Programas armados con progresión automática">
                         <h2>🎯 Programas</h2>
                         <div id="libPrograms"></div>
                     </div>
@@ -340,7 +341,7 @@
                         <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Sus ejercicios, entrenamientos guardados y progreso siguen intactos. Restauralas cuando las vuelvas a necesitar, o usá el archivo para ir preparando rutinas futuras sin que molesten en la lista actual.</div>
                         <div id="archivedRoutinesList"></div>
                     </div>
-                    <div class="section" data-hint="Agregar una rutina que te pasaron por link">
+                    <div data-feature="shareRoutines" class="section" data-hint="Agregar una rutina que te pasaron por link">
                         <h2>🔗 Importar una rutina</h2>
                         <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Si alguien (por ejemplo, tu entrenador) te pasó el link de una rutina, abrilo desde el celular o pegalo acá. Si son varias, podés pegar todos los links juntos.</div>
                         <textarea id="importRoutineLink" rows="3" placeholder="Pegá el link (o varios links) de la rutina" autocomplete="off" spellcheck="false"></textarea>
@@ -396,17 +397,17 @@
                     <h2>📈 Tu actividad</h2>
                     <div id="profileStats"></div>
                 </div>
-                <div class="section" data-hint="Constancia, récords, kilos, horas y cardio">
+                <div data-feature="medals" class="section" data-hint="Constancia, récords, kilos, horas y cardio">
                     <h2>🏅 Medallas</h2>
                     <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Se ganan con tu historial real. Tocá 📤 para compartir la medalla como imagen (historia o publicación).</div>
                     <div id="profileMedals"></div>
                 </div>
-                <div class="section" data-hint="Tus récords personales, listos para compartir">
+                <div data-feature="medals" class="section" data-hint="Tus récords personales, listos para compartir">
                     <h2>🏆 Trofeos</h2>
                     <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Cada récord personal es un trofeo. Tocá 📤 para compartirlo como imagen (historia o publicación).</div>
                     <div id="profileTrophies"></div>
                 </div>
-                <div class="section" data-hint="Tu evolución en fotos (quedan en tu celular)">
+                <div data-feature="body" class="section" data-hint="Tu evolución en fotos (quedan en tu celular)">
                     <h2>📸 Fotos de progreso</h2>
                     <button type="button" id="addProgressPhoto">📷 Agregar foto de hoy</button>
                     <input type="file" id="progressPhotoInput" accept="image/*" hidden>
@@ -440,6 +441,11 @@
                         <span aria-hidden="true">·</span>
                         <button type="button" class="link-btn" data-fn-click="openLegal" data-fn-args='["terms"]'>Términos y condiciones</button>
                     </div>
+                </div>
+
+                <div class="section" id="featuresSection" data-hint="Activá solo lo que usás: la app arranca simple">
+                    <h2>🧩 Funciones</h2>
+                    <div id="featureSettings"></div>
                 </div>
 
                 <div class="section" id="reformerSection" style="display:none;" data-hint="Marca y resortes de tu reformer">
@@ -520,7 +526,7 @@
                     <button type="button" data-fn-click="testSound">▶ Probar sonido</button>
                 </div>
 
-                <div class="section" data-hint="Qué avisos se dicen, voz, velocidad y contador de reps">
+                <div data-feature="voice" class="section" data-hint="Qué avisos se dicen, voz, velocidad y contador de reps">
                     <h2>🗣️ Voz y avisos</h2>
                     <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">La app te habla con la voz del celular (funciona sin internet). Cada aviso se activa o desactiva por separado. En iPhone, el interruptor de silencio puede apagar la voz.</div>
                     <div id="voiceSettingsBox">
@@ -558,14 +564,14 @@
                     </div>
                 </div>
 
-                <div class="section" data-hint="Tu voz (o la de tu entrenador) para cada aviso">
+                <div data-feature="recordings" class="section" data-hint="Tu voz (o la de tu entrenador) para cada aviso">
                     <h2>🎙️ Mis grabaciones</h2>
                     <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Grabá tu voz (o la de quien quieras) para cada aviso: hasta 5 segundos, y el silencio del principio y del final se recorta solo. Lo que no grabes lo dice la voz del celular; los números siempre los dice la voz del celular. Las grabaciones quedan en este celular y se incluyen en el backup.</div>
                     <label class="toggle-row"><input type="checkbox" data-voice="useRecordings" data-fn-change="onVoiceSettingChange" data-fn-args='["$this"]'><span>Usar mis grabaciones</span></label>
                     <div id="recordingsList"></div>
                 </div>
 
-                <div class="section" data-hint="Tus playlists de Spotify y YouTube Music">
+                <div data-feature="music" class="section" data-hint="Tus playlists de Spotify y YouTube Music">
                     <h2>🎵 Música</h2>
                     <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Pegá el link de tu playlist (en la app de música: Compartir → Copiar link) y la abrís con un toque desde Entrenar. Sin link, se abre la app en su inicio. Pausar o pasar de tema se hace desde la app de música o desde los controles del celular: una web no puede manejar otra app.</div>
                     <label class="range-label" for="musicLink_spotify">Playlist de Spotify</label>
@@ -574,7 +580,7 @@
                     <input type="url" id="musicLink_ytmusic" inputmode="url" autocomplete="off" placeholder="https://music.youtube.com/playlist?list=..." data-fn-change="saveMusicLink" data-fn-args='["ytmusic","$this"]'>
                 </div>
 
-                <div class="section" data-hint="Juntar un ejercicio que quedó con dos nombres">
+                <div data-feature="unify" class="section" data-hint="Juntar un ejercicio que quedó con dos nombres">
                     <h2>🔗 Unificar Ejercicios Duplicados</h2>
                     <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Si dos nombres son el mismo ejercicio (ej. "Mariposa" y "Aperturas en mariposa"), elegilos acá para juntar sus estadísticas e historial. Sin tipear, para no fallar por una tilde o un espacio de más.</div>
                     <select id="unifySource"><option value="">Ejercicio a renombrar...</option></select>
@@ -588,12 +594,12 @@
                     <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Recomendado si el backup tiene fotos o medidas, o si lo vas a mandar por mail o WhatsApp. Si te olvidás la contraseña, el backup no se puede abrir.</div>
                     <button class="success" data-fn-click="downloadData">📥 Descargar backup</button>
                     <button data-fn-click="triggerFileInput">📤 Cargar backup</button>
-                    <button type="button" id="exportCsvBtn">📄 Exportar historial (CSV, para Excel o Sheets)</button>
+                    <button type="button" id="exportCsvBtn" data-feature="importExport">📄 Exportar historial (CSV, para Excel o Sheets)</button>
                     <input type="file" id="fileInput" accept=".json,application/json" style="display:none;">
                     <button class="danger" data-fn-click="resetAllData">🗑️ Resetear todo</button>
                 </div>
 
-                <div class="section" id="importHistorySection" data-hint="Hevy, Strong o Fitbod: tu historial no se pierde al cambiarte">
+                <div data-feature="importExport" class="section" id="importHistorySection" data-hint="Hevy, Strong o Fitbod: tu historial no se pierde al cambiarte">
                     <h2>📥 Traer historial de otra app</h2>
                     <p class="import-help">En la otra app buscá <b>Exportar datos</b> (suele estar en Ajustes o en el Perfil), guardá el archivo <b>CSV</b> y elegilo acá. Funciona con <b>Hevy</b>, <b>Strong</b> y <b>Fitbod</b>, y con el CSV que exporta esta app. Antes de guardar te muestro un resumen; si importás el mismo archivo dos veces, no se duplica.</p>
                     <label for="importWeightUnit" class="settings-label">Si el archivo no dice la unidad (Strong), los pesos están en</label>
@@ -872,6 +878,7 @@
     </div>
 
     <script src="js/core/errors.js"></script>
+    <script src="js/core/feature-registry.js"></script>
     <script src="js/core/utils.js"></script>
     <script src="js/core/i18n.js"></script>
     <script src="js/ui/actions.js"></script>
@@ -937,6 +944,7 @@
     <script src="js/features/muscle-map.js"></script>
     <script src="js/features/plate-calculator.js"></script>
     <script src="js/features/general-settings.js"></script>
+    <script src="js/features/feature-settings.js"></script>
     <script src="js/features/disciplines.js"></script>
     <script src="js/features/reformer.js"></script>
     <script src="js/features/pilates-library.js"></script>

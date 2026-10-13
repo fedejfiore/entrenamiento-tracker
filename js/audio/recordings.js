@@ -127,7 +127,8 @@ function playRecordings(ids, opts = {}) {
 function speakCue(ids, text, key, opts = {}) {
     const st = loadVoiceSettings();
     if (!st.enabled || (key && st[key] === false)) return;
-    if (st.useRecordings && ids.length > 0 && playRecordings(ids, opts)) return;
+    if (typeof features !== 'undefined' && !features.isOn('voice')) return;
+    if (st.useRecordings && features.isOn('recordings') && ids.length > 0 && playRecordings(ids, opts)) return;
     speak(styledCueText(ids, text), null, opts);
 }
 

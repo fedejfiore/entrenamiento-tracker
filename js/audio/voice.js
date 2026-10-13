@@ -62,6 +62,7 @@ function pickVoice(settings) {
 function speak(text, key, opts = {}) {
     const st = loadVoiceSettings();
     if (!st.enabled || (key && st[key] === false) || !voiceSupported()) return;
+    if (typeof features !== 'undefined' && !features.isOn('voice')) return;
     try {
         if (opts.interrupt !== false) {
             stopCuePlayback();

@@ -38,6 +38,8 @@ const STORAGE_SCHEMA = {
     routineTargets: { group: 'data', type: 'object', default: {}, description: 'Objetivos por rutina y ejercicio (series, rango de reps, descanso, incremento): { rutina: { ejercicioNormalizado: {...} } }.' },
     activeProgram: { group: 'data', type: 'object', default: {}, description: 'Programa prearmado en curso: { id, startedAt, routines: [claves] }.' },
     exerciseEquipLevels: { group: 'data', type: 'object', default: {}, description: 'Pilates: nivel del elemento por ejercicio (banda, pelota, aro…): liviana, media o fuerte.' },
+    features: { group: 'prefs', type: 'object', default: null, description: 'Funciones activables: { mode: simple | custom, on: { id: true/false } }.' },
+    featureHintsShown: { group: 'prefs', type: 'array', default: [], description: 'Sugerencias de funciones que ya se mostraron (una vez cada una).' },
     routineDisciplines: { group: 'data', type: 'object', default: {}, description: 'Módulo de cada rutina creada: { clave: "pilates" } (las demás son de gimnasio).' },
     trainingDaysPlanHistory: { group: 'data', type: 'array', default: [], description: 'Plan semanal: días, horarios y aviso previo, con la fecha (lunes) desde la que rige.' },
 

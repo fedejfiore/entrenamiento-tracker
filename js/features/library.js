@@ -23,7 +23,7 @@ function libRoutineItemHtml(key, { archived = false } = {}) {
     const actions = archived
         ? `<button type="button" class="small" data-lib="restore" data-routine="${k}">↩️ Restaurar</button>`
         : `<button type="button" class="small" data-lib="train" data-routine="${k}" aria-label="Entrenar ${escapeHtml(label)}">▶ Entrenar</button>
-           <button type="button" class="small lib-secondary" data-lib="share" data-routine="${k}" aria-label="Compartir ${escapeHtml(label)}" title="Compartir por link">🔗</button>
+           <button type="button" class="small lib-secondary" data-feature="shareRoutines" data-lib="share" data-routine="${k}" aria-label="Compartir ${escapeHtml(label)}" title="Compartir por link">🔗</button>
            <button type="button" class="small lib-secondary" data-lib="archive" data-routine="${k}" aria-label="Archivar ${escapeHtml(label)}" title="Archivar">📥</button>`;
     return `<div class="lib-item">
             <div class="lib-item-main">

@@ -52,7 +52,7 @@ function programTargetLineHtml(routineKey, name) {
     if (!s) return '';
     const { sets, repsMin, repsMax } = s.target;
     const range = repsMin === repsMax ? `${repsMin}` : `${repsMin}–${repsMax}`;
-    return `<small class="program-target program-${s.action}">🎯 ${sets} × ${range} · ${escapeHtml(s.text)}</small>`;
+    return `<small class="program-target program-${s.action}" data-feature="programs">🎯 ${sets} × ${range} · ${escapeHtml(s.text)}</small>`;
 }
 
 // ---- Estancamiento (con o sin programa) ----
@@ -93,7 +93,7 @@ function stallHintHtml(routineKey, name, type) {
         const variants = (EXERCISE_VARIANTS[name] || []).slice(0, 2);
         text += ` Si sigue igual, probá ${variants.length ? `una variante (${variants.join(' o ')})` : 'una variante'} o una semana más liviana (descarga).`;
     }
-    return `<small class="stall-hint">📈 ${escapeHtml(text)}</small>`;
+    return `<small class="stall-hint" data-feature="stall">📈 ${escapeHtml(text)}</small>`;
 }
 
 // ---- Programa en curso ----

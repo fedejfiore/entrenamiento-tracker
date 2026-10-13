@@ -115,12 +115,9 @@ select.type-chip {
     cursor: pointer;
 }
 
-/* Tabla de series: las columnas se definen por tipo de ejercicio */
-.sets-table { --set-cols: 22px 1fr 1fr 1fr 48px 40px 28px; }
-.sets-table.t-bw { --set-cols: 22px 1fr 1fr 48px 40px 28px; }
-.sets-table.t-time { --set-cols: 22px 1fr 1fr 76px 40px 28px; }
-.sets-table.t-min { --set-cols: 22px 1fr 84px 40px 28px; }
-.sets-table.t-km { --set-cols: 22px 1fr 1fr 1fr 62px 40px 28px; }
+/* Tabla de series: las columnas se calculan según el tipo y las funciones activas
+   (setColumnsFor en exercise-block.js); acá van los anchos de las columnas fijas. */
+.sets-table { --c-num: 22px; --c-speed: 62px; --c-effort: 48px; --c-effort-wide: 80px; --c-check: 40px; --c-note: 28px; }
 
 /* Encabezado del tiempo: botón que cambia la unidad */
 .time-unit-btn {

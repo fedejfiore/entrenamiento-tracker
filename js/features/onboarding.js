@@ -4,7 +4,8 @@
 // recarga y la guía sigue en el paso siguiente.
 // Script clásico (no módulo): comparte el ámbito global con el resto de la app.
 
-const ONBOARDING_STEPS = 4;
+const ONBOARDING_STEPS = 5;
+let onboardingFeatureChoice = 'simple';
 let onboardingStep = 1;
 let onboardingDays = new Set([1, 3, 5]);
 let onboardingTime = '19:00';
@@ -39,7 +40,7 @@ function onboardingStepHtml(step) {
         try { lang = localStorage.getItem('language') || 'auto'; } catch (e) {}
         return `<div class="ob-hero">🏋️</div>
             <h3>¡Bienvenido a ${escapeHtml(APP_BRAND.name)}!</h3>
-            <p>Registrá tus entrenamientos, seguí tu progreso y hacé crecer tu flor cada semana. Te preparo la app en cuatro pasos.</p>
+            <p>Registrá tus entrenamientos, seguí tu progreso y hacé crecer tu flor cada semana. Te preparo la app en pocos pasos.</p>
             <label for="obLanguage" class="settings-label">Idioma / Language / Idioma</label>
             <select id="obLanguage" translate="no">
                 <option value="auto"${lang === 'auto' ? ' selected' : ''}>Automático / Auto</option>
@@ -65,6 +66,21 @@ function onboardingStepHtml(step) {
             <div class="ob-choices" data-ob="distance">${opt('km', st.distanceUnit, 'Kilómetros (km)')}${opt('mi', st.distanceUnit, 'Millas (mi)')}</div>`;
     }
     if (step === 3) {
+        const choice = (v, title, text) => `<button type="button" class="ob-start ob-feature-mode${onboardingFeatureChoice === v ? ' on' : ''}" data-ob-features="${v}" aria-pressed="${onboardingFeatureChoice === v}"><b>${title}</b><small>${text}</small></button>`;
+        const groups = onboardingFeatureChoice === 'custom' ? `<p class="settings-label">Tocá lo que necesitás</p><div class="discipline-chips ob-feature-groups">${FEATURE_GROUPS.map(([g, icon, label]) => {
+            const on = features.byGroup(g).some(d => features.isOn(d.id));
+            return `<button type="button" class="discipline-chip${on ? ' on' : ''}" data-ob-feature-group="${g}" aria-pressed="${on}">${icon} ${escapeHtml(label)}</button>`;
+        }).join('')}</div>` : '';
+        return `<h3>¿Cómo querés la app?</h3>
+            <p>Empezá simple: lo demás se activa cuando lo necesites, en Ajustes → Funciones.</p>
+            <div class="ob-starts">
+                ${choice('simple', '🌿 Simple (recomendado)', 'Entrenar, descansar y ver tu historial. Sin nada de más en pantalla.')}
+                ${choice('all', '✨ Completa', 'Todas las funciones: RIR, contador de reps, mapa muscular, medallas, voz y más.')}
+                ${choice('custom', '🧩 Elegir', 'Tocá los grupos de funciones que vas a usar.')}
+            </div>
+            ${groups}`;
+    }
+    if (step === 4) {
         const chips = WEEKDAYS.map(w => `<button type="button" class="ob-day${onboardingDays.has(w.n) ? ' on' : ''}" data-day="${w.n}" aria-pressed="${onboardingDays.has(w.n)}">${w.short}</button>`).join('');
         return `<h3>¿Qué días entrenás?</h3>
             <p>Con tu plan, la app te dice qué toca cada día y tu flor crece con cada semana cumplida.</p>
@@ -108,7 +124,7 @@ function onboardingNext() {
             return;
         }
     }
-    if (onboardingStep === 3) saveOnboardingPlan();
+    if (onboardingStep === 4) saveOnboardingPlan();
     onboardingStep = Math.min(ONBOARDING_STEPS, onboardingStep + 1);
     try { sessionStorage.setItem('onboardingStep', String(onboardingStep)); } catch (e) {}
     renderOnboarding();
@@ -148,6 +164,21 @@ function bindOnboarding() {
         if (action === 'next') { onboardingNext(); return; }
         if (action === 'back') { onboardingStep = Math.max(1, onboardingStep - 1); renderOnboarding(); return; }
         if (action === 'skip') { finishOnboarding(null); return; }
+        const mode = e.target.closest('[data-ob-features]');
+        if (mode) {
+            onboardingFeatureChoice = mode.dataset.obFeatures;
+            if (onboardingFeatureChoice === 'simple') features.useSimple();
+            if (onboardingFeatureChoice === 'all') features.useAll();
+            renderOnboarding();
+            return;
+        }
+        const group = e.target.closest('[data-ob-feature-group]');
+        if (group) {
+            const g = group.dataset.obFeatureGroup;
+            features.setGroup(g, !features.byGroup(g).some(d => features.isOn(d.id)));
+            renderOnboarding();
+            return;
+        }
         const disc = e.target.closest('[data-discipline]');
         if (disc) { toggleDiscipline(disc.dataset.discipline); renderOnboarding(); return; }
         const choice = e.target.closest('.ob-choice');

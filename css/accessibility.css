@@ -86,11 +86,7 @@
 html[data-size] button { min-height: 50px; font-size: 16px; }
 html[data-size] button.small { min-height: 46px; font-size: 15px; }
 html[data-size] select, html[data-size] input { font-size: 18px; padding: 13px 12px; }
-html[data-size] .sets-table { --set-cols: 24px 1fr 1fr 1fr 50px 48px 32px; }
-html[data-size] .sets-table.t-bw { --set-cols: 24px 1fr 1fr 50px 48px 32px; }
-html[data-size] .sets-table.t-time { --set-cols: 24px 1fr 1fr 76px 48px 32px; }
-html[data-size] .sets-table.t-min { --set-cols: 24px 1fr 84px 48px 32px; }
-html[data-size] .sets-table.t-km { --set-cols: 24px 1fr 1fr 1fr 58px 48px 32px; }
+html[data-size] .sets-table { --c-num: 24px; --c-speed: 58px; --c-effort: 50px; --c-effort-wide: 80px; --c-check: 48px; --c-note: 32px; }
 html[data-size] .set-row input, html[data-size] .set-row select,
 html[data-size] .set-check, html[data-size] .set-note-btn, html[data-size] .set-num { min-height: 50px; font-size: 18px; padding-left: 0; padding-right: 0; }
 html[data-size] .set-row + .set-row { margin-top: 4px; }

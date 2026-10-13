@@ -29,6 +29,27 @@ function sanitizeSetInput(el) {
     if (v !== el.value) el.value = v;
 }
 
+/**
+ * Qué columnas se ven en las series de un tipo de ejercicio, según las funciones activas
+ * (Ajustes → Funciones), y la grilla que les corresponde. Lo que no se ve igual queda en la
+ * fila (oculto): no se pierde lo cargado si después se activa.
+ */
+function setColumnsFor(type) {
+    const def = EXERCISE_TYPES[type] || EXERCISE_TYPES.kg;
+    const on = id => (typeof features === 'undefined' ? true : features.isOn(id));
+    const showRest = !!def.rest && on('restColumn');
+    // El dominio es parte de pilates; el RIR / esfuerzo es opcional.
+    const showEffort = def.effort === 'mastery' || on('effort');
+    const showNote = on('notes');
+    const grid = ['var(--c-num)', ...def.cols.map(() => 'minmax(0, 1fr)')];
+    if (def.calc === 'speed') grid.push('var(--c-speed)');
+    if (showRest) grid.push('minmax(0, 1fr)');
+    if (showEffort) grid.push(def.effort === 'rir' ? 'var(--c-effort)' : 'var(--c-effort-wide)');
+    grid.push('var(--c-check)');
+    if (showNote) grid.push('var(--c-note)');
+    return { showRest, showEffort, showNote, style: `--set-cols: ${grid.join(' ')}` };
+}
+
 // Una fila = una serie. Los valores de la última sesión se muestran en gris
 // (placeholder) y se guardan en data-prev: al tildar una serie vacía se completan
 // solos, así repetir lo de la vez pasada es un solo toque.
@@ -36,6 +57,7 @@ function buildSetRowHtml(type, label, set = {}, prev = {}, unit = 'mss') {
     const def = EXERCISE_TYPES[type] || EXERCISE_TYPES.kg;
     const scale = EFFORT_SCALES[def.effort];
     const n = set.warmup ? 'de calentamiento' : label;
+    const cols = setColumnsFor(type);
 
     const metricInput = (field, hidden) => {
         const f = SET_FIELDS[field];
@@ -65,16 +87,16 @@ function buildSetRowHtml(type, label, set = {}, prev = {}, unit = 'mss') {
         .map(([v, optLabel]) => `<option value="${v}"${(set.effort || '') === v ? ' selected' : ''}>${optLabel}</option>`)
         .join('');
 
-    return `<div class="set-row${set.done ? ' done' : ''}${set.half && !set.done ? ' half' : ''}${set.warmup ? ' warmup' : ''}">
+    return `<div class="set-row${set.done ? ' done' : ''}${set.half && !set.done ? ' half' : ''}${set.warmup ? ' warmup' : ''}" style="${cols.style}">
             <button type="button" class="set-num" data-action="toggle-warmup" aria-pressed="${set.warmup ? 'true' : 'false'}" title="Tocá para marcar/desmarcar como calentamiento" aria-label="Serie ${n}: marcar como calentamiento">${set.warmup ? WARMUP_LABEL : label}</button>
             ${visibleInputs}
             ${def.calc === 'speed' ? buildSpeedCellHtml(set, prev) : ''}
-            <input type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" data-f="rest" data-prev="${escapeHtml(prevRest)}" placeholder="${escapeHtml(prevRest || String(DEFAULT_REST_SECONDS))}" value="${escapeHtml(set.rest || '')}" aria-label="Descanso en segundos, serie ${n}"${def.rest ? '' : ' hidden'}>
-            <select data-f="effort" aria-label="${scale.title}, serie ${n}">${effortOptions}</select>
+            <input type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" data-f="rest" data-prev="${escapeHtml(prevRest)}" placeholder="${escapeHtml(prevRest || String(DEFAULT_REST_SECONDS))}" value="${escapeHtml(set.rest || '')}" aria-label="Descanso en segundos, serie ${n}"${cols.showRest ? '' : ' hidden'}>
+            <select data-f="effort" aria-label="${scale.title}, serie ${n}"${cols.showEffort ? '' : ' hidden'}>${effortOptions}</select>
             <button type="button" class="set-check" aria-pressed="${set.done ? 'true' : 'false'}" aria-label="Serie ${n} hecha" data-action="toggle-done">${set.half && !set.done ? '½' : '✓'}</button>
-            <button type="button" class="set-note-btn${set.note ? ' has-note' : ''}" aria-label="Nota de la serie ${n}" title="Nota de la serie" data-action="toggle-set-note">📝</button>
+            <button type="button" class="set-note-btn${set.note ? ' has-note' : ''}" aria-label="Nota de la serie ${n}" title="Nota de la serie" data-action="toggle-set-note"${cols.showNote ? '' : ' hidden'}>📝</button>
             ${hiddenInputs}
-            <input type="text" class="set-note" data-f="note" autocomplete="off" placeholder="Nota de la serie (ej: se me fue la técnica)" value="${escapeHtml(set.note || '')}"${set.note ? '' : ' hidden'}>
+            <input type="text" class="set-note" data-f="note" autocomplete="off" placeholder="Nota de la serie (ej: se me fue la técnica)" value="${escapeHtml(set.note || '')}"${set.note && cols.showNote ? '' : ' hidden'}>
         </div>`;
 }
 
@@ -101,16 +123,17 @@ function updateSetCalc(row) {
 function buildSetsTableHtml(type, sets, prevSets, unit = 'mss') {
     const def = EXERCISE_TYPES[type] || EXERCISE_TYPES.kg;
     const scale = EFFORT_SCALES[def.effort];
-    const head = `<div class="sets-head">
+    const cols = setColumnsFor(type);
+    const head = `<div class="sets-head" style="${cols.style}">
             <span>#</span>
             ${def.cols.map(f => f === 'time'
                 ? `<button type="button" class="time-unit-btn" data-action="cycle-time-unit" title="Cambiar unidad: segundos, m:ss, minutos u h:mm" aria-label="Unidad de tiempo: ${TIME_UNITS[unit].label}. Tocá para cambiarla">${TIME_UNITS[unit].head} ⇄</button>`
                 : `<span>${f === 'km' ? distanceUnitDef().head : f === 'kg' ? weightUnitDef().head : SET_FIELDS[f].head}</span>`).join('')}
             ${def.calc === 'speed' ? `<span title="Velocidad calculada">${distanceUnitDef().speedHead}</span>` : ''}
-            ${def.rest ? '<span title="Descanso en segundos">Desc s</span>' : ''}
-            <span title="${scale.title}">${scale.head}</span>
+            ${cols.showRest ? '<span title="Descanso en segundos">Desc s</span>' : ''}
+            ${cols.showEffort ? `<span title="${scale.title}">${scale.head}</span>` : ''}
             <span>✓</span>
-            <span></span>
+            ${cols.showNote ? '<span></span>' : ''}
         </div>`;
     const lastPrev = prevSets[prevSets.length - 1] || {};
     const labels = setLabels(sets);
@@ -155,8 +178,8 @@ function buildExerciseRowHtml(idx, ex, routine) {
                     <div class="exercise-meta">
                         <select class="type-chip" aria-label="Cómo se mide ${safeName}" data-change="change-type">${buildTypeOptionsHtml(type)}</select>
                         ${equipLevelChipHtml(ex)}
-                        <button type="button" class="side-chip${unilateral ? ' on' : ''}" data-action="toggle-unilateral" aria-pressed="${unilateral ? 'true' : 'false'}" title="${unilateral ? 'Unilateral: cada serie se marca por lado (tocá para desactivar)' : 'Marcar como unilateral (de a un lado)'}">↔${unilateral ? ' Por lado' : ''}</button>
-                <button type="button" class="superset-chip${superset ? ' on' : ''}" data-action="superset" title="${superset ? `Superserie ${escapeHtml(superset)} (tocá para cambiarla)` : 'Armar una superserie con otro ejercicio'}">🔗${superset ? ' ' + escapeHtml(superset) : ''}</button>
+                        <button type="button" data-feature="unilateral" class="side-chip${unilateral ? ' on' : ''}" data-action="toggle-unilateral" aria-pressed="${unilateral ? 'true' : 'false'}" title="${unilateral ? 'Unilateral: cada serie se marca por lado (tocá para desactivar)' : 'Marcar como unilateral (de a un lado)'}">↔${unilateral ? ' Por lado' : ''}</button>
+                <button type="button" data-feature="supersets" class="superset-chip${superset ? ' on' : ''}" data-action="superset" title="${superset ? `Superserie ${escapeHtml(superset)} (tocá para cambiarla)` : 'Armar una superserie con otro ejercicio'}">🔗${superset ? ' ' + escapeHtml(superset) : ''}</button>
                         <span class="exercise-last">${buildLastSummaryText(stats, type)}</span>
                     </div>
                     ${programTargetLineHtml(routine, ex)}
@@ -172,9 +195,9 @@ function buildExerciseRowHtml(idx, ex, routine) {
             <div class="sets-controls">
                 <button type="button" data-action="remove-set" aria-label="Quitar la última serie" title="Quitar la última serie"${setCount <= 1 ? ' disabled' : ''}>−</button>
                 <button type="button" data-action="add-set">+ Agregar serie</button>
-                <button type="button" class="rep-count-btn" data-action="count-reps" title="Cuenta la próxima serie con cadencia y voz">▶ Contar reps</button>
+                <button type="button" data-feature="repCounter" class="rep-count-btn" data-action="count-reps" title="Cuenta la próxima serie con cadencia y voz">▶ Contar reps</button>
             </div>
-            <input type="text" class="exercise-note" id="note_${idx}" autocomplete="off" placeholder="Nota del ejercicio (opcional)">
+            <input type="text" data-feature="notes" class="exercise-note" id="note_${idx}" autocomplete="off" placeholder="Nota del ejercicio (opcional)">
         </div>`;
 }
 
@@ -264,6 +287,7 @@ function applySetsToBlock(block, sets, note) {
 // Serie de calentamiento / aproximación: se registra igual, pero no cuenta para
 // volumen, PRs, 1RM ni récords. Se marca tocando el número de la serie.
 function toggleWarmup(btn) {
+    if (typeof features !== 'undefined' && !features.isOn('warmup')) return;
     const row = btn.closest('.set-row');
     const block = btn.closest('.exercise-row');
     if (!row || !block) return;

@@ -25,7 +25,7 @@ function openSessionSummary({ routine, date, exercises, duration, volume, prs, p
     recBox.innerHTML = summaryRecords.length
         ? `<h4>🏆 Récords de hoy</h4>` + summaryRecords.map((r, i) => `<div class="summary-record">
                 <span><strong>${escapeHtml(r.exercise)}</strong> <small>${escapeHtml(r.label)}: ${escapeHtml(recordValueText(r))}${r.deltaText ? ` (${escapeHtml(r.deltaText)})` : ''}</small></span>
-                <button type="button" class="small" data-summary-share="${i}" aria-label="Compartir el récord de ${escapeHtml(r.exercise)}">📤</button>
+                <button type="button" class="small" data-feature="share" data-summary-share="${i}" aria-label="Compartir el récord de ${escapeHtml(r.exercise)}">📤</button>
             </div>`).join('')
         : '';
 

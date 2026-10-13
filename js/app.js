@@ -129,6 +129,7 @@ class App {
         // initI18n traduce todo lo dibujado y queda atento a los cambios; el primer uso va al final.
         this.steps([
             initTheme,
+            initFeatures,
             initDisciplines,
             initReformerSettings,
             initPilatesLibrary,

@@ -5,8 +5,8 @@ const APP_SCREENS = [
     { id: 'inicio', icon: '🏠', label: 'Inicio' },
     { id: 'entrenar', icon: '🏋️', label: 'Entrenar' },
     { id: 'historial', icon: '📋', label: 'Historial' },
-    { id: 'progreso', icon: '📊', label: 'Progreso' },
-    { id: 'medidas', icon: '📏', label: 'Medidas corporales' },
+    { id: 'progreso', icon: '📊', label: 'Progreso', features: 'muscleMap progression' },
+    { id: 'medidas', icon: '📏', label: 'Medidas corporales', features: 'body' },
     { id: 'biblioteca', icon: '📚', label: 'Biblioteca' },
     { id: 'perfil', icon: '👤', label: 'Perfil' },
     { id: 'ajustes', icon: '⚙️', label: 'Ajustes' }
@@ -15,7 +15,7 @@ const APP_SCREENS = [
 // Qué refrescar al entrar a cada pantalla (los gráficos de Chart.js necesitan
 // que su canvas ya esté visible, si no renderizan a tamaño cero).
 const SCREEN_ON_SHOW = {
-    inicio: () => { renderTodayCard(getCurrentPlan()); renderGarden(); },
+    inicio: () => { renderTodayCard(getCurrentPlan()); renderGarden(); if (typeof renderFeatureHint === 'function') renderFeatureHint(); },
     progreso: () => {
         renderMuscleMap();
         generateProgressionAnalysis();
@@ -28,7 +28,7 @@ const SCREEN_ON_SHOW = {
 function renderDrawerNav() {
     const container = document.getElementById('drawerNav');
     if (!container) return;
-    container.innerHTML = APP_SCREENS.map(s =>
+    container.innerHTML = APP_SCREENS.filter(s => !s.features || typeof anyFeatureOn !== 'function' || anyFeatureOn(s.features)).map(s =>
         `<div class="drawer-nav-item" data-nav-target="${s.id}" ${fnAttrs('showScreen', s.id, true)}>
             <span class="nav-icon">${s.icon}</span><span>${s.label}</span>
         </div>`

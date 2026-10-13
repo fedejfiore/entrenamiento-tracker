@@ -109,7 +109,7 @@ function renderMedals(stats) {
                     <small>${nextText}</small>
                     <div class="medal-bar"><i style="width:${Math.round(a.progress * 100)}%"></i></div>
                 </div>
-                ${a.tier ? `<button type="button" class="small lib-secondary" data-share-medal="${a.id}" aria-label="Compartir medalla ${a.title}">📤</button>` : ''}
+                ${a.tier ? `<button type="button" class="small lib-secondary" data-feature="share" data-share-medal="${a.id}" aria-label="Compartir medalla ${a.title}">📤</button>` : ''}
             </div>`;
     }).join('');
 }
@@ -197,7 +197,7 @@ function renderTrophies() {
                 <span class="trophy-cup" aria-hidden="true">🏆</span>
                 <div class="trophy-text"><strong>${escapeHtml(r.exercise)}</strong>
                     <small>${escapeHtml(r.label)}: ${escapeHtml(recordValueText(r))}${r.deltaText ? ` (${escapeHtml(r.deltaText)})` : ''} · ${new Date(r.date + 'T00:00:00').toLocaleDateString(appLocale())}</small></div>
-                <button type="button" class="small lib-secondary" data-share-trophy="${i}" aria-label="Compartir el récord de ${escapeHtml(r.exercise)}">📤</button>
+                <button type="button" class="small lib-secondary" data-feature="share" data-share-trophy="${i}" aria-label="Compartir el récord de ${escapeHtml(r.exercise)}">📤</button>
             </div>`).join('')
         : emptyStateHtml('Cada récord personal (más peso, más reps, más distancia) se convierte en un trofeo para compartir.', ['train']);
 }

@@ -358,12 +358,41 @@ const HELP_FAQ = [
     ['¿Cómo instalo la app en la pantalla de inicio?', 'Android: menú ⋮ del navegador → Instalar app. iPhone (Safari): Compartir → Agregar a inicio.']
 ];
 
-function buildHelpHtml() {
-    const sections = HELP_SECTIONS.map(s => `
-        <details class="help-section" data-help-id="${s.id}">
+// La ayuda no abruma: primero lo básico y después solo lo que la persona activó (Ajustes →
+// Funciones). "Ver toda la ayuda" muestra también lo de las funciones apagadas.
+const HELP_SECTION_FEATURES = {
+    superseries: 'supersets', unilaterales: 'unilateral', discos: 'plates', programas: 'programs',
+    contador: 'repCounter', voz: 'voice', tabata: 'tabata', musica: 'music', medidas: 'body',
+    progreso: 'progression muscleMap'
+};
+// Orden de "Lo básico": lo que necesita alguien que recién empieza.
+const HELP_BASICS_ORDER = ['inicio-rapido', 'entrenar', 'series', 'descanso', 'rutinas', 'plan', 'historial', 'datos', 'ajuste-rapido', 'tipos', 'tiempo', 'organizar', 'inicio', 'biblioteca', 'perfil', 'privacidad', 'ventajas'];
+let helpShowAll = false;
+
+function helpSectionHtml(s) {
+    const feature = HELP_SECTION_FEATURES[s.id] || '';
+    return `
+        <details class="help-section" data-help-id="${s.id}"${feature ? ` data-help-feature="${feature}"` : ''}>
             <summary><span class="help-icon">${s.icon}</span>${s.title}</summary>
             <div class="help-body">${s.html}</div>
-        </details>`).join('');
+        </details>`;
+}
+
+function helpFeatureOn(section) {
+    const f = HELP_SECTION_FEATURES[section.id];
+    return !f || typeof anyFeatureOn !== 'function' || anyFeatureOn(f);
+}
+
+function buildHelpHtml() {
+    const basics = HELP_SECTIONS.filter(s => !HELP_SECTION_FEATURES[s.id])
+        .sort((a, b) => HELP_BASICS_ORDER.indexOf(a.id) - HELP_BASICS_ORDER.indexOf(b.id));
+    const extras = HELP_SECTIONS.filter(s => HELP_SECTION_FEATURES[s.id]);
+    const activeExtras = extras.filter(helpFeatureOn);
+    const shownExtras = helpShowAll ? extras : activeExtras;
+    const hiddenCount = extras.length - activeExtras.length;
+    const sections = `<h4 class="help-subtitle help-group">📘 Lo básico</h4>${basics.map(helpSectionHtml).join('')}
+        ${shownExtras.length ? `<h4 class="help-subtitle help-group">🧩 ${helpShowAll ? 'Todas las funciones' : 'Lo que activaste'}</h4>${shownExtras.map(helpSectionHtml).join('')}` : ''}
+        ${hiddenCount ? `<button type="button" class="small help-show-all" data-help-all>${helpShowAll ? 'Ver solo lo que activé' : 'Ver toda la ayuda'}</button>` : ''}`;
     const faq = HELP_FAQ.map(([q, a]) => `
         <details class="help-section help-faq">
             <summary>${escapeHtml(q)}</summary>
@@ -371,6 +400,13 @@ function buildHelpHtml() {
         </details>`).join('');
     return `${sections}<h4 class="help-subtitle">❓ Preguntas frecuentes</h4>${faq}
         <p class="help-empty" hidden>No encontré nada con esa palabra. Probá con otra (ej. "backup", "timer", "reordenar").</p>`;
+}
+
+/** Vuelve a armar la ayuda (cuando cambian las funciones activas). */
+function renderHelpContent() {
+    const body = document.getElementById('helpContent');
+    if (!body || !body.dataset.rendered) return;
+    body.innerHTML = buildHelpHtml();
 }
 
 // Abre el tutorial. En el celular, el botón "atrás" lo cierra (en vez de salir de la app).
@@ -417,7 +453,8 @@ function filterHelp(query) {
         if (match) visible++;
         section.open = !!q && match;
     });
-    body.querySelector('.help-subtitle').hidden = !!q && !body.querySelector('.help-faq:not([hidden])');
+    body.querySelectorAll('.help-group').forEach(h => { h.hidden = !!q; });
+    body.querySelector('.help-subtitle:not(.help-group)').hidden = !!q && !body.querySelector('.help-faq:not([hidden])');
     body.querySelector('.help-empty').hidden = visible > 0;
 }
 
@@ -427,6 +464,11 @@ function bindHelp() {
     modal.addEventListener('click', e => { if (e.target === modal) closeHelp(); });
     document.getElementById('helpClose')?.addEventListener('click', () => closeHelp());
     document.getElementById('helpSearch')?.addEventListener('input', e => filterHelp(e.target.value));
+    document.getElementById('helpContent')?.addEventListener('click', e => {
+        if (!e.target.closest('[data-help-all]')) return;
+        helpShowAll = !helpShowAll;
+        renderHelpContent();
+    });
     document.getElementById('openHelpBtn')?.addEventListener('click', () => openHelp());
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeHelp(); });
     window.addEventListener('popstate', () => closeHelp(true));
