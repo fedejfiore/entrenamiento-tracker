@@ -5,6 +5,7 @@
 
 I18N_DICTIONARIES.de = {
  "text": {
+  "Algo falló, pero tus datos están a salvo. Si se repite, contanos desde Ajustes → Ayuda.": "Etwas ist schiefgelaufen, aber deine Daten sind sicher. Wenn es wieder passiert, sag es uns unter Einstellungen → Hilfe.",
   "Elegí tus días en": "Wähle deine Tage unter",
   "Gym": "Gym",
   "Pilates": "Pilates",

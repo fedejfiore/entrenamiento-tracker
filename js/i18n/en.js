@@ -235,6 +235,7 @@ I18N_DICTIONARIES.en = {
         'Para que el aviso del descanso llegue justo a tiempo, permití las alarmas exactas.': 'To get the rest alert right on time, allow exact alarms.',
         'Política de privacidad': 'Privacy policy', 'Términos y condiciones': 'Terms and conditions',
         'Por lado': 'Per side',
+        "Algo falló, pero tus datos están a salvo. Si se repite, contanos desde Ajustes → Ayuda.": "Something went wrong, but your data is safe. If it happens again, tell us from Settings → Help.",
         // Pilates
         "Elegí tus días en": "Choose your days in",
         "Gym": "Gym",

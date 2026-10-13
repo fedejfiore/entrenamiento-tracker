@@ -5,6 +5,7 @@
 
 I18N_DICTIONARIES.pt = {
  "text": {
+  "Algo falló, pero tus datos están a salvo. Si se repite, contanos desde Ajustes → Ayuda.": "Algo deu errado, mas seus dados estão seguros. Se acontecer de novo, conte para nós em Ajustes → Ajuda.",
   "Elegí tus días en": "Escolha seus dias em",
   "Gym": "Academia",
   "Pilates": "Pilates",

@@ -5,6 +5,7 @@
 
 I18N_DICTIONARIES.zh = {
  "text": {
+  "Algo falló, pero tus datos están a salvo. Si se repite, contanos desde Ajustes → Ayuda.": "出了点问题，但你的数据是安全的。如果再次发生，请在 设置 → 帮助 中告诉我们。",
   "Elegí tus días en": "在这里选择你的训练日：",
   "Gym": "健身房",
   "Pilates": "普拉提",

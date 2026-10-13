@@ -18,9 +18,6 @@ const FEEDBACK_AREAS = [
 ];
 
 // Último error de la app (solo en memoria, se manda únicamente si la persona envía el reporte).
-let lastAppError = null;
-window.addEventListener('error', e => { lastAppError = `${e.message} (${(e.filename || '').split('/').pop()}:${e.lineno || '?'})`; });
-window.addEventListener('unhandledrejection', e => { lastAppError = String(e.reason?.message || e.reason || 'Promesa rechazada'); });
 
 function isValidFeedbackContact(text) {
     const s = String(text || '').trim();
@@ -59,7 +56,8 @@ async function feedbackTechnicalInfo() {
         `Tema: ${db.get('theme') || 'auto'} · Idioma: ${navigator.language}`,
         `Navegador: ${navigator.userAgent}`
     ];
-    if (lastAppError) lines.push(`Último error: ${lastAppError}`);
+    const lastError = appErrors.lastMessage();
+    if (lastError) lines.push(`Último error: ${lastError}`);
     return lines.join('\n');
 }
 

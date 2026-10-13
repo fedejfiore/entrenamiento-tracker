@@ -47,7 +47,7 @@ function runDeclaredAction(event) {
             console.warn('Acción no permitida o inexistente:', name);
             return;
         }
-        fn(...args);
+        appErrors.run(() => fn(...args), `acción ${name}`);
     });
 }
 

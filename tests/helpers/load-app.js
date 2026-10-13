@@ -8,6 +8,7 @@ const path = require('node:path');
 const ROOT = path.resolve(__dirname, '..', '..');
 
 const CORE_FILES = [
+    'js/core/errors.js',
     'js/core/utils.js',
     'js/core/time.js',
     'js/core/units.js',

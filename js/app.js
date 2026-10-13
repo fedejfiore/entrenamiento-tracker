@@ -4,13 +4,28 @@
 //   2. Eventos de la página.
 //   3. Primer dibujado de cada pantalla.
 //   4. Cambios hechos desde otra pestaña (aislamiento): se recargan y se redibuja.
+// Cada paso corre protegido (ErrorReporter): si uno falla, los demás siguen y la app se puede usar.
 
 class App {
+    constructor(errors) {
+        this.errors = errors;
+    }
+
     start() {
-        this.initData();
+        this.step('datos', () => this.initData());
         this.bindEvents();
         this.render();
-        this.watchExternalChanges();
+        this.step('otras pestañas', () => this.watchExternalChanges());
+    }
+
+    /** Un paso del arranque, protegido. */
+    step(name, fn) {
+        return this.errors.run(fn, `arranque: ${name}`);
+    }
+
+    /** Varios pasos, cada uno protegido por separado. */
+    steps(list) {
+        list.forEach(fn => this.step(fn.name || 'paso', fn));
     }
 
     initData() {
@@ -50,39 +65,41 @@ class App {
             });
         });
 
-        // Pantalla Entrenar y lista de rutinas archivadas: eventos delegados.
-        workoutScreen.bind();
-        bindArchivedRoutinesList();
-        bindHistoryList();
-        bindHelp();
-        bindFeedback();
-        bindGarden();
-        bindFinishPrompt();
-        bindSessionSummary();
-        bindOnboarding();
-        bindImportHistory();
-        bindShareSheet();
-        bindPlanSection();
-        bindSupersetModal();
-        bindPlateCalculator();
-        bindMuscleMap();
-        initSetStepperAutoHide();
-        bindGeneralSettings();
-        bindLanguageSelect();
-        bindPrograms();
-        bindAccessibilitySettings();
-        bindTrainMode();
-        bindProgression();
-        bindLibrary();
-        bindProfile();
-        initCollapsibleSections(document.querySelector('[data-screen="perfil"]'));
-        initCollapsibleSections(document.querySelector('[data-screen="biblioteca"] .lib-tab[data-tab="rutinas"]'));
-        initCollapsibleSections(document.querySelector('[data-screen="biblioteca"] .lib-tab[data-tab="ejercicios"]'));
-        initCollapsibleSections(document.querySelector('[data-screen="progreso"]'));
-        initCollapsibleSections(document.querySelector('[data-screen="inicio"]'));
-        initCollapsibleSections(document.querySelector('[data-screen="medidas"]'));
-        initCollapsibleSections(document.querySelector('[data-screen="ajustes"]'));
-        initBottomNavKeyboardHide();
+        // Pantallas: eventos delegados (cada uno protegido).
+        this.steps([
+            function bindWorkoutScreen() { workoutScreen.bind(); },
+            bindArchivedRoutinesList,
+            bindHistoryList,
+            bindHelp,
+            bindFeedback,
+            bindGarden,
+            bindFinishPrompt,
+            bindSessionSummary,
+            bindOnboarding,
+            bindImportHistory,
+            bindShareSheet,
+            bindPlanSection,
+            bindSupersetModal,
+            bindPlateCalculator,
+            bindMuscleMap,
+            initSetStepperAutoHide,
+            bindGeneralSettings,
+            bindLanguageSelect,
+            bindPrograms,
+            bindAccessibilitySettings,
+            bindTrainMode,
+            bindProgression,
+            bindLibrary,
+            bindProfile,
+            function collapsibles_perfil() { initCollapsibleSections(document.querySelector('[data-screen="perfil"]')); },
+            function collapsibles_biblioteca_ru() { initCollapsibleSections(document.querySelector('[data-screen="biblioteca"] .lib-tab[data-tab="rutinas"]')); },
+            function collapsibles_biblioteca_ej() { initCollapsibleSections(document.querySelector('[data-screen="biblioteca"] .lib-tab[data-tab="ejercicios"]')); },
+            function collapsibles_progreso() { initCollapsibleSections(document.querySelector('[data-screen="progreso"]')); },
+            function collapsibles_inicio() { initCollapsibleSections(document.querySelector('[data-screen="inicio"]')); },
+            function collapsibles_medidas() { initCollapsibleSections(document.querySelector('[data-screen="medidas"]')); },
+            function collapsibles_ajustes() { initCollapsibleSections(document.querySelector('[data-screen="ajustes"]')); },
+            initBottomNavKeyboardHide,
+        ]);
 
         // El audio solo puede sonar después de un toque del usuario.
         document.addEventListener('pointerdown', unlockAudio, { once: true, capture: true });
@@ -109,32 +126,35 @@ class App {
     }
 
     render() {
-        initTheme();
-        initDisciplines();
-        initReformerSettings();
-        initPilatesLibrary();
-        initWakeLock();
-        initNativeFeatures();
-        initSoundSettingsUI();
-        initVoiceSettingsUI();
-        initMusicSettingsUI();
-        renderRecordingsUI();
-        loadRecordings();
-        populateRoutineOptions();
-        populateUnifySelectors();
-        displayWorkoutHistory();
-        loadBodyChartScale();
-        updateBodyChart();
-        calculateStats();
-        updateSidebar();
-        restoreSessionTimer();
-        restoreWorkoutDraft();
-        restoreTabataSessionBlocks();
-        renderVariantsCatalog();
-        initScreens();
-        maybeRemindTodayPlan();
-        initI18n(); // en otro idioma: traduce todo lo dibujado y queda atento a los cambios
-        maybeStartOnboarding(); // la primera vez: idioma, unidades, días y cómo empezar
+        // initI18n traduce todo lo dibujado y queda atento a los cambios; el primer uso va al final.
+        this.steps([
+            initTheme,
+            initDisciplines,
+            initReformerSettings,
+            initPilatesLibrary,
+            initWakeLock,
+            initNativeFeatures,
+            initSoundSettingsUI,
+            initVoiceSettingsUI,
+            initMusicSettingsUI,
+            renderRecordingsUI,
+            loadRecordings,
+            populateRoutineOptions,
+            populateUnifySelectors,
+            displayWorkoutHistory,
+            loadBodyChartScale,
+            updateBodyChart,
+            calculateStats,
+            updateSidebar,
+            restoreSessionTimer,
+            restoreWorkoutDraft,
+            restoreTabataSessionBlocks,
+            renderVariantsCatalog,
+            initScreens,
+            maybeRemindTodayPlan,
+            initI18n,
+            maybeStartOnboarding,
+        ]);
     }
 
     /**
@@ -158,4 +178,4 @@ class App {
     }
 }
 
-new App().start();
+new App(appErrors).start();
