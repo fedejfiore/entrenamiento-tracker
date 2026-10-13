@@ -206,3 +206,46 @@ function planGoogleCalendarLinks(plan, { title = '🏋️ Entrenar', description
         };
     });
 }
+
+// ---- Movido desde las pantallas (etapa 2 de arquitectura) ----
+
+// Devuelve: 'sin-plan' | 'dias-respetados' | 'cantidad-cumplida' | 'en-curso' | 'incumplido'
+// "Cumplida" exige SIEMPRE el plan completo (no solo los días que ya pasaron esta
+// semana): si el plan pide 5 días y llevás 2, todavía no está cumplida aunque esos
+// 2 hayan sido los correctos. Mientras la semana en curso no llegue al total, queda
+// "en-curso" (ni verde todavía, ni roja porque todavía hay tiempo).
+function getWeekStatus(workouts, plan, weekStart, today = new Date()) {
+    if (!plan || plan.length === 0) return 'sin-plan';
+
+    const weekEnd = new Date(weekStart.getTime() + 6 * 86400000);
+
+    const trainedWeekdays = new Set(
+        workouts
+            .map(w => w.date)
+            .filter(Boolean)
+            .filter(ds => {
+                const d = new Date(ds + 'T00:00:00');
+                return d >= weekStart && d <= weekEnd;
+            })
+            .map(ds => new Date(ds + 'T00:00:00').getDay())
+    );
+
+    const diasRespetados = plan.every(d => trainedWeekdays.has(d));
+    if (diasRespetados) return 'dias-respetados';
+
+    const cantidadCumplida = trainedWeekdays.size >= plan.length;
+    if (cantidadCumplida) return 'cantidad-cumplida';
+
+    const isCurrentWeek = weekStart.getTime() === getMonday(today).getTime();
+    if (isCurrentWeek) return 'en-curso';
+
+    return 'incumplido';
+}
+
+function describeNext(next) {
+    if (!next) return '';
+    const day = WEEKDAYS.find(w => w.n === next.weekday);
+    if (next.isToday) return `hoy a las ${next.time}`;
+    if (next.isTomorrow) return `mañana a las ${next.time}`;
+    return `el ${day.long} a las ${next.time}`;
+}

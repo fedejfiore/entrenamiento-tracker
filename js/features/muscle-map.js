@@ -111,15 +111,6 @@ function renderMuscleMap() {
     renderMuscleMapList(byGroup, weekly, range);
 }
 
-// Texto de cada músculo respecto del rango ideal (en la semana en curso, lo que falta).
-function muscleRangeNote(w, range) {
-    const { min, max } = MUSCLE_IDEAL_RANGE;
-    if (w > max) return 'por encima del rango';
-    if (w >= min) return 'en rango ✓';
-    if (range.inProgress) return w > 0 ? `faltan ${formatNumber(Math.ceil(min - w))} para el rango` : 'todavía sin series';
-    return w > 0 ? 'por debajo del rango' : '';
-}
-
 function renderMuscleMapList(byGroup, weekly, range) {
     const list = document.getElementById('muscleMapList');
     if (!list) return;

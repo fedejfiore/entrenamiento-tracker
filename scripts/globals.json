@@ -48,7 +48,7 @@
   "kind": "function"
  },
  "ageFrom": {
-  "file": "js/features/profile.js",
+  "file": "js/core/time.js",
   "kind": "function"
  },
  "ALL_PLATES": {
@@ -380,7 +380,7 @@
   "kind": "function"
  },
  "buildProgressionHistory": {
-  "file": "js/features/progress.js",
+  "file": "js/domain/stats.js",
   "kind": "function"
  },
  "buildSetRowHtml": {
@@ -740,7 +740,7 @@
   "kind": "function"
  },
  "describeNext": {
-  "file": "js/features/plan-screen.js",
+  "file": "js/domain/plan.js",
   "kind": "function"
  },
  "detectCardioPRs": {
@@ -1016,12 +1016,16 @@
   "kind": "class"
  },
  "FEEDBACK_AREAS": {
-  "file": "js/features/feedback.js",
+  "file": "js/domain/feedback.js",
   "kind": "const"
  },
  "FEEDBACK_TYPES": {
-  "file": "js/features/feedback.js",
+  "file": "js/domain/feedback.js",
   "kind": "const"
+ },
+ "feedbackMessage": {
+  "file": "js/domain/feedback.js",
+  "kind": "function"
  },
  "feedbackTechnicalInfo": {
   "file": "js/features/feedback.js",
@@ -1324,7 +1328,7 @@
   "kind": "function"
  },
  "getWeekStatus": {
-  "file": "js/features/home.js",
+  "file": "js/domain/plan.js",
   "kind": "function"
  },
  "goToNextInSuperset": {
@@ -1676,7 +1680,7 @@
   "kind": "function"
  },
  "isValidFeedbackContact": {
-  "file": "js/features/feedback.js",
+  "file": "js/domain/feedback.js",
   "kind": "function"
  },
  "keepInPlace": {
@@ -1972,7 +1976,7 @@
   "kind": "let"
  },
  "muscleRangeNote": {
-  "file": "js/features/muscle-map.js",
+  "file": "js/domain/training-tools.js",
   "kind": "function"
  },
  "muscleSetsByGroup": {
@@ -2952,11 +2956,11 @@
   "kind": "const"
  },
  "routineShareCodeFrom": {
-  "file": "js/features/library.js",
+  "file": "js/domain/routine-share.js",
   "kind": "function"
  },
  "routineShareCodesFrom": {
-  "file": "js/features/library.js",
+  "file": "js/domain/routine-share.js",
   "kind": "function"
  },
  "rpeToRir": {
@@ -3772,7 +3776,7 @@
   "kind": "function"
  },
  "validateFeedback": {
-  "file": "js/features/feedback.js",
+  "file": "js/domain/feedback.js",
   "kind": "function"
  },
  "ValidationError": {

@@ -4,37 +4,6 @@
 // pantalla, último error) para poder reproducir el problema; nunca datos de entrenamiento.
 // Script clásico (no módulo): comparte el ámbito global con el resto de la app.
 
-const FEEDBACK_TYPES = [
-    { id: 'idea', icon: '💡', label: 'Sugerencia', hint: 'Una idea o algo que mejorarías' },
-    { id: 'critical', icon: '🔴', label: 'Error grave', hint: 'No puedo usar la app o perdí datos' },
-    { id: 'major', icon: '🟠', label: 'Error importante', hint: 'Algo no funciona como debería' },
-    { id: 'minor', icon: '🟡', label: 'Error menor', hint: 'Se ve mal, molesta o confunde' },
-    { id: 'question', icon: '❓', label: 'Consulta u otro', hint: 'Una duda o cualquier otra cosa' }
-];
-
-const FEEDBACK_AREAS = [
-    'Entrenar (rutina, series, timer, contador)', 'Inicio y plan semanal', 'Historial', 'Progreso y mapa de músculos',
-    'Biblioteca y rutinas', 'Perfil y medallas', 'Ajustes, voz y sonidos', 'Backup y datos', 'Instalación o actualización', 'Otro'
-];
-
-// Último error de la app (solo en memoria, se manda únicamente si la persona envía el reporte).
-
-function isValidFeedbackContact(text) {
-    const s = String(text || '').trim();
-    if (/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(s)) return true;
-    const digits = s.replace(/[\s()+.-]/g, '');
-    return /^\d{8,15}$/.test(digits);
-}
-
-/** Valida el formulario: devuelve { ok, errors: { campo: mensaje } }. */
-function validateFeedback({ type, description, name, contact }) {
-    const errors = {};
-    if (!FEEDBACK_TYPES.some(t => t.id === type)) errors.type = 'Elegí si es un error o una sugerencia';
-    if (String(description || '').trim().length < 10) errors.description = 'Contanos un poco más (al menos 10 letras)';
-    if (String(name || '').trim().split(/\s+/).filter(w => w.length >= 2).length < 2) errors.name = 'Poné tu nombre y apellido';
-    if (!isValidFeedbackContact(contact)) errors.contact = 'Poné un mail o un WhatsApp con código de área';
-    return { ok: Object.keys(errors).length === 0, errors };
-}
 
 async function appVersionLabel() {
     try {
@@ -74,11 +43,7 @@ function readFeedbackForm() {
 }
 
 async function composeFeedback(form) {
-    const t = FEEDBACK_TYPES.find(x => x.id === form.type);
-    const subject = `[${APP_BRAND.name}] ${t.icon} ${t.label} · ${form.area}`;
-    let body = `${t.icon} ${t.label}\nSección: ${form.area}\n\n${form.description.trim()}\n\n— ${form.name.trim()} · ${form.contact.trim()}`;
-    if (form.includeTech) body += `\n\n---- Datos técnicos ----\n${await feedbackTechnicalInfo()}`;
-    return { subject, body };
+    return feedbackMessage(form, APP_BRAND.name, form.includeTech ? await feedbackTechnicalInfo() : '');
 }
 
 // Aparte, para poder reemplazarla en las pruebas.

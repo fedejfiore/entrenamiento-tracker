@@ -283,3 +283,14 @@ function detectStall(sessions, { type = 'kg', today = new Date(), repsMax } = {}
     const action = type === 'bw' ? (best.reps >= top ? 'harder' : 'reps') : (best.reps >= top ? 'weight' : 'reps');
     return { weeks, sessions: since, kg: best.kg, reps: best.reps, action, variant: weeks >= STALL_RULES.variantWeeks };
 }
+
+// ---- Nota del mapa muscular (antes en js/features/muscle-map.js) ----
+
+// Texto de cada músculo respecto del rango ideal (en la semana en curso, lo que falta).
+function muscleRangeNote(w, range) {
+    const { min, max } = MUSCLE_IDEAL_RANGE;
+    if (w > max) return 'por encima del rango';
+    if (w >= min) return 'en rango ✓';
+    if (range.inProgress) return w > 0 ? `faltan ${formatNumber(Math.ceil(min - w))} para el rango` : 'todavía sin series';
+    return w > 0 ? 'por debajo del rango' : '';
+}

@@ -340,3 +340,27 @@ function getRecentRoutineSummaries(workouts, count = 5) {
     });
 }
 
+// ---- Historial de progresión (antes en js/features/progress.js) ----
+
+/** Historial por ejercicio (volumen, reps y peso máximo por sesión) y la rutina más reciente de cada uno. */
+function buildProgressionHistory(workouts) {
+    const history = {};
+    const lastRoutine = {};
+    [...workouts].sort((a, b) => (a.date || '').localeCompare(b.date || '')).forEach(w => {
+        if (!w || !w.date || !Array.isArray(w.exercises)) return;
+        w.exercises.forEach(ex => {
+            if (!ex || !ex.name) return;
+            const weights = parseWeightList(ex.weight, ex.reps);
+            const totalReps = calculateExerciseTotalReps(ex);
+            if (weights.length === 0 && totalReps === 0) return;
+            (history[ex.name] ||= []).push({
+                date: w.date,
+                volume: calculateExerciseVolume(ex),
+                totalReps,
+                maxWeight: weights.length > 0 ? Math.max(...weights) : 0
+            });
+            lastRoutine[ex.name] = w.routine || '';
+        });
+    });
+    return { history, lastRoutine };
+}

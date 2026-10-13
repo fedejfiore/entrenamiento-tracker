@@ -42,14 +42,6 @@ function trainedToday() {
     return repo.workouts.all().some(w => w.date === today);
 }
 
-function describeNext(next) {
-    if (!next) return '';
-    const day = WEEKDAYS.find(w => w.n === next.weekday);
-    if (next.isToday) return `hoy a las ${next.time}`;
-    if (next.isTomorrow) return `mañana a las ${next.time}`;
-    return `el ${day.long} a las ${next.time}`;
-}
-
 // ---------- Dibujo ----------
 
 function renderPlanSection() {

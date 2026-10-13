@@ -90,3 +90,18 @@ function decodeRoutineShare(code) {
     if (exercises.length === 0) fail('La rutina compartida no tiene ejercicios válidos.');
     return { label, exercises };
 }
+
+// ---- Códigos de rutina en un texto pegado (antes en js/features/library.js) ----
+
+/** Todos los códigos de un texto: se pueden pegar varios links juntos (uno por rutina). */
+function routineShareCodesFrom(text) {
+    const s = String(text || '');
+    const links = [...s.matchAll(/#rutina=([A-Za-z0-9_-]+)/g)].map(m => m[1]);
+    if (links.length) return links;
+    const bare = s.trim().match(/^([A-Za-z0-9_-]{8,})$/);
+    return bare ? [bare[1]] : [];
+}
+
+function routineShareCodeFrom(text) {
+    return routineShareCodesFrom(text)[0] || null;
+}

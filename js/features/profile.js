@@ -45,15 +45,6 @@ async function savePhoto(file, kind, date) {
     return id;
 }
 
-// Edad a partir de la fecha de nacimiento (se guarda la fecha, así la edad se actualiza sola).
-function ageFrom(birthDate, today = new Date()) {
-    if (!birthDate) return null;
-    const b = new Date(birthDate + 'T00:00:00');
-    let age = today.getFullYear() - b.getFullYear();
-    if (today.getMonth() < b.getMonth() || (today.getMonth() === b.getMonth() && today.getDate() < b.getDate())) age--;
-    return age >= 5 && age <= 110 ? age : null;
-}
-
 // ---------- Pantalla ----------
 
 async function renderProfile() {

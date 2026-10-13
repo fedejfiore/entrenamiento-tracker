@@ -226,36 +226,3 @@ function calendarSessionHtml(w) {
     return `<div class="cal-detail-session"><div class="cal-detail-title"><span>${escapeHtml(label)}</span>${meta ? ` <small>${escapeHtml(meta)}</small>` : ''}</div><ul>${exercises}</ul>${prs}</div>`;
 }
 
-// Devuelve: 'sin-plan' | 'dias-respetados' | 'cantidad-cumplida' | 'en-curso' | 'incumplido'
-// "Cumplida" exige SIEMPRE el plan completo (no solo los días que ya pasaron esta
-// semana): si el plan pide 5 días y llevás 2, todavía no está cumplida aunque esos
-// 2 hayan sido los correctos. Mientras la semana en curso no llegue al total, queda
-// "en-curso" (ni verde todavía, ni roja porque todavía hay tiempo).
-function getWeekStatus(workouts, plan, weekStart) {
-    if (!plan || plan.length === 0) return 'sin-plan';
-
-    const weekEnd = new Date(weekStart.getTime() + 6 * 86400000);
-
-    const trainedWeekdays = new Set(
-        workouts
-            .map(w => w.date)
-            .filter(Boolean)
-            .filter(ds => {
-                const d = new Date(ds + 'T00:00:00');
-                return d >= weekStart && d <= weekEnd;
-            })
-            .map(ds => new Date(ds + 'T00:00:00').getDay())
-    );
-
-    const diasRespetados = plan.every(d => trainedWeekdays.has(d));
-    if (diasRespetados) return 'dias-respetados';
-
-    const cantidadCumplida = trainedWeekdays.size >= plan.length;
-    if (cantidadCumplida) return 'cantidad-cumplida';
-
-    const isCurrentWeek = weekStart.getTime() === getMonday(new Date()).getTime();
-    if (isCurrentWeek) return 'en-curso';
-
-    return 'incumplido';
-}
-
