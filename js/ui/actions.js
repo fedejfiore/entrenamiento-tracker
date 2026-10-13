@@ -10,21 +10,26 @@
 // Solo se pueden llamar las funciones de esta lista.
 // Script clásico (no módulo): comparte el ámbito global con el resto de la app.
 
-const DECLARED_ACTIONS = new Set([
-    'adjustRepTarget', 'adjustRepTempo', 'adjustRestTimer', 'archiveCurrentRoutine',
-    'cancelRestTimer', 'changeCalendarMonth', 'closeDrawer', 'closeExerciseDetail',
-    'createNewRoutine', 'displayWorkoutHistory', 'downloadData', 'finishRoutineManually',
-    'finishTabataSession', 'generateProgressionAnalysis', 'loadRoutineExercises',
-    'onHistoryViewModeChange', 'onSoundVolumeInput', 'onTimerWidgetClick', 'onVoiceSettingChange',
-    'openLegal', 'openMusic', 'previewCue', 'removeRecording', 'renameRoutine', 'renderExerciseDetailChart',
-    'renderRecordingsUI', 'resetAllData', 'resetRoutineTimer', 'saveBodyMetrics', 'saveMusicLink',
-    'finishSession', 'saveSoundSettings', 'saveWorkoutDraft', 'saveWorkoutSession', 'showScreen',
-    'showVoiceInstallHelp', 'startRoutineManually', 'startTabata',
-    'stopRepCounter', 'testSound', 'testVoice', 'toggleDrawer', 'toggleRecentRoutinesExpanded',
-    'toggleRecording', 'toggleRepCounterPause', 'toggleVariantGroup', 'toggleWakeLock',
-    'triggerFileInput', 'unifyFromSelectors', 'updateBodyChart', 'uploadCueAudio',
-    'openFeedback'
-]);
+// Mapa explícito nombre → función (no se busca nada por nombre en window). Se arma al primer
+// uso: algunas de estas funciones se definen en archivos que cargan después.
+let declaredActionsCache = null;
+function declaredActions() {
+    declaredActionsCache ||= {
+        adjustRepTarget, adjustRepTempo, adjustRestTimer, archiveCurrentRoutine, cancelRestTimer,
+        changeCalendarMonth, closeDrawer, closeExerciseDetail, createNewRoutine,
+        displayWorkoutHistory, downloadData, finishRoutineManually, finishTabataSession,
+        generateProgressionAnalysis, loadRoutineExercises, onHistoryViewModeChange,
+        onSoundVolumeInput, onTimerWidgetClick, onVoiceSettingChange, openLegal, openMusic,
+        previewCue, removeRecording, renameRoutine, renderExerciseDetailChart, renderRecordingsUI,
+        resetAllData, resetRoutineTimer, saveBodyMetrics, saveMusicLink, finishSession,
+        saveSoundSettings, saveWorkoutDraft, saveWorkoutSession, showScreen, showVoiceInstallHelp,
+        startRoutineManually, startTabata, stopRepCounter, testSound, testVoice, toggleDrawer,
+        toggleRecentRoutinesExpanded, toggleRecording, toggleRepCounterPause, toggleVariantGroup,
+        toggleWakeLock, triggerFileInput, unifyFromSelectors, updateBodyChart, uploadCueAudio,
+        openFeedback
+    };
+    return declaredActionsCache;
+}
 
 /** Atributos para el HTML generado: `<button ${fnAttrs('previewCue', id)}>`. */
 function fnAttrs(fn, ...args) {
@@ -42,8 +47,8 @@ function runDeclaredAction(event) {
     try { args = JSON.parse(el.getAttribute('data-fn-args') || '[]'); } catch (e) { args = []; }
     args = args.map(a => (a === '$this' ? el : a));
     el.getAttribute(attr).split(/\s+/).filter(Boolean).forEach(name => {
-        const fn = window[name];
-        if (!DECLARED_ACTIONS.has(name) || typeof fn !== 'function') {
+        const fn = Object.prototype.hasOwnProperty.call(declaredActions(), name) ? declaredActions()[name] : null;
+        if (typeof fn !== 'function') {
             console.warn('Acción no permitida o inexistente:', name);
             return;
         }

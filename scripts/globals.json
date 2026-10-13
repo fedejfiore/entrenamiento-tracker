@@ -663,9 +663,13 @@
   "file": "js/data/repositories.js",
   "kind": "const"
  },
- "DECLARED_ACTIONS": {
+ "declaredActions": {
   "file": "js/ui/actions.js",
-  "kind": "const"
+  "kind": "function"
+ },
+ "declaredActionsCache": {
+  "file": "js/ui/actions.js",
+  "kind": "let"
  },
  "decodeAudio": {
   "file": "js/audio/recordings.js",

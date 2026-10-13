@@ -17,7 +17,8 @@ const APP_LANGUAGES = {
     de: { name: 'Deutsch', locale: 'de-DE' },
     zh: { name: '简体中文', locale: 'zh-CN' }
 };
-const I18N_DICTIONARIES = {};
+// Global a propósito: los diccionarios (js/i18n/*.js) se cargan aparte y se agregan acá.
+const I18N_DICTIONARIES = (globalThis.I18N_DICTIONARIES ||= {});
 
 /** Idioma elegido en Ajustes, o el del celular si está en "automático". */
 function resolveLanguage(saved, navigatorLanguage) {
