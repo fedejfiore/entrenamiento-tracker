@@ -50,7 +50,7 @@ module.exports = [
     },
     {
         // Las pruebas en el navegador corren funciones dentro de la página (page.evaluate).
-        files: ['tests/e2e/**/*.js'],
+        files: ['tests/e2e/**/*.js', 'scripts/landing-shots.js'],
         languageOptions: { globals: { ...globals.node, ...globals.browser, ...appNames } }
     },
     {
