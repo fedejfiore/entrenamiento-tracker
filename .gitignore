@@ -19,6 +19,7 @@ ultimo tracker funcionando backup/
 !package.json
 # Configuración de la app nativa (Capacitor); www/ se arma con scripts/build-www.js.
 !capacitor.config.json
+# Registro de globales y línea de base de ESLint (npm run lint); no tienen datos privados.
 !scripts/globals.json
 !scripts/lint-baseline.json
 
