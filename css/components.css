@@ -428,3 +428,4 @@ html[data-module="pilates"] [data-module-only="gym"], html[data-module="gym"] [d
 .gym-alts { display: flex; flex-wrap: wrap; gap: 6px; }
 .gym-alts button { width: auto; margin: 0; }
 .gym-body-hint .link-btn { width: auto; margin: 0; padding: 4px 10px; font-size: 13px; }
+.ob-slogan { font-weight: 700; color: var(--brand); margin-bottom: 4px; }

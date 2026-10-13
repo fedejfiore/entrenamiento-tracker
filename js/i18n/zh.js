@@ -5,6 +5,8 @@
 
 I18N_DICTIONARIES.zh = {
  "text": {
+  "Simple para usar, tan profesional como necesites.": "用起来简单，专业程度随你所需。",
+  "Arranca con lo justo y en Ajustes → Funciones activás lo que vayas necesitando. Apagar algo no borra nada.": "从最基本的功能开始，需要什么再到 设置 → 功能 中开启。关闭功能不会删除任何数据。",
   "La espalda se redondea": "背部弓起变圆",
   "Pecho alto y columna neutra; si no podés mantenerla, bajá el peso.": "挺胸，脊柱保持中立；如果保持不住，就减轻重量。",
   "La zona lumbar se arquea de más": "下背部过度反弓",

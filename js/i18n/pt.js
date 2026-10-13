@@ -5,6 +5,8 @@
 
 I18N_DICTIONARIES.pt = {
  "text": {
+  "Simple para usar, tan profesional como necesites.": "Simples de usar, tão profissional quanto você precisar.",
+  "Arranca con lo justo y en Ajustes → Funciones activás lo que vayas necesitando. Apagar algo no borra nada.": "Começa com o essencial e em Ajustes → Funções você ativa o que for precisando. Desligar algo não apaga nada.",
   "La espalda se redondea": "As costas arredondam",
   "Pecho alto y columna neutra; si no podés mantenerla, bajá el peso.": "Peito alto e coluna neutra; se não conseguir mantê-la, diminua o peso.",
   "La zona lumbar se arquea de más": "A lombar arqueia demais",

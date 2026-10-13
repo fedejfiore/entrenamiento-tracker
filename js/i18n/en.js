@@ -237,6 +237,8 @@ I18N_DICTIONARIES.en = {
         'Por lado': 'Per side',
         "Algo falló, pero tus datos están a salvo. Si se repite, contanos desde Ajustes → Ayuda.": "Something went wrong, but your data is safe. If it happens again, tell us from Settings → Help.",
         // Pilates
+        "Simple para usar, tan profesional como necesites.": "Simple to use, as professional as you need.",
+        "Arranca con lo justo y en Ajustes → Funciones activás lo que vayas necesitando. Apagar algo no borra nada.": "It starts with just the essentials, and in Settings → Features you turn on what you need along the way. Turning something off deletes nothing.",
         "La espalda se redondea": "The back rounds",
         "Pecho alto y columna neutra; si no podés mantenerla, bajá el peso.": "Chest up and spine neutral; if you can't hold it, lower the weight.",
         "La zona lumbar se arquea de más": "The lower back arches too much",

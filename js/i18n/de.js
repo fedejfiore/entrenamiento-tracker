@@ -5,6 +5,8 @@
 
 I18N_DICTIONARIES.de = {
  "text": {
+  "Simple para usar, tan profesional como necesites.": "Einfach zu bedienen, so professionell, wie du es brauchst.",
+  "Arranca con lo justo y en Ajustes → Funciones activás lo que vayas necesitando. Apagar algo no borra nada.": "Sie startet mit dem Nötigsten, und unter Einstellungen → Funktionen aktivierst du nach und nach, was du brauchst. Ausschalten löscht nichts.",
   "La espalda se redondea": "Der Rücken wird rund",
   "Pecho alto y columna neutra; si no podés mantenerla, bajá el peso.": "Brust raus und Wirbelsäule neutral; wenn du das nicht halten kannst, nimm weniger Gewicht.",
   "La zona lumbar se arquea de más": "Der untere Rücken überstreckt",

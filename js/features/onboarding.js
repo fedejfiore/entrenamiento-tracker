@@ -72,6 +72,7 @@ function onboardingStepHtml(step) {
             return `<button type="button" class="discipline-chip${on ? ' on' : ''}" data-ob-feature-group="${g}" aria-pressed="${on}">${icon} ${escapeHtml(label)}</button>`;
         }).join('')}</div>` : '';
         return `<h3>¿Cómo querés la app?</h3>
+            <p class="ob-slogan">✨ Simple para usar, tan profesional como necesites.</p>
             <p>Empezá simple: lo demás se activa cuando lo necesites, en Ajustes → Funciones.</p>
             <div class="ob-starts">
                 ${choice('simple', '🌿 Simple (recomendado)', 'Entrenar, descansar y ver tu historial. Sin nada de más en pantalla.')}
