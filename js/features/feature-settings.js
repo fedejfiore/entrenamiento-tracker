@@ -99,12 +99,14 @@ function onFeaturesChanged() {
     }, 'funciones: entrenar');
     if (!features.isOn('tabata') && typeof setTrainMode === 'function') appErrors.run(() => setTrainMode('rutina'), 'funciones: tabata');
     if (typeof renderHelpContent === 'function') appErrors.run(renderHelpContent, 'funciones: ayuda');
+    if (typeof renderMascot === 'function') renderMascot();
 }
 
 // ---- Sugerencias en contexto (una sola vez cada una) ----
 const FEATURE_HINTS = [
     { feature: 'supersets', when: () => Object.keys(db.get('routineSupersets') || {}).length > 0, text: 'Tenés superseries armadas en tus rutinas. ¿Las activás para que la app te lleve de un ejercicio al otro?' },
     { feature: 'muscleMap', when: n => n >= 5, text: 'Ya registraste 5 sesiones. ¿Querés ver qué músculos trabajaste y si estás en el rango ideal?' },
+    { feature: 'mascot', when: n => n >= 8, text: 'Tu entrenamiento ya se nota: ¿querés conocer a tu compañero 3D, que crece y se pone musculoso con lo que entrenás? (vista previa de Pro)' },
     { feature: 'progression', when: n => n >= 10, text: 'Con 10 sesiones ya se puede ver cómo progresa cada ejercicio. ¿Lo activás?' },
     { feature: 'medals', when: n => n >= 3, text: 'Vas por buen camino: ¿querés ganar medallas por tu constancia?' }
 ];

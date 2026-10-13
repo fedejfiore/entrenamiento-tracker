@@ -41,6 +41,7 @@ const FEATURE_DEFINITIONS = [
     { id: 'stall', group: 'progress', simple: false, label: 'Avisos de estancamiento', description: 'Te avisa si un ejercicio no mejora hace semanas y qué cambiar.' },
     { id: 'body', group: 'progress', simple: false, label: 'Medidas y fotos', description: 'Peso, grasa, músculo, cintura y fotos de progreso.' },
     { id: 'garden', group: 'motivation', simple: true, label: 'La flor del plan', description: 'Crece con cada semana que cumplís tu plan.' },
+    { id: 'mascot', group: 'motivation', simple: false, label: 'Mascota 3D (vista previa Pro)', description: 'Un compañero que crece con tus semanas cumplidas y se pone musculoso con lo que entrenás.' },
     { id: 'medals', group: 'motivation', simple: false, label: 'Medallas y trofeos', description: 'Logros por constancia, récords, kilos y horas.' },
     { id: 'share', group: 'motivation', simple: false, label: 'Compartir imágenes', description: 'Tus récords y medallas como imagen para las redes.' },
     { id: 'voice', group: 'voice', simple: false, label: 'Avisos por voz', description: 'La app te habla: fin del descanso, últimos segundos, conteo.' },

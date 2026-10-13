@@ -19,6 +19,27 @@ function escapeHtml(str) {
     return String(str ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
 }
 
+/** HTML ya armado y seguro (sale de la plantilla html`…`): no se vuelve a escapar. */
+class SafeHtml {
+    constructor(value) { this.value = value; }
+    toString() { return this.value; }
+}
+
+/**
+ * Plantilla que escapa sola: html`<b>${nombre}</b>` escapa nombre. Lo que ya es SafeHtml (otra
+ * plantilla html) va tal cual; una lista se une; null, undefined y false no muestran nada.
+ * Es la forma de armar HTML con datos: ESLint la reconoce como segura para innerHTML.
+ */
+function html(strings, ...values) {
+    const part = v => {
+        if (v instanceof SafeHtml) return v.value;
+        if (Array.isArray(v)) return v.map(part).join('');
+        if (v === null || v === undefined || v === false) return '';
+        return escapeHtml(v);
+    };
+    return new SafeHtml(strings.reduce((out, s, i) => out + s + (i < values.length ? part(values[i]) : ''), ''));
+}
+
 // "22,5", "22.5" → 22.5. Punto o coma, lo que traiga el teclado.
 function parseDecimal(v) {
     const n = parseFloat(String(v ?? '').trim().replace(',', '.'));

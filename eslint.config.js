@@ -30,8 +30,8 @@ module.exports = [
             'no-eval': 'error',
             'no-implied-eval': 'error',
             'no-new-func': 'error',
-            'no-unsanitized/method': ['error', { escape: { methods: ['escapeHtml'] } }],
-            'no-unsanitized/property': ['error', { escape: { methods: ['escapeHtml'] } }]
+            'no-unsanitized/method': ['error', { escape: { methods: ['escapeHtml'], taggedTemplates: ['html'] } }],
+            'no-unsanitized/property': ['error', { escape: { methods: ['escapeHtml'], taggedTemplates: ['html'] } }]
         }
     },
     {

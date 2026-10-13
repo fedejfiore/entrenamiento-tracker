@@ -22,7 +22,7 @@ const SCREEN_ON_SHOW = {
     },
     medidas: () => updateBodyChart(),
     biblioteca: () => renderLibrary(),
-    perfil: () => renderProfile()
+    perfil: () => { renderProfile(); renderMascot(); }
 };
 
 function renderDrawerNav() {

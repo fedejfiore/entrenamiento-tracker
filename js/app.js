@@ -134,6 +134,7 @@ class App {
             initReformerSettings,
             initPilatesLibrary,
             initGymLibrary,
+            initMascot,
             initWakeLock,
             initNativeFeatures,
             initSoundSettingsUI,

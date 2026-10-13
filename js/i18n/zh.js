@@ -5,6 +5,35 @@
 
 I18N_DICTIONARIES.zh = {
  "text": {
+  "Créditos": "致谢",
+  "Tipografías Inter y Oswald, con licencia SIL Open Font License.": "Inter 和 Oswald 字体，采用 SIL Open Font License 许可。",
+  "Gráficos: Chart.js (licencia MIT).": "图表：Chart.js（MIT 许可）。",
+  "Mascota en 3D: three.js (licencia MIT).": "3D 伙伴：three.js（MIT 许可）。",
+  "Zorro: modelo de PixelMannen (CC0), rigging y animación de tomkranis (CC BY 4.0), conversión a glTF de AsoboStudio y scurest (CC BY 4.0).": "狐狸：模型由 PixelMannen 制作（CC0），骨骼与动画由 tomkranis 制作（CC BY 4.0），glTF 转换由 AsoboStudio 和 scurest 完成（CC BY 4.0）。",
+  "Tu compañero": "你的伙伴",
+  "Crece con tus semanas y se pone musculoso con lo que entrenás": "随你坚持的周数成长，并随你的训练变得强壮",
+  "Vista previa de Pro": "Pro 预览",
+  "Zorro": "狐狸",
+  "Cachorro": "幼崽",
+  "Joven": "少年",
+  "Adulto": "成年",
+  "Ya es adulto": "已经成年",
+  "Falta 1 semana cumplida para joven": "再完成 1 周就到少年",
+  "Falta 1 semana cumplida para adulto": "再完成 1 周就到成年",
+  "Contento: cumpliste tu semana": "开心：你完成了本周计划",
+  "Tranquilo": "平静",
+  "Con sueño: te extraña. Con la próxima semana cumplida se despierta": "困了：它想你了。下次完成一周它就会醒来",
+  "Entrená y se le van a marcar los músculos que trabajes (promedio de 4 semanas).": "训练后，你练到的肌肉会显现出来（4 周平均）。",
+  "Festejar": "庆祝",
+  "Elegir mascota": "选择伙伴",
+  "Perro (próximamente)": "狗（即将推出）",
+  "Gato (próximamente)": "猫（即将推出）",
+  "Tu celular no puede mostrar 3D: se ve el estado en texto.": "你的手机无法显示 3D：以文字显示状态。",
+  "No se pudo cargar el visor 3D": "无法加载 3D 查看器",
+  "¡Semana cumplida! Tu compañero lo festeja": "本周完成！你的伙伴在庆祝",
+  "Mascota 3D (vista previa Pro)": "3D 伙伴（Pro 预览）",
+  "Un compañero que crece con tus semanas cumplidas y se pone musculoso con lo que entrenás.": "一个随你完成的周数成长、随你的训练变得强壮的伙伴。",
+  "Tu entrenamiento ya se nota: ¿querés conocer a tu compañero 3D, que crece y se pone musculoso con lo que entrenás? (vista previa de Pro)": "你的训练已经见效：想认识会随你的训练成长、变强壮的 3D 伙伴吗？（Pro 预览）",
   "Simple para usar, tan profesional como necesites.": "用起来简单，专业程度随你所需。",
   "Arranca con lo justo y en Ajustes → Funciones activás lo que vayas necesitando. Apagar algo no borra nada.": "从最基本的功能开始，需要什么再到 设置 → 功能 中开启。关闭功能不会删除任何数据。",
   "La espalda se redondea": "背部弓起变圆",
@@ -3056,3 +3085,5 @@ I18N_DICTIONARIES.zh.patterns.push(["{n:num} series por hacer","还剩 {n} 组"]
 I18N_DICTIONARIES.zh.patterns.push(["{n:num} de {m:num} series · {x}","{n}/{m} 组 · {x}"]);
 I18N_DICTIONARIES.zh.patterns.push(["{n:num} de {m:num} series","{n}/{m} 组"]);
 I18N_DICTIONARIES.zh.patterns.push(["Ficha de {x}: técnica y errores","{x} 说明：技术和常见错误"]);
+I18N_DICTIONARIES.zh.patterns.push(["Faltan {n:num} semanas cumplidas para {x:tr}","再完成 {n} 周就到{x}"]);
+I18N_DICTIONARIES.zh.patterns.push(["{x:tr} en 3D","3D {x}"]);

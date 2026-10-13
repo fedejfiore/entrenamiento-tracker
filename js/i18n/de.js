@@ -5,6 +5,35 @@
 
 I18N_DICTIONARIES.de = {
  "text": {
+  "Créditos": "Danksagungen",
+  "Tipografías Inter y Oswald, con licencia SIL Open Font License.": "Schriften Inter und Oswald, unter der SIL Open Font License.",
+  "Gráficos: Chart.js (licencia MIT).": "Diagramme: Chart.js (MIT-Lizenz).",
+  "Mascota en 3D: three.js (licencia MIT).": "3D-Maskottchen: three.js (MIT-Lizenz).",
+  "Zorro: modelo de PixelMannen (CC0), rigging y animación de tomkranis (CC BY 4.0), conversión a glTF de AsoboStudio y scurest (CC BY 4.0).": "Fuchs: Modell von PixelMannen (CC0), Rigging und Animation von tomkranis (CC BY 4.0), glTF-Konvertierung von AsoboStudio und scurest (CC BY 4.0).",
+  "Tu compañero": "Dein Begleiter",
+  "Crece con tus semanas y se pone musculoso con lo que entrenás": "Wächst mit deinen Wochen und wird muskulös mit dem, was du trainierst",
+  "Vista previa de Pro": "Pro-Vorschau",
+  "Zorro": "Fuchs",
+  "Cachorro": "Jungtier",
+  "Joven": "Jung",
+  "Adulto": "Erwachsen",
+  "Ya es adulto": "Schon erwachsen",
+  "Falta 1 semana cumplida para joven": "Noch 1 erfüllte Woche bis jung",
+  "Falta 1 semana cumplida para adulto": "Noch 1 erfüllte Woche bis erwachsen",
+  "Contento: cumpliste tu semana": "Fröhlich: du hast deine Woche erfüllt",
+  "Tranquilo": "Ruhig",
+  "Con sueño: te extraña. Con la próxima semana cumplida se despierta": "Müde: es vermisst dich. Mit der nächsten erfüllten Woche wacht es auf",
+  "Entrená y se le van a marcar los músculos que trabajes (promedio de 4 semanas).": "Trainiere, und die Muskeln, die du trainierst, werden sichtbar (Durchschnitt von 4 Wochen).",
+  "Festejar": "Feiern",
+  "Elegir mascota": "Maskottchen wählen",
+  "Perro (próximamente)": "Hund (demnächst)",
+  "Gato (próximamente)": "Katze (demnächst)",
+  "Tu celular no puede mostrar 3D: se ve el estado en texto.": "Dein Handy kann kein 3D anzeigen: Der Status wird als Text gezeigt.",
+  "No se pudo cargar el visor 3D": "Der 3D-Viewer konnte nicht geladen werden",
+  "¡Semana cumplida! Tu compañero lo festeja": "Woche erfüllt! Dein Begleiter feiert",
+  "Mascota 3D (vista previa Pro)": "3D-Maskottchen (Pro-Vorschau)",
+  "Un compañero que crece con tus semanas cumplidas y se pone musculoso con lo que entrenás.": "Ein Begleiter, der mit deinen erfüllten Wochen wächst und mit deinem Training muskulös wird.",
+  "Tu entrenamiento ya se nota: ¿querés conocer a tu compañero 3D, que crece y se pone musculoso con lo que entrenás? (vista previa de Pro)": "Dein Training zeigt Wirkung: Willst du deinen 3D-Begleiter kennenlernen, der mit deinem Training wächst und muskulös wird? (Pro-Vorschau)",
   "Simple para usar, tan profesional como necesites.": "Einfach zu bedienen, so professionell, wie du es brauchst.",
   "Arranca con lo justo y en Ajustes → Funciones activás lo que vayas necesitando. Apagar algo no borra nada.": "Sie startet mit dem Nötigsten, und unter Einstellungen → Funktionen aktivierst du nach und nach, was du brauchst. Ausschalten löscht nichts.",
   "La espalda se redondea": "Der Rücken wird rund",
@@ -3056,3 +3085,5 @@ I18N_DICTIONARIES.de.patterns.push(["{n:num} series por hacer","{n} Sätze offen
 I18N_DICTIONARIES.de.patterns.push(["{n:num} de {m:num} series · {x}","{n} von {m} Sätzen · {x}"]);
 I18N_DICTIONARIES.de.patterns.push(["{n:num} de {m:num} series","{n} von {m} Sätzen"]);
 I18N_DICTIONARIES.de.patterns.push(["Ficha de {x}: técnica y errores","Anleitung zu {x}: Technik und Fehler"]);
+I18N_DICTIONARIES.de.patterns.push(["Faltan {n:num} semanas cumplidas para {x:tr}","Noch {n} erfüllte Wochen bis {x}"]);
+I18N_DICTIONARIES.de.patterns.push(["{x:tr} en 3D","{x} in 3D"]);

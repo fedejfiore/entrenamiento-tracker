@@ -1451,6 +1451,10 @@
   "file": "js/features/history.js",
   "kind": "const"
  },
+ "html": {
+  "file": "js/core/utils.js",
+  "kind": "function"
+ },
  "I18N_ATTRS": {
   "file": "js/core/i18n.js",
   "kind": "const"
@@ -1577,6 +1581,10 @@
  },
  "initializeData": {
   "file": "js/data/routines-store.js",
+  "kind": "function"
+ },
+ "initMascot": {
+  "file": "js/features/mascot.js",
   "kind": "function"
  },
  "initMusicSettingsUI": {
@@ -1818,6 +1826,50 @@
  "markSetRowDone": {
   "file": "js/features/training/finish-prompt.js",
   "kind": "function"
+ },
+ "MASCOT_MUSCLES": {
+  "file": "js/domain/mascot.js",
+  "kind": "const"
+ },
+ "MASCOT_SPECIES": {
+  "file": "js/domain/mascot.js",
+  "kind": "const"
+ },
+ "MASCOT_STAGES": {
+  "file": "js/domain/mascot.js",
+  "kind": "const"
+ },
+ "mascotBoneScales": {
+  "file": "js/domain/mascot.js",
+  "kind": "function"
+ },
+ "mascotData": {
+  "file": "js/features/mascot.js",
+  "kind": "function"
+ },
+ "mascotMood": {
+  "file": "js/domain/mascot.js",
+  "kind": "function"
+ },
+ "mascotMuscleLevels": {
+  "file": "js/domain/mascot.js",
+  "kind": "function"
+ },
+ "mascotSnapshot": {
+  "file": "js/domain/mascot.js",
+  "kind": "function"
+ },
+ "mascotStage": {
+  "file": "js/domain/mascot.js",
+  "kind": "function"
+ },
+ "mascotView": {
+  "file": "js/features/mascot.js",
+  "kind": "const"
+ },
+ "MascotView": {
+  "file": "js/features/mascot.js",
+  "kind": "class"
  },
  "MAX_RECORDING_MS": {
   "file": "js/audio/recordings.js",
@@ -2595,6 +2647,10 @@
   "file": "js/features/library.js",
   "kind": "function"
  },
+ "renderMascot": {
+  "file": "js/features/mascot.js",
+  "kind": "function"
+ },
  "renderMedals": {
   "file": "js/features/profile.js",
   "kind": "function"
@@ -2914,6 +2970,10 @@
  "runTabataPhase": {
   "file": "js/features/tabata.js",
   "kind": "function"
+ },
+ "SafeHtml": {
+  "file": "js/core/utils.js",
+  "kind": "class"
  },
  "sanitizeDecimalInput": {
   "file": "js/core/utils.js",

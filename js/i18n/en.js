@@ -237,6 +237,35 @@ I18N_DICTIONARIES.en = {
         'Por lado': 'Per side',
         "Algo falló, pero tus datos están a salvo. Si se repite, contanos desde Ajustes → Ayuda.": "Something went wrong, but your data is safe. If it happens again, tell us from Settings → Help.",
         // Pilates
+        "Créditos": "Credits",
+        "Tipografías Inter y Oswald, con licencia SIL Open Font License.": "Inter and Oswald fonts, under the SIL Open Font License.",
+        "Gráficos: Chart.js (licencia MIT).": "Charts: Chart.js (MIT license).",
+        "Mascota en 3D: three.js (licencia MIT).": "3D mascot: three.js (MIT license).",
+        "Zorro: modelo de PixelMannen (CC0), rigging y animación de tomkranis (CC BY 4.0), conversión a glTF de AsoboStudio y scurest (CC BY 4.0).": "Fox: model by PixelMannen (CC0), rigging and animation by tomkranis (CC BY 4.0), glTF conversion by AsoboStudio and scurest (CC BY 4.0).",
+        "Tu compañero": "Your companion",
+        "Crece con tus semanas y se pone musculoso con lo que entrenás": "Grows with your weeks and gets muscular with what you train",
+        "Vista previa de Pro": "Pro preview",
+        "Zorro": "Fox",
+        "Cachorro": "Cub",
+        "Joven": "Young",
+        "Adulto": "Adult",
+        "Ya es adulto": "Fully grown",
+        "Falta 1 semana cumplida para joven": "1 more completed week to young",
+        "Falta 1 semana cumplida para adulto": "1 more completed week to adult",
+        "Contento: cumpliste tu semana": "Happy: you completed your week",
+        "Tranquilo": "Calm",
+        "Con sueño: te extraña. Con la próxima semana cumplida se despierta": "Sleepy: it misses you. It wakes up with your next completed week",
+        "Entrená y se le van a marcar los músculos que trabajes (promedio de 4 semanas).": "Train and the muscles you work will start to show (4-week average).",
+        "Festejar": "Celebrate",
+        "Elegir mascota": "Choose mascot",
+        "Perro (próximamente)": "Dog (coming soon)",
+        "Gato (próximamente)": "Cat (coming soon)",
+        "Tu celular no puede mostrar 3D: se ve el estado en texto.": "Your phone can't show 3D: the status is shown as text.",
+        "No se pudo cargar el visor 3D": "The 3D viewer couldn't load",
+        "¡Semana cumplida! Tu compañero lo festeja": "Week completed! Your companion celebrates",
+        "Mascota 3D (vista previa Pro)": "3D mascot (Pro preview)",
+        "Un compañero que crece con tus semanas cumplidas y se pone musculoso con lo que entrenás.": "A companion that grows with your completed weeks and gets muscular with what you train.",
+        "Tu entrenamiento ya se nota: ¿querés conocer a tu compañero 3D, que crece y se pone musculoso con lo que entrenás? (vista previa de Pro)": "Your training is showing: want to meet your 3D companion, which grows and gets muscular with what you train? (Pro preview)",
         "Simple para usar, tan profesional como necesites.": "Simple to use, as professional as you need.",
         "Arranca con lo justo y en Ajustes → Funciones activás lo que vayas necesitando. Apagar algo no borra nada.": "It starts with just the essentials, and in Settings → Features you turn on what you need along the way. Turning something off deletes nothing.",
         "La espalda se redondea": "The back rounds",
@@ -2214,3 +2243,5 @@ I18N_DICTIONARIES.en.patterns.push(["{n:num} series por hacer","{n} sets to go"]
 I18N_DICTIONARIES.en.patterns.push(["{n:num} de {m:num} series · {x}","{n} of {m} sets · {x}"]);
 I18N_DICTIONARIES.en.patterns.push(["{n:num} de {m:num} series","{n} of {m} sets"]);
 I18N_DICTIONARIES.en.patterns.push(["Ficha de {x}: técnica y errores","{x} guide: technique and mistakes"]);
+I18N_DICTIONARIES.en.patterns.push(["Faltan {n:num} semanas cumplidas para {x:tr}","{n} more completed weeks to {x}"]);
+I18N_DICTIONARIES.en.patterns.push(["{x:tr} en 3D","{x} in 3D"]);

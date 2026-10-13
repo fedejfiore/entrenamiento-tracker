@@ -5,6 +5,35 @@
 
 I18N_DICTIONARIES.pt = {
  "text": {
+  "Créditos": "Créditos",
+  "Tipografías Inter y Oswald, con licencia SIL Open Font License.": "Fontes Inter e Oswald, com licença SIL Open Font License.",
+  "Gráficos: Chart.js (licencia MIT).": "Gráficos: Chart.js (licença MIT).",
+  "Mascota en 3D: three.js (licencia MIT).": "Mascote em 3D: three.js (licença MIT).",
+  "Zorro: modelo de PixelMannen (CC0), rigging y animación de tomkranis (CC BY 4.0), conversión a glTF de AsoboStudio y scurest (CC BY 4.0).": "Raposa: modelo de PixelMannen (CC0), rigging e animação de tomkranis (CC BY 4.0), conversão para glTF de AsoboStudio e scurest (CC BY 4.0).",
+  "Tu compañero": "Seu companheiro",
+  "Crece con tus semanas y se pone musculoso con lo que entrenás": "Cresce com suas semanas e fica musculoso com o que você treina",
+  "Vista previa de Pro": "Prévia do Pro",
+  "Zorro": "Raposa",
+  "Cachorro": "Filhote",
+  "Joven": "Jovem",
+  "Adulto": "Adulto",
+  "Ya es adulto": "Já é adulto",
+  "Falta 1 semana cumplida para joven": "Falta 1 semana cumprida para jovem",
+  "Falta 1 semana cumplida para adulto": "Falta 1 semana cumprida para adulto",
+  "Contento: cumpliste tu semana": "Contente: você cumpriu sua semana",
+  "Tranquilo": "Tranquilo",
+  "Con sueño: te extraña. Con la próxima semana cumplida se despierta": "Com sono: sente sua falta. Acorda com a próxima semana cumprida",
+  "Entrená y se le van a marcar los músculos que trabajes (promedio de 4 semanas).": "Treine e os músculos que você trabalhar vão aparecer (média de 4 semanas).",
+  "Festejar": "Comemorar",
+  "Elegir mascota": "Escolher mascote",
+  "Perro (próximamente)": "Cachorro (em breve)",
+  "Gato (próximamente)": "Gato (em breve)",
+  "Tu celular no puede mostrar 3D: se ve el estado en texto.": "Seu celular não consegue mostrar 3D: o estado aparece em texto.",
+  "No se pudo cargar el visor 3D": "Não foi possível carregar o visualizador 3D",
+  "¡Semana cumplida! Tu compañero lo festeja": "Semana cumprida! Seu companheiro comemora",
+  "Mascota 3D (vista previa Pro)": "Mascote 3D (prévia Pro)",
+  "Un compañero que crece con tus semanas cumplidas y se pone musculoso con lo que entrenás.": "Um companheiro que cresce com suas semanas cumpridas e fica musculoso com o que você treina.",
+  "Tu entrenamiento ya se nota: ¿querés conocer a tu compañero 3D, que crece y se pone musculoso con lo que entrenás? (vista previa de Pro)": "Seu treino já aparece: quer conhecer seu companheiro 3D, que cresce e fica musculoso com o que você treina? (prévia do Pro)",
   "Simple para usar, tan profesional como necesites.": "Simples de usar, tão profissional quanto você precisar.",
   "Arranca con lo justo y en Ajustes → Funciones activás lo que vayas necesitando. Apagar algo no borra nada.": "Começa com o essencial e em Ajustes → Funções você ativa o que for precisando. Desligar algo não apaga nada.",
   "La espalda se redondea": "As costas arredondam",
@@ -3058,3 +3087,5 @@ I18N_DICTIONARIES.pt.patterns.push(["{n:num} series por hacer","{n} séries a fa
 I18N_DICTIONARIES.pt.patterns.push(["{n:num} de {m:num} series · {x}","{n} de {m} séries · {x}"]);
 I18N_DICTIONARIES.pt.patterns.push(["{n:num} de {m:num} series","{n} de {m} séries"]);
 I18N_DICTIONARIES.pt.patterns.push(["Ficha de {x}: técnica y errores","Ficha de {x}: técnica e erros"]);
+I18N_DICTIONARIES.pt.patterns.push(["Faltan {n:num} semanas cumplidas para {x:tr}","Faltam {n} semanas cumpridas para {x}"]);
+I18N_DICTIONARIES.pt.patterns.push(["{x:tr} en 3D","{x} em 3D"]);

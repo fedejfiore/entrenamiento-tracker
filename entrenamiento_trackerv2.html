@@ -5,7 +5,7 @@
     <!-- Sin viewport-fit=cover: con eso Chrome en Android dibuja la página debajo de los botones
          del sistema al esconder su barra y la barra de navegación de abajo quedaba tapada. -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src 'self'; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src 'self'; connect-src 'self' blob:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
     <meta name="referrer" content="no-referrer">
     <title>Gymnastés by Inquieto</title>
     <link rel="manifest" href="manifest.json">
@@ -396,6 +396,10 @@
                 <div class="section" data-hint="Sesiones, horas, rachas y récords">
                     <h2>📈 Tu actividad</h2>
                     <div id="profileStats"></div>
+                </div>
+                <div data-feature="mascot" class="section" data-hint="Crece con tus semanas y se pone musculoso con lo que entrenás" data-open="1">
+                    <h2>🦊 Tu compañero</h2>
+                    <div id="mascotSection"></div>
                 </div>
                 <div data-feature="medals" class="section" data-hint="Constancia, récords, kilos, horas y cardio">
                     <h2>🏅 Medallas</h2>
@@ -898,6 +902,7 @@
     <script src="js/domain/plan.js"></script>
     <script src="js/domain/garden.js"></script>
     <script src="js/domain/training-tools.js"></script>
+    <script src="js/domain/mascot.js"></script>
     <script src="js/domain/programs.js"></script>
     <script src="js/domain/pilates-programs.js"></script>
     <script src="js/domain/routine-share.js"></script>
@@ -943,6 +948,7 @@
     <script src="js/features/home.js"></script>
     <script src="js/features/plan-screen.js"></script>
     <script src="js/features/garden.js"></script>
+    <script src="js/features/mascot.js"></script>
     <script src="js/features/muscle-map.js"></script>
     <script src="js/features/plate-calculator.js"></script>
     <script src="js/features/general-settings.js"></script>

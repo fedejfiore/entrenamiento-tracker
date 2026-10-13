@@ -429,3 +429,18 @@ html[data-module="pilates"] [data-module-only="gym"], html[data-module="gym"] [d
 .gym-alts button { width: auto; margin: 0; }
 .gym-body-hint .link-btn { width: auto; margin: 0; padding: 4px 10px; font-size: 13px; }
 .ob-slogan { font-weight: 700; color: var(--brand); margin-bottom: 4px; }
+
+/* Perfil → Tu compañero (mascota 3D) */
+.mascot-pro { margin: 0 0 6px; font-size: 12px; font-weight: 700; color: var(--brand); }
+.mascot-stage { width: 100%; height: 240px; border-radius: var(--radius); background: radial-gradient(circle at 50% 70%, color-mix(in srgb, var(--brand) 18%, var(--bg-subtle)), var(--bg-subtle)); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.mascot-stage canvas { width: 100% !important; height: 100% !important; display: block; }
+.mascot-line { margin: 8px 0 0; font-size: 14px; }
+.mascot-line span { color: var(--text-muted); font-size: 13px; }
+.mascot-muscles { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.mascot-chip { font-size: 12px; padding: 3px 8px; border-radius: 999px; background: var(--bg-subtle); border: 1px solid var(--border); }
+.mascot-chip.lvl-3 { border-color: var(--success); }
+.mascot-chip.lvl-4 { border-color: var(--warning); }
+.mascot-empty { font-size: 13px; color: var(--text-muted); text-align: center; padding: 8px; }
+.mascot-actions { display: flex; gap: 8px; margin-top: 10px; }
+.mascot-actions button, .mascot-actions select { width: auto; margin: 0; white-space: nowrap; }
+.mascot-actions select { flex: 1; }

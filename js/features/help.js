@@ -331,6 +331,16 @@ const HELP_SECTIONS = [
                 <li><b>Unificar Ejercicios Duplicados:</b> si el mismo ejercicio quedó con dos nombres, juntalos y se unen sus estadísticas.</li>
                 <li><b>🗑️ Resetear todo</b> borra todos los datos de este celular. No se puede deshacer: hacé un backup antes.</li>
             </ul>`
+    },
+    {
+        id: 'creditos', icon: '©️', title: 'Créditos',
+        html: `
+            <ul>
+                <li>Tipografías Inter y Oswald, con licencia SIL Open Font License.</li>
+                <li>Gráficos: Chart.js (licencia MIT).</li>
+                <li>Mascota en 3D: three.js (licencia MIT).</li>
+                <li>Zorro: modelo de PixelMannen (CC0), rigging y animación de tomkranis (CC BY 4.0), conversión a glTF de AsoboStudio y scurest (CC BY 4.0).</li>
+            </ul>`
     }
 ];
 
@@ -367,7 +377,7 @@ const HELP_SECTION_FEATURES = {
     progreso: 'progression muscleMap'
 };
 // Orden de "Lo básico": lo que necesita alguien que recién empieza.
-const HELP_BASICS_ORDER = ['inicio-rapido', 'entrenar', 'series', 'descanso', 'rutinas', 'plan', 'historial', 'datos', 'ajuste-rapido', 'tipos', 'tiempo', 'organizar', 'inicio', 'biblioteca', 'perfil', 'privacidad', 'ventajas'];
+const HELP_BASICS_ORDER = ['inicio-rapido', 'entrenar', 'series', 'descanso', 'rutinas', 'plan', 'historial', 'datos', 'ajuste-rapido', 'tipos', 'tiempo', 'organizar', 'inicio', 'biblioteca', 'perfil', 'privacidad', 'ventajas', 'creditos'];
 let helpShowAll = false;
 
 function helpSectionHtml(s) {

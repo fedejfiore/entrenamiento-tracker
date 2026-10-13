@@ -13,7 +13,7 @@ const esbuild = require('esbuild');
 const ROOT = path.resolve(__dirname, '..');
 const PAGE = 'entrenamiento_trackerv2.html';
 const BASE_FILES = [PAGE, 'manifest.json', 'service-worker.js', 'icon-192.png', 'icon-512.png', 'icon-512-maskable.png', 'apple-touch-icon.png'];
-const BASE_DIRS = ['js', 'css', 'fonts', 'vendor', 'legal'];
+const BASE_DIRS = ['js', 'css', 'fonts', 'vendor', 'legal', 'assets'];
 const TARGET = ['chrome90', 'firefox90', 'safari15'];
 
 const gz = s => zlib.gzipSync(s, { level: 9 }).length;
