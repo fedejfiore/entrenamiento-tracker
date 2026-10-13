@@ -237,6 +237,14 @@ I18N_DICTIONARIES.en = {
         'Por lado': 'Per side',
         "Algo falló, pero tus datos están a salvo. Si se repite, contanos desde Ajustes → Ayuda.": "Something went wrong, but your data is safe. If it happens again, tell us from Settings → Help.",
         // Pilates
+        "Un ejercicio a la vez": "One exercise at a time",
+        "En Entrenar se ve abierto solo el ejercicio que toca (o toda su superserie); los demás quedan plegados en una línea.": "Train shows only the current exercise open (or its whole superset); the rest fold into one line.",
+        "1 serie por hacer": "1 set to go",
+        "Tenés superseries armadas en tus rutinas. ¿Las activás para que la app te lleve de un ejercicio al otro?": "You have supersets set up in your routines. Turn them on so the app takes you from one exercise to the next?",
+        "Mantené apretados los puntos ⠿ y arrastrá para reordenar": "Press and hold the ⠿ dots and drag to reorder",
+        "Tocá el número de serie para marcarla como calentamiento (C)": "Tap the set number to mark it as warm-up (C)",
+        "✓ marca la serie y arranca el descanso": "✓ marks the set and starts the rest",
+        "RIR: reps que te quedaban (F = al fallo)": "RIR: reps you had left (F = to failure)",
         "✅ Activado. Lo podés apagar en Ajustes → Funciones.": "✅ Turned on. You can turn it off in Settings → Features.",
         "Ya registraste 5 sesiones. ¿Querés ver qué músculos trabajaste y si estás en el rango ideal?": "You've logged 5 sessions. Want to see which muscles you worked and whether you're in the ideal range?",
         "Con 10 sesiones ya se puede ver cómo progresa cada ejercicio. ¿Lo activás?": "With 10 sessions you can now see how each exercise progresses. Turn it on?",
@@ -1850,3 +1858,6 @@ Object.assign(I18N_DICTIONARIES.en.text, {
 });
 I18N_DICTIONARIES.en.patterns.push(["¡Bienvenido a {x:name}!","Welcome to {x}!"]);
 I18N_DICTIONARIES.en.patterns.push(["{n:num} de {m:num} activas","{n} of {m} on"]);
+I18N_DICTIONARIES.en.patterns.push(["{n:num} series por hacer","{n} sets to go"]);
+I18N_DICTIONARIES.en.patterns.push(["{n:num} de {m:num} series · {x}","{n} of {m} sets · {x}"]);
+I18N_DICTIONARIES.en.patterns.push(["{n:num} de {m:num} series","{n} of {m} sets"]);

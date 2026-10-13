@@ -1,5 +1,8 @@
 /* Estructura: barra superior, menú lateral, contenido, inputs y botones. */
 
+
+/* "hidden" siempre oculta, aunque el elemento tenga su propio display (flex, grid…). */
+[hidden] { display: none !important; }
 /* APP SHELL */
 .app-shell {
     min-height: 100vh;

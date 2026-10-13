@@ -5,6 +5,14 @@
 
 I18N_DICTIONARIES.pt = {
  "text": {
+  "Un ejercicio a la vez": "Um exercício por vez",
+  "En Entrenar se ve abierto solo el ejercicio que toca (o toda su superserie); los demás quedan plegados en una línea.": "Em Treinar fica aberto só o exercício da vez (ou toda a sua supersérie); os outros ficam recolhidos em uma linha.",
+  "1 serie por hacer": "1 série a fazer",
+  "Tenés superseries armadas en tus rutinas. ¿Las activás para que la app te lleve de un ejercicio al otro?": "Você tem supersséries montadas nas suas rotinas. Quer ativá-las para o app te levar de um exercício ao outro?",
+  "Mantené apretados los puntos ⠿ y arrastrá para reordenar": "Mantenha pressionados os pontos ⠿ e arraste para reordenar",
+  "Tocá el número de serie para marcarla como calentamiento (C)": "Toque no número da série para marcá-la como aquecimento (C)",
+  "✓ marca la serie y arranca el descanso": "✓ marca a série e inicia o descanso",
+  "RIR: reps que te quedaban (F = al fallo)": "RIR: reps que sobravam (F = até a falha)",
   "✅ Activado. Lo podés apagar en Ajustes → Funciones.": "✅ Ativado. Você pode desligar em Ajustes → Funções.",
   "Ya registraste 5 sesiones. ¿Querés ver qué músculos trabajaste y si estás en el rango ideal?": "Você já registrou 5 sessões. Quer ver quais músculos trabalhou e se está na faixa ideal?",
   "Con 10 sesiones ya se puede ver cómo progresa cada ejercicio. ¿Lo activás?": "Com 10 sessões já dá para ver como cada exercício evolui. Quer ativar?",
@@ -2694,3 +2702,6 @@ Object.assign(I18N_DICTIONARIES.pt.text, {
 });
 I18N_DICTIONARIES.pt.patterns.push(["¡Bienvenido a {x:name}!","Bem-vindo ao {x}!"]);
 I18N_DICTIONARIES.pt.patterns.push(["{n:num} de {m:num} activas","{n} de {m} ativas"]);
+I18N_DICTIONARIES.pt.patterns.push(["{n:num} series por hacer","{n} séries a fazer"]);
+I18N_DICTIONARIES.pt.patterns.push(["{n:num} de {m:num} series · {x}","{n} de {m} séries · {x}"]);
+I18N_DICTIONARIES.pt.patterns.push(["{n:num} de {m:num} series","{n} de {m} séries"]);

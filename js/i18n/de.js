@@ -5,6 +5,14 @@
 
 I18N_DICTIONARIES.de = {
  "text": {
+  "Un ejercicio a la vez": "Eine Übung nach der anderen",
+  "En Entrenar se ve abierto solo el ejercicio que toca (o toda su superserie); los demás quedan plegados en una línea.": "Unter Trainieren ist nur die aktuelle Übung offen (oder ihr ganzer Supersatz); der Rest ist auf eine Zeile eingeklappt.",
+  "1 serie por hacer": "1 Satz offen",
+  "Tenés superseries armadas en tus rutinas. ¿Las activás para que la app te lleve de un ejercicio al otro?": "Du hast Supersätze in deinen Routinen. Aktivieren, damit die App dich von einer Übung zur nächsten führt?",
+  "Mantené apretados los puntos ⠿ y arrastrá para reordenar": "Halte die Punkte ⠿ gedrückt und ziehe zum Umsortieren",
+  "Tocá el número de serie para marcarla como calentamiento (C)": "Tippe auf die Satznummer, um ihn als Aufwärmsatz (C) zu markieren",
+  "✓ marca la serie y arranca el descanso": "✓ markiert den Satz und startet die Pause",
+  "RIR: reps que te quedaban (F = al fallo)": "RIR: Wiederholungen, die noch drin waren (F = bis zum Versagen)",
   "✅ Activado. Lo podés apagar en Ajustes → Funciones.": "✅ Aktiviert. Du kannst es unter Einstellungen → Funktionen ausschalten.",
   "Ya registraste 5 sesiones. ¿Querés ver qué músculos trabajaste y si estás en el rango ideal?": "Du hast schon 5 Einheiten eingetragen. Willst du sehen, welche Muskeln du trainiert hast und ob du im idealen Bereich bist?",
   "Con 10 sesiones ya se puede ver cómo progresa cada ejercicio. ¿Lo activás?": "Mit 10 Einheiten lässt sich sehen, wie sich jede Übung entwickelt. Aktivieren?",
@@ -2692,3 +2700,6 @@ I18N_DICTIONARIES.de = {
  ]
 };
 I18N_DICTIONARIES.de.patterns.push(["{n:num} de {m:num} activas","{n} von {m} aktiv"]);
+I18N_DICTIONARIES.de.patterns.push(["{n:num} series por hacer","{n} Sätze offen"]);
+I18N_DICTIONARIES.de.patterns.push(["{n:num} de {m:num} series · {x}","{n} von {m} Sätzen · {x}"]);
+I18N_DICTIONARIES.de.patterns.push(["{n:num} de {m:num} series","{n} von {m} Sätzen"]);

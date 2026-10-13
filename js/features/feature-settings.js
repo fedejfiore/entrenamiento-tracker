@@ -89,12 +89,21 @@ function onFeaturesChanged() {
     document.querySelectorAll('#exercisesContainer .exercise-row').forEach(block => {
         appErrors.run(() => renderBlockSets(block, block.dataset.type, readBlockSets(block)), 'funciones: series');
     });
+    // Entrenar: con "un ejercicio a la vez" se enfoca; sin él, se abre lo pendiente.
+    appErrors.run(() => {
+        if (typeof refreshSupersetBadges === 'function') refreshSupersetBadges();
+        if (features.isOn('focus')) focusCurrentExercise();
+        else document.querySelectorAll('#exercisesContainer .exercise-row').forEach(b => { if (b.querySelector('.set-row:not(.done)')) setBlockCollapsed(b, false); });
+        const legend = document.querySelector('#exercisesContainer .sets-legend');
+        if (legend) legend.innerHTML = setsLegendHtml();
+    }, 'funciones: entrenar');
     if (!features.isOn('tabata') && typeof setTrainMode === 'function') appErrors.run(() => setTrainMode('rutina'), 'funciones: tabata');
     if (typeof renderHelpContent === 'function') appErrors.run(renderHelpContent, 'funciones: ayuda');
 }
 
 // ---- Sugerencias en contexto (una sola vez cada una) ----
 const FEATURE_HINTS = [
+    { feature: 'supersets', when: () => Object.keys(db.get('routineSupersets') || {}).length > 0, text: 'Tenés superseries armadas en tus rutinas. ¿Las activás para que la app te lleve de un ejercicio al otro?' },
     { feature: 'muscleMap', when: n => n >= 5, text: 'Ya registraste 5 sesiones. ¿Querés ver qué músculos trabajaste y si estás en el rango ideal?' },
     { feature: 'progression', when: n => n >= 10, text: 'Con 10 sesiones ya se puede ver cómo progresa cada ejercicio. ¿Lo activás?' },
     { feature: 'medals', when: n => n >= 3, text: 'Vas por buen camino: ¿querés ganar medallas por tu constancia?' }

@@ -47,15 +47,21 @@ test('volver a simple y activar todo', () => {
     r.useAll();
     assert.equal(r.inactiveIds().length, 0);
     r.useSimple();
-    assert.deepEqual([...r.activeIds()].sort(), ['garden', 'restColumn']);
+    assert.deepEqual([...r.activeIds()].sort(), ['calendar', 'focus', 'garden', 'restColumn']);
 });
 
 test('lo guardado roto o de otra versión se completa con los valores por defecto', () => {
-    const { r } = registry({ mode: 'raro', on: { effort: true, inventada: true, muscleMap: 'si' } });
-    assert.equal(r.state.mode, 'simple');
+    const { r } = registry({ mode: 'custom', on: { effort: true, inventada: true, muscleMap: 'si' } });
     assert.equal(r.isOn('effort'), true);
     assert.equal(r.isOn('muscleMap'), false, 'un valor que no es booleano no cuenta');
     assert.equal('inventada' in r.state.on, false);
+});
+
+test('en el modo simple vale lo que trae el modo (si el modo cambia, se actualiza solo)', () => {
+    const { r } = registry({ mode: 'raro', on: { effort: true, calendar: false } });
+    assert.equal(r.state.mode, 'simple');
+    assert.equal(r.isOn('effort'), false);
+    assert.equal(r.isOn('calendar'), true);
 });
 
 test('grupos: todos los grupos tienen funciones y cada función tiene un grupo válido', () => {

@@ -174,7 +174,7 @@ function buildExerciseRowHtml(idx, ex, routine) {
                         ${typeof pilatesExerciseInfo === 'function' && pilatesExerciseInfo(ex) ? `<button type="button" class="pl-info-btn" data-pilates-info="${safeName}" aria-label="Ficha de ${safeName}: técnica, respiración y errores" title="Ficha: técnica, respiración y errores">📖</button>` : ''}
                         <button type="button" class="collapse-btn" data-action="toggle-collapse" aria-expanded="true" aria-label="Contraer ${safeName}" title="Contraer / expandir">▾</button>
                     </div>
-                    <div class="exercise-done-summary" hidden></div>
+                    <div class="exercise-done-summary" data-action="toggle-collapse" hidden></div>
                     <div class="exercise-meta">
                         <select class="type-chip" aria-label="Cómo se mide ${safeName}" data-change="change-type">${buildTypeOptionsHtml(type)}</select>
                         ${equipLevelChipHtml(ex)}
@@ -364,7 +364,8 @@ function toggleSetDone(btn) {
     maybeAutoStartSessionTimer();
     saveWorkoutDraft();
     // Todas las series hechas: el bloque se contrae solo (se vuelve a abrir con ▸).
-    if (isBlockComplete(block)) setTimeout(() => { if (isBlockComplete(block)) setBlockCollapsed(block, true); }, 700);
+    // Y se abre el que sigue (ver focus.js).
+    if (isBlockComplete(block)) setTimeout(() => { if (isBlockComplete(block)) { setBlockCollapsed(block, true); focusCurrentExercise({ scroll: !isSessionComplete() }); } }, 700);
     // Era la última serie de la sesión: en vez del descanso, se pregunta si guardar.
     if (isSessionComplete()) { setTimeout(() => { if (isSessionComplete()) openFinishPrompt(); }, 400); return; }
     if (goToNextInSuperset(block, row)) return; // superserie: el descanso va al final de la vuelta
@@ -437,7 +438,10 @@ function setBlockCollapsed(block, collapsed) {
         const rows = [...block.querySelectorAll('.set-row')];
         const done = rows.filter(r => r.classList.contains('done')).length;
         const text = formatSetsSummary(readBlockSets(block).filter(s => s.done && !s.warmup), block.dataset.type);
-        summary.textContent = `${done === rows.length ? '✓ ' : ''}${done} de ${rows.length} series${text ? ' · ' + text : ''}`;
+        summary.textContent = done === 0
+            ? (rows.length === 1 ? '1 serie por hacer' : `${rows.length} series por hacer`)
+            : `${done === rows.length ? '✓ ' : ''}${done} de ${rows.length} series${text ? ' · ' + text : ''}`;
+        summary.classList.toggle('pending', done < rows.length);
         summary.hidden = !collapsed;
     }
     if (collapsed && block.contains(document.activeElement)) document.activeElement.blur();
@@ -445,7 +449,10 @@ function setBlockCollapsed(block, collapsed) {
 
 function toggleBlockCollapsed(btn) {
     const block = btn.closest('.exercise-row');
-    if (block) setBlockCollapsed(block, !block.classList.contains('collapsed'));
+    if (!block) return;
+    const collapsed = !block.classList.contains('collapsed');
+    setBlockCollapsed(block, collapsed);
+    rememberManualCollapse(block, collapsed);
 }
 
 function toggleSetNote(btn) {

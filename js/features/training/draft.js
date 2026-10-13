@@ -76,6 +76,7 @@ function restoreWorkoutDraft() {
         });
     }
 
+    focusCurrentExercise();
     showToast('🔄 Se recuperaron los datos de tu entrenamiento sin guardar', 'success', 4500);
 }
 

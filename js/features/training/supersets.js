@@ -11,7 +11,9 @@ function supersetMap(routine) {
 }
 
 // Solo una letra A-Z: el mapa viene de los datos guardados (o de un backup).
+// Con la función apagada (Ajustes → Funciones) las superseries guardadas no se aplican.
 function getSupersetLetter(routine, name) {
+    if (typeof features !== 'undefined' && !features.isOn('supersets')) return null;
     const letter = supersetMap(routine)[normalizeForCompare(name || '')];
     return typeof letter === 'string' && /^[A-Z]$/.test(letter) ? letter : null;
 }
@@ -107,6 +109,7 @@ function saveSupersetFromModal() {
     }
     closeSupersetModal();
     refreshSupersetBadges();
+    focusCurrentExercise();
     const letter = getSupersetLetter(routine, name);
     showToast(letter ? `🔗 Superserie ${letter} lista: se hacen seguidos y se descansa al final de la vuelta` : 'Superserie quitada');
 }

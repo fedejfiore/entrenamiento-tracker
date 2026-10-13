@@ -157,7 +157,8 @@ svg.muscle-dot .muscle, .muscle-legend-item .muscle { stroke-width: 0; cursor: d
     border-radius: var(--radius-sm);
 }
 .collapse-btn:hover { background: var(--bg-elevated); box-shadow: none; transform: none; }
-.exercise-done-summary { font-size: 12px; color: var(--success); margin-top: 3px; overflow-wrap: anywhere; }
+.exercise-done-summary { font-size: 12px; color: var(--success); margin-top: 3px; overflow-wrap: anywhere; cursor: pointer; }
+.exercise-done-summary.pending { color: var(--text-muted); }
 .exercise-row.collapsed .sets-table,
 .exercise-row.collapsed .sets-controls,
 .exercise-row.collapsed .exercise-note,

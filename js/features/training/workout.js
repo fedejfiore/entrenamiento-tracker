@@ -48,6 +48,17 @@ function restoreArchivedExercise(routine, name) {
     showToast(`✅ "${name}" restaurado a la rutina`);
 }
 
+/** La ayuda de arriba de los ejercicios: solo lo de las funciones activas (cada parte se traduce sola). */
+function setsLegendHtml() {
+    const on = id => typeof features === 'undefined' || features.isOn(id);
+    return [
+        'Mantené apretados los puntos ⠿ y arrastrá para reordenar',
+        on('warmup') && 'Tocá el número de serie para marcarla como calentamiento (C)',
+        '✓ marca la serie y arranca el descanso',
+        on('effort') && 'RIR: reps que te quedaban (F = al fallo)'
+    ].filter(Boolean).map(t => `<span>${t}</span>`).join(' · ');
+}
+
 function loadRoutineExercises() {
     reorderController.finish(); // si quedó un arrastre a medias, se cierra y la vista vuelve a la normalidad
     const routine = document.getElementById('routine').value;
@@ -74,7 +85,7 @@ function loadRoutineExercises() {
     const archivedNames = archivedExercises[routine] || [];
     const archivedSet = new Set(archivedNames.map(normalizeForCompare));
 
-    let html = `<div class="sets-legend">Mantené apretados los puntos ⠿ y arrastrá para reordenar · Tocá el número de serie para marcarla como calentamiento (C) · ✓ marca la serie y arranca el descanso · RIR: reps que te quedaban (F = al fallo)</div>`;
+    let html = `<div class="sets-legend">${setsLegendHtml()}</div>`;
     exercises.forEach((ex, idx) => {
         if (!ex) return;
         if (archivedSet.has(normalizeForCompare(ex))) return;
@@ -96,6 +107,7 @@ function loadRoutineExercises() {
     </div>`;
     container.innerHTML = html;
     populateExerciseDatalist();
+    focusCurrentExercise();
 
     const sessionNotesInput = document.getElementById('sessionNotes');
     if (sessionNotesInput) {

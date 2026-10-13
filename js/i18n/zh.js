@@ -5,6 +5,14 @@
 
 I18N_DICTIONARIES.zh = {
  "text": {
+  "Un ejercicio a la vez": "一次一个动作",
+  "En Entrenar se ve abierto solo el ejercicio que toca (o toda su superserie); los demás quedan plegados en una línea.": "“训练”中只展开当前动作（或整个超级组），其余折叠成一行。",
+  "1 serie por hacer": "还剩 1 组",
+  "Tenés superseries armadas en tus rutinas. ¿Las activás para que la app te lleve de un ejercicio al otro?": "你的训练里设置了超级组。要开启它们，让应用带你从一个动作切到下一个吗？",
+  "Mantené apretados los puntos ⠿ y arrastrá para reordenar": "按住 ⠿ 并拖动以重新排序",
+  "Tocá el número de serie para marcarla como calentamiento (C)": "点按组号可标记为热身组（C）",
+  "✓ marca la serie y arranca el descanso": "✓ 标记完成并开始休息",
+  "RIR: reps que te quedaban (F = al fallo)": "RIR：还能做的次数（F = 力竭）",
   "✅ Activado. Lo podés apagar en Ajustes → Funciones.": "✅ 已开启。可在 设置 → 功能 中关闭。",
   "Ya registraste 5 sesiones. ¿Querés ver qué músculos trabajaste y si estás en el rango ideal?": "你已经记录了 5 次训练。想看看练了哪些肌肉、是否在理想范围内吗？",
   "Con 10 sesiones ya se puede ver cómo progresa cada ejercicio. ¿Lo activás?": "有了 10 次训练，就能看到每个动作的进步了。要开启吗？",
@@ -2692,3 +2700,6 @@ I18N_DICTIONARIES.zh = {
  ]
 };
 I18N_DICTIONARIES.zh.patterns.push(["{n:num} de {m:num} activas","已开启 {n}/{m}"]);
+I18N_DICTIONARIES.zh.patterns.push(["{n:num} series por hacer","还剩 {n} 组"]);
+I18N_DICTIONARIES.zh.patterns.push(["{n:num} de {m:num} series · {x}","{n}/{m} 组 · {x}"]);
+I18N_DICTIONARIES.zh.patterns.push(["{n:num} de {m:num} series","{n}/{m} 组"]);

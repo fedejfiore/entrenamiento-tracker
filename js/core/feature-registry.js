@@ -22,6 +22,7 @@ const FEATURE_GROUPS = [
 ];
 
 const FEATURE_DEFINITIONS = [
+    { id: 'focus', group: 'log', simple: true, label: 'Un ejercicio a la vez', description: 'En Entrenar se ve abierto solo el ejercicio que toca (o toda su superserie); los demás quedan plegados en una línea.' },
     { id: 'restColumn', group: 'log', simple: true, label: 'Descanso por serie', description: 'Una columna para elegir el descanso de cada serie. Sin ella, el descanso usa el de la última vez (o 90 s).' },
     { id: 'effort', group: 'log', simple: false, label: 'RIR / esfuerzo', description: 'Cuántas reps te quedaban (RIR) o qué tan exigente fue cada serie.' },
     { id: 'warmup', group: 'log', simple: false, label: 'Series de calentamiento', description: 'Tocá el número de la serie para marcarla como calentamiento (C): no cuenta para récords ni volumen.' },
@@ -33,7 +34,7 @@ const FEATURE_DEFINITIONS = [
     { id: 'tabata', group: 'tools', simple: false, label: 'Tabata e intervalos', description: 'Bloques de trabajo y descanso con cuenta regresiva.' },
     { id: 'music', group: 'tools', simple: false, label: 'Música', description: 'Abrí tu playlist de Spotify o YouTube Music desde Entrenar.' },
     { id: 'programs', group: 'plan', simple: false, label: 'Programas con progresión', description: 'Programas armados que te dicen qué peso y cuántas reps hacer.' },
-    { id: 'calendar', group: 'plan', simple: false, label: 'Calendario', description: 'Los días que entrenaste, mes a mes, con el detalle de cada día.' },
+    { id: 'calendar', group: 'plan', simple: true, label: 'Calendario', description: 'Los días que entrenaste, mes a mes, con el detalle de cada día.' },
     { id: 'homeStats', group: 'plan', simple: false, label: 'Estadísticas en Inicio', description: 'Totales, promedio semanal y tus últimas rutinas.' },
     { id: 'muscleMap', group: 'progress', simple: false, label: 'Músculos trabajados', description: 'Series por músculo en la semana y si estás en el rango ideal.' },
     { id: 'progression', group: 'progress', simple: false, label: 'Análisis de progresión', description: 'Cada ejercicio contra sesiones anteriores, con gráficos.' },
@@ -66,7 +67,9 @@ class FeatureRegistry {
         const mode = saved && saved.mode === 'custom' ? 'custom' : 'simple';
         const on = {};
         this.definitions.forEach((d, id) => {
-            const v = saved && saved.on ? saved.on[id] : undefined;
+            // En el modo simple vale siempre lo que trae el modo (si cambia, se actualiza solo);
+            // lo elegido a mano es del modo personalizado.
+            const v = mode === 'custom' && saved.on ? saved.on[id] : undefined;
             on[id] = typeof v === 'boolean' ? v : !!d.simple;
         });
         return { mode, on };
