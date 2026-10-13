@@ -186,6 +186,11 @@ function findProgram(id) {
     return PROGRAMS.find(p => p.id === id) || null;
 }
 
+/** Módulo de un programa: 'pilates' si es de una disciplina de pilates, si no 'gym'. */
+function programModule(id) {
+    return findProgram(id)?.discipline ? 'pilates' : 'gym';
+}
+
 /** Clave de rutina para un día de un programa (no choca con las rutinas del usuario). */
 function programRoutineKey(programId, dayKey) {
     return `PRG_${programId}_${dayKey}`.toUpperCase();

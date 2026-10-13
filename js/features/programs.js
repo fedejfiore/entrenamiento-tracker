@@ -102,6 +102,11 @@ function programDayKeys(program) {
     return program.days.map(d => programRoutineKey(program.id, d.key));
 }
 
+/** El programa en curso del módulo que se está viendo (gimnasio o pilates). */
+function currentProgram() {
+    return repo.routines.activeProgram(typeof activeModule === 'function' ? activeModule() : 'gym');
+}
+
 /** Próximo día del programa: el que sigue al último que se entrenó. */
 function nextProgramDay(program) {
     const keys = programDayKeys(program);
@@ -116,7 +121,7 @@ function nextProgramDay(program) {
 function renderProgramsSection() {
     const box = document.getElementById('programStatus');
     if (!box) return;
-    const active = repo.routines.activeProgram();
+    const active = currentProgram();
     const program = active && findProgram(active.id);
     if (!program) {
         box.innerHTML = `<p class="program-empty">Programas armados con progresión automática: la app te dice cuántas reps y qué peso hacer cada día. Primero se suben reps y, cuando llegás al tope en todas las series, se sube el peso.</p>
@@ -160,7 +165,7 @@ function programsForActiveModule() {
 }
 
 function openProgramsModal() {
-    const active = repo.routines.activeProgram();
+    const active = currentProgram();
     document.getElementById('programList').innerHTML = programsForActiveModule().map(p => programCardHtml(p, active?.id)).join('');
     document.getElementById('programsModal').classList.add('open');
 }
@@ -172,7 +177,8 @@ function closeProgramsModal() {
 function startProgram(id) {
     const program = findProgram(id);
     if (!program) return;
-    const active = repo.routines.activeProgram();
+    const module = programModule(program.id);
+    const active = repo.routines.activeProgram(module);
     const replacing = active && active.id !== id ? `\n\nSe termina "${findProgram(active.id)?.name || 'el programa anterior'}" (sus rutinas y tu historial quedan).` : '';
     if (!confirm(`¿Empezar "${program.name}"?\n\nSe crean ${program.days.length === 1 ? 'su rutina' : `sus ${program.days.length} rutinas`} con el objetivo de cada ejercicio.${replacing}`)) return;
 
@@ -185,8 +191,8 @@ function startProgram(id) {
         }]))
     }));
     try {
-        if (active) repo.routines.endProgram();
-        repo.routines.startProgram(program.id, days, getLocalDateString());
+        if (active) repo.routines.endProgram(module);
+        repo.routines.startProgram(program.id, days, getLocalDateString(), module);
         // Los de peso corporal se miden así (si el usuario no eligió otra cosa antes).
         program.days.forEach(d => d.exercises.forEach(e => {
             if (e.type && !exercisePrefs.hasType(e.name)) saveExerciseType(e.name, e.type);
@@ -216,10 +222,10 @@ function startProgram(id) {
 }
 
 function endProgram() {
-    const active = repo.routines.activeProgram();
+    const active = currentProgram();
     if (!active) return;
     if (!confirm('¿Terminar el programa?\n\nSus rutinas y todo lo que entrenaste quedan; solo se dejan de mostrar los objetivos de cada ejercicio.')) return;
-    repo.routines.endProgram();
+    repo.routines.endProgram(programModule(active.id));
     renderProgramsSection();
     showToast('Programa terminado');
 }

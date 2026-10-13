@@ -47,7 +47,7 @@ function renderLibrary() {
     const ownHtml = own.map(k => libRoutineItemHtml(k)).join('');
     const myBox = document.getElementById('libMyRoutines');
     if (myBox) myBox.innerHTML = ownHtml || emptyStateHtml('Todavía no creaste rutinas. Creá una, elegí un programa armado o importá una que te pasaron (abajo).', ['create-routine', 'programs']);
-    const active = repo.routines.activeProgram();
+    const active = currentProgram();
     const programIntro = `<p class="lib-note">Programas armados con progresión automática (primero reps, después peso).${active ? ` En curso: <b>${escapeHtml(findProgram(active.id)?.name || '')}</b>.` : ''}</p>
         <button type="button" data-program-action="browse">📚 Ver todos los programas</button>`;
     set('libPrograms', programIntro + fromPrograms.map(k => libRoutineItemHtml(k)).join(''), '');

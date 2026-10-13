@@ -85,3 +85,29 @@ test('empezar un programa crea sus rutinas con objetivos; terminarlo deja las ru
     assert.deepEqual(JSON.parse(JSON.stringify(routines.targets('PRG_X_A'))), {});
     assert.ok(store.get('customRoutines').PRG_X_A, 'las rutinas del programa quedan');
 });
+
+test('un programa activo por módulo: gimnasio y pilates a la vez, y se termina cada uno por separado', () => {
+    const app = loadApp();
+    const store = app('(a) => new Store(a, STORAGE_SCHEMA)')(app('new MemoryAdapter()'));
+    const moduleOf = id => (id.startsWith('p') ? 'pilates' : 'gym');
+    const routines = app('(s, m) => new RoutineRepository(s, m)')(store, moduleOf);
+    routines.startProgram('fb3', [{ key: 'PRG_FB3_A', label: 'A', exercises: ['Sentadilla'], targets: { sentadilla: { sets: 3 } } }], '2026-10-01');
+    routines.startProgram('pmat1', [{ key: 'PRG_PMAT1_A', label: 'Mat', exercises: ['Cien'], targets: { cien: { sets: 1 } } }], '2026-10-02');
+    assert.equal(routines.activeProgram('gym').id, 'fb3');
+    assert.equal(routines.activeProgram('pilates').id, 'pmat1');
+    routines.endProgram('pilates');
+    assert.equal(routines.activeProgram('pilates'), null);
+    assert.equal(routines.activeProgram('gym').id, 'fb3', 'el de gimnasio sigue');
+    assert.equal(routines.targets('PRG_FB3_A').sentadilla.sets, 3);
+});
+
+test('el formato viejo (un solo programa) se lee en el módulo de ese programa', () => {
+    const app = loadApp();
+    const store = app('(a) => new Store(a, STORAGE_SCHEMA)')(app('new MemoryAdapter()'));
+    store.set('activeProgram', { id: 'pmat1', startedAt: '2026-09-01', routines: ['PRG_PMAT1_A'] });
+    const routines = app('(s, m) => new RoutineRepository(s, m)')(store, id => (id.startsWith('p') ? 'pilates' : 'gym'));
+    assert.equal(routines.activeProgram('gym'), null);
+    assert.equal(routines.activeProgram('pilates').id, 'pmat1');
+    routines.startProgram('fb3', [{ key: 'PRG_FB3_A', label: 'A', exercises: [], targets: {} }], '2026-10-01');
+    assert.equal(routines.activeProgram('pilates').id, 'pmat1', 'al guardar, el viejo pasa al formato nuevo sin perderse');
+});

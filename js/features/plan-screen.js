@@ -141,7 +141,7 @@ function todayRoutineKey(weekday = new Date().getDay()) {
     if (planned && keys.includes(planned)) return planned;
     const byName = keys.filter(k => routineLabelMatchesWeekday(routineLabelOf(k), weekday));
     if (byName.length === 1) return byName[0];
-    const active = repo.routines.activeProgram();
+    const active = currentProgram();
     const program = active && findProgram(active.id);
     if (program) {
         const { key } = nextProgramDay(program);

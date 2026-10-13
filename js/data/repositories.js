@@ -116,7 +116,15 @@ class BodyMetricsRepository {
  * personalizar: la versión guardada reemplaza a la base.
  */
 class RoutineRepository {
-    constructor(store) { this.store = store; }
+    /**
+     * @param store
+     * @param {(programId: string) => string} programModule  a qué módulo pertenece un programa
+     *        (para leer el formato viejo, de un solo programa, sin perderlo)
+     */
+    constructor(store, programModule = () => 'gym') {
+        this.store = store;
+        this.programModule = programModule;
+    }
 
     custom() { return this.store.get('customRoutines'); }
     saveCustom(map) { this.store.set('customRoutines', map); }
@@ -168,9 +176,18 @@ class RoutineRepository {
     /** Objetivos (series, rango de reps…) de los ejercicios de una rutina, o {}. */
     targets(routineKey) { return this.store.get('routineTargets')[routineKey] || {}; }
 
-    activeProgram() {
-        const p = this.store.get('activeProgram');
-        return p && p.id ? p : null;
+    /**
+     * Programas en curso, uno por módulo: { gym: {id, startedAt, routines}, pilates: {...} }.
+     * El formato viejo (un solo programa) se lee como el del módulo de ese programa.
+     */
+    activePrograms(raw = this.store.get('activeProgram')) {
+        if (!raw || typeof raw !== 'object') return {};
+        if (raw.id) return { [this.programModule(raw.id)]: raw };
+        return Object.fromEntries(Object.entries(raw).filter(([, p]) => p && p.id));
+    }
+
+    activeProgram(module = 'gym') {
+        return this.activePrograms()[module] || null;
     }
 
     /**
@@ -178,7 +195,7 @@ class RoutineRepository {
      * objetivos de cada ejercicio y lo marca como el programa en curso.
      * days: [{ key, label, exercises: [nombres], targets: { ejercicioNormalizado: {...} } }]
      */
-    startProgram(programId, days, startedAt) {
+    startProgram(programId, days, startedAt, module = this.programModule(programId)) {
         this.store.transaction(tx => {
             const custom = tx.get('customRoutines');
             const labels = tx.get('customRoutineLabels');
@@ -191,7 +208,7 @@ class RoutineRepository {
             tx.set('customRoutines', custom);
             tx.set('customRoutineLabels', labels);
             tx.set('routineTargets', targets);
-            tx.set('activeProgram', { id: programId, startedAt, routines: days.map(d => d.key) });
+            tx.set('activeProgram', { ...this.activePrograms(tx.get('activeProgram')), [module]: { id: programId, startedAt, routines: days.map(d => d.key) } });
         });
     }
 
@@ -210,14 +227,17 @@ class RoutineRepository {
         });
     }
 
-    /** Termina el programa: se van los objetivos, las rutinas y su historial quedan. */
-    endProgram() {
+    /** Termina el programa de un módulo: se van los objetivos, las rutinas y su historial quedan. */
+    endProgram(module = 'gym') {
         this.store.transaction(tx => {
-            const active = tx.get('activeProgram');
+            const all = this.activePrograms(tx.get('activeProgram'));
+            const active = all[module];
+            if (!active) return;
             const targets = tx.get('routineTargets');
             (active.routines || []).forEach(k => { delete targets[k]; });
+            delete all[module];
             tx.set('routineTargets', targets);
-            tx.set('activeProgram', {});
+            tx.set('activeProgram', all);
         });
     }
 
@@ -232,5 +252,5 @@ const db = new Store(LocalStorageAdapter.isAvailable() ? new LocalStorageAdapter
 const repo = {
     workouts: new WorkoutRepository(db),
     bodyMetrics: new BodyMetricsRepository(db),
-    routines: new RoutineRepository(db)
+    routines: new RoutineRepository(db, id => programModule(id))
 };

@@ -36,7 +36,7 @@ const STORAGE_SCHEMA = {
     exerciseGroupOverrides: { group: 'data', type: 'object', default: {}, description: 'Grupo muscular elegido a mano por ejercicio.' },
     routineSupersets: { group: 'data', type: 'object', default: {}, description: 'Superseries por rutina: { rutina: { ejercicioNormalizado: "A" } }.' },
     routineTargets: { group: 'data', type: 'object', default: {}, description: 'Objetivos por rutina y ejercicio (series, rango de reps, descanso, incremento): { rutina: { ejercicioNormalizado: {...} } }.' },
-    activeProgram: { group: 'data', type: 'object', default: {}, description: 'Programa prearmado en curso: { id, startedAt, routines: [claves] }.' },
+    activeProgram: { group: 'data', type: 'object', default: {}, description: 'Programas en curso, uno por módulo: { gym: { id, startedAt, routines: [claves] }, pilates: {…} }. El formato viejo (un solo programa) se sigue leyendo.' },
     exerciseEquipLevels: { group: 'data', type: 'object', default: {}, description: 'Pilates: nivel del elemento por ejercicio (banda, pelota, aro…): liviana, media o fuerte.' },
     mascot: { group: 'prefs', type: 'object', default: null, description: 'Mascota 3D: { species, celebrated (semana ya festejada) }.' },
     features: { group: 'prefs', type: 'object', default: null, description: 'Funciones activables: { mode: simple | custom, on: { id: true/false } }.' },

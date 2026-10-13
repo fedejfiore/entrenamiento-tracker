@@ -619,6 +619,10 @@
   "file": "js/features/plate-calculator.js",
   "kind": "function"
  },
+ "currentProgram": {
+  "file": "js/features/programs.js",
+  "kind": "function"
+ },
  "currentSessionEndTime": {
   "file": "js/features/training/session-clock.js",
   "kind": "let"
@@ -2438,6 +2442,10 @@
  "programExercise": {
   "file": "js/domain/programs.js",
   "kind": "const"
+ },
+ "programModule": {
+  "file": "js/domain/programs.js",
+  "kind": "function"
  },
  "programPrevSets": {
   "file": "js/features/programs.js",
