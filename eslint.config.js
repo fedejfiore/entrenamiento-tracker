@@ -9,7 +9,9 @@ const globals = require('globals');
 const noUnsanitized = require('eslint-plugin-no-unsanitized');
 const appGlobals = require('./scripts/globals.json');
 
-const appNames = Object.fromEntries(Object.entries(appGlobals).map(([name, g]) => [name, g.kind === 'let' || g.kind === 'var' ? 'writable' : 'readonly']));
+// Todas de solo lectura: un archivo no puede reasignar el estado de otro (lo cambia con una
+// función del archivo dueño). Así el código ya respeta la regla de los módulos ES.
+const appNames = Object.fromEntries(Object.keys(appGlobals).map(name => [name, 'readonly']));
 
 module.exports = [
     { ignores: ['dist/**', 'www/**', 'android/**', 'node_modules/**', 'vendor/**', 'js/app.min.js', 'docs/**', 'tools/**', 'control/**'] },
@@ -34,6 +36,11 @@ module.exports = [
             'no-unsanitized/property': ['error', { escape: { methods: ['escapeHtml'], taggedTemplates: ['html'] } }]
         }
     },
+    // Cada archivo ve las globales de los demás como de solo lectura (las suyas, no: son su estado).
+    ...[...new Set(Object.values(appGlobals).map(g => g.file))].map(file => ({
+        files: [file],
+        languageOptions: { globals: Object.fromEntries(Object.entries(appGlobals).filter(([, g]) => g.file === file).map(([name]) => [name, 'off'])) }
+    })),
     {
         files: ['service-worker.js'],
         languageOptions: { ecmaVersion: 'latest', sourceType: 'script', globals: { ...globals.serviceworker } }

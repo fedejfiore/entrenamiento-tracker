@@ -36,6 +36,12 @@ function getNoSleepVideoEl() {
     return v;
 }
 
+/** Apaga la opción (por ejemplo, si el celular no deja mantener la pantalla encendida). */
+function disableWakeLock() {
+    wakeLockEnabled = false;
+    try { db.set('wakeLockEnabled', '0'); } catch (e) {}
+}
+
 async function requestWakeLock() {
     if ('wakeLock' in navigator && window.isSecureContext) {
         try {

@@ -70,7 +70,7 @@ function restoreWorkoutDraft() {
         if (sn) sn.value = draft.sessionNotes;
     }
     if (draft.mood) {
-        selectedMood = draft.mood;
+        setSelectedMood(draft.mood);
         document.querySelectorAll('.emoji-btn').forEach(b => {
             b.classList.toggle('selected', parseInt(b.dataset.mood, 10) === draft.mood);
         });

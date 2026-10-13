@@ -4,7 +4,7 @@
 let restTimerInterval = null;
 
 function runRestTimer(totalSeconds) {
-    if (tabataInterval) { clearInterval(tabataInterval); tabataInterval = null; tabataState = null; }
+    if (tabataInterval) stopTabata();
     if (restTimerInterval) clearInterval(restTimerInterval);
 
     const widget = document.getElementById('restTimer');
@@ -89,11 +89,7 @@ function cancelRestTimer() {
         clearInterval(restTimerInterval);
         restTimerInterval = null;
     }
-    if (tabataInterval) {
-        clearInterval(tabataInterval);
-        tabataInterval = null;
-    }
-    tabataState = null;
+    stopTabata();
     restTimerEndsAt = null;
     hideTimerWidget();
 }

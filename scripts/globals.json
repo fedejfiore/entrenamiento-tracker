@@ -235,10 +235,6 @@
   "file": "js/features/training/workout-screen.js",
   "kind": "function"
  },
- "bindCalendarDayDetail": {
-  "file": "js/features/home.js",
-  "kind": "function"
- },
  "bindFeedback": {
   "file": "js/features/feedback.js",
   "kind": "function"
@@ -363,10 +359,6 @@
   "file": "js/features/training/exercise-block.js",
   "kind": "function"
  },
- "buildHelpHtml": {
-  "file": "js/features/help.js",
-  "kind": "function"
- },
  "buildImportedWorkouts": {
   "file": "js/domain/import-csv.js",
   "kind": "function"
@@ -423,17 +415,21 @@
   "file": "js/domain/stats.js",
   "kind": "function"
  },
- "calendarMonthOffset": {
-  "file": "js/features/home.js",
-  "kind": "let"
- },
- "calendarSelectedDate": {
-  "file": "js/features/home.js",
-  "kind": "let"
+ "calendarMonth": {
+  "file": "js/domain/plan.js",
+  "kind": "function"
  },
  "calendarSessionHtml": {
   "file": "js/features/home.js",
   "kind": "function"
+ },
+ "calendarView": {
+  "file": "js/features/home.js",
+  "kind": "const"
+ },
+ "CalendarView": {
+  "file": "js/features/home.js",
+  "kind": "class"
  },
  "cancelImportHistory": {
   "file": "js/features/import-history.js",
@@ -763,6 +759,10 @@
   "file": "js/domain/training-tools.js",
   "kind": "function"
  },
+ "disableWakeLock": {
+  "file": "js/ui/wake-lock.js",
+  "kind": "function"
+ },
  "DISCIPLINES": {
   "file": "js/features/disciplines.js",
   "kind": "const"
@@ -1039,20 +1039,12 @@
   "file": "js/features/pilates-library.js",
   "kind": "function"
  },
- "filterHelp": {
-  "file": "js/features/help.js",
-  "kind": "function"
- },
  "findClosestSession": {
   "file": "js/domain/stats.js",
   "kind": "function"
  },
  "findProgram": {
   "file": "js/domain/programs.js",
-  "kind": "function"
- },
- "finishOnboarding": {
-  "file": "js/features/onboarding.js",
   "kind": "function"
  },
  "finishPromptSummary": {
@@ -1423,21 +1415,13 @@
   "file": "js/features/help.js",
   "kind": "const"
  },
- "helpFeatureOn": {
+ "helpView": {
   "file": "js/features/help.js",
-  "kind": "function"
+  "kind": "const"
  },
- "helpLastFocus": {
+ "HelpView": {
   "file": "js/features/help.js",
-  "kind": "let"
- },
- "helpSectionHtml": {
-  "file": "js/features/help.js",
-  "kind": "function"
- },
- "helpShowAll": {
-  "file": "js/features/help.js",
-  "kind": "let"
+  "kind": "class"
  },
  "hexAlpha": {
   "file": "js/features/share-cards.js",
@@ -2039,33 +2023,13 @@
   "file": "js/ui/wake-lock.js",
   "kind": "let"
  },
- "ONBOARDING_STEPS": {
+ "onboardingFlow": {
   "file": "js/features/onboarding.js",
   "kind": "const"
  },
- "onboardingDays": {
+ "OnboardingFlow": {
   "file": "js/features/onboarding.js",
-  "kind": "let"
- },
- "onboardingFeatureChoice": {
-  "file": "js/features/onboarding.js",
-  "kind": "let"
- },
- "onboardingNext": {
-  "file": "js/features/onboarding.js",
-  "kind": "function"
- },
- "onboardingStep": {
-  "file": "js/features/onboarding.js",
-  "kind": "let"
- },
- "onboardingStepHtml": {
-  "file": "js/features/onboarding.js",
-  "kind": "function"
- },
- "onboardingTime": {
-  "file": "js/features/onboarding.js",
-  "kind": "let"
+  "kind": "class"
  },
  "onFeaturesChanged": {
   "file": "js/features/feature-settings.js",
@@ -2575,6 +2539,10 @@
   "file": "js/ui/wake-lock.js",
   "kind": "function"
  },
+ "reloadArchivedRoutines": {
+  "file": "js/data/routines-store.js",
+  "kind": "function"
+ },
  "rememberManualCollapse": {
   "file": "js/features/training/focus.js",
   "kind": "function"
@@ -2609,10 +2577,6 @@
  },
  "renderBlockSets": {
   "file": "js/features/training/exercise-block.js",
-  "kind": "function"
- },
- "renderCalendarDayDetail": {
-  "file": "js/features/home.js",
   "kind": "function"
  },
  "renderDisciplineSettings": {
@@ -2685,10 +2649,6 @@
  },
  "renderMuscleMapList": {
   "file": "js/features/muscle-map.js",
-  "kind": "function"
- },
- "renderOnboarding": {
-  "file": "js/features/onboarding.js",
   "kind": "function"
  },
  "renderPhotos": {
@@ -3059,10 +3019,6 @@
   "file": "js/features/music.js",
   "kind": "function"
  },
- "saveOnboardingPlan": {
-  "file": "js/features/onboarding.js",
-  "kind": "function"
- },
  "savePhoto": {
   "file": "js/features/profile.js",
   "kind": "function"
@@ -3211,6 +3167,10 @@
   "file": "js/ui/collapsible.js",
   "kind": "function"
  },
+ "setSelectedMood": {
+  "file": "js/features/training/routines-ui.js",
+  "kind": "function"
+ },
  "setsFromLegacy": {
   "file": "js/domain/legacy-format.js",
   "kind": "function"
@@ -3274,10 +3234,6 @@
  "shareSheetSpec": {
   "file": "js/features/share-cards.js",
   "kind": "let"
- },
- "shouldShowOnboarding": {
-  "file": "js/features/onboarding.js",
-  "kind": "function"
  },
  "showActionToast": {
   "file": "js/ui/toast.js",
@@ -3433,6 +3389,10 @@
  },
  "stopSessionTimer": {
   "file": "js/features/training/session-clock.js",
+  "kind": "function"
+ },
+ "stopTabata": {
+  "file": "js/features/tabata.js",
   "kind": "function"
  },
  "STORAGE_SCHEMA": {

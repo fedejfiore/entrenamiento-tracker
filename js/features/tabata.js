@@ -6,6 +6,12 @@
 let tabataInterval = null;
 
 let tabataState = null; // {name, workSec, restSec, rounds, currentRound, phase, roundsCompleted}
+
+/** Corta el Tabata en curso (si hay uno), sin guardar nada. */
+function stopTabata() {
+    if (tabataInterval) { clearInterval(tabataInterval); tabataInterval = null; }
+    tabataState = null;
+}
 let tabataSessionBlocks = [];
 
 function startTabata() {

@@ -44,7 +44,7 @@ class App {
 
     /** Lo guardado que las pantallas mantienen en memoria. */
     loadCaches() {
-        archivedRoutines = loadArchivedRoutines();
+        reloadArchivedRoutines();
         loadArchivedExercises();
         loadCustomRoutines();
         loadCustomRoutineLabels();
@@ -60,7 +60,7 @@ class App {
             btn.addEventListener('click', function () {
                 document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('selected'));
                 this.classList.add('selected');
-                selectedMood = parseInt(this.dataset.mood);
+                setSelectedMood(parseInt(this.dataset.mood, 10));
                 saveWorkoutDraft();
             });
         });
@@ -112,10 +112,7 @@ class App {
                 wakeLockMode === null;
             if (!needsRestart) return;
             const ok = await requestWakeLock();
-            if (!ok) {
-                wakeLockEnabled = false;
-                try { db.set('wakeLockEnabled', '0'); } catch (e) {}
-            }
+            if (!ok) disableWakeLock();
             updateWakeLockBtn();
         });
 

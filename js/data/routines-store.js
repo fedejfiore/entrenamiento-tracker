@@ -17,6 +17,11 @@ function loadArchivedRoutines() {
 
 let archivedRoutines = new Set();
 
+/** Vuelve a leer las rutinas archivadas de lo guardado. */
+function reloadArchivedRoutines() {
+    archivedRoutines = loadArchivedRoutines();
+}
+
 function saveArchivedRoutines() {
     repo.routines.saveArchived(archivedRoutines);
 }

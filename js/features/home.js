@@ -120,95 +120,83 @@ function renderRecentRoutineAverages(workouts) {
 
 // Calendario mensual tipo "tablero de programador": un color por día según si se entrenó,
 // con intensidad según el volumen de ese día. Navegable mes a mes (no se puede ir a futuro).
-let calendarMonthOffset = 0;
-
-function changeCalendarMonth(delta) {
-    calendarMonthOffset = Math.min(0, calendarMonthOffset + delta);
-    renderMonthCalendar();
-}
-
-function renderMonthCalendar() {
-    const container = document.getElementById('trainingCalendar');
-    const labelEl = document.getElementById('calendarMonthLabel');
-    if (!container) return;
-
-    let workouts = repo.workouts.all();
-    if (!Array.isArray(workouts)) workouts = [];
-
-    const base = new Date();
-    base.setDate(1);
-    base.setMonth(base.getMonth() + calendarMonthOffset);
-    const year = base.getFullYear();
-    const month = base.getMonth();
-
-    if (labelEl) {
-        const label = base.toLocaleDateString(appLocale(), { month: 'long', year: 'numeric' });
-        labelEl.textContent = label.charAt(0).toUpperCase() + label.slice(1);
+// Tocar un día muestra qué se hizo. El armado del mes está en el dominio (calendarMonth).
+class CalendarView {
+    /**
+     * @param {object} deps
+     *   workouts()          sesiones guardadas
+     *   routineLabel(key)   nombre de una rutina
+     *   locale()            idioma para fechas
+     *   sessionHtml(w)      detalle de una sesión
+     */
+    constructor(deps) {
+        this.deps = deps;
+        this.monthOffset = 0;
+        this.selectedDate = null;
     }
 
-    const byDate = {};
-    workouts.forEach(w => {
-        if (!w || !w.date) return;
-        if (!byDate[w.date]) byDate[w.date] = [];
-        byDate[w.date].push(w);
-    });
-
-    const firstOfMonth = new Date(year, month, 1);
-    const startWeekday = (firstOfMonth.getDay() + 6) % 7; // 0 = lunes
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const todayStr = getLocalDateString();
-
-    let html = '<div class="calendar-weekdays">' + ['L','M','X','J','V','S','D'].map(d => `<div>${d}</div>`).join('') + '</div>';
-    html += '<div class="calendar-grid">';
-    for (let i = 0; i < startWeekday; i++) html += '<div class="calendar-cell empty"></div>';
-
-    for (let day = 1; day <= daysInMonth; day++) {
-        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        const dayWorkouts = byDate[dateStr] || [];
-        const trained = dayWorkouts.length > 0;
-        const totalVol = dayWorkouts.reduce((s, w) => s + (w.volume || 0), 0);
-
-        let intensity = '';
-        if (trained) intensity = totalVol > 3000 ? 'high' : totalVol > 800 ? 'mid' : 'low';
-
-        const label = dayWorkouts.map(w => w.type === 'tabata' ? `Tabata: ${w.name || ''}` : (customRoutineLabels[w.routine] || ROUTINE_LABELS[w.routine] || w.routine || 'Entreno')).join(' + ');
-        const title = trained ? `${dateStr}: ${label}` : dateStr;
-        const isToday = dateStr === todayStr;
-
-        const selected = dateStr === calendarSelectedDate;
-        html += `<button type="button" class="calendar-cell ${trained ? 'trained ' + intensity : ''}${isToday ? ' today' : ''}${selected ? ' selected' : ''}" data-cal-date="${dateStr}" aria-pressed="${selected}" title="${escapeHtml(title)}">${day}</button>`;
+    changeMonth(delta) {
+        this.monthOffset = Math.min(0, this.monthOffset + delta);
+        this.render();
     }
-    html += '</div>';
-    container.innerHTML = html;
-    bindCalendarDayDetail(container);
-    renderCalendarDayDetail();
+
+    render() {
+        const container = document.getElementById('trainingCalendar');
+        const labelEl = document.getElementById('calendarMonthLabel');
+        if (!container) return;
+        const workouts = this.deps.workouts();
+        const m = calendarMonth(Array.isArray(workouts) ? workouts : [], this.monthOffset, new Date());
+        if (labelEl) {
+            const label = new Date(m.year, m.month, 1).toLocaleDateString(this.deps.locale(), { month: 'long', year: 'numeric' });
+            labelEl.textContent = label.charAt(0).toUpperCase() + label.slice(1);
+        }
+        const name = w => (w.type === 'tabata' ? `Tabata: ${w.name || ''}` : this.deps.routineLabel(w.routine));
+        let html = '<div class="calendar-weekdays">' + ['L', 'M', 'X', 'J', 'V', 'S', 'D'].map(d => `<div>${d}</div>`).join('') + '</div>';
+        html += '<div class="calendar-grid">' + '<div class="calendar-cell empty"></div>'.repeat(m.leadingEmpty);
+        m.days.forEach(d => {
+            const title = d.trained ? `${d.date}: ${d.sessions.map(name).join(' + ')}` : d.date;
+            const selected = d.date === this.selectedDate;
+            html += `<button type="button" class="calendar-cell ${d.trained ? 'trained ' + d.intensity : ''}${d.isToday ? ' today' : ''}${selected ? ' selected' : ''}" data-cal-date="${d.date}" aria-pressed="${selected}" title="${escapeHtml(title)}">${d.day}</button>`;
+        });
+        container.innerHTML = html + '</div>';
+        this.bind(container);
+        this.renderDayDetail();
+    }
+
+    bind(container) {
+        if (container.dataset.bound) return;
+        container.dataset.bound = '1';
+        container.addEventListener('click', e => {
+            const cell = e.target.closest('[data-cal-date]');
+            if (!cell) return;
+            this.selectedDate = this.selectedDate === cell.dataset.calDate ? null : cell.dataset.calDate;
+            this.render();
+        });
+    }
+
+    renderDayDetail() {
+        const box = document.getElementById('calendarDayDetail');
+        if (!box) return;
+        if (!this.selectedDate) { box.hidden = true; box.innerHTML = ''; return; }
+        const date = new Date(this.selectedDate + 'T00:00:00');
+        const title = date.toLocaleDateString(this.deps.locale(), { weekday: 'long', day: 'numeric', month: 'long' });
+        const sessions = this.deps.workouts().filter(w => w && w.date === this.selectedDate);
+        box.hidden = false;
+        box.innerHTML = `<div class="cal-detail-head"><strong>${escapeHtml(title.charAt(0).toUpperCase() + title.slice(1))}</strong></div>`
+            + (sessions.length ? sessions.map(w => this.deps.sessionHtml(w)).join('') : '<p class="cal-detail-empty">Sin entrenamientos este día.</p>');
+    }
 }
 
-// ---- Tocar un día del calendario: qué se hizo ese día ----
-let calendarSelectedDate = null;
+const calendarView = new CalendarView({
+    workouts: () => repo.workouts.all(),
+    routineLabel: key => customRoutineLabels[key] || ROUTINE_LABELS[key] || key || 'Entreno',
+    locale: () => appLocale(),
+    sessionHtml: w => calendarSessionHtml(w)
+});
 
-function bindCalendarDayDetail(container) {
-    if (container.dataset.bound) return;
-    container.dataset.bound = '1';
-    container.addEventListener('click', e => {
-        const cell = e.target.closest('[data-cal-date]');
-        if (!cell) return;
-        calendarSelectedDate = calendarSelectedDate === cell.dataset.calDate ? null : cell.dataset.calDate;
-        renderMonthCalendar();
-    });
-}
-
-function renderCalendarDayDetail() {
-    const box = document.getElementById('calendarDayDetail');
-    if (!box) return;
-    if (!calendarSelectedDate) { box.hidden = true; box.innerHTML = ''; return; }
-    const date = new Date(calendarSelectedDate + 'T00:00:00');
-    const title = date.toLocaleDateString(appLocale(), { weekday: 'long', day: 'numeric', month: 'long' });
-    const sessions = repo.workouts.all().filter(w => w && w.date === calendarSelectedDate);
-    box.hidden = false;
-    box.innerHTML = `<div class="cal-detail-head"><strong>${escapeHtml(title.charAt(0).toUpperCase() + title.slice(1))}</strong></div>`
-        + (sessions.length ? sessions.map(calendarSessionHtml).join('') : '<p class="cal-detail-empty">Sin entrenamientos este día.</p>');
-}
+// Lo que usan los botones (data-fn-click) y otras pantallas.
+function changeCalendarMonth(delta) { calendarView.changeMonth(delta); }
+function renderMonthCalendar() { calendarView.render(); }
 
 function calendarSessionHtml(w) {
     if (w.type === 'tabata') {

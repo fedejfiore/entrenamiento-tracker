@@ -378,112 +378,142 @@ const HELP_SECTION_FEATURES = {
 };
 // Orden de "Lo básico": lo que necesita alguien que recién empieza.
 const HELP_BASICS_ORDER = ['inicio-rapido', 'entrenar', 'series', 'descanso', 'rutinas', 'plan', 'historial', 'datos', 'ajuste-rapido', 'tipos', 'tiempo', 'organizar', 'inicio', 'biblioteca', 'perfil', 'privacidad', 'ventajas', 'creditos'];
-let helpShowAll = false;
+/**
+ * Pantalla de ayuda: arma el contenido (lo básico + lo activado), lo abre y cierra (el botón
+ * "atrás" del celular la cierra), y filtra con el buscador. Recibe lo que necesita por
+ * constructor: los textos y cómo saber si una función está activa.
+ */
+class HelpView {
+    /**
+     * @param {object} deps
+     *   sections, faq        contenido (HELP_SECTIONS, HELP_FAQ)
+     *   sectionFeatures      { idDeSección: 'función o funciones' }
+     *   basicsOrder          orden de "Lo básico"
+     *   isOn(features)       ¿alguna de esas funciones está activa?
+     */
+    constructor(deps) {
+        this.deps = deps;
+        this.showAll = false;
+        this.lastFocus = null;
+    }
 
-function helpSectionHtml(s) {
-    const feature = HELP_SECTION_FEATURES[s.id] || '';
-    return `
+    sectionHtml(s) {
+        const feature = this.deps.sectionFeatures[s.id] || '';
+        return `
         <details class="help-section" data-help-id="${s.id}"${feature ? ` data-help-feature="${feature}"` : ''}>
             <summary><span class="help-icon">${s.icon}</span>${s.title}</summary>
             <div class="help-body">${s.html}</div>
         </details>`;
-}
+    }
 
-function helpFeatureOn(section) {
-    const f = HELP_SECTION_FEATURES[section.id];
-    return !f || typeof anyFeatureOn !== 'function' || anyFeatureOn(f);
-}
+    featureOn(section) {
+        const f = this.deps.sectionFeatures[section.id];
+        return !f || this.deps.isOn(f);
+    }
 
-function buildHelpHtml() {
-    const basics = HELP_SECTIONS.filter(s => !HELP_SECTION_FEATURES[s.id])
-        .sort((a, b) => HELP_BASICS_ORDER.indexOf(a.id) - HELP_BASICS_ORDER.indexOf(b.id));
-    const extras = HELP_SECTIONS.filter(s => HELP_SECTION_FEATURES[s.id]);
-    const activeExtras = extras.filter(helpFeatureOn);
-    const shownExtras = helpShowAll ? extras : activeExtras;
-    const hiddenCount = extras.length - activeExtras.length;
-    const sections = `<h4 class="help-subtitle help-group">📘 Lo básico</h4>${basics.map(helpSectionHtml).join('')}
-        ${shownExtras.length ? `<h4 class="help-subtitle help-group">🧩 ${helpShowAll ? 'Todas las funciones' : 'Lo que activaste'}</h4>${shownExtras.map(helpSectionHtml).join('')}` : ''}
-        ${hiddenCount ? `<button type="button" class="small help-show-all" data-help-all>${helpShowAll ? 'Ver solo lo que activé' : 'Ver toda la ayuda'}</button>` : ''}`;
-    const faq = HELP_FAQ.map(([q, a]) => `
+    buildHtml() {
+        const { sections, faq, sectionFeatures, basicsOrder } = this.deps;
+        const basics = sections.filter(s => !sectionFeatures[s.id])
+            .sort((a, b) => basicsOrder.indexOf(a.id) - basicsOrder.indexOf(b.id));
+        const extras = sections.filter(s => sectionFeatures[s.id]);
+        const activeExtras = extras.filter(s => this.featureOn(s));
+        const shownExtras = this.showAll ? extras : activeExtras;
+        const hiddenCount = extras.length - activeExtras.length;
+        const groups = `<h4 class="help-subtitle help-group">📘 Lo básico</h4>${basics.map(s => this.sectionHtml(s)).join('')}
+        ${shownExtras.length ? `<h4 class="help-subtitle help-group">🧩 ${this.showAll ? 'Todas las funciones' : 'Lo que activaste'}</h4>${shownExtras.map(s => this.sectionHtml(s)).join('')}` : ''}
+        ${hiddenCount ? `<button type="button" class="small help-show-all" data-help-all>${this.showAll ? 'Ver solo lo que activé' : 'Ver toda la ayuda'}</button>` : ''}`;
+        const faqHtml = faq.map(([q, a]) => `
         <details class="help-section help-faq">
             <summary>${escapeHtml(q)}</summary>
             <div class="help-body"><p>${escapeHtml(a)}</p></div>
         </details>`).join('');
-    return `${sections}<h4 class="help-subtitle">❓ Preguntas frecuentes</h4>${faq}
+        return `${groups}<h4 class="help-subtitle">❓ Preguntas frecuentes</h4>${faqHtml}
         <p class="help-empty" hidden>No encontré nada con esa palabra. Probá con otra (ej. "backup", "timer", "reordenar").</p>`;
-}
-
-/** Vuelve a armar la ayuda (cuando cambian las funciones activas). */
-function renderHelpContent() {
-    const body = document.getElementById('helpContent');
-    if (!body || !body.dataset.rendered) return;
-    body.innerHTML = buildHelpHtml();
-}
-
-// Abre el tutorial. En el celular, el botón "atrás" lo cierra (en vez de salir de la app).
-function openHelp(sectionId) {
-    const modal = document.getElementById('helpModal');
-    if (!modal) return;
-    const body = document.getElementById('helpContent');
-    if (!body.dataset.rendered) {
-        body.innerHTML = buildHelpHtml();
-        body.dataset.rendered = '1';
     }
-    modal.classList.add('open');
-    document.body.classList.add('modal-open');
-    helpLastFocus = document.activeElement;
-    if (sectionId) {
-        const section = body.querySelector(`[data-help-id="${sectionId}"]`);
-        if (section) { section.open = true; section.scrollIntoView({ block: 'start' }); }
+
+    /** Vuelve a armar la ayuda si ya se abrió alguna vez (cuando cambian las funciones activas). */
+    render() {
+        const body = document.getElementById('helpContent');
+        if (!body || !body.dataset.rendered) return;
+        body.innerHTML = this.buildHtml();
     }
-    document.getElementById('helpClose')?.focus();
-    try { history.pushState({ helpOpen: true }, ''); } catch (e) {}
-}
 
-let helpLastFocus = null;
-
-function closeHelp(fromHistory) {
-    const modal = document.getElementById('helpModal');
-    if (!modal || !modal.classList.contains('open')) return;
-    modal.classList.remove('open');
-    document.body.classList.remove('modal-open');
-    if (!fromHistory && history.state && history.state.helpOpen) {
-        try { history.back(); } catch (e) {}
+    open(sectionId) {
+        const modal = document.getElementById('helpModal');
+        if (!modal) return;
+        const body = document.getElementById('helpContent');
+        if (!body.dataset.rendered) {
+            body.innerHTML = this.buildHtml();
+            body.dataset.rendered = '1';
+        }
+        modal.classList.add('open');
+        document.body.classList.add('modal-open');
+        this.lastFocus = document.activeElement;
+        if (sectionId) {
+            const section = body.querySelector(`[data-help-id="${sectionId}"]`);
+            if (section) { section.open = true; section.scrollIntoView({ block: 'start' }); }
+        }
+        document.getElementById('helpClose')?.focus();
+        try { history.pushState({ helpOpen: true }, ''); } catch (e) {}
     }
-    helpLastFocus?.focus?.();
+
+    close(fromHistory) {
+        const modal = document.getElementById('helpModal');
+        if (!modal || !modal.classList.contains('open')) return;
+        modal.classList.remove('open');
+        document.body.classList.remove('modal-open');
+        if (!fromHistory && history.state && history.state.helpOpen) {
+            try { history.back(); } catch (e) {}
+        }
+        this.lastFocus?.focus?.();
+    }
+
+    /** Buscador: muestra solo las secciones que contienen el texto y las abre. */
+    filter(query) {
+        const q = normalizeForCompare(query || '');
+        const body = document.getElementById('helpContent');
+        let visible = 0;
+        body.querySelectorAll('.help-section').forEach(section => {
+            const match = !q || normalizeForCompare(section.textContent).includes(q);
+            section.hidden = !match;
+            if (match) visible++;
+            section.open = !!q && match;
+        });
+        body.querySelectorAll('.help-group').forEach(h => { h.hidden = !!q; });
+        body.querySelector('.help-subtitle:not(.help-group)').hidden = !!q && !body.querySelector('.help-faq:not([hidden])');
+        body.querySelector('.help-empty').hidden = visible > 0;
+    }
+
+    bind() {
+        const modal = document.getElementById('helpModal');
+        if (!modal) return;
+        modal.addEventListener('click', e => { if (e.target === modal) this.close(); });
+        document.getElementById('helpClose')?.addEventListener('click', () => this.close());
+        document.getElementById('helpSearch')?.addEventListener('input', e => this.filter(e.target.value));
+        document.getElementById('helpContent')?.addEventListener('click', e => {
+            if (!e.target.closest('[data-help-all]')) return;
+            this.showAll = !this.showAll;
+            this.render();
+        });
+        document.getElementById('openHelpBtn')?.addEventListener('click', () => this.open());
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') this.close(); });
+        window.addEventListener('popstate', () => this.close(true));
+    }
 }
 
-// Buscador: muestra solo las secciones que contienen el texto y las abre.
-function filterHelp(query) {
-    const q = normalizeForCompare(query || '');
-    const body = document.getElementById('helpContent');
-    let visible = 0;
-    body.querySelectorAll('.help-section').forEach(section => {
-        const match = !q || normalizeForCompare(section.textContent).includes(q);
-        section.hidden = !match;
-        if (match) visible++;
-        section.open = !!q && match;
-    });
-    body.querySelectorAll('.help-group').forEach(h => { h.hidden = !!q; });
-    body.querySelector('.help-subtitle:not(.help-group)').hidden = !!q && !body.querySelector('.help-faq:not([hidden])');
-    body.querySelector('.help-empty').hidden = visible > 0;
-}
+const helpView = new HelpView({
+    sections: HELP_SECTIONS,
+    faq: HELP_FAQ,
+    sectionFeatures: HELP_SECTION_FEATURES,
+    basicsOrder: HELP_BASICS_ORDER,
+    isOn: list => typeof anyFeatureOn !== 'function' || anyFeatureOn(list)
+});
 
-function bindHelp() {
-    const modal = document.getElementById('helpModal');
-    if (!modal) return;
-    modal.addEventListener('click', e => { if (e.target === modal) closeHelp(); });
-    document.getElementById('helpClose')?.addEventListener('click', () => closeHelp());
-    document.getElementById('helpSearch')?.addEventListener('input', e => filterHelp(e.target.value));
-    document.getElementById('helpContent')?.addEventListener('click', e => {
-        if (!e.target.closest('[data-help-all]')) return;
-        helpShowAll = !helpShowAll;
-        renderHelpContent();
-    });
-    document.getElementById('openHelpBtn')?.addEventListener('click', () => openHelp());
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeHelp(); });
-    window.addEventListener('popstate', () => closeHelp(true));
-}
+// Lo que usan los botones (data-fn-click) y otras pantallas.
+function renderHelpContent() { helpView.render(); }
+function openHelp(sectionId) { helpView.open(sectionId); }
+function closeHelp(fromHistory) { helpView.close(fromHistory); }
+function bindHelp() { helpView.bind(); }
 
 // Textos legales (carpeta legal/): en castellano o en inglés según el idioma de la app.
 function openLegal(kind) {

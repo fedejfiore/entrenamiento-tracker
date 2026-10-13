@@ -71,3 +71,17 @@ test('comentarios: validación del formulario y armado del mensaje', () => {
     assert.match(m.body, /Datos técnicos ----\nVersión: v1$/);
     assert.ok(!message(ok, 'Gymnastés').body.includes('Datos técnicos'));
 });
+
+test('calendario: días del mes, intensidad por volumen y lugar del día 1', () => {
+    const month = app('calendarMonth');
+    const m = month([{ date: '2026-10-05', volume: 5000 }, { date: '2026-10-05', volume: 100 }, { date: '2026-10-07', volume: 500 }], 0, new Date('2026-10-13T12:00:00'));
+    assert.equal(m.days.length, 31);
+    assert.equal(m.leadingEmpty, 3, 'el 1/10/2026 es jueves');
+    assert.equal(m.days[4].intensity, 'high');
+    assert.equal(m.days[4].sessions.length, 2);
+    assert.equal(m.days[6].intensity, 'low');
+    assert.equal(m.days[12].isToday, true);
+    const prev = month([], -1, new Date('2026-10-13T12:00:00'));
+    assert.equal(prev.month, 8, 'septiembre');
+    assert.equal(month([], -10, new Date('2026-10-13T12:00:00')).year, 2025);
+});

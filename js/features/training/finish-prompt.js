@@ -40,7 +40,7 @@ function bindFinishPrompt() {
         const mood = e.target.closest('[data-mood]');
         if (mood) {
             // El ánimo es el mismo de "Finalizar Sesión": se marca en los dos lugares.
-            selectedMood = +mood.dataset.mood;
+            setSelectedMood(+mood.dataset.mood);
             document.querySelectorAll('.emoji-btn[data-mood]').forEach(b => b.classList.toggle('selected', +b.dataset.mood === selectedMood));
             saveWorkoutDraft();
             return;

@@ -3,6 +3,11 @@
 
 let selectedMood = 3;
 
+/** Ánimo elegido para la sesión (1 a 5). */
+function setSelectedMood(mood) {
+    selectedMood = mood;
+}
+
 function populateRoutineOptions() {
     const select = document.getElementById('routine');
     if (!select) return;
@@ -209,7 +214,7 @@ function deleteCustomRoutineForever(key) {
     repo.routines.deleteForever(key);
     loadCustomRoutines();
     loadCustomRoutineLabels();
-    archivedRoutines = loadArchivedRoutines();
+    reloadArchivedRoutines();
     loadArchivedExercises();
 
     renderArchivedRoutinesList();

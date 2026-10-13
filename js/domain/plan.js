@@ -249,3 +249,29 @@ function describeNext(next) {
     if (next.isTomorrow) return `mañana a las ${next.time}`;
     return `el ${day.long} a las ${next.time}`;
 }
+
+/**
+ * Un mes del calendario: los días con sus sesiones, si se entrenó y con qué intensidad (según
+ * el volumen del día), y cuántas celdas vacías van antes del día 1 (la semana empieza el lunes).
+ * @param offset  0 = el mes de hoy, -1 = el anterior…
+ */
+function calendarMonth(workouts, offset = 0, today = new Date()) {
+    const base = new Date(today.getFullYear(), today.getMonth() + offset, 1);
+    const year = base.getFullYear();
+    const month = base.getMonth();
+    const byDate = {};
+    (workouts || []).forEach(w => { if (w && w.date) (byDate[w.date] ||= []).push(w); });
+    const pad = n => String(n).padStart(2, '0');
+    const todayStr = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const days = [];
+    for (let day = 1; day <= daysInMonth; day++) {
+        const date = `${year}-${pad(month + 1)}-${pad(day)}`;
+        const sessions = byDate[date] || [];
+        const volume = sessions.reduce((sum, w) => sum + (w.volume || 0), 0);
+        const trained = sessions.length > 0;
+        days.push({ day, date, sessions, trained, volume, isToday: date === todayStr,
+            intensity: trained ? (volume > 3000 ? 'high' : volume > 800 ? 'mid' : 'low') : '' });
+    }
+    return { year, month, leadingEmpty: (new Date(year, month, 1).getDay() + 6) % 7, days };
+}
