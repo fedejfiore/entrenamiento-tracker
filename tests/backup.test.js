@@ -91,3 +91,24 @@ test('las fotos entran en el backup y se restauran', async () => {
     await service.restore(parsed);
     assert.equal(photos.saved.avatar.data, 'AAEC');
 });
+
+test('backup armado a mano: claves peligrosas, textos enormes y archivos adjuntos inválidos se rechazan sin escribir nada', () => {
+    const app = loadApp();
+    const service = app('new BackupService(new Store(new MemoryAdapter(), STORAGE_SCHEMA), { replaceAll: async () => {} })');
+    const base = { format: 'entrenamiento-tracker-backup', formatVersion: 3, schemaVersion: 3, data: { workouts: [] } };
+    const bad = [
+        ['{"format":"entrenamiento-tracker-backup","data":{"workouts":[{"id":1,"date":"2026-01-01","__proto__":{"isAdmin":true}}]}}', /no permitida/],
+        [JSON.stringify({ ...base, data: { workouts: [{ id: 1, date: '2026-01-01', notes: 'x'.repeat(30000) }] } }), /demasiado largo/],
+        [JSON.stringify({ ...base, recordings: { a: { mime: 'text/html', data: 'AAAA' } } }), /tipo no permitido/],
+        [JSON.stringify({ ...base, photos: { a: { mime: 'image/jpeg', data: '<script>' } } }), /dañadas/]
+    ];
+    bad.forEach(([text, re]) => assert.throws(() => service.parse(text), re, text.slice(0, 80)));
+    assert.doesNotThrow(() => service.parse(JSON.stringify({ ...base, photos: { a: { mime: 'image/jpeg', data: 'AAAA' } } })));
+});
+
+test('un modelo no deja cambiar su prototipo con "__proto__"', () => {
+    const app = loadApp();
+    const w = app('(d) => new WorkoutSession(d)')(JSON.parse('{"id":1,"date":"2026-01-01","__proto__":{"evil":true}}'));
+    assert.equal(w.evil, undefined);
+    assert.equal(typeof w.isTabata, 'boolean');
+});

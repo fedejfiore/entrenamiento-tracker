@@ -92,8 +92,11 @@ class WorkoutSession {
     }
 
     constructor(data) {
-        // Se conservan todos los campos (también los desconocidos: compatibilidad hacia adelante).
-        Object.assign(this, data);
+        // Se conservan todos los campos (también los desconocidos: compatibilidad hacia adelante),
+        // menos los que podrían cambiar el prototipo del objeto (un archivo armado a mano).
+        Object.keys(data || {}).forEach(k => {
+            if (k !== '__proto__' && k !== 'constructor' && k !== 'prototype') this[k] = data[k];
+        });
     }
 
     get isTabata() { return this.type === 'tabata'; }

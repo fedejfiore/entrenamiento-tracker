@@ -305,8 +305,8 @@ button.small {
 
 /* Botones principales: tamaño de toque cómodo con una mano */
 #btnStartRoutine, #btnFinishRoutine,
-button[onclick="saveWorkoutSession()"],
-button[onclick="startTabata()"] {
+button[data-fn-click="saveWorkoutSession"],
+button[data-fn-click="startTabata"] {
     min-height: 48px;
 }
 
