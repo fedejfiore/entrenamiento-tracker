@@ -18,6 +18,7 @@ import { openSupersetModal } from './supersets.js';
 import { toggleVariantGroup } from '../exercises.js';
 import { openExerciseDetailFromRow } from '../progress.js';
 import { saveEquipLevel } from '../pilates-library.js';
+import { applyProgression } from './progression.js';
 
 export class WorkoutScreen {
     constructor(containerId) {
@@ -54,7 +55,8 @@ export class WorkoutScreen {
             'restore-archived': el => restoreArchivedExercise(this.routine, el.dataset.exercise),
             'toggle-collapsible': el => toggleVariantGroup(el.dataset.target),
             'quick-add': () => quickAddExercise(this.routine),
-            'superset': el => openSupersetModal(el.closest('.exercise-row'))
+            'superset': el => openSupersetModal(el.closest('.exercise-row')),
+            'apply-progression': el => applyProgression(el)
         };
     }
 

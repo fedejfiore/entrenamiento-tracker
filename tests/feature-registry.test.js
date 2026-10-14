@@ -47,7 +47,7 @@ test('volver a simple y activar todo', () => {
     r.useAll();
     assert.equal(r.inactiveIds().length, 0);
     r.useSimple();
-    assert.deepEqual([...r.activeIds()].sort(), ['calendar', 'focus', 'garden', 'restColumn']);
+    assert.deepEqual([...r.activeIds()].sort(), ['calendar', 'focus', 'garden', 'nextStep', 'restColumn']);
 });
 
 test('lo guardado roto o de otra versión se completa con los valores por defecto', () => {

@@ -175,7 +175,7 @@ export const HELP_SECTIONS = [
             <ol>
                 <li><b>Empezar este programa</b> crea sus rutinas (ej. "Completo · Día A") y, si querés, pone sus días en tu plan semanal.</li>
                 <li>En Inicio ves qué día te toca y lo empezás con <b>▶ Entrenar</b>.</li>
-                <li>Cada ejercicio muestra su objetivo (🎯 3 × 8–12) y qué hacer hoy. Los valores sugeridos aparecen en gris: si los hiciste, tocá ✓.</li>
+                <li>Cada ejercicio muestra su objetivo (🎯 3 × 8–12) y qué toca hoy. En gris está siempre lo de la última vez: para subir peso o reps, elegí la opción en "Para progresar hoy" (la recomendada lleva ★). Nada cambia solo.</li>
             </ol>
             <p><b>Progresión doble: primero reps, después peso.</b> Con el mismo peso vas sumando una rep por serie. Cuando llegás al tope del rango en todas las series, la app te sugiere subir el peso (de a 2,5 o 5 kg, o una placa en las máquinas) y volver al mínimo del rango. Si no llegaste al mínimo, repetís el peso. En los de peso corporal, al llegar arriba te sugiere una variante más difícil.</p>
             <p><b>Terminar</b> deja las rutinas y todo tu historial; solo se dejan de mostrar los objetivos.</p>`

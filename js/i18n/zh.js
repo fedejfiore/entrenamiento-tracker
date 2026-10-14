@@ -5,6 +5,14 @@
 
 I18N_DICTIONARIES.zh = {
  "text": {
+  "Cada ejercicio muestra su objetivo (🎯 3 × 8–12) y qué toca hoy. En gris está siempre lo de la última vez: para subir peso o reps, elegí la opción en \"Para progresar hoy\" (la recomendada lleva ★). Nada cambia solo.": "每个动作显示目标（🎯 3 × 8–12）和今天该做的。灰色始终是上次的数值：想加重量或次数，就在“今天这样进步”里选一个（推荐的带 ★）。不会自动改变。",
+  "Para progresar hoy:": "今天这样进步：",
+  "＋1 rep": "＋1 次",
+  "⏱ −15 s de descanso": "⏱ 休息 −15 秒",
+  "Lo que recomienda el programa": "方案推荐",
+  "No hay series pendientes con valores de la vez pasada para cambiar": "没有可修改的、带上次数值的待完成组",
+  "Sugerencias para progresar": "进步建议",
+  "Debajo de cada ejercicio: subir el peso, sumar una rep o bajar el descanso. Vos elegís; nada cambia solo.": "每个动作下方：加重量、加一次或缩短休息。由你选择，不会自动改变。",
   "Créditos": "致谢",
   "Tipografías Inter y Oswald, con licencia SIL Open Font License.": "Inter 和 Oswald 字体，采用 SIL Open Font License 许可。",
   "Gráficos: Chart.js (licencia MIT).": "图表：Chart.js（MIT 许可）。",
@@ -1858,7 +1866,6 @@ I18N_DICTIONARIES.zh = {
   "Botón «▶ Contar reps» en cada ejercicio": "每个动作上的“▶ 数次数”按钮",
   "Busca la combinación con menos discos, aunque falten algunos. Si el peso no se puede armar exacto, te muestra el más cercano por debajo y por encima.": "它会找出用片最少的组合，即使缺少某些片。如果无法正好凑出这个重量，会显示最接近的较小值和较大值。",
   "Básicos con barra a 5 series de 5. Si completás las 25 reps, la próxima vez sumás peso (piernas de a 5 kg, torso de a 2,5 kg).": "杠铃基础动作 5 组 × 5 次。如果完成全部 25 次，下次就加重（腿部加 5 kg，上肢加 2.5 kg）。",
-  "Cada ejercicio muestra su objetivo (🎯 3 × 8–12) y qué hacer hoy. Los valores sugeridos aparecen en gris: si los hiciste, tocá ✓.": "每个动作都会显示目标（🎯 3 × 8–12）和今天要做的内容。建议值以灰色显示：如果你完成了，点按 ✓。",
   "Cada ejercicio se mide de una forma. Se cambia con el selector debajo del nombre del ejercicio:": "每个动作有一种记录方式。用动作名称下方的选择器更改：",
   "Cada superserie tiene una letra (A, B…) y un color en el borde del bloque.": "每个超级组都有一个字母（A、B…）和区块边框上的颜色。",
   "Cambiar el plan rige desde esta semana: las semanas anteriores se siguen evaluando con el plan que tenían. Si cambiás días u horarios, borrá los eventos viejos del calendario y volvé a agregarlos.": "计划的修改从本周开始生效：之前的周仍按当时的计划评估。如果你更改了日期或时间，请删除旧的日历事件并重新添加。",
@@ -3087,3 +3094,16 @@ I18N_DICTIONARIES.zh.patterns.push(["{n:num} de {m:num} series","{n}/{m} 组"]);
 I18N_DICTIONARIES.zh.patterns.push(["Ficha de {x}: técnica y errores","{x} 说明：技术和常见错误"]);
 I18N_DICTIONARIES.zh.patterns.push(["Faltan {n:num} semanas cumplidas para {x:tr}","再完成 {n} 周就到{x}"]);
 I18N_DICTIONARIES.zh.patterns.push(["{x:tr} en 3D","3D {x}"]);
+I18N_DICTIONARIES.zh.patterns.push(["{s:num} × {r} · {x:tr}","{s} × {r} · {x}"]);
+I18N_DICTIONARIES.zh.patterns.push(["Toca subir el peso: {n:num} (+{i:num}) y volver a {r:num} reps.","该加重量了：{n}（+{i}），回到 {r} 次。"]);
+I18N_DICTIONARIES.zh.patterns.push(["Mismo peso ({n:num}): apuntá a {r:num} reps en cada serie.","重量不变（{n}）：每组目标 {r} 次。"]);
+I18N_DICTIONARIES.zh.patterns.push(["Mismo peso: apuntá a {r:num} reps en cada serie.","重量不变：每组目标 {r} 次。"]);
+I18N_DICTIONARIES.zh.patterns.push(["Mismo peso ({n:num}), una rep más: {x}. Al llegar a {r:num} en todas, subís.","重量不变（{n}），多做一次：{x}。全部达到 {r} 次就加重。"]);
+I18N_DICTIONARIES.zh.patterns.push(["Mismo peso, una rep más: {x}. Al llegar a {r:num} en todas, subís.","重量不变，多做一次：{x}。全部达到 {r} 次就加重。"]);
+I18N_DICTIONARIES.zh.patterns.push(["Primera vez: elegí un peso con el que llegues a {r:num} reps dejando 2 o 3 en reserva.","第一次：选一个能做 {r} 次、还留 2–3 次余力的重量。"]);
+I18N_DICTIONARIES.zh.patterns.push(["Primera vez: hacé {r:num} reps por serie con buena técnica.","第一次：每组做 {r} 次，注意技术。"]);
+I18N_DICTIONARIES.zh.patterns.push(["Llegaste a {r:num} en todas: pasá a una variante más difícil, sumá lastre o una serie.","全部达到 {r} 次：换更难的变式、加负重或加一组。"]);
+I18N_DICTIONARIES.zh.patterns.push(["Primera vez: {r:num} reps lentas y con control; la técnica está en la ficha.","第一次：{r} 次，慢而有控制；技术要点见说明。"]);
+I18N_DICTIONARIES.zh.patterns.push(["Llegaste a {r:num}: pasá a la versión más difícil (mirá la ficha) o ajustá el resorte.","达到 {r} 次：换更难的版本（见说明）或调整弹簧。"]);
+I18N_DICTIONARIES.zh.patterns.push(["{x} en {n:num} series","{n} 组：{x}"]);
+I18N_DICTIONARIES.zh.patterns.push(["{x} en 1 serie","1 组：{x}"]);

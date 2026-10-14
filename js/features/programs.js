@@ -71,7 +71,8 @@ export function programTargetLineHtml(routineKey, name) {
     if (!s) return '';
     const { sets, repsMin, repsMax } = s.target;
     const range = repsMin === repsMax ? `${repsMin}` : `${repsMin}–${repsMax}`;
-    return `<small class="program-target program-${s.action}" data-feature="programs">🎯 ${sets} × ${range} · ${escapeHtml(s.text)}</small>`;
+    // La sugerencia va en su propio elemento: así se traduce sola (sin el objetivo pegado).
+    return `<small class="program-target program-${s.action}" data-feature="programs">🎯 <span translate="no">${sets} × ${range}</span> · <span>${escapeHtml(s.text)}</span></small>`;
 }
 
 // ---- Estancamiento (con o sin programa) ----

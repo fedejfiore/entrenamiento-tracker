@@ -237,6 +237,14 @@ I18N_DICTIONARIES.en = {
         'Por lado': 'Per side',
         "Algo falló, pero tus datos están a salvo. Si se repite, contanos desde Ajustes → Ayuda.": "Something went wrong, but your data is safe. If it happens again, tell us from Settings → Help.",
         // Pilates
+        "Cada ejercicio muestra su objetivo (🎯 3 × 8–12) y qué toca hoy. En gris está siempre lo de la última vez: para subir peso o reps, elegí la opción en \"Para progresar hoy\" (la recomendada lleva ★). Nada cambia solo.": "Each exercise shows its target (🎯 3 × 8–12) and what is due today. Gray always shows last time: to add weight or reps, pick the option under \"To progress today\" (the recommended one has ★). Nothing changes on its own.",
+        "Para progresar hoy:": "To progress today:",
+        "＋1 rep": "＋1 rep",
+        "⏱ −15 s de descanso": "⏱ −15 s rest",
+        "Lo que recomienda el programa": "What the program recommends",
+        "No hay series pendientes con valores de la vez pasada para cambiar": "No pending sets with values from last time to change",
+        "Sugerencias para progresar": "Progress suggestions",
+        "Debajo de cada ejercicio: subir el peso, sumar una rep o bajar el descanso. Vos elegís; nada cambia solo.": "Under each exercise: add weight, add a rep or cut rest. You choose; nothing changes on its own.",
         "Créditos": "Credits",
         "Tipografías Inter y Oswald, con licencia SIL Open Font License.": "Inter and Oswald fonts, under the SIL Open Font License.",
         "Gráficos: Chart.js (licencia MIT).": "Charts: Chart.js (MIT license).",
@@ -1932,8 +1940,6 @@ Object.assign(I18N_DICTIONARIES.en.text, {
         'It finds the combination with the fewest plates, even if some are missing. If the weight cannot be made exactly, it shows the closest below and above.',
     'Básicos con barra a 5 series de 5. Si completás las 25 reps, la próxima vez sumás peso (piernas de a 5 kg, torso de a 2,5 kg).':
         'Barbell basics at 5 sets of 5. If you complete the 25 reps, next time you add weight (legs by 5 kg, upper body by 2.5 kg).',
-    'Cada ejercicio muestra su objetivo (🎯 3 × 8–12) y qué hacer hoy. Los valores sugeridos aparecen en gris: si los hiciste, tocá ✓.':
-        'Each exercise shows its target (🎯 3 × 8–12) and what to do today. Suggested values appear in gray: if you did them, tap ✓.',
     'Cada ejercicio se mide de una forma. Se cambia con el selector debajo del nombre del ejercicio:': 'Each exercise is measured one way. Change it with the picker below the exercise name:',
     'Cada superserie tiene una letra (A, B…) y un color en el borde del bloque.': 'Each superset has a letter (A, B…) and a color on the block border.',
     'Cambiar el plan rige desde esta semana: las semanas anteriores se siguen evaluando con el plan que tenían. Si cambiás días u horarios, borrá los eventos viejos del calendario y volvé a agregarlos.':
@@ -2245,3 +2251,16 @@ I18N_DICTIONARIES.en.patterns.push(["{n:num} de {m:num} series","{n} of {m} sets
 I18N_DICTIONARIES.en.patterns.push(["Ficha de {x}: técnica y errores","{x} guide: technique and mistakes"]);
 I18N_DICTIONARIES.en.patterns.push(["Faltan {n:num} semanas cumplidas para {x:tr}","{n} more completed weeks to {x}"]);
 I18N_DICTIONARIES.en.patterns.push(["{x:tr} en 3D","{x} in 3D"]);
+I18N_DICTIONARIES.en.patterns.push(["{s:num} × {r} · {x:tr}","{s} × {r} · {x}"]);
+I18N_DICTIONARIES.en.patterns.push(["Toca subir el peso: {n:num} (+{i:num}) y volver a {r:num} reps.","Time to add weight: {n} (+{i}) and go back to {r} reps."]);
+I18N_DICTIONARIES.en.patterns.push(["Mismo peso ({n:num}): apuntá a {r:num} reps en cada serie.","Same weight ({n}): aim for {r} reps in each set."]);
+I18N_DICTIONARIES.en.patterns.push(["Mismo peso: apuntá a {r:num} reps en cada serie.","Same weight: aim for {r} reps in each set."]);
+I18N_DICTIONARIES.en.patterns.push(["Mismo peso ({n:num}), una rep más: {x}. Al llegar a {r:num} en todas, subís.","Same weight ({n}), one more rep: {x}. When you reach {r} in all, you go up."]);
+I18N_DICTIONARIES.en.patterns.push(["Mismo peso, una rep más: {x}. Al llegar a {r:num} en todas, subís.","Same weight, one more rep: {x}. When you reach {r} in all, you go up."]);
+I18N_DICTIONARIES.en.patterns.push(["Primera vez: elegí un peso con el que llegues a {r:num} reps dejando 2 o 3 en reserva.","First time: pick a weight that gets you to {r} reps with 2 or 3 in reserve."]);
+I18N_DICTIONARIES.en.patterns.push(["Primera vez: hacé {r:num} reps por serie con buena técnica.","First time: do {r} reps per set with good form."]);
+I18N_DICTIONARIES.en.patterns.push(["Llegaste a {r:num} en todas: pasá a una variante más difícil, sumá lastre o una serie.","You reached {r} in all: move to a harder variation, add weight or a set."]);
+I18N_DICTIONARIES.en.patterns.push(["Primera vez: {r:num} reps lentas y con control; la técnica está en la ficha.","First time: {r} slow, controlled reps; the technique is in the guide."]);
+I18N_DICTIONARIES.en.patterns.push(["Llegaste a {r:num}: pasá a la versión más difícil (mirá la ficha) o ajustá el resorte.","You reached {r}: move to the harder version (see the guide) or adjust the spring."]);
+I18N_DICTIONARIES.en.patterns.push(["{x} en {n:num} series","{x} on {n} sets"]);
+I18N_DICTIONARIES.en.patterns.push(["{x} en 1 serie","{x} on 1 set"]);

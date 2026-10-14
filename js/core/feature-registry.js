@@ -23,6 +23,7 @@ export const FEATURE_GROUPS = [
 
 export const FEATURE_DEFINITIONS = [
     { id: 'focus', group: 'log', simple: true, label: 'Un ejercicio a la vez', description: 'En Entrenar se ve abierto solo el ejercicio que toca (o toda su superserie); los demás quedan plegados en una línea.' },
+    { id: 'nextStep', group: 'log', simple: true, label: 'Sugerencias para progresar', description: 'Debajo de cada ejercicio: subir el peso, sumar una rep o bajar el descanso. Vos elegís; nada cambia solo.' },
     { id: 'restColumn', group: 'log', simple: true, label: 'Descanso por serie', description: 'Una columna para elegir el descanso de cada serie. Sin ella, el descanso usa el de la última vez (o 90 s).' },
     { id: 'effort', group: 'log', simple: false, label: 'RIR / esfuerzo', description: 'Cuántas reps te quedaban (RIR) o qué tan exigente fue cada serie.' },
     { id: 'warmup', group: 'log', simple: false, label: 'Series de calentamiento', description: 'Tocá el número de la serie para marcarla como calentamiento (C): no cuenta para récords ni volumen.' },

@@ -242,7 +242,7 @@ export function suggestDoubleProgression(lastSets, target) {
             return { action: 'level', kg: null, reps: fill(repsMax), text: `Llegaste a ${repsMax} en todas: pasá a una variante más difícil, sumá lastre o una serie.` };
         }
         const next = Math.round((kg + inc) * 100) / 100;
-        return { action: 'weight', kg: next, reps: fill(repsMin), text: `¡Subí el peso! ${formatNumber(next)} ${unit} (+${formatNumber(inc)}) y volvé a ${repsMin} reps.` };
+        return { action: 'weight', kg: next, reps: fill(repsMin), text: `Toca subir el peso: ${formatNumber(next)} ${unit} (+${formatNumber(inc)}) y volver a ${repsMin} reps.` };
     }
     if (reps.every(r => r < repsMin)) {
         return { action: 'repeat', kg, reps: fill(repsMin), text: `Mismo peso${kg ? ` (${formatNumber(kg)} ${unit})` : ''}: apuntá a ${repsMin} reps en cada serie.` };
@@ -250,3 +250,36 @@ export function suggestDoubleProgression(lastSets, target) {
     const nextReps = reps.map(r => Math.min(repsMax, Math.max(repsMin, r + 1)));
     return { action: 'reps', kg, reps: nextReps, text: `Mismo peso${kg ? ` (${formatNumber(kg)} ${unit})` : ''}, una rep más: ${nextReps.join('-')}. Al llegar a ${repsMax} en todas, subís.` };
 }
+
+// ---- Progresar a elección: la app sugiere, la persona elige (no se cambia nada solo) ----
+
+/** Qué se puede subir o bajar según cómo se mide el ejercicio. */
+export const PROGRESSION_KINDS = { kg: ['weight', 'reps', 'rest'], bw: ['reps', 'rest'], time: ['rest'] };
+
+/**
+ * El valor de un campo de una serie después de progresar (lo que se ve en la serie, en la unidad
+ * elegida). weight: + inc; reps: + 1; rest: − restStep segundos (nunca menos de minRest).
+ * Devuelve null si no hay un valor del que partir.
+ */
+export function progressedValue(kind, value, { inc = 2.5, restStep = 15, minRest = 30 } = {}) {
+    const text = String(value ?? '').trim();
+    if (!text) return null;
+    if (kind === 'weight') {
+        const n = parseFloat(text.replace(',', '.'));
+        if (!Number.isFinite(n) || n <= 0) return null;
+        return String(Math.round((n + inc) * 100) / 100).replace('.', ',');
+    }
+    if (kind === 'reps') {
+        const n = parseInt(text, 10);
+        return Number.isFinite(n) && n > 0 ? String(n + 1) : null;
+    }
+    if (kind === 'rest') {
+        const n = parseInt(text, 10);
+        if (!Number.isFinite(n) || n <= minRest) return null;
+        return String(Math.max(minRest, n - restStep));
+    }
+    return null;
+}
+
+/** El campo de la serie que cambia cada opción. */
+export const PROGRESSION_FIELD = { weight: 'kg', reps: 'reps', rest: 'rest' };

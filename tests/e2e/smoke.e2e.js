@@ -192,6 +192,30 @@ server.listen(0, '127.0.0.1', async () => {
             check(`la página legal en ${language} no tiene errores`, errors.length === 0, errors.join(' | '));
             await page.close();
         }
+
+        // 8. Celular angosto (360 px) con botones grandes y todas las funciones: ninguna pantalla
+        //    se desborda a lo ancho (si algo se sale, el celular achica la página y la barra
+        //    inferior queda corrida o fuera de la vista).
+        for (const uiSize of ['normal', 'xlarge']) {
+            const seed = { ...evilSeed, uiSize, routineTargets: { EV: { [`press ${EVIL}`.toLowerCase()]: { sets: 3, repsMin: 8, repsMax: 12, inc: 2.5 } } } };
+            const { page, errors } = await newPage(browser, seed);
+            await page.setViewportSize({ width: 360, height: 740 });
+            await page.evaluate(() => gym.features.useAll());
+            const wide = [];
+            for (const s of SCREENS) {
+                await page.evaluate(id => {
+                    gym.showScreen(id, true);
+                    if (id === 'entrenar') { const sel = document.getElementById('routine'); sel.value = 'EV'; sel.dispatchEvent(new Event('change')); }
+                    document.querySelectorAll(`[data-screen="${id}"] .section.collapsible`).forEach(sec => gym.setSectionOpen(sec, true, false));
+                }, s);
+                await page.waitForTimeout(120);
+                const r = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+                if (r > 0) wide.push(`${s} (+${r}px)`);
+            }
+            check(`a 360 px (${uiSize}) ninguna pantalla se desborda a lo ancho`, wide.length === 0, wide.join(', '));
+            check(`a 360 px (${uiSize}) sin errores`, errors.length === 0, errors.join(' | '));
+            await page.close();
+        }
     } catch (err) {
         check('la prueba terminó', false, err.stack);
     } finally {

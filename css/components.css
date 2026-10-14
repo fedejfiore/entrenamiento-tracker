@@ -443,4 +443,10 @@ html[data-module="pilates"] [data-module-only="gym"], html[data-module="gym"] [d
 .mascot-empty { font-size: 13px; color: var(--text-muted); text-align: center; padding: 8px; }
 .mascot-actions { display: flex; gap: 8px; margin-top: 10px; }
 .mascot-actions button, .mascot-actions select { width: auto; margin: 0; white-space: nowrap; }
-.mascot-actions select { flex: 1; }
+.mascot-actions select { flex: 1 1 0; min-width: 0; }
+
+/* Ánimo de la sesión: los cinco caben siempre en la tarjeta (se achican en pantallas chicas). */
+.mood-row { display: flex; align-items: center; gap: 6px; margin-bottom: 12px; }
+.mood-label { flex: none; }
+.mood-row .emoji-btn, .finish-prompt-mood .emoji-btn { flex: 1 1 0; min-width: 0; width: auto; max-width: 64px; margin: 0; padding: 6px 0; font-size: clamp(20px, 6vw, 28px); line-height: 1.2; text-align: center; }
+.mood-row .emoji-btn.selected, .finish-prompt-mood .emoji-btn.selected { transform: none; }

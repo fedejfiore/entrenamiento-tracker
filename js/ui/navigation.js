@@ -148,13 +148,26 @@ export function initTheme() {
 }
 
 
-// Con el teclado abierto la barra de abajo estorba (tapa el campo que se edita): se oculta
-// mientras la ventana visible es mucho más baja que la pantalla.
+// Con el teclado abierto la barra de abajo estorba (tapa el campo que se edita): se oculta solo
+// si hay un campo de texto enfocado Y la parte visible se achicó mucho (el zoom no cuenta). Se
+// vuelve a evaluar al salir del campo: la barra nunca queda escondida por un aviso perdido.
+export function isTextField(el) {
+    if (!el) return false;
+    if (el.isContentEditable || el.tagName === 'TEXTAREA') return true;
+    return el.tagName === 'INPUT' && !['checkbox', 'radio', 'button', 'submit', 'range', 'color', 'file'].includes(el.type) && !el.readOnly;
+}
+
 export function initBottomNavKeyboardHide() {
     const vv = window.visualViewport;
     if (!vv) return;
-    const update = () => document.body.classList.toggle('keyboard-open', vv.height < window.innerHeight * 0.75);
+    const update = () => {
+        const shrunk = vv.height * (vv.scale || 1) < window.innerHeight * 0.75;
+        document.body.classList.toggle('keyboard-open', shrunk && isTextField(document.activeElement));
+    };
     vv.addEventListener('resize', update);
+    document.addEventListener('focusin', update);
+    document.addEventListener('focusout', () => setTimeout(update, 60));
+    window.addEventListener('orientationchange', () => setTimeout(update, 300));
     update();
 }
 

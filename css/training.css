@@ -397,3 +397,10 @@ body.rep-counter-off .rep-count-btn { display: none; }
 .springs-stepper button[data-spring] { font-size: 15px; padding: 6px 0; }
 .springs-stepper .springs-load { flex: 1 1 100%; text-align: center; font-size: 11px; font-weight: 600; color: var(--text-muted); min-height: 14px; }
 .springs-stepper .springs-load:empty { display: none; }
+
+/* "Para progresar hoy": opciones que la persona elige (no se aplica nada solo) */
+.progress-choices { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px; }
+.progress-choices-label { font-size: 12px; color: var(--text-muted); }
+.progress-chip { width: auto; margin: 0; min-height: 32px; padding: 4px 10px; font-size: 12px; font-weight: 600; border-radius: 999px; background: var(--bg-subtle); color: var(--text); border: 1px solid var(--border); }
+.progress-chip.rec { border-color: var(--success); color: var(--success); }
+.progress-chip[aria-pressed="true"] { background: var(--success); border-color: var(--success); color: var(--on-color); }

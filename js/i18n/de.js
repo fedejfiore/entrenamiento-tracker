@@ -5,6 +5,14 @@
 
 I18N_DICTIONARIES.de = {
  "text": {
+  "Cada ejercicio muestra su objetivo (🎯 3 × 8–12) y qué toca hoy. En gris está siempre lo de la última vez: para subir peso o reps, elegí la opción en \"Para progresar hoy\" (la recomendada lleva ★). Nada cambia solo.": "Jede Übung zeigt ihr Ziel (🎯 3 × 8–12) und was heute dran ist. Grau steht immer das vom letzten Mal: Für mehr Gewicht oder Wiederholungen wähle die Option unter „Heute steigern“ (die empfohlene hat ★). Nichts ändert sich von allein.",
+  "Para progresar hoy:": "Heute steigern:",
+  "＋1 rep": "＋1 Wdh.",
+  "⏱ −15 s de descanso": "⏱ −15 s Pause",
+  "Lo que recomienda el programa": "Was das Programm empfiehlt",
+  "No hay series pendientes con valores de la vez pasada para cambiar": "Keine offenen Sätze mit Werten vom letzten Mal zum Ändern",
+  "Sugerencias para progresar": "Vorschläge zum Steigern",
+  "Debajo de cada ejercicio: subir el peso, sumar una rep o bajar el descanso. Vos elegís; nada cambia solo.": "Unter jeder Übung: mehr Gewicht, eine Wiederholung mehr oder kürzere Pause. Du entscheidest; nichts ändert sich von allein.",
   "Créditos": "Danksagungen",
   "Tipografías Inter y Oswald, con licencia SIL Open Font License.": "Schriften Inter und Oswald, unter der SIL Open Font License.",
   "Gráficos: Chart.js (licencia MIT).": "Diagramme: Chart.js (MIT-Lizenz).",
@@ -1858,7 +1866,6 @@ I18N_DICTIONARIES.de = {
   "Botón «▶ Contar reps» en cada ejercicio": "Taste „▶ Wdh. zählen“ bei jeder Übung",
   "Busca la combinación con menos discos, aunque falten algunos. Si el peso no se puede armar exacto, te muestra el más cercano por debajo y por encima.": "Er findet die Kombination mit den wenigsten Scheiben, auch wenn welche fehlen. Wenn sich das Gewicht nicht genau zusammenstellen lässt, zeigt er das nächstkleinere und das nächstgrößere.",
   "Básicos con barra a 5 series de 5. Si completás las 25 reps, la próxima vez sumás peso (piernas de a 5 kg, torso de a 2,5 kg).": "Langhantel-Grundübungen mit 5 Sätzen zu 5. Wenn du die 25 Wiederholungen schaffst, erhöhst du beim nächsten Mal das Gewicht (Beine um 5 kg, Oberkörper um 2,5 kg).",
-  "Cada ejercicio muestra su objetivo (🎯 3 × 8–12) y qué hacer hoy. Los valores sugeridos aparecen en gris: si los hiciste, tocá ✓.": "Jede Übung zeigt ihr Ziel (🎯 3 × 8–12) und was heute zu tun ist. Vorgeschlagene Werte erscheinen grau: Wenn du sie geschafft hast, tippe auf ✓.",
   "Cada ejercicio se mide de una forma. Se cambia con el selector debajo del nombre del ejercicio:": "Jede Übung wird auf eine Art gemessen. Ändere sie mit der Auswahl unter dem Übungsnamen:",
   "Cada superserie tiene una letra (A, B…) y un color en el borde del bloque.": "Jeder Supersatz hat einen Buchstaben (A, B …) und eine Farbe am Rand des Blocks.",
   "Cambiar el plan rige desde esta semana: las semanas anteriores se siguen evaluando con el plan que tenían. Si cambiás días u horarios, borrá los eventos viejos del calendario y volvé a agregarlos.": "Planänderungen gelten ab dieser Woche: Frühere Wochen werden weiter mit ihrem damaligen Plan bewertet. Wenn du Tage oder Uhrzeiten änderst, lösche die alten Kalendereinträge und füge sie neu hinzu.",
@@ -3087,3 +3094,16 @@ I18N_DICTIONARIES.de.patterns.push(["{n:num} de {m:num} series","{n} von {m} Sä
 I18N_DICTIONARIES.de.patterns.push(["Ficha de {x}: técnica y errores","Anleitung zu {x}: Technik und Fehler"]);
 I18N_DICTIONARIES.de.patterns.push(["Faltan {n:num} semanas cumplidas para {x:tr}","Noch {n} erfüllte Wochen bis {x}"]);
 I18N_DICTIONARIES.de.patterns.push(["{x:tr} en 3D","{x} in 3D"]);
+I18N_DICTIONARIES.de.patterns.push(["{s:num} × {r} · {x:tr}","{s} × {r} · {x}"]);
+I18N_DICTIONARIES.de.patterns.push(["Toca subir el peso: {n:num} (+{i:num}) y volver a {r:num} reps.","Zeit für mehr Gewicht: {n} (+{i}) und zurück auf {r} Wdh."]);
+I18N_DICTIONARIES.de.patterns.push(["Mismo peso ({n:num}): apuntá a {r:num} reps en cada serie.","Gleiches Gewicht ({n}): Ziel {r} Wdh. pro Satz."]);
+I18N_DICTIONARIES.de.patterns.push(["Mismo peso: apuntá a {r:num} reps en cada serie.","Gleiches Gewicht: Ziel {r} Wdh. pro Satz."]);
+I18N_DICTIONARIES.de.patterns.push(["Mismo peso ({n:num}), una rep más: {x}. Al llegar a {r:num} en todas, subís.","Gleiches Gewicht ({n}), eine Wdh. mehr: {x}. Bei {r} in allen Sätzen steigerst du."]);
+I18N_DICTIONARIES.de.patterns.push(["Mismo peso, una rep más: {x}. Al llegar a {r:num} en todas, subís.","Gleiches Gewicht, eine Wdh. mehr: {x}. Bei {r} in allen Sätzen steigerst du."]);
+I18N_DICTIONARIES.de.patterns.push(["Primera vez: elegí un peso con el que llegues a {r:num} reps dejando 2 o 3 en reserva.","Erstes Mal: Wähle ein Gewicht, mit dem du {r} Wdh. schaffst und 2 bis 3 in Reserve hast."]);
+I18N_DICTIONARIES.de.patterns.push(["Primera vez: hacé {r:num} reps por serie con buena técnica.","Erstes Mal: {r} Wdh. pro Satz mit guter Technik."]);
+I18N_DICTIONARIES.de.patterns.push(["Llegaste a {r:num} en todas: pasá a una variante más difícil, sumá lastre o una serie.","Du hast {r} in allen Sätzen: nimm eine schwerere Variante, Zusatzgewicht oder einen Satz mehr."]);
+I18N_DICTIONARIES.de.patterns.push(["Primera vez: {r:num} reps lentas y con control; la técnica está en la ficha.","Erstes Mal: {r} langsame, kontrollierte Wdh.; die Technik steht in der Anleitung."]);
+I18N_DICTIONARIES.de.patterns.push(["Llegaste a {r:num}: pasá a la versión más difícil (mirá la ficha) o ajustá el resorte.","Du hast {r} erreicht: nimm die schwerere Version (siehe Anleitung) oder passe die Feder an."]);
+I18N_DICTIONARIES.de.patterns.push(["{x} en {n:num} series","{x} bei {n} Sätzen"]);
+I18N_DICTIONARIES.de.patterns.push(["{x} en 1 serie","{x} bei 1 Satz"]);

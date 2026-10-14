@@ -204,3 +204,7 @@ html[data-contrast="high"] .bottom-nav { border-top: 2px solid var(--border); }
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
 }
+
+/* Celdas del calendario: con botones grandes se agrandan la letra y el alto, nunca el ancho
+   mínimo (los 7 días tienen que entrar en la pantalla). */
+html[data-size] button.calendar-cell { min-height: 0; min-width: 0; font-size: 13px; }

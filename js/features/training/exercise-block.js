@@ -26,6 +26,7 @@ import { features } from '../feature-settings.js';
 import { typesForModule } from '../disciplines.js';
 import { equipLevelChipHtml } from '../pilates-library.js';
 import { programPrevSets, programTargetLineHtml, stallHintHtml } from '../programs.js';
+import { progressionChoicesHtml } from './progression.js';
 
 export function isSessionDataEvent(e) {
     return !!e.target.closest?.('.set-row, .exercise-note');
@@ -167,8 +168,14 @@ export function buildSetsTableHtml(type, sets, prevSets, unit = 'mss') {
 
 // Valores sugeridos de cada serie: lo de la última vez o, si la rutina es de un programa,
 // lo que toca hoy según su progresión (js/features/programs.js).
+/**
+ * Lo que se ve en gris (y se completa al tildar sin tocar): siempre lo de la última vez. Solo la
+ * primera vez de un ejercicio con objetivo de programa se proponen las reps del objetivo. Subir
+ * peso o reps es una opción que la persona elige ("Para progresar hoy").
+ */
 export function getBlockPrevSets(name, type, routine = document.getElementById('routine')?.value) {
     const prev = getPrevSets(name, type);
+    if (prev.some(p => p && !p.warmup)) return prev;
     return programPrevSets(routine, name, prev) || prev;
 }
 
@@ -208,6 +215,7 @@ export function buildExerciseRowHtml(idx, ex, routine) {
                         <span class="exercise-last">${buildLastSummaryText(stats, type)}</span>
                     </div>
                     ${programTargetLineHtml(routine, ex)}
+                    ${progressionChoicesHtml(routine, ex, type)}
                     ${stallHintHtml(routine, ex, type)}
                     ${stats.lastNote ? `<small style="color:var(--brand); font-style:italic; display:block; margin-top:3px;">💡 ${escapeHtml(stats.lastNote)}</small>` : ''}
                 </div>

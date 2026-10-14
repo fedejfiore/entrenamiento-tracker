@@ -83,3 +83,16 @@ test('los programas usan ejercicios del catálogo (así cuentan en el mapa de m�
         }));
     });
 });
+
+test('progresar a elección: cada serie parte de lo suyo (no se iguala al peso máximo)', () => {
+    const app2 = loadApp([...CORE_FILES, 'js/domain/programs.js']);
+    const next = app2('progressedValue');
+    assert.deepEqual(['40', '45', '50'].map(v => next('weight', v, { inc: 2.5 })), ['42,5', '47,5', '52,5']);
+    assert.equal(next('weight', '22,5', { inc: 2.5 }), '25');
+    assert.equal(next('reps', '8'), '9');
+    assert.equal(next('rest', '90'), '75');
+    assert.equal(next('rest', '40'), '30', 'nunca menos de 30 s');
+    assert.equal(next('rest', '30'), null, 'ya está en el mínimo');
+    assert.equal(next('weight', ''), null, 'sin valor de la vez pasada no inventa nada');
+    assert.deepEqual([...app2('PROGRESSION_KINDS').bw], ['reps', 'rest']);
+});
